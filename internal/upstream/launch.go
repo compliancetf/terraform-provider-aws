@@ -9,6 +9,8 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"io/fs"
+	"log"
 	"os"
 	"os/exec"
 	"path"
@@ -44,6 +46,9 @@ type VerifiedBinary struct {
 	version  string
 	name     string // Source.Name, for diagnostics
 	execDir  string // private exec child holding path; removed by Upstream.Close
+	cacheDir string // shared entry holding path, for per-binary caches; "" for a private copy
+	// retry makes a private copy when a shared entry fails to start; nil otherwise.
+	retry func(context.Context) (VerifiedBinary, error)
 }
 
 // SHA256 is the verified hex sha256 of the binary at Path.
@@ -56,6 +61,7 @@ type Upstream struct {
 	Version  string           // pinned upstream version
 	Name     string           // Source.Name, e.g. hashicorp/<type>
 	SHA256   string           // verified sha256 of the launched binary
+	CacheDir string           // owner-only dir for caches of this binary's output; "" when none
 
 	client  *plugin.Client
 	cmd     *exec.Cmd
@@ -148,6 +154,16 @@ func Launch(ctx context.Context, bin VerifiedBinary, logger hclog.Logger) (*Upst
 		return nil, err
 	}
 	rpc, err := client.Client()
+	var pe *fs.PathError
+	if err != nil && bin.retry != nil && errors.As(err, &pe) { // exec itself failed: entry removed, noexec, busy
+		client.Kill()
+		log.Printf("[upstream] %q did not start (%v); retrying with a private copy", bin.path, err)
+		vb, rerr := bin.retry(ctx)
+		if rerr != nil {
+			return nil, rerr
+		}
+		return Launch(ctx, vb, logger)
+	}
 	if err != nil {
 		return fail(fmt.Errorf("start upstream %s %s: %w", bin.name, bin.version, err))
 	}
@@ -159,7 +175,7 @@ func Launch(ctx context.Context, bin VerifiedBinary, logger hclog.Logger) (*Upst
 	if !ok {
 		return fail(fmt.Errorf("dispensed upstream plugin is %T, not *grpc.ClientConn", raw))
 	}
-	return &Upstream{Conn: conn, Protocol: bin.protocol, Version: bin.version, Name: bin.name, SHA256: bin.sha256, client: client, cmd: cmd, execDir: bin.execDir, crash: crash}, nil
+	return &Upstream{Conn: conn, Protocol: bin.protocol, Version: bin.version, Name: bin.name, SHA256: bin.sha256, CacheDir: bin.cacheDir, client: client, cmd: cmd, execDir: bin.execDir, crash: crash}, nil
 }
 
 // Exited reports whether the upstream process has ended and its exit status

@@ -1,149 +1,69 @@
-# Performance Analysis & Optimizations
+# Performance
 
-## Summary
+The provider is a proxy: Terraform starts it, and it starts the unmodified `hashicorp/aws` binary as a subprocess. On a warm machine a `terraform plan` takes as long as with `hashicorp/aws` directly.
 
-The compliance.tf provider proxy adds **~3% overhead** over the direct `hashicorp/aws` provider on warm runs. This document records the investigation methodology, root causes, and optimizations applied.
+## Current numbers
 
-**Benchmark setup:** Apple M1 Max, hashicorp/aws v6.40.0, 1 `aws_s3_bucket` resource, `profile = "demo"`.
+macOS arm64, Terraform 1.16.3, hashicorp/aws 6.69.0, `examples/soft-fail` (one `aws_db_instance`, AWS credentials from a profile), median of 8 warm runs:
 
-| Phase | Direct | Proxy | Overhead |
-|---|---|---|---|
-| Baseline (no optimizations) | 3.8s | 5.7s | **50%** |
-| Round 1 (schema cache + type memo) | 3.8s | 4.1s | **10%** |
-| Round 2 (lazy schema + single unmarshal) | 3.9s | 4.0s | **~3%** |
+| Provider | `terraform plan` |
+|---|---|
+| hashicorp/aws 6.69.0 directly | 2.57 s |
+| compliancetf/aws 6.69.0 (the release before this change) | 24.57 s |
+| compliancetf/aws with the shared upstream copy | 3.30 s |
+| compliancetf/aws with the shared copy and the schema file | 2.59 s |
 
-## Root Cause Analysis
+The first run after a new upstream pin costs about 11 s once. That is the same one-off first-exec cost that hashicorp/aws pays itself after `terraform init` (12 s in the same setup).
 
-### Why a proxy is inherently slower than direct
+## Where the time went
 
-The direct `hashicorp/aws` provider is a single process. The compliance proxy adds:
-1. **Double process launch** — Terraform starts our binary, our binary starts the upstream binary via go-plugin
-2. **gRPC hop** — every RPC goes: Terraform → our tf5server → proto conversion → gRPC to upstream → proto conversion back
-3. **Schema conversion** — the AWS provider has ~1,638 resource schemas that must be converted between proto and tfprotov5 types
+Terraform starts the provider three times per plan: once for the schema, once to validate, once to plan. Every start of ours used to:
 
-### Why Terraform launches 3 provider processes
+1. Copy the pinned 796 MB upstream binary into a fresh per-process directory and hash it as it was written: about 1 s.
+2. Exec that new file. macOS validates the code signature of an executable the first time a given file (inode) runs: 9.2 s for this binary. A second exec of the same file takes 0.2 s.
 
-Terraform's architecture launches separate provider processes for different lifecycle phases. In our measurements, we consistently observed 3 processes:
-1. **Process 1** — schema discovery (GetProviderSchema)
-2. **Process 2** — validation + configuration (PrepareProviderConfig, Configure, Validate, Plan)
-3. **Process 3** — additional operations
+So each plan paid about 3 x 7 s. CPU time was 4.4 s of the 25 s wall time; the rest was waiting.
 
-Each process independently starts its own upstream subprocess, pays the go-plugin handshake cost, and needs the schema.
+Measured directly:
 
-## Profiling Data
+| Step | Time |
+|---|---|
+| first exec of a fresh copy | 9.2 s |
+| exec of the same file again | 0.2 s |
+| `cp` of the binary | 0.4 s |
+| sha256 of the binary (Go) | about 0.5 s |
 
-### CPU Profile (10 iterations of full schema conversion)
+After that fix, about 0.6 s remained. In the plan process Terraform does not ask for the schema (the upstream sets `get_provider_schema_optional`). The proxy still needs resource schemas to evaluate controls, so it asked the upstream for the full schema: about 0.3 s to build 7.5 MB. Reading the same response from a file takes about 40 ms.
 
-| Function | Flat | Cumulative | Notes |
-|---|---|---|---|
-| `runtime.madvise` | 21% | 21% | Memory management — large allocation footprint |
-| `protobuf.unmarshalPointer` | 2.5% | 21% | Proto reflection during unmarshal |
-| `schemaAttributeFromProto` | 1.2% | 6.2% | Our conversion code |
+## What the provider does now
 
-### Memory Profile (670MB total over 10 iterations)
+- **Shared upstream copy** (`internal/upstream/shared.go`). The first start verifies the copy as before, then publishes it by renaming its private directory to `<user cache>/compliancetf/exec/v1-<sha256>/`. Later starts run that file, so there is no copy, no hash and no new inode. Before every exec the entry is checked: owner-only directory and file, on unix one link and no write bits, and a stamp of size, mtime, device and inode written at verification. A stamp mismatch triggers one rehash. A hash mismatch or a broken entry is replaced. An entry that is not ours, or an I/O error, leads to a private per-process copy as before. `COMPLIANCETF_UPSTREAM_PATH` is still hashed on every start, and a mismatch is still fatal. Entries of other pins are removed after 14 idle days.
+- **Schema file** (`internal/proxy/schemafile.go`). The upstream GetSchema response is stored in the same entry, prefixed with its sha256, and later processes read it instead of asking the upstream. A missing, damaged or mismatching file is ignored.
 
-| Allocator | Amount | % | Notes |
-|---|---|---|---|
-| `reflect.unsafe_New` | 311MB | 46% | Protobuf reflection during unmarshal |
-| `os.readFileContents` | 68MB | 10% | Cache file reads |
-| `schemaAttributeFromProto` | 65MB | 10% | Per-attribute conversion |
-| `schemaBlockFromProto` | 58MB | 9% | Per-block conversion |
-| `consumeStringValidateUTF8` | 38MB | 6% | Proto string validation |
-| `schemaNestedBlockFromProto` | 33MB | 5% | Nested block conversion |
-| `bytesToCtyType` | 18MB | 3% | Type JSON parsing (now memoized) |
+The threat model is unchanged for other local users: the entry and its parents are writable only by the user. A process running as the same user could replace the shared binary or schema file; it could equally replace `terraform`, the CLI config or this provider, so that is out of scope (see the comment at the top of `shared.go`). With an `XDG_RUNTIME_DIR` or a user cache directory that fails the checks, the provider falls back to the old per-process copy.
 
-### Per-RPC Timing (single resource plan)
-
-| RPC | Time | Notes |
-|---|---|---|
-| GetProviderSchema | 975ms | 1,638 resources over gRPC + full conversion |
-| PrepareProviderConfig (lazy-init) | 260ms → **20ms** (after optimization) | Was loading ALL schemas; now provider-only |
-| Configure | 1,007ms | Upstream AWS auth — out of our control |
-| ValidateResourceTypeConfig | 8-13ms | Fast — just compliance evaluation |
-| PlanResourceChange | 5ms | Fast — compliance evaluation + upstream plan |
-
-## Optimizations Applied
-
-### Round 1: Schema Disk Cache + Type Memoization
-
-**Files:** `internal/upstream/schemacache.go`, `internal/upstream/convert_from_proto.go`
-
-1. **Proto-based disk cache** — first provider process writes the GetProviderSchema proto response (~7MB) to a temp file. Processes 2 and 3 read from cache instead of making a full gRPC call (~1s each). Keyed by upstream binary path hash, 5-minute TTL.
-
-2. **tftypes.ParseJSONType memoization** — AWS schemas repeat the same primitive types (string, bool, number) thousands of times. A `sync.RWMutex`-protected `map[string]tftypes.Type` cache avoids re-parsing identical JSON type bytes.
-
-**Impact:** 50% → 10% overhead
-
-### Round 2: Lazy Schema + Single Unmarshal + Type Cache
-
-**Files:** `internal/upstream/schemacache.go`, `internal/proxy/server.go`, `internal/proxy/config.go`, `internal/proxy/intercept.go`
-
-3. **Lazy provider-only schema loading** — operation processes (2 and 3) read only the provider schema from the disk cache, skipping conversion of 1,638 resource schemas entirely. Resource schemas are loaded on-demand when first accessed by compliance evaluation. This is the single biggest win in round 2.
-
-4. **Combined ParseAndStripComplianceConfig** — `ParseComplianceConfig` and `StripComplianceBlock` both called `config.Unmarshal()` separately. Combined into a single function that unmarshals once and produces both the compliance config and the stripped upstream DynamicValue.
-
-5. **SchemaBlockToType cache** — `SchemaBlockToType(schema.Block)` was called on every ValidateResourceTypeConfig, PlanResourceChange, and ApplyResourceChange RPC, rebuilding the recursive type graph each time. Now cached per resource type name in `map[string]tftypes.Type`.
-
-**Impact:** 10% → ~3% overhead
-
-## Remaining ~3% Overhead
-
-The remaining overhead is the **inherent cost of the go-plugin subprocess architecture**:
-- ~300ms for go-plugin process launch + gRPC handshake + AutoMTLS setup
-- This cost is paid per provider process (3 processes)
-- It runs in parallel with Terraform's own startup, so the observable overhead is less than 3 × 300ms
-
-### Potential future optimizations (not implemented)
-
-| Optimization | Expected Impact | Effort | Notes |
-|---|---|---|---|
-| Shared upstream daemon | Eliminate 2 of 3 subprocess launches | High | Single upstream shared across Terraform processes via Unix socket. Complex state management. |
-| Disable AutoMTLS | ~50ms per connection | Low | Security tradeoff for local-only connections |
-| Custom cache format | ~100ms on cache read | Medium | Replace proto unmarshal with a narrow decoder that only extracts needed fields |
-| gRPC compression | ~50ms on large schema transfer | Low | May not help — schema is only transferred once per process |
-
-## How to Reproduce Benchmarks
+## Reproducing
 
 ```bash
-# Build the provider
-make build
+# a release-like build of this checkout
+go build -ldflags "-X main.version=6.69.0" -o /tmp/ctf/terraform-provider-aws ./
 
-# Create benchmark directories
-mkdir -p /tmp/bench-direct /tmp/bench-proxy
-
-# Direct benchmark (baseline)
-cat > /tmp/bench-direct/main.tf << 'EOF'
-terraform {
-  required_providers {
-    aws = { source = "hashicorp/aws", version = "6.40.0" }
+cat > /tmp/ctf.tfrc <<'EOF'
+provider_installation {
+  dev_overrides {
+    "registry.terraform.io/compliancetf/aws" = "/tmp/ctf"
   }
+  direct {}
 }
-provider "aws" { region = "us-east-1"; profile = "demo" }
-resource "aws_s3_bucket" "test" { bucket = "perf-test" }
 EOF
-cd /tmp/bench-direct && terraform init
-time terraform plan -input=false
 
-# Proxy benchmark
-cat > /tmp/bench-proxy/main.tf << 'EOF'
-terraform {
-  required_providers {
-    aws = { source = "compliancetf/aws" }
-  }
-}
-provider "aws" {
-  region = "us-east-1"
-  profile = "demo"
-  compliance { enforcement_mode = "advisory" }
-}
-resource "aws_s3_bucket" "test" { bucket = "perf-test" }
-EOF
-export TF_CLI_CONFIG_FILE=/path/to/terraform-provider-aws/.terraformrc
-time terraform -chdir=/tmp/bench-proxy plan -input=false
+# warm-up once, then time a few runs
+for i in 1 2 3 4; do
+  /usr/bin/time -p env TF_CLI_CONFIG_FILE=/tmp/ctf.tfrc \
+    terraform -chdir=examples/soft-fail plan -input=false -lock=false >/dev/null
+done
 ```
 
-## Reviewed By
+For the baseline, point a second `dev_overrides` entry for `registry.terraform.io/hashicorp/aws` at a directory holding the same upstream binary named `terraform-provider-aws`, and use a copy of the example with `source = "hashicorp/aws"`.
 
-- Architecture review: blind spot analysis, identified lazy schema loading + single unmarshal + type cache
-- Security review: independent performance review, validated approach correctness
-- Profiling: Go pprof CPU + memory profiles on real 1,638-resource AWS schema conversion
+To find where time goes, `TF_LOG=trace TF_LOG_PATH=...` and look for gaps between consecutive timestamps. Wall time far above CPU time (`time`) means waiting, not computing.

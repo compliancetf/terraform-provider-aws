@@ -82,6 +82,20 @@ func Discover(ctx context.Context, src Source, pins []byte, anchors [][]byte) (V
 		}
 		return d.download(ctx, p, osArch, cacheDir)
 	}
+	if parent := sharedParent(s.dirs); parent != "" {
+		vb, done, err := s.discoverShared(ctx, parent)
+		if done {
+			if err == nil && vb.execDir == "" {
+				vb.retry = s.discoverPrivate
+			}
+			return vb, err
+		}
+	}
+	return s.discoverPrivate(ctx)
+}
+
+// discoverPrivate copies the binary into a fresh per-process exec child.
+func (s *source) discoverPrivate(ctx context.Context) (VerifiedBinary, error) {
 	ed, err := newExecDir(execCandidates(), s.dirs)
 	if err != nil {
 		return VerifiedBinary{}, err
@@ -94,10 +108,12 @@ func Discover(ctx context.Context, src Source, pins []byte, anchors [][]byte) (V
 	return vb, err
 }
 
+func (s *source) notFound(reason string) error {
+	return &NotFoundError{Upstream: s.pins.src.Name(), Version: s.pins.Version, OSArch: s.osArch, Reason: reason}
+}
+
 func (s *source) find(ctx context.Context) (VerifiedBinary, error) {
-	notFound := func(reason string) error {
-		return &NotFoundError{Upstream: s.pins.src.Name(), Version: s.pins.Version, OSArch: s.osArch, Reason: reason}
-	}
+	notFound := s.notFound
 	if s.explicit != "" {
 		vb, err := s.exec.copy(ctx, s.explicit, s.pins, s.osArch)
 		if err != nil && ctx.Err() != nil {

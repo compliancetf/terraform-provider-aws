@@ -37,7 +37,7 @@ func Serve(cfg Config, version, commit string) error {
 	if err != nil {
 		return err
 	}
-	proxy.Serve(proxy.Backends{Upstream: u.Conn, UpstreamName: u.Name, UpstreamSHA256: u.SHA256, OnTransportErr: u.TransportErr, Evaluator: ev})
+	proxy.Serve(proxy.Backends{Upstream: u.Conn, UpstreamName: u.Name, UpstreamSHA256: u.SHA256, SchemaCacheDir: u.CacheDir, OnTransportErr: u.TransportErr, Evaluator: ev})
 	return nil
 }
 

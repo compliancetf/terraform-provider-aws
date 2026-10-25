@@ -31,6 +31,9 @@ type Backends struct {
 	// UpstreamSHA256 is the verified sha256 of the binary behind Upstream;
 	// the GetSchema cache is keyed on it.
 	UpstreamSHA256 string
+	// SchemaCacheDir holds the upstream GetSchema response across processes
+	// (schemafile.go): the shared, sha256-named upstream entry. "" disables it.
+	SchemaCacheDir string
 	// OnTransportErr maps an Unavailable error from Upstream (upstream.TransportErr).
 	OnTransportErr func(method string, err error) error
 	// Evaluator is called at Configure and at each hook stage. Nil: hook.Noop.
