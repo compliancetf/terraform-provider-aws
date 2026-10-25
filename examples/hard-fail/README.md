@@ -34,15 +34,10 @@ Error: [rds_db_instance_encryption_at_rest_enabled] RDS instances must have stor
   25:   storage_encrypted       = false # deny
 
 Fix: Set storage_encrypted = true.
-Severity: critical
-Mode: hard_fail
-Stage: plan
-Frameworks: cis_aws:2.3.1, cis_v600:3, cis_v600:3.2
-To waive: add an exception for rds_db_instance_encryption_at_rest_enabled in
-the exceptions_file
+Docs: https://compliance.tf/docs/controls/aws/rds_db_instance_encryption_at_rest_enabled/
 ```
 
-The "To waive" line counts only with a signed org profile that allows self-service exceptions for the control: see [exception](../exception).
+`COMPLIANCETF_DIAGNOSTICS=full` adds the severity, mode, stage and framework references. A `To waive:` line appears only when an `exceptions_file` entry can waive the control, which needs a signed org profile: see [exception](../exception) and [Diagnostics](../../docs/reference.md#diagnostics).
 
 ## Next steps
 

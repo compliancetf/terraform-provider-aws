@@ -20,7 +20,7 @@
       {
         "severity": "error",
         "summary": "[rds_instance_kms_key_configured] RDS instances must name a customer managed KMS key.",
-        "detail": "Fix: Set kms_key_id.\nSeverity: medium\nMode: hard_fail\nStage: plan\nTo waive: add an exception for rds_instance_kms_key_configured in compliance-exceptions.hcl",
+        "detail": "Fix: Set kms_key_id.\nDocs: https://compliance.tf/docs/controls/aws/rds_instance_kms_key_configured/",
         "attribute": "AttributeName(\"kms_key_id\")"
       }
     ],

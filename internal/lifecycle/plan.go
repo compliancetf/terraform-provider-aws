@@ -459,7 +459,7 @@ func (l *Lifecycle) check(ctx context.Context, c *Configured, stage Stage, ctl *
 		d.Summary = fmt.Sprintf("[%s] controls changed between plan and apply", ctl.ID)
 		d.Detail = changed
 	} else {
-		d.Summary, d.Detail = diagText(ctl, out, mode, v.Severity, stage, c.Block.ExceptionsFile)
+		d.Summary, d.Detail = diagText(ctl, out, mode, v.Severity, stage, c.fields(ctl.ID))
 	}
 	if downgraded {
 		d.Detail = unchangedNote + "\n" + d.Detail
@@ -488,7 +488,7 @@ func pendingKinds(c *Configured, ctl *bundle.Control, mode profile.Mode) []strin
 // pendingDiags are the plan warnings of a blocking failure eligible for an
 // exemption: one per kind, value-free (control id, message and fixed text).
 func pendingDiags(c *Configured, ctl *bundle.Control, out engine.Outcome, mode profile.Mode, stage Stage, kinds []string) []hook.Diagnostic {
-	summary, detail := diagText(ctl, out, mode, SeverityError, stage, c.Block.ExceptionsFile)
+	summary, detail := diagText(ctl, out, mode, SeverityError, stage, c.fields(ctl.ID))
 	diags := make([]hook.Diagnostic, len(kinds))
 	for i, k := range kinds {
 		diags[i] = hook.Diagnostic{Severity: hook.SeverityWarning, Attribute: attrPath(ctl.Reads), Summary: verdict.PendingSummary(k, ctl.ID),
@@ -587,7 +587,7 @@ func rank(s engine.State) int {
 }
 
 // diagText is the summary and detail of the diagnostics table.
-func diagText(ctl *bundle.Control, out engine.Outcome, mode profile.Mode, sev Severity, stage Stage, exceptionsFile string) (string, string) {
+func diagText(ctl *bundle.Control, out engine.Outcome, mode profile.Mode, sev Severity, stage Stage, show shown) (string, string) {
 	paths := strings.Join(out.UnknownPaths, ", ")
 	if stage == StageEphemeralOpen && sev == SeverityError {
 		// Every block names the control and
@@ -599,7 +599,7 @@ func diagText(ctl *bundle.Control, out engine.Outcome, mode profile.Mode, sev Se
 		case engine.NotEvaluable:
 			lines = append(lines, fmt.Sprintf("Not evaluable (%s): treated as a failure of this control.", out.Err))
 		}
-		return fmt.Sprintf("[%s] %s", ctl.ID, ctl.Message), strings.Join(append(lines, detailLines(ctl, mode, stage, exceptionsFile)...), "\n")
+		return fmt.Sprintf("[%s] %s", ctl.ID, ctl.Message), strings.Join(append(lines, detailLines(ctl, mode, stage, show)...), "\n")
 	}
 	switch {
 	case out.State == engine.Unknown && stage == StageDataSource:
@@ -621,27 +621,60 @@ func diagText(ctl *bundle.Control, out engine.Outcome, mode profile.Mode, sev Se
 		summary = fmt.Sprintf("[%s] applied value violates control", ctl.ID)
 		lines = append(lines, "The change was applied and state recorded. Fix configuration and apply again.")
 	}
-	return summary, strings.Join(append(lines, detailLines(ctl, mode, stage, exceptionsFile)...), "\n")
+	return summary, strings.Join(append(lines, detailLines(ctl, mode, stage, show)...), "\n")
 }
 
-// detailLines are the detail lines after the reason: fix,
-// severity, mode, stage, frameworks and how to waive.
-func detailLines(ctl *bundle.Control, mode profile.Mode, stage Stage, exceptionsFile string) []string {
+// shown is what the detail lines of one control's diagnostics show: the
+// COMPLIANCETF_DIAGNOSTICS fields and the exceptions_file path when the
+// sidecar can waive the control ("" when it cannot).
+type shown struct {
+	fields Field
+	waive  string
+}
+
+// fields is what diagnostics of control id show under c.
+func (c *Configured) fields(id string) shown {
+	s := shown{fields: c.Block.Fields}
+	if c.Sidecar.Waivable(id) {
+		s.waive = c.Block.ExceptionsFile
+	}
+	return s
+}
+
+// detailLines are the detail lines after the reason, in field order: fix,
+// docs, waive, severity, mode, stage (and type at the data source stage),
+// frameworks. Zero fields is the default set.
+func detailLines(ctl *bundle.Control, mode profile.Mode, stage Stage, show shown) []string {
+	f := show.fields
+	if f == 0 {
+		f = presets["default"]
+	}
 	var lines []string
-	if ctl.Fix != "" {
+	if f&FieldFix != 0 && ctl.Fix != "" {
 		lines = append(lines, "Fix: "+ctl.Fix)
 	}
-	lines = append(lines, "Severity: "+string(ctl.Severity), "Mode: "+mode.String(), "Stage: "+stageName(stage))
-	if stage == StageDataSource {
-		lines = append(lines, "Type: "+ctl.ResourceType)
+	if f&FieldDocs != 0 {
+		lines = append(lines, "Docs: "+docsBase+ctl.ID+"/")
 	}
-	if len(ctl.FrameworkRefs) > 0 {
+	if f&FieldWaive != 0 && show.waive != "" {
+		lines = append(lines, fmt.Sprintf("To waive: add an exception for %s in %s", ctl.ID, show.waive))
+	}
+	if f&FieldSeverity != 0 {
+		lines = append(lines, "Severity: "+string(ctl.Severity))
+	}
+	if f&FieldMode != 0 {
+		lines = append(lines, "Mode: "+mode.String())
+	}
+	if f&FieldStage != 0 {
+		lines = append(lines, "Stage: "+stageName(stage))
+		if stage == StageDataSource {
+			lines = append(lines, "Type: "+ctl.ResourceType)
+		}
+	}
+	if f&FieldFrameworks != 0 && len(ctl.FrameworkRefs) > 0 {
 		lines = append(lines, "Frameworks: "+strings.Join(ctl.FrameworkRefs, ", "))
 	}
-	if exceptionsFile == "" {
-		exceptionsFile = "the exceptions_file"
-	}
-	return append(lines, fmt.Sprintf("To waive: add an exception for %s in %s", ctl.ID, exceptionsFile))
+	return lines
 }
 
 // attrPath is the top-level attribute of the first reads path. reads drop

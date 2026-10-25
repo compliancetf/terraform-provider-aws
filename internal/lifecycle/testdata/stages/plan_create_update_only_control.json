@@ -20,7 +20,7 @@
       {
         "severity": "error",
         "summary": "[rds_instance_deletion_protection_enabled] RDS instances must keep deletion protection on.",
-        "detail": "Fix: Set deletion_protection = true.\nSeverity: medium\nMode: hard_fail\nStage: plan\nTo waive: add an exception for rds_instance_deletion_protection_enabled in compliance-exceptions.hcl",
+        "detail": "Fix: Set deletion_protection = true.\nDocs: https://compliance.tf/docs/controls/aws/rds_instance_deletion_protection_enabled/",
         "attribute": "AttributeName(\"deletion_protection\")"
       }
     ],

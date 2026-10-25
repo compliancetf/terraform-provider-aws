@@ -212,8 +212,8 @@ func TestDataSourceThroughProxy(t *testing.T) {
 					if d.Severity != tfplugin5.Diagnostic_ERROR && d.Severity != tfplugin5.Diagnostic_WARNING {
 						t.Errorf("severity %v", d.Severity)
 					}
-					if strings.Contains(tc.wantSummary, "] Look up") && !strings.Contains(d.Detail, "Stage: data_source\nType: fake_lookup") {
-						t.Errorf("detail %q, want Stage: data_source then Type: fake_lookup", d.Detail)
+					if strings.Contains(tc.wantSummary, "] Look up") && !strings.HasSuffix(d.Detail, "\nDocs: https://compliance.tf/docs/controls/aws/lookup_name_bobthecorp/") {
+						t.Errorf("detail %q, want the control docs link last", d.Detail)
 					}
 				}
 			}

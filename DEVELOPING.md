@@ -226,6 +226,8 @@ Version parity: compliancetf/aws X.Y.Z proxies hashicorp/aws X.Y.Z exactly. User
 | beta | `X.Y.Z-beta.N` | before the X.Y.Z release |
 | proxy-only fix | `X.Y.Z-compliancetf.N` | a fix on top of X.Y.Z; spell `compliancetf` in full |
 
+Every control diagnostic links `https://compliance.tf/docs/controls/aws/<control id>/`, so a control id ships in a bundle only once its docs page is published. Before tagging, check each new embedded control id: `curl -fsSL https://compliance.tf/docs/controls/aws/<id>/ | rg -qF <id>` must succeed.
+
 Terraform never selects a prerelease from a range constraint, so users opt in by pinning the exact version.
 
 `min_wrapper_version` (org profile and floor statement) orders versions by `internal/trust/wrapper.go` (vectors in `internal/trust/testdata/wrapper_order.json`): the base X.Y.Z first; within one base `beta.N` < release < `compliancetf.N`, N numeric. Any other prerelease (for example `rc.1`) ranks with the betas, below the release and every `compliancetf.N`; against a beta or another such prerelease of the same base it is unordered, so that pair fails closed. Floor signers issue canonical forms only. A floor can force a proxy fix: `6.67.0-compliancetf.1` refuses `6.67.0` and admits `6.67.0-compliancetf.1`, `6.67.0-compliancetf.2` and `6.68.0`. Bundle `version_range` checks treat `X.Y.Z-beta.N` and `X.Y.Z-compliancetf.N` as X.Y.Z.
