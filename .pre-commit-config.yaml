@@ -2,6 +2,8 @@
 # same file). Install once per clone: `make hooks`.
 #   pre-commit: fast checks on the staged files
 #   pre-push:   the history guard, then the full gate, `make test` and `make lint`
+#               (run without the GIT_DIR-style variables git exports to hooks,
+#               so tests that create scratch repos stay in them)
 # Run everything by hand: `prek run --all-files` and
 # `prek run --all-files --hook-stage pre-push`.
 default_install_hook_types: [pre-commit, pre-push]
@@ -49,7 +51,7 @@ repos:
       - id: make-test
         name: make test
         language: system
-        entry: make test
+        entry: env -u GIT_DIR -u GIT_WORK_TREE -u GIT_INDEX_FILE -u GIT_COMMON_DIR -u GIT_OBJECT_DIRECTORY -u GIT_PREFIX make test
         pass_filenames: false
         always_run: true
         stages: [pre-push]
@@ -57,7 +59,7 @@ repos:
       - id: make-lint
         name: make lint
         language: system
-        entry: env GOTOOLCHAIN=go1.26.2 make lint
+        entry: env -u GIT_DIR -u GIT_WORK_TREE -u GIT_INDEX_FILE -u GIT_COMMON_DIR -u GIT_OBJECT_DIRECTORY -u GIT_PREFIX GOTOOLCHAIN=go1.26.2 make lint
         pass_filenames: false
         always_run: true
         stages: [pre-push]
