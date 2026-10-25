@@ -30,30 +30,46 @@ jobs:
           persist-credentials: false
       # Only release commits that reached master through the protected-path
       # gate, or a backfill (scripts/backfill.sh): one commit on a master
-      # commit that changes pins.json alone, to an older release of the same
-      # major. A tag commit can edit this file, so a tag ruleset (owner
-      # settings) must also restrict who may push v* tags; a backfill commit
-      # cannot, because it changes nothing but pins.json.
+      # commit that changes pins.json alone, as a regular file, to an older
+      # X.Y.Z of the same major. A tag commit can edit this file, so a tag
+      # ruleset (owner settings) must also restrict who may push v* tags; a
+      # backfill commit cannot, because it changes nothing but pins.json.
       - name: Require the tagged commit on master, or a pins-only backfill on it
         id: origin
         run: |
           set -euo pipefail
-          if git merge-base --is-ancestor "$GITHUB_SHA" origin/master; then
+          commit=$(git rev-parse "$GITHUB_SHA^{commit}")
+          if git merge-base --is-ancestor "$commit" origin/master; then
             echo "backfill=false" >> "$GITHUB_OUTPUT"
             exit 0
           fi
-          [ "$(git rev-list --parents -n1 "$GITHUB_SHA" | wc -w)" = 2 ] || { echo "::error::a backfill commit has exactly one parent"; exit 1; }
-          git merge-base --is-ancestor "$GITHUB_SHA^" origin/master || { echo "::error::the tagged commit is not on master, nor one commit on a master commit"; exit 1; }
-          [ "$(git diff --name-only "$GITHUB_SHA^" "$GITHUB_SHA")" = pins.json ] || { echo "::error::a backfill commit changes pins.json only"; exit 1; }
-          new=$(git show "$GITHUB_SHA:pins.json" | jq -r .version)
+          [ "$(git rev-list --parents -n1 "$commit" | wc -w)" -eq 2 ] || { echo "::error::a backfill commit has exactly one parent"; exit 1; }
+          git merge-base --is-ancestor "$commit^" origin/master || { echo "::error::the tagged commit is not on master, nor one commit on a master commit"; exit 1; }
+          changes=$(git diff-tree -r --no-renames --no-commit-id "$commit^" "$commit")
+          printf '%s\n' "$changes" | grep -Eqx $':100644 100644 [0-9a-f]{40} [0-9a-f]{40} M\tpins\\.json' && [ "$(printf '%s\n' "$changes" | wc -l)" -eq 1 ] \
+            || { echo "::error::a backfill commit modifies the regular file pins.json and nothing else"; exit 1; }
+          new=$(git show "$commit:pins.json" | jq -r .version)
           cur=$(git show origin/master:pins.json | jq -r .version)
+          semver='^(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)$'
+          [[ "$new" =~ $semver && "$cur" =~ $semver ]] || { echo "::error::pins.json versions must be X.Y.Z (got $new, master $cur)"; exit 1; }
           [ "${new%%.*}" = "${cur%%.*}" ] && [ "$new" != "$cur" ] \
             && [ "$(printf '%s\n%s\n' "$cur" "$new" | sort -t. -k1,1n -k2,2n -k3,3n | head -n1)" = "$new" ] \
             || { echo "::error::backfill $new is not older than the master pin $cur in the same major"; exit 1; }
           echo "backfill=true" >> "$GITHUB_OUTPUT"
+          echo "version=$new" >> "$GITHUB_OUTPUT"
       - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
         with:
           go-version-file: go.mod
+      # A backfill's pins.json must be what tools/pinupstream derives for its
+      # version from HashiCorp's signed SHA256SUMS, byte for byte.
+      - name: Re-derive the pins of a backfill
+        if: steps.origin.outputs.backfill == 'true'
+        env:
+          VERSION: ${{ steps.origin.outputs.version }}
+        run: |
+          set -euo pipefail
+          go run ./tools/pinupstream -version "$VERSION" -out "$RUNNER_TEMP/pins.json"
+          cmp pins.json "$RUNNER_TEMP/pins.json" || { echo "::error::pins.json is not the pinupstream output for $VERSION"; exit 1; }
       # refuse to publish a build that enforces no
       # control. Fails unless main.go wires the Phase 0B lifecycle.
       # A skipped, renamed or tag-excluded test exits 0, so require its PASS line.
@@ -131,7 +147,7 @@ jobs:
           set -euo pipefail
           if [ "$BACKFILL" = true ]; then
             printf 'NOTES:\n\n* backfill: compliancetf/aws %s for hashicorp/aws %s, built from master %s\n' \
-              "${GITHUB_REF_NAME#v}" "${GITHUB_REF_NAME#v}" "$(git rev-parse --short "$GITHUB_SHA^")" > "$RUNNER_TEMP/notes.md"
+              "${GITHUB_REF_NAME#v}" "${GITHUB_REF_NAME#v}" "$(git rev-parse --short "$GITHUB_SHA^{commit}^")" > "$RUNNER_TEMP/notes.md"
           else
             go run ./tools/changelog -version "$GITHUB_REF_NAME" -notes > "$RUNNER_TEMP/notes.md"
           fi
