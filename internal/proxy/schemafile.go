@@ -59,7 +59,7 @@ func readSchemaFile(dir string) *tfplugin5.GetProviderSchema_Response {
 // processes. Best effort: a failure only costs the next process an upstream
 // call.
 func writeSchemaFile(dir string, r *tfplugin5.GetProviderSchema_Response) {
-	if dir == "" {
+	if dir == "" || len(r.GetResourceSchemas()) == 0 { // an empty answer is never worth keeping
 		return
 	}
 	payload, err := proto.Marshal(r)
