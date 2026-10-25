@@ -64,13 +64,26 @@ Stage: plan
 Frameworks: cis_aws:2.2.1, cis_v600:6
 ```
 
-The provider is tested with Terraform 1.5 and later and with OpenTofu; replacing a resource that has an identity needs Terraform 1.16.6 or later (see [Limitations](docs/reference.md#limitations)). The [examples](examples/) directory has complete configurations.
+The provider is tested with Terraform 1.5 and later and with OpenTofu; replacing a resource that has an identity needs Terraform 1.16.6 or later (see [Limitations](docs/reference.md#limitations)). The [examples](#examples) are complete configurations to start from.
 
 ## What is included
 
 The provider ships with a CIS baseline for AWS: 18 controls on 11 resource types, with checks for encryption, public access, backup retention, deletion protection, and SSH and RDP ingress on those types. It is free, built into the binary, and needs no account or token. Resource types without a control are not checked. The controls are listed in [docs/reference.md](docs/reference.md#cis-controls), and each error names its CIS references.
 
 Bundles for other frameworks, organization rules and exceptions come from [compliance.tf](https://compliance.tf). Without them there are no exceptions: use the default warning mode for resources you cannot fix yet.
+
+## Examples
+
+Each directory in [examples/](examples/) has a `README.md` with how to run it and the expected output.
+
+| Example | Shows | Expected plan |
+|---------|-------|---------------|
+| [basic](examples/basic) | A compliant RDS instance; a quick setup check | Succeeds, no compliance diagnostics |
+| [cis-complete](examples/cis-complete) | Every resource type the CIS bundle checks, configured to pass every control, with the control id next to each setting | Succeeds, 23 resources, no compliance diagnostics |
+| [hard-fail](examples/hard-fail) | Violations in `hard_fail` mode | Fails with 4 errors and 1 warning |
+| [soft-fail](examples/soft-fail) | The same violations in the default `soft_fail` mode | Succeeds with 5 warnings |
+| [exception](examples/exception) | Self-service exceptions, with every entry attribute and `match` variable explained | Succeeds; needs a signed org profile (signed with the test key for a development build) |
+| [custom-bundle](examples/custom-bundle) | A signed team bundle next to the embedded CIS bundle | Fails with 1 error and 1 warning; needs a development build |
 
 ## What it does not do
 

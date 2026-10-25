@@ -1,22 +1,12 @@
-# compliance.tf Terraform Provider - basic example (happy path)
+# compliance.tf provider for AWS - basic example
 #
-# A fully compliant RDS instance. `terraform plan` shows no compliance
-# errors or warnings.
-#
-# Prerequisites (DEVELOPING.md, "Manual testing with Terraform"):
-#   1. make build-dev
-#   2. export TF_CLI_CONFIG_FILE=<CLI config with dev_overrides for
-#      registry.terraform.io/compliancetf/aws pointing at the repo root>
-#   3. export CTFTEST_UPSTREAM_PATH=<hashicorp/aws 6.x provider binary>
-#   4. AWS credentials, as for hashicorp/aws. Plan creates nothing.
-#
-# Usage (skip terraform init under dev_overrides):
-#   terraform plan
+# A fully compliant RDS instance: `terraform plan` shows no compliance
+# error or warning. See README.md for how to run it.
 
 terraform {
   required_providers {
     aws = {
-      source = "compliancetf/aws"
+      source = "registry.compliance.tf/compliancetf/aws"
     }
   }
 }

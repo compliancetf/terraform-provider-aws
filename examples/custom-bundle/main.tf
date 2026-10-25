@@ -1,34 +1,12 @@
-# compliance.tf Terraform Provider - custom bundle example
+# compliance.tf provider for AWS - custom bundle example
 #
-# control_bundle_path loads a signed bundle 2.0 archive (for example in an
-# air-gapped run) next to the embedded CIS bundle. bundle-src/ holds the
-# source of a two-control team bundle:
-#   bobthecorp_rds_multi_az_enabled              deny  aws_db_instance.multi_az
-#   bobthecorp_s3_bucket_force_destroy_disabled  warn  aws_s3_bucket.force_destroy
-#
-# Prerequisites: see examples/basic/main.tf. Then build the archive from
-# the repo root; ctfbundle build signs it with -key. A development build
-# (make build-dev) trusts the test key; a release build accepts only
-# archives signed by compliance.tf.
-#   go run -tags ctftest ./cmd/ctfbundle build -src examples/custom-bundle/bundle-src \
-#     -key test:bundle -out examples/custom-bundle/team-controls.tar.gz
-# In bundle-src/manifest.json, provider.address is the released provider
-# address, and the zero schema_compat_digest and the catalog snapshot_id are
-# placeholders for this example; compliance.tf fills them in for bundles it
-# issues.
-#
-# Usage (skip terraform init under dev_overrides):
-#   terraform plan
-#
-# Expected output: `terraform plan` fails (exit 1) with
-#   Error:   bobthecorp_rds_multi_az_enabled
-#   Warning: bobthecorp_s3_bucket_force_destroy_disabled
-# The resources pass every embedded CIS control.
+# A signed team bundle (bundle-src/) loaded next to the embedded CIS bundle
+# with control_bundle_path. See README.md for how to build and run it.
 
 terraform {
   required_providers {
     aws = {
-      source = "compliancetf/aws"
+      source = "registry.compliance.tf/compliancetf/aws"
     }
   }
 }
