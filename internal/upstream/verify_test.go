@@ -348,3 +348,34 @@ func TestCheckRedirect(t *testing.T) {
 		}
 	}
 }
+
+// TestSignatureRebound: hashicorp/aws 6.0.0 to 6.33.0 were signed before
+// HashiCorp's current binding of its signing subkey, so they verify now but
+// not at their own creation time. The runtime check accepts either; the pin
+// check (now) accepts them too.
+func TestSignatureRebound(t *testing.T) {
+	keyFile, err := os.ReadFile("../../keys/hashicorp-security.asc")
+	if err != nil {
+		t.Skip("HashiCorp key not committed")
+	}
+	key, err := LoadKey(keyFile, HashiCorpFingerprint)
+	if err != nil {
+		t.Fatal(err)
+	}
+	sums, err := os.ReadFile("testdata/sums/terraform-provider-aws_6.0.0_SHA256SUMS")
+	if err != nil {
+		t.Fatal(err)
+	}
+	sig, err := os.ReadFile("testdata/sums/terraform-provider-aws_6.0.0_SHA256SUMS.sig")
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, atSigning := range []bool{false, true} {
+		if err := VerifySumsSignature(key, sums, sig, time.Now(), atSigning); err != nil {
+			t.Errorf("atSigning=%v: %v", atSigning, err)
+		}
+	}
+	if err := VerifySumsSignature(key, append([]byte("x"), sums...), sig, time.Now(), true); err == nil {
+		t.Error("altered sums must fail")
+	}
+}

@@ -124,10 +124,13 @@ func LoadKey(data []byte, expectFingerprint string) (*openpgp.Entity, error) {
 // VerifySumsSignature checks a binary detached signature over sums made by e.
 // The library requires a signing-capable key or cross-signed subkey and
 // rejects revoked or expired keys and signatures at the verification time:
-// now when atSigning is false (pin generation), or the signature's own
-// creation time when atSigning is true (runtime download, where the pinned
-// SHA256SUMS hash is the binding and a later key expiry must not brick a
-// released wrapper). A signature dated after now+5m always fails.
+// now when atSigning is false (pin generation). When atSigning is true
+// (runtime download, where the pinned SHA256SUMS hash is the binding and a
+// later key expiry must not brick a released wrapper) the signature passes
+// when it verifies at its own creation time or now: HashiCorp re-binds its
+// signing subkey, so a release signed before the current binding (6.0.0 to
+// 6.33.0) fails at its creation time and passes now. A signature dated after
+// now+5m always fails.
 func VerifySumsSignature(e *openpgp.Entity, sums, sig []byte, now time.Time, atSigning bool) error {
 	r := bytes.NewReader(sig)
 	p, err := packet.Read(r)
@@ -147,12 +150,14 @@ func VerifySumsSignature(e *openpgp.Entity, sums, sig []byte, now time.Time, atS
 	case s.CreationTime.After(now.Add(clockSkew)):
 		return errors.New("signature created in the future")
 	}
-	at := now
-	if atSigning {
-		at = s.CreationTime
+	check := func(at time.Time) (*openpgp.Entity, error) {
+		cfg := &packet.Config{Time: func() time.Time { return at }}
+		return openpgp.CheckDetachedSignatureAndHash(openpgp.EntityList{e}, bytes.NewReader(sums), bytes.NewReader(sig), allowedHashes, cfg)
 	}
-	cfg := &packet.Config{Time: func() time.Time { return at }}
-	signer, err := openpgp.CheckDetachedSignatureAndHash(openpgp.EntityList{e}, bytes.NewReader(sums), bytes.NewReader(sig), allowedHashes, cfg)
+	signer, err := check(now)
+	if err != nil && atSigning {
+		signer, err = check(s.CreationTime)
+	}
 	if err != nil {
 		return fmt.Errorf("SHA256SUMS signature: %w", err)
 	}
