@@ -341,7 +341,7 @@ func TestReleaseVerifiesAndGates(t *testing.T) {
 		`(?m)^\s*cosign verify-blob \\$`,
 		`(?m)^\s*--certificate-identity "https://github\.com/goreleaser/goreleaser/\.github/workflows/release\.yml@refs/tags/\$GORELEASER_VERSION" \\$`,
 		`(?m)^\s*--certificate-oidc-issuer https://token\.actions\.githubusercontent\.com \\$`,
-		`(?m)^\s*run: goreleaser release --clean$`,
+		`(?m)^\s*run: goreleaser release --clean --release-notes "\$RUNNER_TEMP/notes\.md"$`,
 	}
 	at := 0
 	for _, re := range order {
