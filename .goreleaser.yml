@@ -49,8 +49,10 @@ archives:
   - id: terraform-provider-aws
     formats: [zip]
     name_template: "{{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
+    # LICENSE.txt next to the binary, as in the hashicorp/aws archives.
     files:
-      - none*
+      - src: LICENSE
+        dst: LICENSE.txt
 
 checksum:
   name_template: "{{ .ProjectName }}_{{ .Version }}_SHA256SUMS"
@@ -77,28 +79,9 @@ signs:
 snapshot:
   version_template: "{{ incpatch .Version }}-next"
 
-changelog:
-  sort: asc
-  use: github
-  filters:
-    exclude:
-      - "^docs:"
-      - "^test:"
-      - "^chore:"
-      - "Merge pull request"
-      - "Merge branch"
-  groups:
-    - title: Features
-      regexp: "^.*feat[(\\w)]*:+.*$"
-      order: 0
-    - title: "Bug fixes"
-      regexp: "^.*fix[(\\w)]*:+.*$"
-      order: 1
-    - title: "Performance improvements"
-      regexp: "^.*perf[(\\w)]*:+.*$"
-      order: 2
-    - title: Others
-      order: 999
+# No changelog block: the release notes are the tag's CHANGELOG.md section,
+# rendered by tools/changelog and passed with --release-notes (release.yml).
+# Keep changelog enabled: a disabled changelog also drops --release-notes.
 
 release:
   github:

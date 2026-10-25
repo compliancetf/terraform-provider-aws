@@ -101,8 +101,55 @@ jobs:
           echo "$dir" >> "$GITHUB_PATH"
       # .goreleaser.yml runs tools/releasegate on every built binary (tags,
       # HashiCorp key, org pin, evaluator); --skip=before cannot bypass it.
+      # The release notes are the CHANGELOG.md section of this tag: the
+      # conventional commits since the previous tag (tools/changelog).
+      - name: Render the release notes
+        run: go run ./tools/changelog -version "$GITHUB_REF_NAME" -notes > "$RUNNER_TEMP/notes.md"
       - name: Release
-        run: goreleaser release --clean
+        run: goreleaser release --clean --release-notes "$RUNNER_TEMP/notes.md"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GPG_FINGERPRINT: ${{ steps.import_gpg.outputs.fingerprint }}
+
+  # After a published release, a PR puts the same section at the top of
+  # CHANGELOG.md on master. PRs opened with GITHUB_TOKEN start no workflows:
+  # the owner merges it by hand, like the pin PRs.
+  changelog:
+    name: Open the CHANGELOG PR
+    needs: release
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: master
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
+        with:
+          go-version-file: go.mod
+      - name: Update CHANGELOG.md, push the branch, open the PR
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          # tools/changelog rejects anything but vX.Y.Z[-pre], before the name reaches git.
+          go run ./tools/changelog -version "$GITHUB_REF_NAME" -update CHANGELOG.md
+          if git diff --quiet -- CHANGELOG.md; then
+            echo "::notice::CHANGELOG.md already has $GITHUB_REF_NAME"
+            exit 0
+          fi
+          branch="changelog/$GITHUB_REF_NAME"
+          git switch -q -c "$branch"
+          git -c user.name='github-actions[bot]' -c user.email='41898282+github-actions[bot]@users.noreply.github.com' \
+            commit -q -m "docs(changelog): $GITHUB_REF_NAME" -- CHANGELOG.md
+          auth="AUTHORIZATION: basic $(printf 'x-access-token:%s' "$GH_TOKEN" | base64 -w0)"
+          echo "::add-mask::$auth"
+          git -c http.https://github.com/.extraheader="$auth" push origin "refs/heads/$branch:refs/heads/$branch"
+          url=$(gh api "repos/$REPO/pulls" -f title="docs(changelog): $GITHUB_REF_NAME" -f head="$branch" -f base=master \
+            -f body="Adds the $GITHUB_REF_NAME release notes to CHANGELOG.md (tools/changelog). Merge by hand." --jq .html_url)
+          echo "::notice::opened $url"
