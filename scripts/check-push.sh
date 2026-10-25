@@ -1,12 +1,18 @@
 #!/usr/bin/env bash
 #
-# Pre-push guard (prek, .pre-commit-config.yaml): refuses a push that would
-# publish history from outside this repository. Every pushed commit must
-# descend from the repository's root commit, and refs/dolt/* (data of a
-# Dolt-backed issue tracker) is never pushed.
+# Pre-push guard (prek, .pre-commit-config.yaml): refuses a push that could
+# publish history from outside this repository.
 #
-# prek sets PRE_COMMIT_TO_REF (the pushed commit) and PRE_COMMIT_REMOTE_BRANCH
-# (the remote ref). By hand: scripts/check-push.sh [<commit>] [<remote ref>].
+# Every root commit reachable from the local branches, the local tags and the
+# pushed commit must be this repository's root commit. Checking the roots, not
+# only that the tip descends from the root, also catches a merge that pulls in
+# unrelated history through another parent; checking every local branch and
+# tag covers multi-ref pushes, which prek reports as one ref. refs/dolt/*
+# (data of a Dolt-backed issue tracker) is never pushed.
+#
+# prek sets PRE_COMMIT_TO_REF (a pushed commit, all zeros for a deletion) and
+# PRE_COMMIT_REMOTE_BRANCH (its remote ref). By hand:
+#   scripts/check-push.sh [<commit>] [<remote ref>]
 
 set -euo pipefail
 
@@ -21,7 +27,13 @@ case "${remote}" in
     ;;
 esac
 
-if ! git merge-base --is-ancestor "${root}" "${to}" 2>/dev/null; then
-  echo "check-push: ${to} does not descend from this repository's root commit ${root:0:7}; it would publish unrelated history" >&2
+revs=(--branches --tags)
+[[ -z "${to//0/}" ]] || revs+=("${to}")
+
+others="$(git rev-list --max-parents=0 "${revs[@]}" | sort -u | grep -vx "${root}" || true)"
+if [[ -n "${others}" ]]; then
+  echo "check-push: unrelated history reachable from the local branches, tags or the pushed commit (root commits other than ${root:0:7}):" >&2
+  echo "${others}" >&2
+  echo "check-push: delete or rebase those refs; pushing them would publish that history" >&2
   exit 1
 fi
