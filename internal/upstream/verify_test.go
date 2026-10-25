@@ -390,3 +390,63 @@ func TestSignatureRebound(t *testing.T) {
 		t.Error("altered sums must fail at every time")
 	}
 }
+
+// TestSignatureFallbackBounds: the runtime fallback never accepts a signature
+// made after the key expired, nor any signature of a key revoked as
+// compromised; a key superseded after it signed still verifies that signature.
+func TestSignatureFallbackBounds(t *testing.T) {
+	t0 := time.Date(2026, 1, 1, 0, 0, 0, 0, time.UTC)
+	at := func(ts time.Time, lifetime uint32) *packet.Config {
+		return &packet.Config{Time: func() time.Time { return ts }, KeyLifetimeSecs: lifetime}
+	}
+	sums := []byte("sums\n")
+	later := t0.Add(48 * time.Hour)
+
+	// Signed at t0+2h, then the key's only self-signature is replaced by one
+	// made at t0 that expires at t0+1h: the signature postdates the expiry,
+	// and the binding time (t0) predates the signature.
+	expiring := newKey(t, at(t0, 0))
+	afterExpiry := detachSign(t, expiring, sums, at(t0.Add(2*time.Hour), 0))
+	for _, id := range expiring.Identities {
+		ss := *id.SelfSignature
+		ss.CreationTime = t0
+		lifetime := uint32(3600)
+		ss.KeyLifetimeSecs = &lifetime
+		if err := ss.SignUserId(id.UserId.Id, expiring.PrimaryKey, expiring.PrivateKey, at(t0, 0)); err != nil {
+			t.Fatal(err)
+		}
+		id.SelfSignature, id.Signatures = &ss, []*packet.Signature{&ss}
+	}
+	if err := VerifySumsSignature(expiring, sums, afterExpiry, t0.Add(30*time.Minute+2*time.Hour), false); err == nil {
+		t.Fatal("fixture: the key must be expired when it signed")
+	}
+	if err := VerifySumsSignature(expiring, sums, afterExpiry, later, true); err == nil {
+		t.Error("a signature made after the key expired must fail")
+	}
+
+	compromised := newKey(t, at(t0, 0))
+	sig := detachSign(t, compromised, sums, at(t0.Add(time.Hour), 0))
+	if err := compromised.RevokeKey(packet.KeyCompromised, "compromised", at(t0.Add(2*time.Hour), 0)); err != nil {
+		t.Fatal(err)
+	}
+	if err := VerifySumsSignature(compromised, sums, sig, later, true); err == nil {
+		t.Error("a key revoked as compromised must fail at every time")
+	}
+
+	// Signed at t0+1h and t0+3h, then revoked as superseded at t0+2h.
+	superseded := newKey(t, at(t0, 0))
+	sig = detachSign(t, superseded, sums, at(t0.Add(time.Hour), 0))
+	afterRevocation := detachSign(t, superseded, sums, at(t0.Add(3*time.Hour), 0))
+	if err := superseded.RevokeKey(packet.KeySuperseded, "superseded", at(t0.Add(2*time.Hour), 0)); err != nil {
+		t.Fatal(err)
+	}
+	if err := VerifySumsSignature(superseded, sums, sig, later, false); err == nil {
+		t.Error("pin generation must reject a revoked key")
+	}
+	if err := VerifySumsSignature(superseded, sums, sig, later, true); err != nil {
+		t.Errorf("a signature made before a superseding revocation must still verify at runtime: %v", err)
+	}
+	if err := VerifySumsSignature(superseded, sums, afterRevocation, later, true); err == nil {
+		t.Error("a signature made after the revocation must fail")
+	}
+}

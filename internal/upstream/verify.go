@@ -132,7 +132,10 @@ func LoadKey(data []byte, expectFingerprint string) (*openpgp.Entity, error) {
 // subkey, and the published key keeps only the latest binding, so a release
 // signed before it (6.0.0 to 6.33.0) fails at its creation time. A binding's
 // creation time is fixed in the embedded key, so that check still passes once
-// the binding has expired. A signature dated after now+5m always fails.
+// the binding has expired. Only times at or after the signature's creation
+// are tried. A KeyCompromised revocation in the key rejects at every time;
+// another revocation rejects signatures made after it. A signature dated after
+// now+5m always fails.
 func VerifySumsSignature(e *openpgp.Entity, sums, sig []byte, now time.Time, atSigning bool) error {
 	r := bytes.NewReader(sig)
 	p, err := packet.Read(r)
@@ -161,6 +164,9 @@ func VerifySumsSignature(e *openpgp.Entity, sums, sig []byte, now time.Time, atS
 		for _, at := range append([]time.Time{s.CreationTime}, bindingTimes(e)...) {
 			if err == nil {
 				break
+			}
+			if at.Before(s.CreationTime) { // a binding older than the signature cannot vouch for it
+				continue
 			}
 			signer, err = check(at)
 		}
