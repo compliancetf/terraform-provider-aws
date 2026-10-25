@@ -30,7 +30,7 @@ build-all:
 	GOOS=windows GOARCH=amd64 go build ${LDFLAGS} -o dist/${BINARY_NAME}-windows-amd64.exe ./
 
 .PHONY: test
-test: hygiene doc-drift
+test: hygiene
 	go test -v ./...
 	go test -tags ctftest $$(go list -tags ctftest ./... | grep -v /test/bench)
 	cd test/fakeupstream && go test ./...
@@ -116,11 +116,6 @@ tidy-check:
 	cd test/fakeupstream && GOTOOLCHAIN=auto go mod tidy -diff
 	cd test/sdkregion && GOTOOLCHAIN=auto go mod tidy -diff
 
-# Fail on names removed in v2 appearing outside history (scripts/doc-drift.sh).
-.PHONY: doc-drift
-doc-drift:
-	./scripts/doc-drift.sh
-
 # Recapture testdata/schemas/aws-subset.json from the registry
 # (scripts/capture-aws-schema.sh). pins.json wins; 6.67.0 while it pins none.
 AWS_SCHEMA_VERSION ?= 6.67.0
@@ -160,21 +155,18 @@ clean:
 install: build
 	mv ${BINARY_NAME} ${GOPATH}/bin/
 
+# Terraform on test/fixtures/ with the ctftest build (scripts/fixtures.sh);
+# needs CTFTEST_UPSTREAM_PATH.
 .PHONY: test-terraform
 test-terraform:
-	@./scripts/test-terraform.sh
+	@./scripts/fixtures.sh validate
 
 .PHONY: dogfood
 dogfood:
-	@./scripts/dogfood-test.sh
+	@./scripts/fixtures.sh plan
 
-.PHONY: dev-install
-dev-install: build
-	@echo ""
-	@echo "Binary built: $(CURDIR)/${BINARY_NAME}"
-	@echo ""
-	@echo "Run terraform with:"
-	@echo ""
-	@echo '  export TF_CLI_CONFIG_FILE=$(CURDIR)/.terraformrc'
-	@echo '  terraform plan'
-	@echo ""
+# Git hooks from .pre-commit-config.yaml: fast checks on commit, make test
+# and make lint on push.
+.PHONY: hooks
+hooks:
+	prek install

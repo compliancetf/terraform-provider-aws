@@ -25,10 +25,11 @@
 /.golangci.json @antonbabenko
 /vendor @antonbabenko
 /main.go @antonbabenko
-/release_guard_test.go @antonbabenko
+/main_test.go @antonbabenko
 /evaluator.go @antonbabenko
 /evaluator_conformance.go @antonbabenko
-/workflow_pins_test.go @antonbabenko
+/test/workflows @antonbabenko
+/.pre-commit-config.yaml @antonbabenko
 
 # Hook routing, protocol, classification
 /internal/tfplugin @antonbabenko

@@ -3,7 +3,7 @@
 # A fully compliant RDS instance. `terraform plan` shows no compliance
 # errors or warnings.
 #
-# Prerequisites (DEVELOPING.md, "Manual Testing with Terraform"):
+# Prerequisites (DEVELOPING.md, "Manual testing with Terraform"):
 #   1. make build-dev
 #   2. export TF_CLI_CONFIG_FILE=<CLI config with dev_overrides for
 #      registry.terraform.io/compliancetf/aws pointing at the repo root>

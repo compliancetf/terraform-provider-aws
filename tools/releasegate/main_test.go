@@ -123,11 +123,11 @@ func TestCheckTree(t *testing.T) {
 // skip, a renamed test or no tests at all fail.
 func TestGuardPassed(t *testing.T) {
 	for out, want := range map[string]bool{
-		"=== RUN   TestReleaseGuard\n--- PASS: TestReleaseGuard (0.00s)\nPASS\n":                                             true,
-		"=== RUN   TestReleaseGuard\n--- SKIP: TestReleaseGuard (0.00s)\nPASS\n":                                             false,
-		"--- PASS: TestReleaseGuardX (0.00s)\nPASS\n":                                                                        false,
-		"testing: warning: no tests to run\nPASS\n":                                                                          false,
-		"=== RUN   TestReleaseGuard\n    release_guard_test.go:49: main.go serves hook.Noop, not the compliance lifecycle\n": false,
+		"=== RUN   TestReleaseGuard\n--- PASS: TestReleaseGuard (0.00s)\nPASS\n":                                    true,
+		"=== RUN   TestReleaseGuard\n--- SKIP: TestReleaseGuard (0.00s)\nPASS\n":                                    false,
+		"--- PASS: TestReleaseGuardX (0.00s)\nPASS\n":                                                               false,
+		"testing: warning: no tests to run\nPASS\n":                                                                 false,
+		"=== RUN   TestReleaseGuard\n    main_test.go:49: main.go serves hook.Noop, not the compliance lifecycle\n": false,
 	} {
 		if got := guardPassed([]byte(out)); got != want {
 			t.Errorf("guardPassed(%q) = %v, want %v", out, got, want)
