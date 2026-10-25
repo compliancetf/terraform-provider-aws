@@ -5,6 +5,7 @@ import (
 	"errors"
 	"io"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"runtime"
 	"testing"
@@ -244,5 +245,25 @@ func TestLaunchRetriesSharedStartFailure(t *testing.T) {
 		retry: func(context.Context) (VerifiedBinary, error) { calls++; return VerifiedBinary{}, sentinel }}
 	if _, err := Launch(context.Background(), bin, NewLogger(io.Discard, "hashicorp/aws")); !errors.Is(err, sentinel) || calls != 1 {
 		t.Fatalf("Launch = %v after %d retries, want one private retry", err, calls)
+	}
+}
+
+// An ACL on the binary fails checkOwnerPerm only: the entry is left alone and
+// this start makes a private copy.
+func TestSharedForeignACLUntouched(t *testing.T) {
+	if runtime.GOOS != "darwin" {
+		t.Skip("macOS ACLs")
+	}
+	r := newRelease(t)
+	parent := realTempDir(t)
+	vb := mustShared(t, sharedSource(t, r), parent)
+	if out, err := exec.Command("chmod", "+a", "everyone allow read", vb.Path()).CombinedOutput(); err != nil {
+		t.Fatalf("chmod +a: %v %s", err, out)
+	}
+	if _, done, err := sharedSource(t, r).discoverShared(context.Background(), parent); done || err != nil {
+		t.Fatalf("ACL on the binary: done=%v err=%v, want a private copy", done, err)
+	}
+	if _, err := os.Stat(vb.Path()); err != nil {
+		t.Fatalf("entry removed: %v", err)
 	}
 }

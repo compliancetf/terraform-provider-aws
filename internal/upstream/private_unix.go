@@ -121,8 +121,9 @@ func fileID(st os.FileInfo) (dev, ino uint64) {
 	return uint64(sys.Dev), uint64(sys.Ino) //nolint:gosec,unconvert // Dev is int32 on darwin; Ino width varies by platform
 }
 
-// sealed: one link and no write bit, as publish leaves a shared binary.
+// sealed: one link and at most r-x for the owner, as publish leaves a
+// shared binary.
 func sealed(st os.FileInfo) bool {
 	sys, ok := st.Sys().(*syscall.Stat_t)
-	return ok && sys.Nlink == 1 && st.Mode().Perm()&0o222 == 0
+	return ok && sys.Nlink == 1 && st.Mode().Perm()&^0o500 == 0
 }

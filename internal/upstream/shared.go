@@ -58,13 +58,13 @@ const (
 	entryTransient                   // unreadable or not ours: private copy, entry untouched
 )
 
-// sharedRoot is os.UserCacheDir; tests point it at a temporary directory.
-var sharedRoot = os.UserCacheDir
+// userCacheDir is os.UserCacheDir for exec dirs; tests point it at a temporary directory.
+var userCacheDir = os.UserCacheDir
 
 // sharedParent is the shared exec parent, or "" when it fails the checks
 // every exec parent passes.
 func sharedParent(terraformDirs []string) string {
-	d, err := sharedRoot()
+	d, err := userCacheDir()
 	if err != nil {
 		return ""
 	}
@@ -91,8 +91,10 @@ func checkEntry(ctx context.Context, dir string, pin PlatformPin, repair bool) e
 		return entryDefective
 	case err != nil:
 		return entryTransient
-	case !st.Mode().IsRegular() || st.Size() == 0 || !sealed(st) || checkOwnerPerm(bin, st, true) != nil:
+	case !st.Mode().IsRegular() || st.Size() == 0 || !sealed(st):
 		return entryDefective
+	case checkOwnerPerm(bin, st, true) != nil: // owner or ACL, or reading it failed: not ours to delete
+		return entryTransient
 	}
 	if got, ok := readStamp(dir); ok && got == stampOf(st) {
 		return entryUse

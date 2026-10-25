@@ -52,7 +52,7 @@ func TestMain(m *testing.M) {
 	if root, err = filepath.EvalSymlinks(root); err != nil { // macOS /var -> /private/var
 		panic(err)
 	}
-	sharedRoot = func() (string, error) { return root, nil } // never the real user cache
+	userCacheDir = func() (string, error) { return root, nil } // never the real user cache
 	code := m.Run()
 	_ = os.RemoveAll(root)
 	if fakeDir != "" {

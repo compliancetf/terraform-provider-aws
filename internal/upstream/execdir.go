@@ -54,7 +54,7 @@ func execCandidates() []string {
 	if x := os.Getenv("XDG_RUNTIME_DIR"); !windows && filepath.IsAbs(x) {
 		c = append(c, filepath.Join(x, "compliancetf"))
 	}
-	if d, err := os.UserCacheDir(); err == nil {
+	if d, err := userCacheDir(); err == nil {
 		c = append(c, filepath.Join(d, "compliancetf", "exec"))
 	}
 	if !windows {
