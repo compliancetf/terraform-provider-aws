@@ -1,0 +1,72 @@
+{
+  "description": "a blocking unknown on replace blocks at plan and is recorded blocked",
+  "stage": "plan",
+  "mode": "hard_fail",
+  "op": "replace",
+  "requires_replace": [
+    "engine"
+  ],
+  "config": {
+    "storage_encrypted": null,
+    "kms_key_id": "arn:aws:kms:us-east-1:111122223333:key/bobthecorp-rds",
+    "engine": "aurora-postgresql"
+  },
+  "prior": {
+    "storage_encrypted": true,
+    "kms_key_id": "arn:aws:kms:us-east-1:111122223333:key/bobthecorp-rds",
+    "engine": "postgres",
+    "deletion_protection": false
+  },
+  "planned": {
+    "storage_encrypted": "<unknown>",
+    "kms_key_id": "arn:aws:kms:us-east-1:111122223333:key/bobthecorp-rds",
+    "engine": "aurora-postgresql",
+    "deletion_protection": true
+  },
+  "want": {
+    "diagnostics": [
+      {
+        "severity": "error",
+        "summary": "[rds_db_instance_encryption_at_rest_enabled] replacement blocked: control undecided at plan",
+        "detail": "The prior object would be destroyed before this control runs.",
+        "attribute": "AttributeName(\"storage_encrypted\")"
+      }
+    ],
+    "evidence": {
+      "op": "replace",
+      "results": [
+        {
+          "control": "rds_instance_deletion_guard",
+          "state": "pass",
+          "decision": "logged",
+          "half": "delete"
+        },
+        {
+          "control": "rds_db_instance_encryption_at_rest_enabled",
+          "state": "unknown",
+          "decision": "blocked",
+          "half": "create"
+        },
+        {
+          "control": "rds_instance_kms_key_configured",
+          "state": "pass",
+          "decision": "logged",
+          "half": "create"
+        },
+        {
+          "control": "rds_instance_engine_not_mysql",
+          "state": "pass",
+          "decision": "logged",
+          "half": "create"
+        },
+        {
+          "control": "rds_instance_deletion_protection_enabled",
+          "state": "pass",
+          "decision": "logged",
+          "half": "create"
+        }
+      ]
+    },
+    "stamp": true
+  }
+}

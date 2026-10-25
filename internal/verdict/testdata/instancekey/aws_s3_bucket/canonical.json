@@ -1,0 +1,115 @@
+{
+  "entries": [
+    {
+      "actions": [
+        "create"
+      ],
+      "address": "aws_s3_bucket.new",
+      "keys": [
+        {
+          "after": {
+            "bucket": "s:bobthecorp-reports",
+            "force_destroy": "b:false",
+            "region": "s:us-east-1",
+            "tags": {
+              "Name": "s:bobthecorp-reports",
+              "｡halfwidth": "s:halfwidth-ideographic-full-stop",
+              "😀smile": "s:emoji-key"
+            },
+            "tags_all": {
+              "Name": "s:bobthecorp-reports",
+              "｡halfwidth": "s:halfwidth-ideographic-full-stop",
+              "😀smile": "s:emoji-key"
+            }
+          },
+          "after_hashed_jcs": "{\"bucket\":\"beb34f177ac779ca6317a1da249e5418e7e84e4d25ba0cdbcbb0f733e1b5b784\",\"force_destroy\":\"bd2697924fc3dbc2684e37198d7f4911d738e969f1d3a4db9e113420c2e90f17\",\"region\":\"8df8ff45a31e55a282b554a4217667bd534d60853102522fb525315732856f2a\",\"tags\":{\"Name\":\"beb34f177ac779ca6317a1da249e5418e7e84e4d25ba0cdbcbb0f733e1b5b784\",\"😀smile\":\"d199b9829f439d0500b849a8a7adfc722697e562989d77632da3b19aa677b56d\",\"｡halfwidth\":\"ed42739b52d95b07f663fbd588af61167f746d8534bb158286a980b13bf74791\"},\"tags_all\":{\"Name\":\"beb34f177ac779ca6317a1da249e5418e7e84e4d25ba0cdbcbb0f733e1b5b784\",\"😀smile\":\"d199b9829f439d0500b849a8a7adfc722697e562989d77632da3b19aa677b56d\",\"｡halfwidth\":\"ed42739b52d95b07f663fbd588af61167f746d8534bb158286a980b13bf74791\"}}",
+          "field": "instance_key",
+          "form": "create",
+          "prior_identity": null,
+          "prior_identity_hashed_jcs": "null",
+          "prior_identity_kind": "none"
+        }
+      ]
+    },
+    {
+      "action_reason": "delete_because_no_resource_config",
+      "actions": [
+        "delete"
+      ],
+      "address": "aws_s3_bucket.old",
+      "keys": [
+        {
+          "after": null,
+          "after_hashed_jcs": "null",
+          "field": "delete_key",
+          "form": "delete",
+          "prior_identity": {
+            "account_id": "s:111111111111",
+            "bucket": "s:bobthecorp-legacy",
+            "region": "s:us-east-1"
+          },
+          "prior_identity_hashed_jcs": "{\"account_id\":\"47e7ec2525e1a3e184c7844d068e98ee8789c5c565812114c46d959065728ced\",\"bucket\":\"dd21a3dcc945d08083078d8b9c93a7ab153275dce5ca96f05c461ff843da047b\",\"region\":\"8df8ff45a31e55a282b554a4217667bd534d60853102522fb525315732856f2a\"}",
+          "prior_identity_kind": "identity"
+        }
+      ]
+    },
+    {
+      "actions": [
+        "update"
+      ],
+      "address": "aws_s3_bucket.this",
+      "keys": [
+        {
+          "after": {
+            "arn": "s:arn:aws:s3:::bobthecorp-data",
+            "bucket": "s:bobthecorp-data",
+            "bucket_domain_name": "s:bobthecorp-fake-bucket_domain_name",
+            "bucket_namespace": "s:bobthecorp-fake-bucket_namespace",
+            "bucket_prefix": "s:bobthecorp-fake-bucket_prefix",
+            "bucket_region": "s:bobthecorp-fake-bucket_region",
+            "bucket_regional_domain_name": "s:bobthecorp-fake-bucket_regional_domain_name",
+            "cors_rule": [],
+            "force_destroy": "b:false",
+            "grant": [],
+            "hosted_zone_id": "s:bobthecorp-fake-hosted_zone_id",
+            "id": "s:bobthecorp-data",
+            "lifecycle_rule": [],
+            "logging": [],
+            "object_lock_configuration": [],
+            "object_lock_enabled": "b:false",
+            "policy": "s:bobthecorp-fake-policy",
+            "region": "s:us-east-1",
+            "replication_configuration": [],
+            "request_payer": "s:BucketOwner",
+            "server_side_encryption_configuration": [],
+            "tags": {
+              "Env": "s:prod",
+              "Name": "s:bobthecorp-data"
+            },
+            "tags_all": {
+              "Env": "s:prod",
+              "Name": "s:bobthecorp-data"
+            },
+            "versioning": [],
+            "website": [],
+            "website_domain": "s:bobthecorp-fake-website_domain",
+            "website_endpoint": "s:bobthecorp-fake-website_endpoint"
+          },
+          "after_hashed_jcs": "{\"arn\":\"d21ced3c80c5ae0caf16e7cb1544f5036a9559694bb6e038130845b97203025a\",\"bucket\":\"9d45117d8725945e7ed7e793f42d03c8b5eef70c9fdf80ca92fd1f443a980edd\",\"bucket_domain_name\":\"801694aa42bf74d65413645f75e936682bbd2ca0f11637c4a52677b9040d5f28\",\"bucket_namespace\":\"9b912ff65029e82048b72630a5f2aec29c37cc721c9a7ebf217a9e6494718a70\",\"bucket_prefix\":\"0be0f435ba929a57a324e9a8820c984adb0f3aeccd88e1d93a47df00e4cdc7e5\",\"bucket_region\":\"c36e6392cc518814e1ea08fbc3611edfb2629c47e37929b5cebd4aa742d0eba8\",\"bucket_regional_domain_name\":\"d118368b340dc2dced0d9eb2444cf658dc646c23631789adbf5cb622a88bd3ec\",\"cors_rule\":[],\"force_destroy\":\"bd2697924fc3dbc2684e37198d7f4911d738e969f1d3a4db9e113420c2e90f17\",\"grant\":[],\"hosted_zone_id\":\"52bb2a18a55101b63675aae24a4640c21953d0fe87be908537f999f37a0da54e\",\"id\":\"9d45117d8725945e7ed7e793f42d03c8b5eef70c9fdf80ca92fd1f443a980edd\",\"lifecycle_rule\":[],\"logging\":[],\"object_lock_configuration\":[],\"object_lock_enabled\":\"bd2697924fc3dbc2684e37198d7f4911d738e969f1d3a4db9e113420c2e90f17\",\"policy\":\"88d3f721a44450cb3ae8621982839a8cfc5ae300a233b97b67b0913855e572cf\",\"region\":\"8df8ff45a31e55a282b554a4217667bd534d60853102522fb525315732856f2a\",\"replication_configuration\":[],\"request_payer\":\"93de4938cd16c3166dce0c44c3b21ecf04e7c0c050809aca1cb36bd982a42367\",\"server_side_encryption_configuration\":[],\"tags\":{\"Env\":\"05a839fe865f580ee3e193fa9a97cd376af02871d6dda4e87d4224dec613c855\",\"Name\":\"9d45117d8725945e7ed7e793f42d03c8b5eef70c9fdf80ca92fd1f443a980edd\"},\"tags_all\":{\"Env\":\"05a839fe865f580ee3e193fa9a97cd376af02871d6dda4e87d4224dec613c855\",\"Name\":\"9d45117d8725945e7ed7e793f42d03c8b5eef70c9fdf80ca92fd1f443a980edd\"},\"versioning\":[],\"website\":[],\"website_domain\":\"ce6c0045176c0b8f28295c4a2ab56501748c90be818e3430f0c10d6f81b22f41\",\"website_endpoint\":\"14c6a14082c2745095584d33568b1b5eadd9f723ffe7e39870c4224aac5306b4\"}",
+          "field": "instance_key",
+          "form": "update",
+          "prior_identity": {
+            "account_id": "s:111111111111",
+            "bucket": "s:bobthecorp-data",
+            "region": "s:us-east-1"
+          },
+          "prior_identity_hashed_jcs": "{\"account_id\":\"47e7ec2525e1a3e184c7844d068e98ee8789c5c565812114c46d959065728ced\",\"bucket\":\"9d45117d8725945e7ed7e793f42d03c8b5eef70c9fdf80ca92fd1f443a980edd\",\"region\":\"8df8ff45a31e55a282b554a4217667bd534d60853102522fb525315732856f2a\"}",
+          "prior_identity_kind": "identity"
+        }
+      ]
+    }
+  ],
+  "format": "compliancetf.instancekey.golden/v1",
+  "provider_version": "hashicorp/aws 6.65.0",
+  "terraform_version": "1.16.3"
+}

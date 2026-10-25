@@ -1,0 +1,24 @@
+{
+  "format": "content.provider-intents/1",
+  "content_version": "0.27.1",
+  "content_commit": "1f2a3ad",
+  "catalog_snapshot_id": "snap_20261004_000000_000000",
+  "policies": [
+    {
+      "id": "rds_db_instance_no_default_admin_name",
+      "resource_type": "aws_db_instance",
+      "attributes": [{"schema_path": "username", "condition": "not_empty", "values": [], "values_from_ref": null}],
+      "explanation": "Attribute `username` of `aws_db_instance` must not be empty.",
+      "postcondition": "self.username != \"admin\"",
+      "has_strategy_condition": false
+    },
+    {
+      "id": "s3_bobthecorp_versioning_on",
+      "resource_type": "aws_s3_bucket_versioning",
+      "attributes": [{"schema_path": "versioning_configuration[0].status", "condition": "equals_any", "values": ["Enabled"], "values_from_ref": null}],
+      "explanation": "Attribute `versioning_configuration[0].status` of `aws_s3_bucket_versioning` must be `\"Enabled\"`.",
+      "postcondition": "contains([\"Enabled\"], one(self.versioning_configuration).status)",
+      "has_strategy_condition": false
+    }
+  ]
+}

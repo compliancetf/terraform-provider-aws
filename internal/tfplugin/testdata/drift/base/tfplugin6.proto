@@ -1,0 +1,16 @@
+// Synthetic baseline for scripts/proto-drift.sh --self-test.
+syntax = "proto3";
+package tfplugin6;
+
+message ReadStateBytes {
+    message Request {
+        string type_name = 1;
+    }
+    message Response {
+        bytes bytes = 1;
+    }
+}
+
+service Provider {
+    rpc ReadStateBytes(ReadStateBytes.Request) returns (stream ReadStateBytes.Response);
+}

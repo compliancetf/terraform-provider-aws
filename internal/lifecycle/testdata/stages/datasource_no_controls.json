@@ -1,0 +1,26 @@
+{
+  "description": "a data source type with no data source controls writes an eval record with no results",
+  "stage": "data_source",
+  "type_name": "aws_db_instance",
+  "mode": "hard_fail",
+  "data_sources_deny": true,
+  "config": {
+    "storage_encrypted": true,
+    "kms_key_id": "arn:aws:kms:us-east-1:111122223333:key/bobthecorp-rds",
+    "engine": "postgres",
+    "deletion_protection": true
+  },
+  "new": {
+    "storage_encrypted": true,
+    "kms_key_id": "arn:aws:kms:us-east-1:111122223333:key/bobthecorp-rds",
+    "engine": "postgres",
+    "deletion_protection": true
+  },
+  "want": {
+    "diagnostics": [],
+    "evidence": {
+      "op": "read",
+      "results": []
+    }
+  }
+}

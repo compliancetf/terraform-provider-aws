@@ -1,0 +1,59 @@
+{
+  "description": "a blocking unknown at plan is recorded pending",
+  "stage": "plan",
+  "mode": "hard_fail",
+  "op": "update",
+  "config": {
+    "storage_encrypted": null,
+    "kms_key_id": "arn:aws:kms:us-east-1:111122223333:key/bobthecorp-rds",
+    "engine": "postgres"
+  },
+  "prior": {
+    "storage_encrypted": true,
+    "kms_key_id": "arn:aws:kms:us-east-1:111122223333:key/bobthecorp-rds",
+    "engine": "postgres",
+    "deletion_protection": true
+  },
+  "planned": {
+    "storage_encrypted": "<unknown>",
+    "kms_key_id": "arn:aws:kms:us-east-1:111122223333:key/bobthecorp-rds",
+    "engine": "postgres",
+    "deletion_protection": true
+  },
+  "want": {
+    "diagnostics": [
+      {
+        "severity": "warning",
+        "summary": "[rds_db_instance_encryption_at_rest_enabled] pending: re-checked at apply",
+        "detail": "Unknown until apply: storage_encrypted.",
+        "attribute": "AttributeName(\"storage_encrypted\")"
+      }
+    ],
+    "evidence": {
+      "op": "update",
+      "results": [
+        {
+          "control": "rds_db_instance_encryption_at_rest_enabled",
+          "state": "unknown",
+          "decision": "pending"
+        },
+        {
+          "control": "rds_instance_kms_key_configured",
+          "state": "pass",
+          "decision": "logged"
+        },
+        {
+          "control": "rds_instance_engine_not_mysql",
+          "state": "pass",
+          "decision": "logged"
+        },
+        {
+          "control": "rds_instance_deletion_protection_enabled",
+          "state": "pass",
+          "decision": "logged"
+        }
+      ]
+    },
+    "stamp": true
+  }
+}

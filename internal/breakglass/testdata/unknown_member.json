@@ -1,0 +1,16 @@
+{
+  "description": "an unknown member",
+  "policy": {},
+  "receipt_set": {
+    "extra": "x"
+  },
+  "queries": [
+    {
+      "control": "CTF.S3.1",
+      "key": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "result": "fail",
+      "want": false
+    }
+  ],
+  "warning": "is not a valid"
+}

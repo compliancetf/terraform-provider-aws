@@ -1,0 +1,43 @@
+{
+  "format": "compliancetf.iampolicy/v1",
+  "version": "2012-10-17",
+  "statements": [
+    {
+      "sid": "",
+      "effect": "Allow",
+      "actions": [
+        "sts:assumerolewithwebidentity"
+      ],
+      "not_actions": [],
+      "resources": [],
+      "not_resources": [],
+      "principals": {
+        "federated": [
+          "cognito-identity.amazonaws.com"
+        ]
+      },
+      "not_principals": {},
+      "conditions": [],
+      "action_all": false,
+      "principal_any": false,
+      "resource_any": false,
+      "action_any": false,
+      "principal_all": false,
+      "resource_all": false,
+      "unconditional": true,
+      "ambiguous": [
+        "resource_absent"
+      ],
+      "actions_expanded": [],
+      "not_actions_expanded": [],
+      "unresolved_actions": [],
+      "unresolved_principals": {
+        "canonicaluser": [
+          "79a59df900b949e55d96a1e698fbacedfd6e09d98eacf8f8d5218e7cd47ef2be"
+        ]
+      },
+      "unresolved_resources": []
+    }
+  ],
+  "catalog": ""
+}

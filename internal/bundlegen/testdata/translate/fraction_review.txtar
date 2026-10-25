@@ -1,0 +1,28 @@
+a fraction for a number attribute: type refusal
+-- intent.json --
+{
+ "id": "rds_db_instance_custom_port",
+ "resource_type": "aws_db_instance",
+ "attributes": [
+  {
+   "schema_path": "port",
+   "condition": "equals_any",
+   "values": [
+    1.5
+   ],
+   "values_from_ref": null
+  }
+ ],
+ "explanation": "Explanation of rds_db_instance_custom_port.",
+ "postcondition": "",
+ "has_strategy_condition": false
+}
+-- want.json --
+{
+  "review": {
+    "id": "rds_db_instance_custom_port",
+    "resource_type": "aws_db_instance",
+    "reason": "type",
+    "detail": "port equals_any: value 0: integer for a number attribute only"
+  }
+}

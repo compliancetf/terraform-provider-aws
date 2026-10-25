@@ -1,0 +1,22 @@
+{
+  "description": "advisory: no diagnostics for failing controls; stamp still set",
+  "stage": "plan",
+  "mode": "advisory",
+  "op": "create",
+  "config": {
+    "storage_encrypted": false,
+    "kms_key_id": null,
+    "engine": "mysql"
+  },
+  "prior": null,
+  "planned": {
+    "storage_encrypted": false,
+    "kms_key_id": "arn:aws:kms:us-east-1:111122223333:key/bobthecorp-rds",
+    "engine": "mysql",
+    "deletion_protection": true
+  },
+  "want": {
+    "diagnostics": [],
+    "stamp": true
+  }
+}

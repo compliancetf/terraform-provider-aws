@@ -1,0 +1,8 @@
+{
+  "description": "a 0644 verdict file is refused",
+  "verdict_mode": "644",
+  "want": {
+    "summary": "Invalid verdict file",
+    "detail": "The verdict file mode must be exactly 0600."
+  }
+}

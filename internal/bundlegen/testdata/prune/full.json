@@ -1,0 +1,105 @@
+{
+ "provider_schemas": {
+  "registry.terraform.io/hashicorp/random": {
+   "resource_schemas": {
+    "random_id": {
+     "version": 0,
+     "block": {}
+    }
+   }
+  },
+  "registry.terraform.io/hashicorp/aws": {
+   "resource_schemas": {
+    "aws_s3_bucket_versioning": {
+     "version": 0,
+     "block": {
+      "attributes": {
+       "bucket": {
+        "type": "string",
+        "required": true
+       }
+      }
+     }
+    },
+    "aws_instance": {
+     "version": 1,
+     "block": {
+      "attributes": {
+       "ami": {
+        "type": "string",
+        "optional": true,
+        "description": "BOBTHECORP unrelated"
+       }
+      }
+     }
+    },
+    "aws_iam_policy": {
+     "version": 0,
+     "block": {
+      "attributes": {
+       "policy": {
+        "type": "string",
+        "required": true
+       }
+      }
+     }
+    },
+    "aws_db_instance": {
+     "version": 2,
+     "block": {
+      "attributes": {
+       "storage_encrypted": {
+        "type": "bool",
+        "optional": true,
+        "computed": true
+       }
+      }
+     }
+    }
+   },
+   "provider": {
+    "version": 0,
+    "block": {
+     "attributes": {
+      "region": {
+       "type": "string",
+       "optional": true
+      }
+     }
+    }
+   },
+   "functions": {
+    "arn_parse": {
+     "description": "x"
+    }
+   },
+   "ephemeral_resource_schemas": {
+    "aws_secretsmanager_random_password": {
+     "version": 0,
+     "block": {
+      "attributes": {
+       "password_length": {
+        "type": "number",
+        "optional": true
+       }
+      }
+     }
+    }
+   },
+   "data_source_schemas": {
+    "aws_caller_identity": {
+     "version": 0,
+     "block": {
+      "attributes": {
+       "account_id": {
+        "type": "string",
+        "computed": true
+       }
+      }
+     }
+    }
+   }
+  }
+ },
+ "format_version": "1.0"
+}

@@ -1,0 +1,40 @@
+{
+  "description": "update: every create or update control runs, so removing kms_key_id fails the create-only kms control too; deletion_guard does not run",
+  "stage": "plan",
+  "mode": "hard_fail",
+  "op": "update",
+  "config": {
+    "storage_encrypted": false,
+    "kms_key_id": null,
+    "engine": "postgres"
+  },
+  "prior": {
+    "storage_encrypted": true,
+    "kms_key_id": "arn:aws:kms:us-east-1:111122223333:key/bobthecorp-rds",
+    "engine": "postgres",
+    "deletion_protection": true
+  },
+  "planned": {
+    "storage_encrypted": false,
+    "kms_key_id": null,
+    "engine": "postgres",
+    "deletion_protection": true
+  },
+  "want": {
+    "diagnostics": [
+      {
+        "severity": "error",
+        "summary": "[rds_db_instance_encryption_at_rest_enabled] RDS storage must be encrypted at rest.",
+        "detail": "Fix: Set storage_encrypted = true.\nSeverity: high\nMode: hard_fail\nStage: plan\nFrameworks: soc_2:CC6.1, cis_aws:2.3.1\nTo waive: add an exception for rds_db_instance_encryption_at_rest_enabled in compliance-exceptions.hcl",
+        "attribute": "AttributeName(\"storage_encrypted\")"
+      },
+      {
+        "severity": "error",
+        "summary": "[rds_instance_kms_key_configured] RDS instances must name a customer managed KMS key.",
+        "detail": "Fix: Set kms_key_id.\nSeverity: medium\nMode: hard_fail\nStage: plan\nTo waive: add an exception for rds_instance_kms_key_configured in compliance-exceptions.hcl",
+        "attribute": "AttributeName(\"kms_key_id\")"
+      }
+    ],
+    "stamp": true
+  }
+}

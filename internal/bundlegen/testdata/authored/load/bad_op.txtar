@@ -1,0 +1,18 @@
+An op outside the crosscheck set (create, update, delete).
+-- rds_bobthecorp_storage_encrypted.yaml --
+targets:
+  - kind: resource
+    type: aws_db_instance
+    reads: [storage_encrypted]
+    presence_mode: effective
+    on: [create, update]
+    expr: resource.storage_encrypted == true
+    action: deny
+fixtures:
+  - {kind: resource, type: aws_db_instance, name: pass, bindings: {op: create, resource: {storage_encrypted: true}}, expect: {state: pass}}
+  - {kind: resource, type: aws_db_instance, name: fail, bindings: {op: create, resource: {storage_encrypted: false}}, expect: {state: fail}}
+  - {kind: resource, type: aws_db_instance, name: replace, bindings: {op: replace, resource: {}}, expect: {state: fail}}
+-- want.json --
+{
+  "error": "E_AUTHORED"
+}

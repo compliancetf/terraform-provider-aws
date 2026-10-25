@@ -1,0 +1,10 @@
+{
+  "description": "an unknown top-level member is refused",
+  "set": {
+    "extra": "x"
+  },
+  "want": {
+    "summary": "Invalid verdict file",
+    "detail": "The file is not a compliancetf.verdict/v1 document."
+  }
+}

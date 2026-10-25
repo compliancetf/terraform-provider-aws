@@ -1,0 +1,35 @@
+[
+  {
+    "id": "rds_db_instance_encryption_at_rest_enabled",
+    "version": "2.1.0",
+    "kind": "resource",
+    "resource_type": "aws_db_instance",
+    "reads": ["storage_encrypted"],
+    "presence_mode": "effective",
+    "on": ["create", "update"],
+    "expr": "resource.storage_encrypted == true",
+    "action": "deny",
+    "severity": "high",
+    "message": "RDS storage must be encrypted at rest.",
+    "fix": "Set storage_encrypted = true.",
+    "framework_refs": ["soc_2:CC6.1"],
+    "tool_refs": {"checkov": ["CKV_AWS_16"]},
+    "exemption_coverable": ["grant"]
+  },
+  {
+    "id": "s3_bucket_level_public_access_prohibited",
+    "version": "1.0.0",
+    "kind": "resource",
+    "resource_type": "aws_s3_bucket_public_access_block",
+    "reads": ["block_public_acls"],
+    "presence_mode": "configured",
+    "on": ["create", "update"],
+    "expr": "config.block_public_acls == true",
+    "action": "deny",
+    "severity": "high",
+    "message": "S3 buckets must block public ACLs.",
+    "fix": "Set block_public_acls = true.",
+    "framework_refs": ["soc_2:CC6.1"],
+    "exemption_coverable": []
+  }
+]

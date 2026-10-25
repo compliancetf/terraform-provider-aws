@@ -1,0 +1,26 @@
+equals_any without values: type refusal
+-- intent.json --
+{
+ "id": "kms_cmk_rotation_enabled",
+ "resource_type": "aws_kms_key",
+ "attributes": [
+  {
+   "schema_path": "enable_key_rotation",
+   "condition": "equals_any",
+   "values": [],
+   "values_from_ref": null
+  }
+ ],
+ "explanation": "Explanation of kms_cmk_rotation_enabled.",
+ "postcondition": "",
+ "has_strategy_condition": false
+}
+-- want.json --
+{
+  "review": {
+    "id": "kms_cmk_rotation_enabled",
+    "resource_type": "aws_kms_key",
+    "reason": "type",
+    "detail": "enable_key_rotation equals_any: no values"
+  }
+}

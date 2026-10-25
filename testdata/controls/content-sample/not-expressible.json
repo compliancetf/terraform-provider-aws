@@ -1,0 +1,4 @@
+[
+ {"policy": "bobthecorp_sample_instance_ami_virtualization", "resource_type": "aws_instance",
+  "reason": "The virtualization type is an attribute of the AMI, not of aws_instance: a control on aws_instance sees only the ami id. Needs a lookup across resources or data sources (disposition graph)."}
+]

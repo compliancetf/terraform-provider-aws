@@ -1,0 +1,155 @@
+{
+  "format_version": "1.0",
+  "provider_schemas": {
+    "registry.terraform.io/hashicorp/aws": {
+      "resource_identity_schemas": {
+        "aws_kms_key": {
+          "attributes": {
+            "account_id": {
+              "optional_for_import": true,
+              "type": "string"
+            },
+            "id": {
+              "required_for_import": true,
+              "type": "string"
+            },
+            "region": {
+              "optional_for_import": true,
+              "type": "string"
+            }
+          },
+          "version": 0
+        }
+      },
+      "resource_schemas": {
+        "aws_kms_key": {
+          "block": {
+            "attributes": {
+              "arn": {
+                "computed": true,
+                "description_kind": "plain",
+                "type": "string"
+              },
+              "bypass_policy_lockout_safety_check": {
+                "description_kind": "plain",
+                "optional": true,
+                "type": "bool"
+              },
+              "custom_key_store_id": {
+                "description_kind": "plain",
+                "optional": true,
+                "type": "string"
+              },
+              "customer_master_key_spec": {
+                "description_kind": "plain",
+                "optional": true,
+                "type": "string"
+              },
+              "deletion_window_in_days": {
+                "description_kind": "plain",
+                "optional": true,
+                "type": "number"
+              },
+              "description": {
+                "computed": true,
+                "description_kind": "plain",
+                "optional": true,
+                "type": "string"
+              },
+              "enable_key_rotation": {
+                "description_kind": "plain",
+                "optional": true,
+                "type": "bool"
+              },
+              "id": {
+                "computed": true,
+                "description_kind": "plain",
+                "optional": true,
+                "type": "string"
+              },
+              "is_enabled": {
+                "description_kind": "plain",
+                "optional": true,
+                "type": "bool"
+              },
+              "key_id": {
+                "computed": true,
+                "description_kind": "plain",
+                "type": "string"
+              },
+              "key_usage": {
+                "description_kind": "plain",
+                "optional": true,
+                "type": "string"
+              },
+              "multi_region": {
+                "computed": true,
+                "description_kind": "plain",
+                "optional": true,
+                "type": "bool"
+              },
+              "policy": {
+                "computed": true,
+                "description_kind": "plain",
+                "optional": true,
+                "type": "string"
+              },
+              "region": {
+                "computed": true,
+                "description": "Region where this resource will be [managed](https://docs.aws.amazon.com/general/latest/gr/rande.html#regional-endpoints). Defaults to the Region set in the [provider configuration](https://registry.terraform.io/providers/hashicorp/aws/latest/docs#aws-configuration-reference).",
+                "description_kind": "plain",
+                "optional": true,
+                "type": "string"
+              },
+              "rotation_period_in_days": {
+                "computed": true,
+                "description_kind": "plain",
+                "optional": true,
+                "type": "number"
+              },
+              "tags": {
+                "description_kind": "plain",
+                "optional": true,
+                "type": [
+                  "map",
+                  "string"
+                ]
+              },
+              "tags_all": {
+                "computed": true,
+                "description_kind": "plain",
+                "optional": true,
+                "type": [
+                  "map",
+                  "string"
+                ]
+              },
+              "xks_key_id": {
+                "description_kind": "plain",
+                "optional": true,
+                "type": "string"
+              }
+            },
+            "block_types": {
+              "timeouts": {
+                "block": {
+                  "attributes": {
+                    "create": {
+                      "description_kind": "plain",
+                      "optional": true,
+                      "type": "string"
+                    }
+                  },
+                  "description_kind": "plain"
+                },
+                "nesting_mode": "single"
+              }
+            },
+            "description_kind": "plain"
+          },
+          "version": 0
+        }
+      }
+    }
+  }
+}

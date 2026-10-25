@@ -1,0 +1,11 @@
+{
+  "evaluator": "lifecycle",
+  "env": {
+    "COMPLIANCETF_ORG_ID": "bobthecorp",
+    "COMPLIANCETF_PROFILE_PATH": "{work}/profile.dsse.json",
+    "COMPLIANCETF_BUNDLE_PATH": "{work}/bundle.tar.gz"
+  },
+  "steps": [
+    {"cmd": ["plan", "-no-color", "-var", "name=bobthecorp-new"], "exit": 1, "stderr_contains": ["[fake_replace_id_not_bad] replacement blocked: control undecided at plan"], "state_unchanged": true}
+  ]
+}

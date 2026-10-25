@@ -1,0 +1,42 @@
+{
+  "description": "provisional without proof blocks",
+  "verdict": true,
+  "required": true,
+  "delete": false,
+  "type": "aws_s3_bucket",
+  "matches": [
+    {
+      "address": "aws_s3_bucket.logs",
+      "type": "aws_s3_bucket",
+      "action": "create",
+      "decisions": [
+        {
+          "control": "s3_bucket_public_access_block_present",
+          "version": "1.0.0",
+          "result": "provisional",
+          "action": "deny"
+        }
+      ],
+      "not_evaluable": [],
+      "exceptions": []
+    }
+  ],
+  "graph": [
+    {
+      "id": "s3_bucket_public_access_block_present",
+      "version": "1.0.0",
+      "message": "S3 bucket has no public access block.",
+      "fail_severity": "error"
+    }
+  ],
+  "excepted": [],
+  "want": [
+    {
+      "control": "s3_bucket_public_access_block_present",
+      "version": "1.0.0",
+      "result": "exemption_unproven",
+      "severity": "error",
+      "text": "s3_bucket_public_access_block_present: provisional exemption for aws_s3_bucket.logs has no final proof; re-run ctfkit gate with the grant, baseline or approved break-glass"
+    }
+  ]
+}

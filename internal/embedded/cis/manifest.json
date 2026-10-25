@@ -1,0 +1,16 @@
+{
+  "format": "compliancetf.bundle-manifest/v2",
+  "bundle_id": "cis-aws",
+  "bundle_version": 1,
+  "label": "2026.10.0",
+  "org_id": "",
+  "profile": "cis-baseline",
+  "catalog": {"snapshot_id": "snap_20261004_000000_000000", "schema_version": "1"},
+  "provider": {"address": "registry.compliance.tf/compliancetf/aws", "version_range": ">= 6.0.0, < 7.0.0"},
+  "upstream": {"source": "hashicorp/aws", "version_range": ">= 6.0.0, < 7.0.0"},
+  "schema_compat_digest": "sha256:5efd8e64b986160d8064a361328a6a2a25c63ba05954a066834e0b71081460eb",
+  "issued_at": "2026-10-06T00:00:00Z",
+  "expires_at": "2027-10-06T00:00:00Z",
+  "min_bundle_version": 1,
+  "min_profile_version": 0
+}

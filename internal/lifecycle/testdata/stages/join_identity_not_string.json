@@ -1,0 +1,20 @@
+{
+  "description": "an identity with a non-string value is not written: kind falls back to id",
+  "stage": "apply_post",
+  "mode": "hard_fail",
+  "op": "create",
+  "new": {"storage_encrypted": true, "kms_key_id": "arn:aws:kms:us-east-1:111122223333:key/bobthecorp-rds", "engine": "postgres", "deletion_protection": true, "id": "bobthecorp-db"},
+  "identity": {"identifier": "bobthecorp-db", "port": 5432},
+  "want": {
+    "diagnostics": [],
+    "evidence": {
+      "op": "create",
+      "results": [
+        {"control": "rds_db_instance_encryption_at_rest_enabled", "state": "pass", "decision": "logged"},
+        {"control": "rds_instance_engine_not_mysql", "state": "pass", "decision": "logged"},
+        {"control": "rds_instance_deletion_protection_enabled", "state": "pass", "decision": "logged"}
+      ],
+      "resource": {"id": "bobthecorp-db", "identity": null, "identity_kind": "id", "op": "create", "type": "aws_db_instance"}
+    }
+  }
+}

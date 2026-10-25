@@ -1,0 +1,21 @@
+[
+  {
+    "id": "db_instance_encrypted_aws_partition",
+    "version": "1.0.0",
+    "kind": "resource",
+    "resource_type": "aws_db_instance",
+    "reads": [
+      "arn",
+      "storage_encrypted"
+    ],
+    "presence_mode": "effective",
+    "on": [
+      "create",
+      "update"
+    ],
+    "expr": "resource.storage_encrypted == true && resource.arn.startsWith('arn:aws:')",
+    "action": "deny",
+    "severity": "high",
+    "message": "RDS storage must be encrypted in the aws partition."
+  }
+]

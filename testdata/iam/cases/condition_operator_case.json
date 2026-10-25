@@ -1,0 +1,1 @@
+{"Version":"2012-10-17","Statement":[{"Effect":"Allow","Action":"ec2:RunInstances","Resource":"*","Condition":{"stringequals":{"ec2:InstanceType":"t3.micro"},"forallvalues:stringlikeifexists":{"aws:TagKeys":"bobthecorp-*"},"forAnyValue:STRINGEQUALS":{"aws:CalledVia":"cloudformation.amazonaws.com"}}}]}

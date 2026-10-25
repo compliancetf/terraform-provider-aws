@@ -1,0 +1,21 @@
+{
+  "description": "destroy in hard_fail succeeds: a stale stamp is ignored and only the deletion guard runs on Prior",
+  "stage": "apply_pre",
+  "mode": "hard_fail",
+  "op": "delete",
+  "envelope": {
+    "op": "delete",
+    "digest": "sha256:stale"
+  },
+  "config": null,
+  "prior": {
+    "storage_encrypted": false,
+    "kms_key_id": null,
+    "engine": "mysql",
+    "deletion_protection": false
+  },
+  "planned": null,
+  "want": {
+    "diagnostics": []
+  }
+}

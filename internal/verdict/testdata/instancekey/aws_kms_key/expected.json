@@ -1,0 +1,62 @@
+{
+  "entries": [
+    {
+      "actions": [
+        "create"
+      ],
+      "address": "aws_kms_key.new",
+      "keys": [
+        {
+          "field": "instance_key",
+          "form": "create",
+          "key": "sha256:c41c0a041b946be113e00f894da7f4014df2df4fd6ca5545b6c5b7f5d8ae7c3e",
+          "prior_identity_kind": "none",
+          "unknown_paths": [
+            [
+              "arn"
+            ],
+            [
+              "id"
+            ],
+            [
+              "key_id"
+            ],
+            [
+              "multi_region"
+            ],
+            [
+              "policy"
+            ],
+            [
+              "rotation_period_in_days"
+            ],
+            [
+              "tags_all"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "actions": [
+        "update"
+      ],
+      "address": "aws_kms_key.this",
+      "keys": [
+        {
+          "field": "instance_key",
+          "form": "update",
+          "key": "sha256:d82fa568b3dcac5d020fee96737bc3eaace1dd2a29a03d3c26b1fafdcbbfff1c",
+          "prior_identity_kind": "id",
+          "unknown_paths": []
+        }
+      ]
+    }
+  ],
+  "format": "compliancetf.instancekey.golden/v1",
+  "k_leaf_hex": "845cba3b9048a0ea701ceebf35bf8d23f96345d369ee41f24777d11aee0609eb",
+  "key_check": "278a53702bed79d81258d55c57dbfd708733a1e9d04c6fe3e8a7e5d0ca565a63",
+  "provider_version": "hashicorp/aws 6.65.0",
+  "terraform_version": "1.16.3",
+  "test_secret_hex": "494e5345435552452d544553542d5345435245542d696e7374616e63656b6579"
+}

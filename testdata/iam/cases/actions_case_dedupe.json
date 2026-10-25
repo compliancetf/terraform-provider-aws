@@ -1,0 +1,1 @@
+{"Version":"2012-10-17","Statement":[{"Effect":"Allow","Action":["S3:GetObject","s3:getobject","s3:PutObject","s3:Get*","ec2:Describe?nstances"],"Resource":"*"}]}

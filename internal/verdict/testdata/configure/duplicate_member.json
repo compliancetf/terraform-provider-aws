@@ -1,0 +1,8 @@
+{
+  "description": "a duplicate member name is refused (no last-wins parse)",
+  "raw": "{\"format\":\"compliancetf.verdict/v1\",\"format\":\"compliancetf.verdict/v1\"}",
+  "want": {
+    "summary": "Invalid verdict file",
+    "detail": "The file is not a compliancetf.verdict/v1 document."
+  }
+}

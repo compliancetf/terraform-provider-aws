@@ -1,0 +1,1 @@
+{"description": "a for expression (or any non-literal) fails the load before decoding evaluates it", "load_error": "only literal strings and lists"}

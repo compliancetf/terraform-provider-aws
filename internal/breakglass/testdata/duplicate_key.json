@@ -1,0 +1,19 @@
+{
+  "description": "a duplicate instance key",
+  "policy": {},
+  "receipt_set": {
+    "instance_keys": [
+      "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    ]
+  },
+  "queries": [
+    {
+      "control": "CTF.S3.1",
+      "key": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "result": "fail",
+      "want": false
+    }
+  ],
+  "warning": "is not a valid"
+}

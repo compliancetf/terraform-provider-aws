@@ -1,0 +1,49 @@
+{
+  "description": "an unknown query argument is pending even for a blocking control: Terraform reads again once it is known",
+  "stage": "data_source",
+  "type_name": "aws_db_lookup",
+  "mode": "hard_fail",
+  "data_sources_deny": true,
+  "config": {
+    "storage_encrypted": true,
+    "kms_key_id": "arn:aws:kms:us-east-1:111122223333:key/bobthecorp-rds",
+    "engine": "<unknown>",
+    "deletion_protection": true
+  },
+  "new": {
+    "storage_encrypted": true,
+    "kms_key_id": "arn:aws:kms:us-east-1:111122223333:key/bobthecorp-rds",
+    "engine": "postgres",
+    "deletion_protection": true
+  },
+  "want": {
+    "diagnostics": [
+      {
+        "severity": "warning",
+        "summary": "[ds_lookup_engine_postgres] pending: re-checked when known",
+        "detail": "Still unknown: engine.",
+        "attribute": "AttributeName(\"engine\")"
+      }
+    ],
+    "evidence": {
+      "op": "read",
+      "results": [
+        {
+          "control": "ds_lookup_engine_postgres",
+          "state": "unknown",
+          "decision": "pending"
+        },
+        {
+          "control": "ds_lookup_encrypted",
+          "state": "pass",
+          "decision": "logged"
+        },
+        {
+          "control": "ds_lookup_deletion_protection",
+          "state": "pass",
+          "decision": "logged"
+        }
+      ]
+    }
+  }
+}

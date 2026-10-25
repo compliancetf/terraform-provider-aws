@@ -1,0 +1,18 @@
+# Reviewed proto drift findings that scripts/proto-drift.sh reports as notices
+# instead of failing the scheduled check. One exact line per finding:
+#   <source> tfplugin<N> <VERDICT> <key>
+# e.g. terraform tfplugin5 DRIFT F .tfplugin5.GetMetadata.Response#9
+# Add a line only in an owner-reviewed PR that explains why the finding is safe.
+
+# Accepted 2026-10-06: tfplugin5 GetMetadata.Response.actions
+# is field 8 in terraform v1.16.5 (docs proto and internal/tfplugin5 pb.go) and
+# field 9 in terraform-plugin-go v0.31.0, which reserves 8 in v5 for the v6-only
+# state_stores. The vendored protos follow plugin-go (9), matching the bytes
+# hashicorp/aws v6.67.0 emits (protocol 5, plugin-go v0.31.0, framework v1.19.0
+# fills GetMetadata actions; 11 actions exist); the proxy passes them through.
+# Safe: neither terraform v1.16.5 nor opentofu v1.13.1 calls GetMetadata as a
+# client (only grpcwrap server stubs returning Unimplemented). plugin-go never
+# emits field 8 in v5, so a v5 client that reads 8 drops 9 as unknown instead of
+# misreading it. tfplugin6 agrees (state_stores 8, actions 9). Re-check if core
+# starts calling GetMetadata or renumbers v5.
+terraform tfplugin5 DRIFT F .tfplugin5.GetMetadata.Response#9

@@ -1,0 +1,8 @@
+{
+  "description": "a symlink to a valid verdict is refused",
+  "verdict": "symlink",
+  "want": {
+    "summary": "Invalid verdict file",
+    "detail": "The file named by COMPLIANCETF_VERDICT cannot be opened as a regular file without following a symlink."
+  }
+}

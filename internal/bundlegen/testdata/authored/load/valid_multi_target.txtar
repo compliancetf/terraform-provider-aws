@@ -1,0 +1,191 @@
+One id, two targets, a pass and a fail fixture each, a version bump.
+An omitted unknown_paths loads as [], the case format value.
+Message, severity and refs are Generate's; version is the lock's placeholder.
+-- rds_bobthecorp_storage_encrypted.yaml --
+fix: Set storage_encrypted = true.
+version_bump: {level: minor, from: 1.0.0}
+targets:
+  - kind: resource
+    type: aws_db_instance
+    reads: [storage_encrypted]
+    presence_mode: configured
+    on: [create, update]
+    expr: config.storage_encrypted == true
+    action: deny
+  - kind: resource
+    type: aws_rds_cluster
+    reads: [storage_encrypted]
+    presence_mode: configured
+    on: [create]
+    expr: config.storage_encrypted == true
+    action: warn
+fixtures:
+  - kind: resource
+    type: aws_db_instance
+    name: pass
+    bindings:
+      op: create
+      provider: {region: eu-west-1, account_id: "111111111111"}
+      config: {storage_encrypted: true, identifier: bobthecorp-orders}
+    expect: {state: pass}
+  - kind: resource
+    type: aws_db_instance
+    name: fail-null
+    bindings: {op: create, config: {identifier: bobthecorp-orders}}
+    expect: {state: fail}
+  - kind: resource
+    type: aws_rds_cluster
+    name: pass
+    bindings: {op: create, config: {storage_encrypted: true}}
+    expect: {state: pass}
+  - kind: resource
+    type: aws_rds_cluster
+    name: fail
+    bindings: {op: create, config: {storage_encrypted: false}}
+    expect: {state: fail}
+  - kind: resource
+    type: aws_rds_cluster
+    name: unknown
+    bindings: {op: create, config: {storage_encrypted: {$unknown: true}}}
+    expect: {state: unknown, unknown_paths: [storage_encrypted]}
+-- want.json --
+{
+  "rds_bobthecorp_storage_encrypted": {
+    "Controls": [
+      {
+        "id": "rds_bobthecorp_storage_encrypted",
+        "version": "1.0.0",
+        "kind": "resource",
+        "resource_type": "aws_db_instance",
+        "reads": [
+          "storage_encrypted"
+        ],
+        "presence_mode": "configured",
+        "on": [
+          "create",
+          "update"
+        ],
+        "expr": "config.storage_encrypted == true",
+        "action": "deny",
+        "severity": "medium",
+        "message": "rds_bobthecorp_storage_encrypted",
+        "fix": "Set storage_encrypted = true.",
+        "exemption_coverable": []
+      },
+      {
+        "id": "rds_bobthecorp_storage_encrypted",
+        "version": "1.0.0",
+        "kind": "resource",
+        "resource_type": "aws_rds_cluster",
+        "reads": [
+          "storage_encrypted"
+        ],
+        "presence_mode": "configured",
+        "on": [
+          "create"
+        ],
+        "expr": "config.storage_encrypted == true",
+        "action": "warn",
+        "severity": "medium",
+        "message": "rds_bobthecorp_storage_encrypted",
+        "fix": "Set storage_encrypted = true.",
+        "exemption_coverable": []
+      }
+    ],
+    "Fixtures": [
+      {
+        "kind": "resource",
+        "resource_type": "aws_db_instance",
+        "name": "pass",
+        "bindings": {
+          "op": "create",
+          "provider": {
+            "account_id": "111111111111",
+            "region": "eu-west-1"
+          },
+          "config": {
+            "identifier": "bobthecorp-orders",
+            "storage_encrypted": true
+          }
+        },
+        "expect": {
+          "state": "pass",
+          "err_class": "",
+          "unknown_paths": []
+        }
+      },
+      {
+        "kind": "resource",
+        "resource_type": "aws_db_instance",
+        "name": "fail-null",
+        "bindings": {
+          "op": "create",
+          "config": {
+            "identifier": "bobthecorp-orders"
+          }
+        },
+        "expect": {
+          "state": "fail",
+          "err_class": "",
+          "unknown_paths": []
+        }
+      },
+      {
+        "kind": "resource",
+        "resource_type": "aws_rds_cluster",
+        "name": "pass",
+        "bindings": {
+          "op": "create",
+          "config": {
+            "storage_encrypted": true
+          }
+        },
+        "expect": {
+          "state": "pass",
+          "err_class": "",
+          "unknown_paths": []
+        }
+      },
+      {
+        "kind": "resource",
+        "resource_type": "aws_rds_cluster",
+        "name": "fail",
+        "bindings": {
+          "op": "create",
+          "config": {
+            "storage_encrypted": false
+          }
+        },
+        "expect": {
+          "state": "fail",
+          "err_class": "",
+          "unknown_paths": []
+        }
+      },
+      {
+        "kind": "resource",
+        "resource_type": "aws_rds_cluster",
+        "name": "unknown",
+        "bindings": {
+          "op": "create",
+          "config": {
+            "storage_encrypted": {
+              "$unknown": true
+            }
+          }
+        },
+        "expect": {
+          "state": "unknown",
+          "err_class": "",
+          "unknown_paths": [
+            "storage_encrypted"
+          ]
+        }
+      }
+    ],
+    "VersionBump": {
+      "Level": "minor",
+      "From": "1.0.0"
+    }
+  }
+}

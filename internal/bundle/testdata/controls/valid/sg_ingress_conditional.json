@@ -1,0 +1,15 @@
+[
+  {
+    "id": "vpc_security_group_restrict_ingress_ssh_all",
+    "version": "1.0.0",
+    "kind": "resource",
+    "resource_type": "aws_security_group",
+    "reads": ["ingress.cidr_blocks", "ingress.from_port"],
+    "presence_mode": "configured",
+    "on": ["create", "update"],
+    "expr": "config.ingress.all(i, i.from_port != 22 || !(\"0.0.0.0/0\" in i.cidr_blocks))",
+    "action": "warn",
+    "severity": "critical",
+    "message": "Security groups must not allow SSH from 0.0.0.0/0."
+  }
+]

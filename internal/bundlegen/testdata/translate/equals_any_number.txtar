@@ -1,0 +1,43 @@
+integers on a number attribute
+-- intent.json --
+{
+ "id": "rds_db_instance_custom_port",
+ "resource_type": "aws_db_instance",
+ "attributes": [
+  {
+   "schema_path": "port",
+   "condition": "equals_any",
+   "values": [
+    15432,
+    15433
+   ],
+   "values_from_ref": null
+  }
+ ],
+ "explanation": "Explanation of rds_db_instance_custom_port.",
+ "postcondition": "",
+ "has_strategy_condition": false
+}
+-- want.json --
+{
+  "control": {
+    "id": "rds_db_instance_custom_port",
+    "version": "1.0.0",
+    "kind": "resource",
+    "resource_type": "aws_db_instance",
+    "reads": [
+      "port"
+    ],
+    "presence_mode": "effective",
+    "on": [
+      "create",
+      "update"
+    ],
+    "expr": "resource.port in [15432, 15433]",
+    "action": "deny",
+    "severity": "",
+    "message": "",
+    "fix": "Explanation of rds_db_instance_custom_port.",
+    "exemption_coverable": []
+  }
+}

@@ -1,0 +1,17 @@
+Any other file in the directory fails closed (a .yml typo would be skipped).
+-- rds_bobthecorp_storage_encrypted.yml --
+targets:
+  - kind: resource
+    type: aws_db_instance
+    reads: [storage_encrypted]
+    presence_mode: effective
+    on: [create, update]
+    expr: resource.storage_encrypted == true
+    action: deny
+fixtures:
+  - {kind: resource, type: aws_db_instance, name: pass, bindings: {op: create, resource: {storage_encrypted: true}}, expect: {state: pass}}
+  - {kind: resource, type: aws_db_instance, name: fail, bindings: {op: create, resource: {storage_encrypted: false}}, expect: {state: fail}}
+-- want.json --
+{
+  "error": "E_AUTHORED"
+}

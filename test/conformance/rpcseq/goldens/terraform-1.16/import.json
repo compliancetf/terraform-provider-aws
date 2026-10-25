@@ -1,0 +1,11 @@
+{
+  "steps": [
+    {"cmd": ["apply","-no-color","-auto-approve"], "calls": [
+      {"stage":"validate","type":"fake_thing","config":"set","proc":1},
+      {"stage":"import","type":"fake_thing","op":"import","new":"set","proc":2},
+      {"stage":"read","type":"fake_thing","prior":"set","new":"set","proc":2},
+      {"stage":"validate","type":"fake_thing","config":"set","proc":2},
+      {"stage":"plan","type":"fake_thing","op":"import","config":"set","prior":"set","planned":"set","proc":2}
+    ]}
+  ]
+}

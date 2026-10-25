@@ -1,0 +1,83 @@
+{
+  "description": "not evaluable is fail every mode",
+  "verdict": true,
+  "required": true,
+  "delete": false,
+  "type": "aws_s3_bucket",
+  "matches": [
+    {
+      "address": "aws_s3_bucket.logs",
+      "type": "aws_s3_bucket",
+      "action": "create",
+      "decisions": [
+        {
+          "control": "s3_bucket_public_access_block_present",
+          "version": "1.0.0",
+          "result": "not_evaluable",
+          "action": "deny"
+        },
+        {
+          "control": "s3_bucket_logging_present",
+          "version": "1.0.0",
+          "result": "not_evaluable",
+          "action": "deny"
+        },
+        {
+          "control": "s3_bucket_versioning_present",
+          "version": "1.0.0",
+          "result": "not_evaluable",
+          "action": "deny"
+        }
+      ],
+      "not_evaluable": [
+        {
+          "control": "s3_bucket_public_access_block_present",
+          "reason": "identity_alias"
+        }
+      ],
+      "exceptions": []
+    }
+  ],
+  "graph": [
+    {
+      "id": "s3_bucket_public_access_block_present",
+      "version": "1.0.0",
+      "message": "S3 bucket has no public access block.",
+      "fail_severity": "error"
+    },
+    {
+      "id": "s3_bucket_logging_present",
+      "version": "1.0.0",
+      "message": "S3 bucket has no logging.",
+      "fail_severity": "warning"
+    },
+    {
+      "id": "s3_bucket_versioning_present",
+      "version": "1.0.0",
+      "message": "S3 bucket has no versioning.",
+      "fail_severity": "none"
+    }
+  ],
+  "excepted": [],
+  "want": [
+    {
+      "control": "s3_bucket_public_access_block_present",
+      "version": "1.0.0",
+      "result": "not_evaluable",
+      "severity": "error",
+      "text": "s3_bucket_public_access_block_present: not decidable at plan (identity_alias) for aws_s3_bucket.logs; blocking control fails closed"
+    },
+    {
+      "control": "s3_bucket_logging_present",
+      "version": "1.0.0",
+      "result": "not_evaluable",
+      "severity": "warning"
+    },
+    {
+      "control": "s3_bucket_versioning_present",
+      "version": "1.0.0",
+      "result": "not_evaluable",
+      "severity": "none"
+    }
+  ]
+}

@@ -1,0 +1,23 @@
+{
+  "description": "no trusted environment, result independent of env: decided pass",
+  "stage": "plan",
+  "mode": "hard_fail",
+  "op": "create",
+  "trusted_env": {},
+  "config": {
+    "storage_encrypted": true,
+    "kms_key_id": "arn:aws:kms:us-east-1:111122223333:key/bobthecorp-rds",
+    "engine": "postgres"
+  },
+  "prior": null,
+  "planned": {
+    "storage_encrypted": true,
+    "kms_key_id": "arn:aws:kms:us-east-1:111122223333:key/bobthecorp-rds",
+    "engine": "postgres",
+    "deletion_protection": true
+  },
+  "want": {
+    "diagnostics": [],
+    "stamp": true
+  }
+}

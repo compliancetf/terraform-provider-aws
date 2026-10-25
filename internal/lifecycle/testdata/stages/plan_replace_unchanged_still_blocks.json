@@ -1,0 +1,40 @@
+{
+  "description": "replace is unaffected: an op replace hint with Planned equal to Prior still blocks in both halves",
+  "stage": "plan",
+  "mode": "hard_fail",
+  "op": "replace",
+  "config": {
+    "storage_encrypted": false,
+    "kms_key_id": "arn:aws:kms:us-east-1:111122223333:key/bobthecorp-rds",
+    "engine": "postgres"
+  },
+  "prior": {
+    "storage_encrypted": false,
+    "kms_key_id": "arn:aws:kms:us-east-1:111122223333:key/bobthecorp-rds",
+    "engine": "postgres",
+    "deletion_protection": true
+  },
+  "planned": {
+    "storage_encrypted": false,
+    "kms_key_id": "arn:aws:kms:us-east-1:111122223333:key/bobthecorp-rds",
+    "engine": "postgres",
+    "deletion_protection": true
+  },
+  "want": {
+    "diagnostics": [
+      {
+        "severity": "error",
+        "summary": "[rds_instance_deletion_guard] Disable deletion_protection before destroying this instance.",
+        "detail": "Severity: medium\nMode: hard_fail\nStage: plan\nTo waive: add an exception for rds_instance_deletion_guard in compliance-exceptions.hcl",
+        "attribute": "AttributeName(\"deletion_protection\")"
+      },
+      {
+        "severity": "error",
+        "summary": "[rds_db_instance_encryption_at_rest_enabled] RDS storage must be encrypted at rest.",
+        "detail": "Fix: Set storage_encrypted = true.\nSeverity: high\nMode: hard_fail\nStage: plan\nFrameworks: soc_2:CC6.1, cis_aws:2.3.1\nTo waive: add an exception for rds_db_instance_encryption_at_rest_enabled in compliance-exceptions.hcl",
+        "attribute": "AttributeName(\"storage_encrypted\")"
+      }
+    ],
+    "stamp": true
+  }
+}

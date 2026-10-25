@@ -1,0 +1,9 @@
+{"about": "not_equals over a value list on a number: the intent says not_empty on port, the control excludes a list of ports.",
+ "control": {"id": "bobthecorp_sample_db_port_not_listed", "version": "1.0.0", "kind": "resource", "resource_type": "aws_db_instance", "reads": ["port"], "presence_mode": "effective", "on": ["create", "update"], "expr": "resource.port != null && !(resource.port in [1111, 2222, 3333, 4444])", "action": "deny", "severity": "low", "message": "Sample: the database must not listen on a listed port."},
+ "cases": [
+  {"id": "P-01-custom", "resource": {"port": 15432}, "expect": {"state": "pass", "err_class": ""}},
+  {"id": "F-01-second-listed", "resource": {"port": 2222}, "expect": {"state": "fail", "err_class": ""}},
+  {"id": "F-02-first-listed", "resource": {"port": 1111}, "expect": {"state": "fail", "err_class": ""}},
+  {"id": "F-03-null", "resource": {}, "expect": {"state": "fail", "err_class": ""}},
+  {"id": "U-01-computed", "resource": {"port": {"$unknown": true}}, "expect": {"state": "unknown", "err_class": ""}}
+ ]}

@@ -1,0 +1,40 @@
+Required string: effective
+-- intent.json --
+{
+ "id": "s3_bucket_versioning_bucket_set",
+ "resource_type": "aws_s3_bucket_versioning",
+ "attributes": [
+  {
+   "schema_path": "bucket",
+   "condition": "not_empty",
+   "values": [],
+   "values_from_ref": null
+  }
+ ],
+ "explanation": "Explanation of s3_bucket_versioning_bucket_set.",
+ "postcondition": "",
+ "has_strategy_condition": false
+}
+-- want.json --
+{
+  "control": {
+    "id": "s3_bucket_versioning_bucket_set",
+    "version": "1.0.0",
+    "kind": "resource",
+    "resource_type": "aws_s3_bucket_versioning",
+    "reads": [
+      "bucket"
+    ],
+    "presence_mode": "effective",
+    "on": [
+      "create",
+      "update"
+    ],
+    "expr": "resource.bucket != null && size(resource.bucket) > 0",
+    "action": "deny",
+    "severity": "",
+    "message": "",
+    "fix": "Explanation of s3_bucket_versioning_bucket_set.",
+    "exemption_coverable": []
+  }
+}

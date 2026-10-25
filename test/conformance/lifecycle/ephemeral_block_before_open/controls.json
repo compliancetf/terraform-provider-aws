@@ -1,0 +1,3 @@
+[{"id": "fake_secret_name_allowed", "version": "1.0.0", "kind": "ephemeral", "resource_type": "fake_secret",
+  "reads": ["name"], "expr": "config.name != 'bobthecorp-blocked'", "action": "deny", "severity": "high",
+  "message": "This fake_secret name is not allowed.", "fix": "Use another name.", "exemption_coverable": []}]

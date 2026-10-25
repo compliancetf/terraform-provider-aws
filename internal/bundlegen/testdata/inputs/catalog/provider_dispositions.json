@@ -1,0 +1,46 @@
+{
+  "companion_types": {
+    "aws_s3_bucket_versioning": {"parent": "aws_s3_bucket", "ref": "bucket"}
+  },
+  "controls": {
+    "acct_bobthecorp_contact_set": {
+      "content": "none",
+      "disposition": "runtime",
+      "reason": "account contact is not in Terraform config"
+    },
+    "iam_bobthecorp_no_kms_wildcard": {
+      "content": "intents",
+      "disposition": "provider-local",
+      "reason": "policy document on the managed policy",
+      "severity": "high",
+      "targets": [{"kind": "resource", "type": "aws_iam_policy"}]
+    },
+    "rds_bobthecorp_storage_encrypted": {
+      "content": "intents",
+      "disposition": "provider-local",
+      "exemption_coverable": ["grant", "baseline"],
+      "reason": "storage_encrypted on the instance",
+      "severity": "high",
+      "targets": [{"kind": "resource", "type": "aws_db_instance"}]
+    },
+    "rds_bobthecorp_deletion_guard": {
+      "content": "none",
+      "disposition": "provider-local",
+      "reason": "deletion_protection on the instance; no content policy yet",
+      "targets": [{"kind": "resource", "type": "aws_db_instance"}]
+    },
+    "s3_bobthecorp_lifecycle_versioned": {
+      "content": "none",
+      "disposition": "graph",
+      "reason": "conditional on a sibling aws_s3_bucket_versioning",
+      "targets": [{"kind": "resource", "type": "aws_s3_bucket_versioning"}]
+    },
+    "s3_bobthecorp_versioning_on": {
+      "content": "intents",
+      "disposition": "companion-local",
+      "reason": "versioning lives on the split resource",
+      "targets": [{"kind": "resource", "type": "aws_s3_bucket_versioning"}]
+    }
+  },
+  "schema_version": 1
+}

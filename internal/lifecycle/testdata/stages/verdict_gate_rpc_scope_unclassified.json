@@ -1,0 +1,40 @@
+{
+  "description": "an RPC the rule does not name is blocked without a verdict entry",
+  "stage": "rpc",
+  "method": "/tfplugin5.Provider/FutureRPC",
+  "mode": "hard_fail",
+  "verdict_required": true,
+  "op": "",
+  "gated": true,
+  "type_name": "rpc_unclassified",
+  "rpc_request": "req-1",
+  "verdict": {
+    "entries": [],
+    "want_keys": [
+      {
+        "form": "rpc",
+        "method": "/tfplugin5.Provider/FutureRPC",
+        "request": "req-1"
+      }
+    ]
+  },
+  "want": {
+    "diagnostics": [
+      {
+        "severity": "error",
+        "summary": "Verdict required",
+        "detail": "no verdict entry matches this instance"
+      }
+    ],
+    "evidence": {
+      "op": "change",
+      "results": [
+        {
+          "control": "verdict_required",
+          "state": "fail",
+          "decision": "blocked"
+        }
+      ]
+    }
+  }
+}

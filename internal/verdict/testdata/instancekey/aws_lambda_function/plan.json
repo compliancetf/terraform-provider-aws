@@ -1,0 +1,312 @@
+{
+  "format_version": "1.2",
+  "resource_changes": [
+    {
+      "address": "aws_lambda_function.new",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "after": {
+          "capacity_provider_config": [],
+          "code_signing_config_arn": null,
+          "dead_letter_config": [],
+          "description": null,
+          "durable_config": [],
+          "environment": [
+            {
+              "variables": {
+                "API_TOKEN": "bobthecorp-fake-token-3",
+                "BUCKET": "bobthecorp-reports"
+              }
+            }
+          ],
+          "file_system_config": [],
+          "filename": "../lambda.zip",
+          "function_name": "bobthecorp-reports",
+          "handler": "index.handler",
+          "image_config": [],
+          "image_uri": null,
+          "kms_key_arn": null,
+          "layers": null,
+          "memory_size": 128,
+          "package_type": "Zip",
+          "publish": false,
+          "publish_to": null,
+          "region": "us-east-1",
+          "replace_security_groups_on_destroy": null,
+          "replacement_security_group_ids": null,
+          "reserved_concurrent_executions": -1,
+          "runtime": "python3.12",
+          "s3_bucket": null,
+          "s3_key": null,
+          "s3_object_version": null,
+          "skip_destroy": false,
+          "snap_start": [],
+          "source_code_hash": "c5KX3fLBmDM8Nx/3IwZbWZXB2VmNXcssJZjxWaXm8gE=",
+          "source_kms_key_arn": null,
+          "tags": null,
+          "tenancy_config": [],
+          "timeout": 3,
+          "timeouts": null,
+          "use_resource_timeout_for_propagation": null,
+          "vpc_config": []
+        },
+        "after_identity": {
+          "account_id": null,
+          "function_name": null,
+          "region": null
+        },
+        "after_sensitive": {
+          "architectures": [],
+          "capacity_provider_config": [],
+          "dead_letter_config": [],
+          "durable_config": [],
+          "environment": [
+            {
+              "variables": true
+            }
+          ],
+          "ephemeral_storage": [],
+          "file_system_config": [],
+          "image_config": [],
+          "logging_config": [],
+          "snap_start": [],
+          "tags_all": {},
+          "tenancy_config": [],
+          "tracing_config": [],
+          "vpc_config": []
+        },
+        "after_unknown": {
+          "architectures": true,
+          "arn": true,
+          "capacity_provider_config": [],
+          "code_sha256": true,
+          "dead_letter_config": [],
+          "durable_config": [],
+          "environment": [
+            {
+              "variables": {}
+            }
+          ],
+          "ephemeral_storage": true,
+          "file_system_config": [],
+          "id": true,
+          "image_config": [],
+          "invoke_arn": true,
+          "last_modified": true,
+          "logging_config": true,
+          "qualified_arn": true,
+          "qualified_invoke_arn": true,
+          "response_streaming_invoke_arn": true,
+          "role": true,
+          "signing_job_arn": true,
+          "signing_profile_version_arn": true,
+          "snap_start": [],
+          "source_code_size": true,
+          "tags_all": true,
+          "tenancy_config": [],
+          "tracing_config": true,
+          "version": true,
+          "vpc_config": []
+        },
+        "before": null,
+        "before_sensitive": false
+      },
+      "mode": "managed",
+      "name": "new",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "type": "aws_lambda_function"
+    },
+    {
+      "address": "aws_lambda_function.this",
+      "change": {
+        "actions": [
+          "update"
+        ],
+        "after": {
+          "architectures": [],
+          "arn": "arn:aws:lambda:us-east-1:111111111111:function:bobthecorp-fn",
+          "capacity_provider_config": [],
+          "code_sha256": "bobthecorp-fake-code_sha256",
+          "code_signing_config_arn": null,
+          "dead_letter_config": [],
+          "description": null,
+          "durable_config": [],
+          "environment": [
+            {
+              "variables": {
+                "API_TOKEN": "bobthecorp-fake-token-2",
+                "MODE": "prod"
+              }
+            }
+          ],
+          "ephemeral_storage": [],
+          "file_system_config": [],
+          "filename": "../lambda.zip",
+          "function_name": "bobthecorp-fn",
+          "handler": "index.handler",
+          "id": "bobthecorp-fn",
+          "image_config": [],
+          "image_uri": null,
+          "invoke_arn": "bobthecorp-fake-invoke_arn",
+          "kms_key_arn": null,
+          "last_modified": "bobthecorp-fake-last_modified",
+          "layers": null,
+          "logging_config": [],
+          "memory_size": 128,
+          "package_type": "Zip",
+          "publish": false,
+          "publish_to": null,
+          "qualified_arn": "bobthecorp-fake-qualified_arn",
+          "qualified_invoke_arn": "bobthecorp-fake-qualified_invoke_arn",
+          "region": "us-east-1",
+          "replace_security_groups_on_destroy": null,
+          "replacement_security_group_ids": null,
+          "reserved_concurrent_executions": -1,
+          "response_streaming_invoke_arn": "bobthecorp-fake-response_streaming_invoke_arn",
+          "role": "arn:aws:iam::111111111111:role/bobthecorp-lambda",
+          "runtime": "python3.12",
+          "s3_bucket": null,
+          "s3_key": null,
+          "s3_object_version": null,
+          "signing_job_arn": "bobthecorp-fake-signing_job_arn",
+          "signing_profile_version_arn": "bobthecorp-fake-signing_profile_version_arn",
+          "skip_destroy": false,
+          "snap_start": [],
+          "source_code_hash": "c5KX3fLBmDM8Nx/3IwZbWZXB2VmNXcssJZjxWaXm8gE=",
+          "source_code_size": 0,
+          "source_kms_key_arn": null,
+          "tags": null,
+          "tags_all": {},
+          "tenancy_config": [],
+          "timeout": 3,
+          "timeouts": null,
+          "tracing_config": [],
+          "use_resource_timeout_for_propagation": null,
+          "version": "$LATEST",
+          "vpc_config": []
+        },
+        "after_identity": {
+          "account_id": "111111111111",
+          "function_name": "bobthecorp-fn",
+          "region": "us-east-1"
+        },
+        "after_sensitive": {
+          "architectures": [],
+          "capacity_provider_config": [],
+          "dead_letter_config": [],
+          "durable_config": [],
+          "environment": [
+            {
+              "variables": true
+            }
+          ],
+          "ephemeral_storage": [],
+          "file_system_config": [],
+          "image_config": [],
+          "logging_config": [],
+          "snap_start": [],
+          "tags_all": {},
+          "tenancy_config": [],
+          "tracing_config": [],
+          "vpc_config": []
+        },
+        "after_unknown": {},
+        "before": {
+          "architectures": [],
+          "arn": "arn:aws:lambda:us-east-1:111111111111:function:bobthecorp-fn",
+          "capacity_provider_config": [],
+          "code_sha256": "bobthecorp-fake-code_sha256",
+          "code_signing_config_arn": null,
+          "dead_letter_config": [],
+          "description": null,
+          "durable_config": [],
+          "environment": [
+            {
+              "variables": {
+                "API_TOKEN": "bobthecorp-fake-token-1",
+                "MODE": "prod"
+              }
+            }
+          ],
+          "ephemeral_storage": [],
+          "file_system_config": [],
+          "filename": "../lambda.zip",
+          "function_name": "bobthecorp-fn",
+          "handler": "index.handler",
+          "id": "bobthecorp-fn",
+          "image_config": [],
+          "image_uri": null,
+          "invoke_arn": "bobthecorp-fake-invoke_arn",
+          "kms_key_arn": null,
+          "last_modified": "bobthecorp-fake-last_modified",
+          "layers": null,
+          "logging_config": [],
+          "memory_size": 128,
+          "package_type": "Zip",
+          "publish": false,
+          "publish_to": null,
+          "qualified_arn": "bobthecorp-fake-qualified_arn",
+          "qualified_invoke_arn": "bobthecorp-fake-qualified_invoke_arn",
+          "region": "us-east-1",
+          "replace_security_groups_on_destroy": null,
+          "replacement_security_group_ids": null,
+          "reserved_concurrent_executions": -1,
+          "response_streaming_invoke_arn": "bobthecorp-fake-response_streaming_invoke_arn",
+          "role": "arn:aws:iam::111111111111:role/bobthecorp-lambda",
+          "runtime": "python3.12",
+          "s3_bucket": null,
+          "s3_key": null,
+          "s3_object_version": null,
+          "signing_job_arn": "bobthecorp-fake-signing_job_arn",
+          "signing_profile_version_arn": "bobthecorp-fake-signing_profile_version_arn",
+          "skip_destroy": false,
+          "snap_start": [],
+          "source_code_hash": "c5KX3fLBmDM8Nx/3IwZbWZXB2VmNXcssJZjxWaXm8gE=",
+          "source_code_size": 0,
+          "source_kms_key_arn": null,
+          "tags": null,
+          "tags_all": {},
+          "tenancy_config": [],
+          "timeout": 3,
+          "timeouts": null,
+          "tracing_config": [],
+          "use_resource_timeout_for_propagation": null,
+          "version": "$LATEST",
+          "vpc_config": []
+        },
+        "before_identity": {
+          "account_id": "111111111111",
+          "function_name": "bobthecorp-fn",
+          "region": "us-east-1"
+        },
+        "before_sensitive": {
+          "architectures": [],
+          "capacity_provider_config": [],
+          "dead_letter_config": [],
+          "durable_config": [],
+          "environment": [
+            {
+              "variables": true
+            }
+          ],
+          "ephemeral_storage": [],
+          "file_system_config": [],
+          "image_config": [],
+          "logging_config": [],
+          "snap_start": [],
+          "tags_all": {},
+          "tenancy_config": [],
+          "tracing_config": [],
+          "vpc_config": []
+        }
+      },
+      "mode": "managed",
+      "name": "this",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "type": "aws_lambda_function"
+    }
+  ],
+  "terraform_version": "1.16.3"
+}

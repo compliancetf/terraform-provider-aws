@@ -1,0 +1,7 @@
+{"about": "exists on network_interface as a prohibition: size(network_interface) == 0. ENIs attached through aws_network_interface_attachment are another resource and out of scope.",
+ "control": {"id": "bobthecorp_sample_instance_no_inline_eni", "version": "1.0.0", "kind": "resource", "resource_type": "aws_instance", "reads": ["network_interface"], "presence_mode": "effective", "on": ["create", "update"], "expr": "size(resource.network_interface) == 0", "action": "deny", "severity": "low", "message": "Sample: the instance must not declare inline network interfaces."},
+ "cases": [
+  {"id": "P-01-no-block", "resource": {"ami": "ami-0bobthecorp"}, "expect": {"state": "pass", "err_class": ""}},
+  {"id": "F-01-one-eni", "resource": {"network_interface": [{"device_index": 0, "network_interface_id": "eni-0bobthecorp"}]}, "expect": {"state": "fail", "err_class": ""}},
+  {"id": "U-01-unknown", "resource": {"network_interface": {"$unknown": true}}, "expect": {"state": "unknown", "err_class": ""}}
+ ]}

@@ -1,0 +1,41 @@
+{
+  "description": "provisional unproven blocks any mode",
+  "verdict": true,
+  "required": false,
+  "delete": false,
+  "type": "aws_s3_bucket",
+  "matches": [
+    {
+      "address": "aws_s3_bucket.a",
+      "type": "aws_s3_bucket",
+      "action": "create",
+      "decisions": [
+        {
+          "control": "s3_bucket_logging_present",
+          "version": "1.0.0",
+          "result": "provisional",
+          "action": "deny"
+        }
+      ],
+      "not_evaluable": [],
+      "exceptions": []
+    }
+  ],
+  "graph": [
+    {
+      "id": "s3_bucket_logging_present",
+      "version": "1.0.0",
+      "message": "S3 bucket has no logging.",
+      "fail_severity": "warning"
+    }
+  ],
+  "excepted": [],
+  "want": [
+    {
+      "control": "s3_bucket_logging_present",
+      "version": "1.0.0",
+      "result": "exemption_unproven",
+      "severity": "error"
+    }
+  ]
+}

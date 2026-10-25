@@ -1,0 +1,5 @@
+{
+  "description": "a control outside the profile self_service list is ignored with a warning",
+  "warnings": ["exception kms: rds_instance_kms_key_configured is not self-service in the org profile; ignored"],
+  "lookups": [{"control": "rds_instance_kms_key_configured", "resource": {"identifier": "db1", "storage_encrypted": false}}]
+}

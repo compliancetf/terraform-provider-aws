@@ -1,0 +1,12 @@
+{
+  "description": "the signing key window ended (beyond the 5 min skew)",
+  "now": "2026-12-01T00:06:00Z",
+  "set": {
+    "issued_at": "2026-12-01T00:00:00Z",
+    "expires_at": "2026-12-01T12:00:00Z"
+  },
+  "want": {
+    "summary": "Verdict signature invalid: key not valid at this time",
+    "detail": "Re-run terraform plan and ctfkit gate, then apply through ctfkit apply."
+  }
+}

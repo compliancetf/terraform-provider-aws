@@ -1,0 +1,10 @@
+{
+  "steps": [
+    {"cmd": ["apply", "-no-color", "-auto-approve"], "exit": 0, "stdout_contains": ["Apply complete! Resources: 1 added"]},
+    {"cmd": ["state", "rm", "aws_ssm_parameter.a"], "exit": 0, "stdout_contains": ["Removed aws_ssm_parameter.a"]},
+    {"cmd": ["import", "-no-color", "aws_ssm_parameter.a", "@PREFIX@-a"], "exit": 0, "stdout_contains": ["Import successful!"]},
+    {"cmd": ["plan", "-no-color", "-detailed-exitcode"], "exit": 0, "stdout_contains": ["No changes."], "state_unchanged": true},
+    {"cmd": ["destroy", "-no-color", "-auto-approve"], "exit": 0, "stdout_contains": ["Destroy complete! Resources: 1 destroyed."]}
+  ],
+  "expect_applies": 2
+}

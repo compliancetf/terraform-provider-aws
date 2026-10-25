@@ -1,0 +1,45 @@
+{
+  "format": "compliancetf.iampolicy/v1",
+  "version": "2012-10-17",
+  "statements": [
+    {
+      "sid": "",
+      "effect": "Allow",
+      "actions": [
+        "kms:decrypt"
+      ],
+      "not_actions": [],
+      "resources": [
+        "*"
+      ],
+      "not_resources": [],
+      "principals": {
+        "aws": [
+          "arn:aws:iam::222222222222:root"
+        ]
+      },
+      "not_principals": {},
+      "conditions": [],
+      "action_all": false,
+      "principal_any": false,
+      "resource_any": true,
+      "action_any": false,
+      "principal_all": false,
+      "resource_all": true,
+      "unconditional": true,
+      "ambiguous": [
+        "account_id_bare"
+      ],
+      "actions_expanded": [],
+      "not_actions_expanded": [],
+      "unresolved_actions": [],
+      "unresolved_principals": {
+        "aws": [
+          "111111111111"
+        ]
+      },
+      "unresolved_resources": []
+    }
+  ],
+  "catalog": ""
+}

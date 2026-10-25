@@ -1,0 +1,29 @@
+not_equals: review with a proposal
+-- intent.json --
+{
+ "id": "rds_db_instance_no_default_admin_name",
+ "resource_type": "aws_db_instance",
+ "attributes": [
+  {
+   "schema_path": "username",
+   "condition": "not_equals",
+   "values": [
+    "admin"
+   ],
+   "values_from_ref": null
+  }
+ ],
+ "explanation": "Explanation of rds_db_instance_no_default_admin_name.",
+ "postcondition": "",
+ "has_strategy_condition": false
+}
+-- want.json --
+{
+  "review": {
+    "id": "rds_db_instance_no_default_admin_name",
+    "resource_type": "aws_db_instance",
+    "reason": "condition",
+    "detail": "username not_equals: not_equals needs review",
+    "proposal": "resource.username != null && !(resource.username in [\"admin\"])"
+  }
+}

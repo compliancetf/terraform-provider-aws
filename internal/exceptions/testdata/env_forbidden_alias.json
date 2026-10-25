@@ -1,0 +1,7 @@
+{
+  "description": "a tool_refs alias in forbid_environment_scoped forbids its canonical control",
+  "hcl": "applied.hcl",
+  "table": {"forbid_environment_scoped": ["CKV_AWS_16"]},
+  "warnings": ["exception legacy-reporting-db: control may not be excepted per environment; rds_db_instance_encryption_at_rest_enabled enforced"],
+  "lookups": [{"resource": {"identifier": "legacy-reporting", "storage_encrypted": false}, "want": {"status": "rejected"}}]
+}

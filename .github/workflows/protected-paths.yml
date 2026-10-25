@@ -1,0 +1,270 @@
+# Protected-paths gate. It never fails to signal "waiting": the job
+# goes red only when the gate itself breaks (script or API error). The result
+# is the `owner-approval` commit status on the PR head:
+#
+#   - no protected path touched (.github/protected-paths): success.
+#   - protected, owner PR: success, and the step summary lists the protected
+#     files. Owner PR means: the API's PR author, the PR's head repository is
+#     this repository, and every commit's GitHub author is the owner. The
+#     owner is compared by numeric user id (OWNER_ID below); the gate fails
+#     if the login in .github/protected-paths no longer resolves to that id.
+#   - protected, anyone else (Dependabot, third parties): auto-merge is
+#     disabled, the PR gets the needs-owner label and the status stays pending
+#     ("needs owner approval of <sha>") until the owner's latest review is an
+#     approval of the current head (reviews compared by user id). A new push
+#     or a dismissed approval goes back to pending, re-adding the label.
+#
+# Owner approval re-check: a review fires owner-review.yml, whose completion
+# runs this file through workflow_run. workflow_run and pull_request_target
+# both run this file and the script from the default branch with a write
+# token, so a fork PR is re-checked too. The workflow_run path trusts only
+# the head SHA and re-reads the PR and its reviews from the API.
+#
+# Changed files and commits come from the compare API pinned to the event's
+# head SHA (base.sha...head), never from the PR's live file or commit list:
+# after a force-push A -> B -> A, the run for A must not judge A by B's files.
+#
+# The job never checks out, builds or runs PR code; it reads the changed file
+# list, go.sum patches and the go.mod files at the merge base and head from
+# the API, as data. tools/gomodcheck, built from the default branch, parses
+# go.mod structurally. PR data reaches the shell only
+# through env and files, never through ${{ }} in run blocks. A run whose PR
+# head moved on exits quietly; the run for the new head sets the status.
+#
+# master is protected by a ruleset requiring the owner-approval check.
+# Dependabot PRs merge through dependabot-merge.yml.
+name: Protected paths
+
+on:
+  pull_request_target:
+    types: [opened, synchronize, reopened, ready_for_review, edited, auto_merge_enabled]
+    branches: [master]
+  workflow_run:
+    workflows: [Owner review]
+    types: [completed]
+
+permissions: {}
+
+# One run at a time per head commit, keyed the same for both events (a fork
+# PR's workflow_run carries no PR number); each run reads the PR state fresh
+# from the API and re-checks the head before it sets the status.
+concurrency:
+  group: protected-paths-${{ github.event.pull_request.head.sha || github.event.workflow_run.head_sha }}
+  cancel-in-progress: false
+
+jobs:
+  protected-paths:
+    name: protected-paths
+    if: github.event_name == 'pull_request_target' || github.event.workflow_run.event == 'pull_request_review'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+      pull-requests: write
+      issues: write
+      statuses: write
+    env:
+      GH_TOKEN: ${{ github.token }}
+      REPO: ${{ github.repository }}
+      EVENT: ${{ github.event_name }}
+      EVENT_PR: ${{ github.event.pull_request.number }}
+      EVENT_HEAD_SHA: ${{ github.event.pull_request.head.sha || github.event.workflow_run.head_sha }}
+      RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+      DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
+      # GitHub user id of the owner in .github/protected-paths (antonbabenko).
+      # Ids survive login renames; change both together.
+      OWNER_ID: "393243"
+    steps:
+      # Pending before anything that can fail (checkout, self-test, API
+      # lookups), so a failed run never leaves an older success standing,
+      # for example after the owner dismisses an approval.
+      - name: Mark owner-approval pending
+        run: |
+          set -euo pipefail
+          [[ $EVENT_HEAD_SHA =~ ^[0-9a-f]{40}$ ]] || { echo "::error::bad head SHA: $EVENT_HEAD_SHA"; exit 1; }
+          gh api --silent "repos/$REPO/statuses/$EVENT_HEAD_SHA" -f state=pending -f context=owner-approval \
+            -f description="checking protected paths" -f target_url="$RUN_URL"
+
+      # The default branch tip, never the PR (base.sha can predate this gate).
+      - name: Check out the default branch tip (never the PR)
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.event.repository.default_branch }}
+          persist-credentials: false
+
+      # Builds tools/gomodcheck for the go.mod check. No cache: this job
+      # holds a write token.
+      - name: Set up Go
+        uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
+        with:
+          go-version-file: go.mod
+          cache: false
+
+      - name: Self-test
+        run: scripts/protected-paths.sh --self-test >/dev/null
+
+      - name: Resolve the PR and its author
+        id: resolve
+        run: |
+          set -euo pipefail
+          [[ $EVENT_HEAD_SHA =~ ^[0-9a-f]{40}$ ]] || { echo "::error::bad head SHA: $EVENT_HEAD_SHA"; exit 1; }
+          # Open PRs with this head (validated hex above, so safe inside the
+          # filter). workflow_run.pull_requests is empty for fork PRs, so the
+          # re-check finds its PR here. A status belongs to the commit, so
+          # when several open PRs share the head, it stays pending.
+          open=$(gh api --paginate "repos/$REPO/pulls?state=open&per_page=100" \
+            --jq ".[] | select(.head.sha == \"$EVENT_HEAD_SHA\") | .number")
+          pending() {
+            gh api --silent "repos/$REPO/statuses/$EVENT_HEAD_SHA" -f state=pending -f context=owner-approval \
+              -f description="$1" -f target_url="$RUN_URL"
+          }
+          if [ -n "$open" ] && [ "$(wc -l <<<"$open")" -ne 1 ]; then
+            pending "several open PRs share this head"
+            # None of them is classified, so none keeps auto-merge.
+            for n in $open; do
+              auto=$(gh pr view "$n" -R "$REPO" --json autoMergeRequest --jq '.autoMergeRequest != null')
+              if [ "$auto" = true ]; then gh pr merge "$n" -R "$REPO" --disable-auto; fi
+            done
+            echo "::notice::several open PRs have head $EVENT_HEAD_SHA; owner-approval left pending"
+            exit 0
+          fi
+          pr=$EVENT_PR
+          if [ "$EVENT" = workflow_run ]; then
+            pr=$open
+            if [ -z "$pr" ]; then
+              echo "::notice::no open PR has head $EVENT_HEAD_SHA; nothing to re-check"
+              exit 0
+            fi
+          fi
+          [[ $pr =~ ^[0-9]+$ ]] || { echo "::error::bad PR number: $pr"; exit 1; }
+          gh api "repos/$REPO/pulls/$pr" >"$RUNNER_TEMP/pr.json"
+          head=$(jq -r .head.sha "$RUNNER_TEMP/pr.json")
+          if [ "$head" != "$EVENT_HEAD_SHA" ]; then
+            echo "::notice::PR #$pr head moved to $head; the run for that head sets the status"
+            exit 0
+          fi
+          # The compare base must be the default branch of this repository:
+          # a PR retargeted to another branch (even briefly) could hide
+          # protected changes that are already on that branch.
+          if ! jq -e --arg ref "$DEFAULT_BRANCH" --arg repo "$REPO" \
+            '.base.ref == $ref and .base.repo.full_name == $repo' "$RUNNER_TEMP/pr.json" >/dev/null; then
+            pending "PR base is not $DEFAULT_BRANCH"
+            echo "::notice::PR #$pr does not target $DEFAULT_BRANCH; owner-approval left pending"
+            exit 0
+          fi
+          base=$(jq -r .base.sha "$RUNNER_TEMP/pr.json")
+          [[ $base =~ ^[0-9a-f]{40}$ ]] || { echo "::error::bad base SHA: $base"; exit 1; }
+          login=$(awk '!/^#/ && NF == 2 { sub(/^@/, "", $2); print $2 }' .github/protected-paths | sort -u)
+          [ "$(wc -l <<<"$login")" -eq 1 ] || { echo "::error::expected one owner in .github/protected-paths"; exit 1; }
+          id=$(gh api "users/$login" --jq .id)
+          [ "$id" = "$OWNER_ID" ] || { echo "::error::owner @$login has id $id, OWNER_ID is $OWNER_ID"; exit 1; }
+          owner_author=false
+          if jq -e --arg id "$OWNER_ID" --arg repo "$REPO" \
+            '(.user.id | tostring) == $id and .head.repo.full_name == $repo' "$RUNNER_TEMP/pr.json" >/dev/null; then
+            # Every commit of this head must be authored by the owner's
+            # GitHub account; an unlinked author (null) does not count. The
+            # compare API lists at most 250 commits, so the listed count must
+            # equal its total.
+            gh api "repos/$REPO/compare/$base...$head" >"$RUNNER_TEMP/compare.json"
+            jq -r '.commits[] | [(.author.id // 0 | tostring), .sha] | @tsv' \
+              "$RUNNER_TEMP/compare.json" >"$RUNNER_TEMP/commits.tsv"
+            listed=$(wc -l <"$RUNNER_TEMP/commits.tsv")
+            total=$(jq -r .total_commits "$RUNNER_TEMP/compare.json")
+            [[ $total =~ ^[0-9]+$ ]] || { echo "::error::bad commit count: $total"; exit 1; }
+            others=$(awk -F'\t' -v id="$OWNER_ID" '$1 != id' "$RUNNER_TEMP/commits.tsv")
+            if [ "$listed" -eq "$total" ] && [ -z "$others" ]; then owner_author=true; fi
+          fi
+          {
+            echo "pr=$pr"
+            echo "base=$base"
+            echo "head=$head"
+            echo "owner_author=$owner_author"
+          } >>"$GITHUB_OUTPUT"
+
+      - name: Classify changed files
+        id: classify
+        if: steps.resolve.outputs.pr != ''
+        env:
+          BASE: ${{ steps.resolve.outputs.base }}
+          HEAD: ${{ steps.resolve.outputs.head }}
+        run: |
+          set -euo pipefail
+          rc=0
+          # Files of HEAD itself, the commit the status below is set on.
+          scripts/protected-paths.sh --compare "$REPO" "$BASE" "$HEAD" >"$RUNNER_TEMP/hits.txt" || rc=$?
+          if [ "$rc" -ne 0 ] && [ "$rc" -ne 1 ]; then
+            echo "::error::protected-paths.sh failed with exit $rc"
+            exit 1
+          fi
+          echo "protected=$([ "$rc" -eq 1 ] && echo true || echo false)" >>"$GITHUB_OUTPUT"
+
+      - name: Set the owner-approval status
+        if: steps.resolve.outputs.pr != ''
+        env:
+          PR: ${{ steps.resolve.outputs.pr }}
+          HEAD: ${{ steps.resolve.outputs.head }}
+          OWNER_AUTHOR: ${{ steps.resolve.outputs.owner_author }}
+          PROTECTED: ${{ steps.classify.outputs.protected }}
+        run: |
+          set -euo pipefail
+          # The head may have moved while the files were classified; the run
+          # for the new head sets its own status.
+          cur=$(gh api "repos/$REPO/pulls/$PR" --jq .head.sha)
+          if [ "$cur" != "$HEAD" ]; then
+            echo "::notice::PR #$PR head moved to $cur during the run; not setting a status for $HEAD"
+            exit 0
+          fi
+          status() {
+            gh api --silent "repos/$REPO/statuses/$HEAD" -f state="$1" -f context=owner-approval \
+              -f description="$2" -f target_url="$RUN_URL"
+          }
+          short=${HEAD:0:7}
+          state=success
+          # File names may hold backticks: strip them so none closes the fence.
+          hits() { echo '```'; tr -d '`' <"$RUNNER_TEMP/hits.txt"; echo '```'; }
+          if [ "$PROTECTED" != true ]; then
+            desc="no protected path touched"
+            note="No protected path touched."
+          elif [ "$OWNER_AUTHOR" = true ]; then
+            desc="owner-authored PR"
+            note="Owner PR (author, head repository and every commit) touches protected paths; no extra approval needed."
+          else
+            # Pending first, so a later API failure never leaves an older
+            # success standing on this head.
+            status pending "needs owner approval of $short"
+            # Latest non-comment review by the owner's user id, by review id.
+            latest=$(gh api --paginate "repos/$REPO/pulls/$PR/reviews?per_page=100" \
+              --jq ".[] | select(.state != \"COMMENTED\" and (.user.id | tostring) == \"$OWNER_ID\") | [.id, .state, .commit_id] | @tsv" \
+              | sort -n -k1,1 | tail -n1 | cut -f2,3)
+            approver=""
+            if [ "$latest" = "$(printf 'APPROVED\t%s' "$HEAD")" ]; then approver=owner; fi
+            labeled=$(jq -r 'any(.labels[]; .name == "needs-owner")' "$RUNNER_TEMP/pr.json")
+            if [ -n "$approver" ]; then
+              desc="approved by the owner at $short"
+              note="Protected paths approved by the owner at $HEAD."
+              if [ "$labeled" = true ]; then
+                # The label may be gone since pr.json was read; the status
+                # below is what counts.
+                gh api --silent -X DELETE "repos/$REPO/issues/$PR/labels/needs-owner" \
+                  || echo "::warning::could not remove the needs-owner label"
+              fi
+            else
+              state=pending
+              desc="needs owner approval of $short"
+              note="Protected paths touched: auto-merge is disabled until the owner approves $HEAD."
+              auto=$(gh pr view "$PR" -R "$REPO" --json autoMergeRequest --jq '.autoMergeRequest != null')
+              if [ "$auto" = true ]; then
+                gh pr merge "$PR" -R "$REPO" --disable-auto
+              fi
+              if [ "$labeled" != true ]; then
+                gh api --silent "repos/$REPO/issues/$PR/labels" -f 'labels[]=needs-owner'
+              fi
+            fi
+          fi
+          status "$state" "$desc"
+          {
+            echo "### Protected paths"
+            echo "$note"
+            if [ "$PROTECTED" = true ]; then hits; fi
+            echo "owner-approval: $state ($desc)"
+          } >>"$GITHUB_STEP_SUMMARY"

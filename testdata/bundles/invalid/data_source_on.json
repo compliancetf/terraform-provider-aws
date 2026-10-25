@@ -1,0 +1,19 @@
+[
+  {
+    "id": "ami_owners_restricted",
+    "version": "1.0.0",
+    "kind": "data_source",
+    "resource_type": "aws_ami",
+    "reads": [
+      "owners"
+    ],
+    "presence_mode": "configured",
+    "on": [
+      "create"
+    ],
+    "expr": "config.owners.all(o, o in ['amazon', 'self'])",
+    "action": "deny",
+    "severity": "high",
+    "message": "AMI lookups must restrict owners to amazon or self."
+  }
+]

@@ -1,0 +1,14 @@
+{
+  "description": "signed by the customer verdict key",
+  "policy": {},
+  "sign": "verdict_key",
+  "queries": [
+    {
+      "control": "CTF.S3.1",
+      "key": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "result": "fail",
+      "want": false
+    }
+  ],
+  "warning": "receipt signature invalid: kid unknown"
+}

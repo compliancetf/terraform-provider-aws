@@ -1,0 +1,16 @@
+{
+  "format": "compliancetf.bundle-manifest/v2",
+  "bundle_id": "bobthecorp-team",
+  "bundle_version": 1,
+  "label": "2026.10.0",
+  "org_id": "",
+  "profile": "team",
+  "catalog": {"snapshot_id": "snap_20261004_000000_000000", "schema_version": "1"},
+  "provider": {"address": "registry.compliance.tf/compliancetf/aws", "version_range": ">= 6.0.0, < 7.0.0"},
+  "upstream": {"source": "hashicorp/aws", "version_range": ">= 6.0.0, < 7.0.0"},
+  "schema_compat_digest": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+  "issued_at": "2026-10-01T00:00:00Z",
+  "expires_at": "2027-10-01T00:00:00Z",
+  "min_bundle_version": 1,
+  "min_profile_version": 0
+}

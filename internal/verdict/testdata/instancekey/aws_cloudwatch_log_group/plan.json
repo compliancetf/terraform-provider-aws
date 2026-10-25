@@ -1,0 +1,139 @@
+{
+  "format_version": "1.2",
+  "resource_changes": [
+    {
+      "address": "aws_cloudwatch_log_group.new",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "after": {
+          "name": "/bobthecorp/reports",
+          "region": "us-east-1",
+          "retention_in_days": 14,
+          "skip_destroy": false,
+          "tags": null
+        },
+        "after_identity": {
+          "account_id": null,
+          "name": null,
+          "region": null
+        },
+        "after_sensitive": {
+          "tags_all": {}
+        },
+        "after_unknown": {
+          "arn": true,
+          "deletion_protection_enabled": true,
+          "id": true,
+          "kms_key_id": true,
+          "log_group_class": true,
+          "name_prefix": true,
+          "tags_all": true
+        },
+        "before": null,
+        "before_sensitive": false
+      },
+      "mode": "managed",
+      "name": "new",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "type": "aws_cloudwatch_log_group"
+    },
+    {
+      "action_reason": "delete_because_no_resource_config",
+      "address": "aws_cloudwatch_log_group.old",
+      "change": {
+        "actions": [
+          "delete"
+        ],
+        "after": null,
+        "after_sensitive": false,
+        "after_unknown": {},
+        "before": {
+          "arn": "arn:aws:logs:us-east-1:111111111111:log-group:/bobthecorp/legacy",
+          "deletion_protection_enabled": false,
+          "id": "/bobthecorp/legacy",
+          "kms_key_id": null,
+          "log_group_class": "STANDARD",
+          "name": "/bobthecorp/legacy",
+          "name_prefix": "bobthecorp-fake-name_prefix",
+          "region": "us-east-1",
+          "retention_in_days": 7,
+          "skip_destroy": false,
+          "tags": null,
+          "tags_all": {}
+        },
+        "before_identity": {
+          "account_id": "111111111111",
+          "name": "/bobthecorp/legacy",
+          "region": "us-east-1"
+        },
+        "before_sensitive": {
+          "tags_all": {}
+        }
+      },
+      "mode": "managed",
+      "name": "old",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "type": "aws_cloudwatch_log_group"
+    },
+    {
+      "address": "aws_cloudwatch_log_group.this",
+      "change": {
+        "actions": [
+          "update"
+        ],
+        "after": {
+          "arn": "arn:aws:logs:us-east-1:111111111111:log-group:/bobthecorp/app",
+          "deletion_protection_enabled": false,
+          "id": "/bobthecorp/app",
+          "kms_key_id": null,
+          "log_group_class": "STANDARD",
+          "name": "/bobthecorp/app",
+          "name_prefix": "bobthecorp-fake-name_prefix",
+          "region": "us-east-1",
+          "retention_in_days": 90,
+          "skip_destroy": false,
+          "tags": null,
+          "tags_all": {}
+        },
+        "after_identity": {
+          "account_id": "111111111111",
+          "name": "/bobthecorp/app",
+          "region": "us-east-1"
+        },
+        "after_sensitive": {
+          "tags_all": {}
+        },
+        "after_unknown": {},
+        "before": {
+          "arn": "arn:aws:logs:us-east-1:111111111111:log-group:/bobthecorp/app",
+          "deletion_protection_enabled": false,
+          "id": "/bobthecorp/app",
+          "kms_key_id": null,
+          "log_group_class": "STANDARD",
+          "name": "/bobthecorp/app",
+          "name_prefix": "bobthecorp-fake-name_prefix",
+          "region": "us-east-1",
+          "retention_in_days": 30,
+          "skip_destroy": false,
+          "tags": null,
+          "tags_all": {}
+        },
+        "before_identity": {
+          "account_id": "111111111111",
+          "name": "/bobthecorp/app",
+          "region": "us-east-1"
+        },
+        "before_sensitive": {
+          "tags_all": {}
+        }
+      },
+      "mode": "managed",
+      "name": "this",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "type": "aws_cloudwatch_log_group"
+    }
+  ],
+  "terraform_version": "1.16.3"
+}

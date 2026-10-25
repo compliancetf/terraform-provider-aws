@@ -1,0 +1,72 @@
+{
+  "description": "replace (requires_replace): both halves run with their half; a block in the create half blocks the plan while the delete half passes",
+  "stage": "plan",
+  "mode": "hard_fail",
+  "op": "replace",
+  "requires_replace": [
+    "engine"
+  ],
+  "config": {
+    "storage_encrypted": false,
+    "kms_key_id": "arn:aws:kms:us-east-1:111122223333:key/bobthecorp-rds",
+    "engine": "aurora-postgresql"
+  },
+  "prior": {
+    "storage_encrypted": true,
+    "kms_key_id": "arn:aws:kms:us-east-1:111122223333:key/bobthecorp-rds",
+    "engine": "postgres",
+    "deletion_protection": false
+  },
+  "planned": {
+    "storage_encrypted": false,
+    "kms_key_id": "arn:aws:kms:us-east-1:111122223333:key/bobthecorp-rds",
+    "engine": "aurora-postgresql",
+    "deletion_protection": true
+  },
+  "want": {
+    "diagnostics": [
+      {
+        "severity": "error",
+        "summary": "[rds_db_instance_encryption_at_rest_enabled] RDS storage must be encrypted at rest.",
+        "detail": "Fix: Set storage_encrypted = true.\nSeverity: high\nMode: hard_fail\nStage: plan\nFrameworks: soc_2:CC6.1, cis_aws:2.3.1\nTo waive: add an exception for rds_db_instance_encryption_at_rest_enabled in compliance-exceptions.hcl",
+        "attribute": "AttributeName(\"storage_encrypted\")"
+      }
+    ],
+    "evidence": {
+      "op": "replace",
+      "results": [
+        {
+          "control": "rds_instance_deletion_guard",
+          "state": "pass",
+          "decision": "logged",
+          "half": "delete"
+        },
+        {
+          "control": "rds_db_instance_encryption_at_rest_enabled",
+          "state": "fail",
+          "decision": "blocked",
+          "half": "create"
+        },
+        {
+          "control": "rds_instance_kms_key_configured",
+          "state": "pass",
+          "decision": "logged",
+          "half": "create"
+        },
+        {
+          "control": "rds_instance_engine_not_mysql",
+          "state": "pass",
+          "decision": "logged",
+          "half": "create"
+        },
+        {
+          "control": "rds_instance_deletion_protection_enabled",
+          "state": "pass",
+          "decision": "logged",
+          "half": "create"
+        }
+      ]
+    },
+    "stamp": true
+  }
+}

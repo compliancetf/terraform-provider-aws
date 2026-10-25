@@ -1,0 +1,1 @@
+{"block": {"control_profile": "soc2"}, "want": {"error": "control_profile \"soc2\": only cis is available"}}

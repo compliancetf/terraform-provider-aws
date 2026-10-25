@@ -1,0 +1,27 @@
+deny on a Computed-only attribute: celeng control_computed_only, load refusal
+-- intent.json --
+{
+ "id": "kms_key_arn_set",
+ "resource_type": "aws_kms_key",
+ "attributes": [
+  {
+   "schema_path": "arn",
+   "condition": "not_empty",
+   "values": [],
+   "values_from_ref": null
+  }
+ ],
+ "explanation": "Explanation of kms_key_arn_set.",
+ "postcondition": "",
+ "has_strategy_condition": false
+}
+-- want.json --
+{
+  "review": {
+    "id": "kms_key_arn_set",
+    "resource_type": "aws_kms_key",
+    "reason": "load",
+    "detail": "control_computed_only",
+    "proposal": "resource.arn != null && size(resource.arn) > 0"
+  }
+}

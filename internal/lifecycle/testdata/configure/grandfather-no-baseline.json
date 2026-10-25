@@ -1,0 +1,1 @@
+{"block": {"enforcement_mode": "grandfather"}, "want": {"bundles": ["cis-aws@1"], "fallback": "free_tier", "run_mode": "grandfather", "warnings": ["grandfather mode without a baseline file: every violation is treated as new"]}}

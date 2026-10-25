@@ -1,0 +1,7 @@
+{
+  "runner_class": "darwin-arm64",
+  "p99_ns": 29647313,
+  "resources": 500,
+  "controls": 206,
+  "note": "recorded with UPDATE=1 make bench-gate (BenchmarkP99 -benchtime 3x -count 10, each iteration a cold-cache pass: fresh Lifecycle, empty decision memo and document cache; median of the per-run p99) on go1.27.2, Apple M1 Max 10 cores 32 GB, macOS 27.0.1"
+}

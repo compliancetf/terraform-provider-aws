@@ -1,0 +1,42 @@
+one value: x == v, effective
+-- intent.json --
+{
+ "id": "kms_cmk_rotation_enabled",
+ "resource_type": "aws_kms_key",
+ "attributes": [
+  {
+   "schema_path": "enable_key_rotation",
+   "condition": "equals_any",
+   "values": [
+    true
+   ],
+   "values_from_ref": null
+  }
+ ],
+ "explanation": "Explanation of kms_cmk_rotation_enabled.",
+ "postcondition": "",
+ "has_strategy_condition": false
+}
+-- want.json --
+{
+  "control": {
+    "id": "kms_cmk_rotation_enabled",
+    "version": "1.0.0",
+    "kind": "resource",
+    "resource_type": "aws_kms_key",
+    "reads": [
+      "enable_key_rotation"
+    ],
+    "presence_mode": "effective",
+    "on": [
+      "create",
+      "update"
+    ],
+    "expr": "resource.enable_key_rotation == true",
+    "action": "deny",
+    "severity": "",
+    "message": "",
+    "fix": "Explanation of kms_cmk_rotation_enabled.",
+    "exemption_coverable": []
+  }
+}

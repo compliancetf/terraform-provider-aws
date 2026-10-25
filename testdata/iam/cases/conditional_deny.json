@@ -1,0 +1,1 @@
+{"Version":"2012-10-17","Statement":[{"Sid":"TLS","Effect":"Deny","Principal":{"AWS":"*"},"Action":"*","Resource":"*","Condition":{"Bool":{"aws:SecureTransport":"false"}}}]}

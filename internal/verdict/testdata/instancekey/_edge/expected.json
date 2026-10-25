@@ -1,0 +1,356 @@
+{
+  "entries": [
+    {
+      "actions": [
+        "create"
+      ],
+      "address": "edge_thing.numbers",
+      "keys": [
+        {
+          "field": "instance_key",
+          "form": "create",
+          "key": "sha256:31e799d0af4c145494d6212cf5383171f2fd1d56a454fa47079956497ac98386",
+          "prior_identity_kind": "none",
+          "unknown_paths": [
+            [
+              "id"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "actions": [
+        "create"
+      ],
+      "address": "edge_thing.empties",
+      "keys": [
+        {
+          "field": "instance_key",
+          "form": "create",
+          "key": "sha256:afca7f8e20ee3a9a989ba150d3907eb960dd0b56791692f3a18744199b42c7d2",
+          "prior_identity_kind": "none",
+          "unknown_paths": [
+            [
+              "id"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "actions": [
+        "create"
+      ],
+      "address": "edge_thing.unknowns",
+      "keys": [
+        {
+          "field": "instance_key",
+          "form": "create",
+          "key": "sha256:9ecd6db424a0b35d30aa6605af539d815ac76ab29492c903c980be5a1c1d749a",
+          "prior_identity_kind": "none",
+          "unknown_paths": [
+            [
+              "id"
+            ],
+            [
+              "item",
+              "0",
+              "vals"
+            ],
+            [
+              "lst",
+              "1"
+            ],
+            [
+              "nt",
+              "0",
+              "b"
+            ],
+            [
+              "obj",
+              "y"
+            ],
+            [
+              "tags",
+              "Owner"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "actions": [
+        "create"
+      ],
+      "address": "edge_thing.allunknown",
+      "error": "whole planned value unknown"
+    },
+    {
+      "actions": [
+        "update"
+      ],
+      "address": "edge_thing.allnull",
+      "keys": [
+        {
+          "field": "instance_key",
+          "form": "update",
+          "key": "sha256:cc5b5ca22afb006a22cb0ca13cc67ace2c1d2857b6fb0c48d31551ef5cc8c74f",
+          "prior_identity_kind": "id",
+          "unknown_paths": []
+        }
+      ]
+    },
+    {
+      "actions": [
+        "update"
+      ],
+      "address": "edge_thing.noid",
+      "error": "no usable prior identity and no non-empty prior id"
+    },
+    {
+      "actions": [
+        "delete"
+      ],
+      "address": "edge_thing.emptyid",
+      "error": "no usable prior identity and no non-empty prior id"
+    },
+    {
+      "actions": [
+        "delete"
+      ],
+      "address": "edge_thing.numid",
+      "error": "no usable prior identity and no non-empty prior id"
+    },
+    {
+      "actions": [
+        "create"
+      ],
+      "address": "edge_thing.bigexp",
+      "error": "number exponent out of range: 10e1000"
+    },
+    {
+      "actions": [
+        "create"
+      ],
+      "address": "edge_thing.smallexp",
+      "error": "number exponent out of range: 1e-1001"
+    },
+    {
+      "actions": [
+        "create"
+      ],
+      "address": "edge_thing.dynmix",
+      "keys": [
+        {
+          "field": "instance_key",
+          "form": "create",
+          "key": "sha256:aa4261dc72dd0ebcbbbdb7f7df9a002aa725c59a4485012778da7f1ad344ed0c",
+          "prior_identity_kind": "none",
+          "unknown_paths": [
+            [
+              "id"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "actions": [
+        "delete"
+      ],
+      "address": "edge_thing.identstr",
+      "error": "before_identity is not an object"
+    },
+    {
+      "actions": [
+        "create"
+      ],
+      "address": "edge_thing.afterfalse",
+      "error": "planned after is not an object"
+    },
+    {
+      "actions": [
+        "create"
+      ],
+      "address": "edge_thing.zeroexp",
+      "keys": [
+        {
+          "field": "instance_key",
+          "form": "create",
+          "key": "sha256:a48671795de18b84638c2d328c0b98795ffd145015f7a4bde3f0dde619035831",
+          "prior_identity_kind": "none",
+          "unknown_paths": [
+            [
+              "id"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "actions": [
+        "create"
+      ],
+      "address": "edge_thing.maskedbad",
+      "error": "['flag']: expected bool"
+    },
+    {
+      "actions": [
+        "create"
+      ],
+      "address": "edge_thing.setscalar",
+      "error": "after_unknown shape does not match schema at ['st']"
+    },
+    {
+      "actions": [
+        "create"
+      ],
+      "address": "edge_thing.setmixed",
+      "error": "after_unknown shape does not match schema at ['st', '1']"
+    },
+    {
+      "actions": [
+        "create"
+      ],
+      "address": "edge_thing.setshape",
+      "error": "after_unknown shape does not match schema at ['st', '0']"
+    },
+    {
+      "actions": [
+        "update"
+      ],
+      "address": "edge_thing.beforestridentity",
+      "error": "before is not an object"
+    },
+    {
+      "actions": [
+        "update"
+      ],
+      "address": "edge_thing.beforestr",
+      "error": "before is not an object"
+    },
+    {
+      "actions": [
+        "no-op"
+      ],
+      "address": "edge_thing.depnoop",
+      "deposed": "0bad0bad",
+      "error": "unsupported actions ['no-op']"
+    },
+    {
+      "actions": [
+        "create"
+      ],
+      "address": "edge_thing.longnum",
+      "error": "number text longer than 1200 bytes"
+    },
+    {
+      "actions": [
+        "create"
+      ],
+      "address": "edge_thing.extra",
+      "error": "attribute 'bogus' not in schema"
+    },
+    {
+      "actions": [
+        "create"
+      ],
+      "address": "edge_thing.noschema",
+      "error": "schema has no entry for this provider and type"
+    },
+    {
+      "actions": [
+        "create"
+      ],
+      "address": "edge_thing.unicode",
+      "keys": [
+        {
+          "field": "instance_key",
+          "form": "create",
+          "key": "sha256:02887db5833beec3e391471cba7ecbbb6f47c96d4ff24705068ae8a9bb3c62bb",
+          "prior_identity_kind": "none",
+          "unknown_paths": [
+            [
+              "id"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "actions": [
+        "delete"
+      ],
+      "address": "edge_thing.gone",
+      "keys": [
+        {
+          "field": "delete_key",
+          "form": "delete",
+          "key": "sha256:b18b09eda9de379205edcd247e3ddaa7ec45c6a380c2e5ce87ac49add53e3642",
+          "prior_identity_kind": "identity",
+          "unknown_paths": []
+        }
+      ]
+    },
+    {
+      "actions": [
+        "delete"
+      ],
+      "address": "edge_thing.gone",
+      "deposed": "0bad0bad",
+      "keys": [
+        {
+          "field": "delete_key",
+          "form": "delete",
+          "key": "sha256:bb0f42fb403d094627ae66fd782c137ee5947c077e7ce3111c87dfc756c90a21",
+          "prior_identity_kind": "identity",
+          "unknown_paths": []
+        }
+      ]
+    },
+    {
+      "actions": [
+        "delete",
+        "create"
+      ],
+      "address": "edge_thing.depbad",
+      "deposed": "0bad0bad",
+      "error": "a deposed object takes only a delete entry"
+    },
+    {
+      "action_reason": "replace_because_tainted",
+      "actions": [
+        "delete",
+        "create"
+      ],
+      "address": "edge_thing.tainted",
+      "keys": [
+        {
+          "field": "delete_key",
+          "form": "delete",
+          "key": "sha256:51321a3502359525ec5b256d9a9e8ec7e1b9056b0e9e978797deee94ff69e20a",
+          "prior_identity_kind": "id",
+          "unknown_paths": []
+        },
+        {
+          "field": "instance_key",
+          "form": "create",
+          "key": "sha256:b56811b10885465194e4fd6ae2442ad2507f42884f16ac8395b1074b63a52c51",
+          "prior_identity_kind": "none",
+          "unknown_paths": [
+            [
+              "id"
+            ]
+          ]
+        }
+      ]
+    }
+  ],
+  "format": "compliancetf.instancekey.golden/v1",
+  "k_leaf_hex": "845cba3b9048a0ea701ceebf35bf8d23f96345d369ee41f24777d11aee0609eb",
+  "key_check": "278a53702bed79d81258d55c57dbfd708733a1e9d04c6fe3e8a7e5d0ca565a63",
+  "provider_version": "hashicorp/aws 6.65.0",
+  "terraform_version": "1.16.3",
+  "test_secret_hex": "494e5345435552452d544553542d5345435245542d696e7374616e63656b6579"
+}

@@ -1,0 +1,197 @@
+{
+  "format_version": "1.2",
+  "resource_changes": [
+    {
+      "address": "aws_security_group.new",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "after": {
+          "description": "Managed by Terraform",
+          "ingress": [
+            {
+              "description": "",
+              "from_port": 8443,
+              "ipv6_cidr_blocks": [],
+              "prefix_list_ids": [],
+              "protocol": "tcp",
+              "security_groups": [],
+              "self": false,
+              "to_port": 8443
+            }
+          ],
+          "name": "bobthecorp-batch",
+          "region": "us-east-1",
+          "revoke_rules_on_delete": false,
+          "tags": null,
+          "timeouts": null,
+          "vpc_id": "vpc-0bbbbbbbbbbbbbbb1"
+        },
+        "after_identity": {
+          "account_id": null,
+          "id": null,
+          "region": null
+        },
+        "after_sensitive": {
+          "egress": [],
+          "ingress": [
+            {
+              "cidr_blocks": [],
+              "ipv6_cidr_blocks": [],
+              "prefix_list_ids": [],
+              "security_groups": []
+            }
+          ],
+          "tags_all": {}
+        },
+        "after_unknown": {
+          "arn": true,
+          "egress": true,
+          "id": true,
+          "ingress": [
+            {
+              "cidr_blocks": true,
+              "ipv6_cidr_blocks": [],
+              "prefix_list_ids": [],
+              "security_groups": []
+            }
+          ],
+          "name_prefix": true,
+          "owner_id": true,
+          "tags_all": true
+        },
+        "before": null,
+        "before_sensitive": false
+      },
+      "mode": "managed",
+      "name": "new",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "type": "aws_security_group"
+    },
+    {
+      "address": "aws_security_group.this",
+      "change": {
+        "actions": [
+          "update"
+        ],
+        "after": {
+          "arn": "arn:aws:ec2:us-east-1:111111111111:security-group/sg-0ddddddddddddddd1",
+          "description": "Managed by Terraform",
+          "egress": [],
+          "id": "sg-0ddddddddddddddd1",
+          "ingress": [
+            {
+              "cidr_blocks": [
+                "10.0.0.0/16"
+              ],
+              "description": "",
+              "from_port": 443,
+              "ipv6_cidr_blocks": [],
+              "prefix_list_ids": [],
+              "protocol": "tcp",
+              "security_groups": [],
+              "self": false,
+              "to_port": 443
+            }
+          ],
+          "name": "bobthecorp-web",
+          "name_prefix": "bobthecorp-fake-name_prefix",
+          "owner_id": "111111111111",
+          "region": "us-east-1",
+          "revoke_rules_on_delete": false,
+          "tags": {
+            "Name": "bobthecorp-web",
+            "Tier": "edge"
+          },
+          "tags_all": {
+            "Name": "bobthecorp-web",
+            "Tier": "edge"
+          },
+          "timeouts": null,
+          "vpc_id": "vpc-0bbbbbbbbbbbbbbb1"
+        },
+        "after_identity": {
+          "account_id": "111111111111",
+          "id": "sg-0ddddddddddddddd1",
+          "region": "us-east-1"
+        },
+        "after_sensitive": {
+          "egress": [],
+          "ingress": [
+            {
+              "cidr_blocks": [
+                false
+              ],
+              "ipv6_cidr_blocks": [],
+              "prefix_list_ids": [],
+              "security_groups": []
+            }
+          ],
+          "tags": {},
+          "tags_all": {}
+        },
+        "after_unknown": {},
+        "before": {
+          "arn": "arn:aws:ec2:us-east-1:111111111111:security-group/sg-0ddddddddddddddd1",
+          "description": "Managed by Terraform",
+          "egress": [],
+          "id": "sg-0ddddddddddddddd1",
+          "ingress": [
+            {
+              "cidr_blocks": [
+                "10.0.0.0/16"
+              ],
+              "description": "",
+              "from_port": 443,
+              "ipv6_cidr_blocks": [],
+              "prefix_list_ids": [],
+              "protocol": "tcp",
+              "security_groups": [],
+              "self": false,
+              "to_port": 443
+            }
+          ],
+          "name": "bobthecorp-web",
+          "name_prefix": "bobthecorp-fake-name_prefix",
+          "owner_id": "111111111111",
+          "region": "us-east-1",
+          "revoke_rules_on_delete": false,
+          "tags": {
+            "Name": "bobthecorp-web"
+          },
+          "tags_all": {
+            "Name": "bobthecorp-web"
+          },
+          "timeouts": null,
+          "vpc_id": "vpc-0bbbbbbbbbbbbbbb1"
+        },
+        "before_identity": {
+          "account_id": "111111111111",
+          "id": "sg-0ddddddddddddddd1",
+          "region": "us-east-1"
+        },
+        "before_sensitive": {
+          "egress": [],
+          "ingress": [
+            {
+              "cidr_blocks": [
+                false
+              ],
+              "ipv6_cidr_blocks": [],
+              "prefix_list_ids": [],
+              "security_groups": []
+            }
+          ],
+          "tags": {},
+          "tags_all": {}
+        }
+      },
+      "mode": "managed",
+      "name": "this",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "type": "aws_security_group"
+    }
+  ],
+  "terraform_version": "1.16.3"
+}

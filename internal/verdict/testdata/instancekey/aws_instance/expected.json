@@ -1,0 +1,382 @@
+{
+  "entries": [
+    {
+      "actions": [
+        "create"
+      ],
+      "address": "aws_instance.new",
+      "keys": [
+        {
+          "field": "instance_key",
+          "form": "create",
+          "key": "sha256:f0c9f319efc45ff34eb43a43bc34fcd7c5baa991ecc8cd25b5df9a60fc7dc44e",
+          "prior_identity_kind": "none",
+          "unknown_paths": [
+            [
+              "arn"
+            ],
+            [
+              "associate_public_ip_address"
+            ],
+            [
+              "availability_zone"
+            ],
+            [
+              "capacity_reservation_specification"
+            ],
+            [
+              "cpu_options"
+            ],
+            [
+              "disable_api_stop"
+            ],
+            [
+              "disable_api_termination"
+            ],
+            [
+              "ebs_block_device"
+            ],
+            [
+              "ebs_optimized"
+            ],
+            [
+              "enable_primary_ipv6"
+            ],
+            [
+              "enclave_options"
+            ],
+            [
+              "ephemeral_block_device"
+            ],
+            [
+              "host_id"
+            ],
+            [
+              "host_resource_group_arn"
+            ],
+            [
+              "iam_instance_profile"
+            ],
+            [
+              "id"
+            ],
+            [
+              "instance_initiated_shutdown_behavior"
+            ],
+            [
+              "instance_lifecycle"
+            ],
+            [
+              "instance_market_options"
+            ],
+            [
+              "instance_state"
+            ],
+            [
+              "ipv6_address_count"
+            ],
+            [
+              "ipv6_addresses"
+            ],
+            [
+              "key_name"
+            ],
+            [
+              "maintenance_options"
+            ],
+            [
+              "metadata_options"
+            ],
+            [
+              "monitoring"
+            ],
+            [
+              "network_interface"
+            ],
+            [
+              "outpost_arn"
+            ],
+            [
+              "password_data"
+            ],
+            [
+              "placement_group"
+            ],
+            [
+              "placement_group_id"
+            ],
+            [
+              "placement_partition_number"
+            ],
+            [
+              "primary_network_interface"
+            ],
+            [
+              "primary_network_interface_id"
+            ],
+            [
+              "private_dns"
+            ],
+            [
+              "private_dns_name_options"
+            ],
+            [
+              "private_ip"
+            ],
+            [
+              "public_dns"
+            ],
+            [
+              "public_ip"
+            ],
+            [
+              "root_block_device",
+              "0",
+              "device_name"
+            ],
+            [
+              "root_block_device",
+              "0",
+              "iops"
+            ],
+            [
+              "root_block_device",
+              "0",
+              "kms_key_id"
+            ],
+            [
+              "root_block_device",
+              "0",
+              "tags_all"
+            ],
+            [
+              "root_block_device",
+              "0",
+              "throughput"
+            ],
+            [
+              "root_block_device",
+              "0",
+              "volume_id"
+            ],
+            [
+              "secondary_network_interface"
+            ],
+            [
+              "secondary_private_ips"
+            ],
+            [
+              "security_groups"
+            ],
+            [
+              "spot_instance_request_id"
+            ],
+            [
+              "tenancy"
+            ],
+            [
+              "user_data_base64"
+            ],
+            [
+              "vpc_security_group_ids"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "action_reason": "replace_because_tainted",
+      "actions": [
+        "delete",
+        "create"
+      ],
+      "address": "aws_instance.tainted",
+      "keys": [
+        {
+          "field": "delete_key",
+          "form": "delete",
+          "key": "sha256:9b93f08fb3cb43d5205aacae54414a3eaf3a818d4420596f75ab8786f5723563",
+          "prior_identity_kind": "id",
+          "unknown_paths": []
+        },
+        {
+          "field": "instance_key",
+          "form": "create",
+          "key": "sha256:0a9815de142f16f948dc0826410d287d39e22fb7a25cf0667e98dfba7bc5b21a",
+          "prior_identity_kind": "none",
+          "unknown_paths": [
+            [
+              "arn"
+            ],
+            [
+              "associate_public_ip_address"
+            ],
+            [
+              "availability_zone"
+            ],
+            [
+              "capacity_reservation_specification"
+            ],
+            [
+              "cpu_options"
+            ],
+            [
+              "disable_api_stop"
+            ],
+            [
+              "disable_api_termination"
+            ],
+            [
+              "ebs_block_device"
+            ],
+            [
+              "ebs_optimized"
+            ],
+            [
+              "enable_primary_ipv6"
+            ],
+            [
+              "enclave_options"
+            ],
+            [
+              "ephemeral_block_device"
+            ],
+            [
+              "host_id"
+            ],
+            [
+              "host_resource_group_arn"
+            ],
+            [
+              "iam_instance_profile"
+            ],
+            [
+              "id"
+            ],
+            [
+              "instance_initiated_shutdown_behavior"
+            ],
+            [
+              "instance_lifecycle"
+            ],
+            [
+              "instance_market_options"
+            ],
+            [
+              "instance_state"
+            ],
+            [
+              "ipv6_address_count"
+            ],
+            [
+              "ipv6_addresses"
+            ],
+            [
+              "key_name"
+            ],
+            [
+              "maintenance_options"
+            ],
+            [
+              "metadata_options"
+            ],
+            [
+              "monitoring"
+            ],
+            [
+              "network_interface"
+            ],
+            [
+              "outpost_arn"
+            ],
+            [
+              "password_data"
+            ],
+            [
+              "placement_group"
+            ],
+            [
+              "placement_group_id"
+            ],
+            [
+              "placement_partition_number"
+            ],
+            [
+              "primary_network_interface"
+            ],
+            [
+              "primary_network_interface_id"
+            ],
+            [
+              "private_dns"
+            ],
+            [
+              "private_dns_name_options"
+            ],
+            [
+              "private_ip"
+            ],
+            [
+              "public_dns"
+            ],
+            [
+              "public_ip"
+            ],
+            [
+              "root_block_device"
+            ],
+            [
+              "secondary_network_interface"
+            ],
+            [
+              "secondary_private_ips"
+            ],
+            [
+              "security_groups"
+            ],
+            [
+              "spot_instance_request_id"
+            ],
+            [
+              "tenancy"
+            ],
+            [
+              "user_data_base64"
+            ],
+            [
+              "vpc_security_group_ids"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "actions": [
+        "update"
+      ],
+      "address": "aws_instance.this",
+      "keys": [
+        {
+          "field": "instance_key",
+          "form": "update",
+          "key": "sha256:d228672e7eb8e85ffbe4112d45d5ed5e95af8477ebe7a260ad64d51befed15d0",
+          "prior_identity_kind": "identity",
+          "unknown_paths": [
+            [
+              "public_dns"
+            ],
+            [
+              "public_ip"
+            ]
+          ]
+        }
+      ]
+    }
+  ],
+  "format": "compliancetf.instancekey.golden/v1",
+  "k_leaf_hex": "845cba3b9048a0ea701ceebf35bf8d23f96345d369ee41f24777d11aee0609eb",
+  "key_check": "278a53702bed79d81258d55c57dbfd708733a1e9d04c6fe3e8a7e5d0ca565a63",
+  "provider_version": "hashicorp/aws 6.65.0",
+  "terraform_version": "1.16.3",
+  "test_secret_hex": "494e5345435552452d544553542d5345435245542d696e7374616e63656b6579"
+}

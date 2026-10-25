@@ -1,0 +1,5 @@
+{
+  "description": "baselines[] holds {digest} members with sha256 digests",
+  "set": {"baselines": [{"digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555"}]},
+  "want": {"summary": "", "detail": ""}
+}

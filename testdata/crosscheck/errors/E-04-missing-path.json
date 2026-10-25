@@ -1,0 +1,3 @@
+{"id": "E-04-missing-path", "resource_type": "aws_db_instance", "schema": "testdata/schemas/aws-subset.json", "load_diags": ["control_schema_path_missing"],
+  "control": {"id": "crosscheck_e_04_missing_path", "version": "1.0.0", "kind": "resource", "resource_type": "aws_db_instance", "reads": ["no_such_attribute"], "presence_mode": "effective", "on": ["create", "update"], "expr": "resource.no_such_attribute == true", "action": "deny", "severity": "high", "message": "Fixture control."},
+  "bindings": {"op": "create", "env": "prod", "provider": {"region": "eu-west-1", "account_id": "111111111111"}, "resource": {"instance_class": "db.t3.micro", "storage_encrypted": true}}, "expect": {"state": "not_evaluable", "err_class": "no_such_attribute", "unknown_paths": []}}

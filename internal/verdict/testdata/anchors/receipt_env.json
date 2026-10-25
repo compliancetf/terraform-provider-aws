@@ -1,0 +1,6 @@
+{
+  "description": "a receipt key supplied only through environment variables is ignored",
+  "use": "receipt",
+  "source": "env",
+  "want_release": "kid unknown"
+}

@@ -1,0 +1,10 @@
+{
+  "description": "verdict for another bundle set",
+  "set": {
+    "bundle_digest": "sha256:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+  },
+  "want": {
+    "summary": "verdict issued for bundle sha256:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee, provider loaded sha256:2222222222222222222222222222222222222222222222222222222222222222: re-run plan and gate",
+    "detail": "Re-run terraform plan and ctfkit gate, then apply through ctfkit apply."
+  }
+}

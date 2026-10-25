@@ -1,0 +1,40 @@
+not_empty on a block: size(b) >= 1, configured
+-- intent.json --
+{
+ "id": "ec2_instance_root_block_device_set",
+ "resource_type": "aws_instance",
+ "attributes": [
+  {
+   "schema_path": "root_block_device",
+   "condition": "not_empty",
+   "values": [],
+   "values_from_ref": null
+  }
+ ],
+ "explanation": "Explanation of ec2_instance_root_block_device_set.",
+ "postcondition": "",
+ "has_strategy_condition": false
+}
+-- want.json --
+{
+  "control": {
+    "id": "ec2_instance_root_block_device_set",
+    "version": "1.0.0",
+    "kind": "resource",
+    "resource_type": "aws_instance",
+    "reads": [
+      "root_block_device"
+    ],
+    "presence_mode": "configured",
+    "on": [
+      "create",
+      "update"
+    ],
+    "expr": "size(config.root_block_device) >= 1",
+    "action": "deny",
+    "severity": "",
+    "message": "",
+    "fix": "Explanation of ec2_instance_root_block_device_set.",
+    "exemption_coverable": []
+  }
+}

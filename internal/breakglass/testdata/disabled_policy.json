@@ -1,0 +1,15 @@
+{
+  "description": "break_glass.enabled false: every receipt is ignored",
+  "policy": {
+    "disabled": true
+  },
+  "queries": [
+    {
+      "control": "CTF.S3.1",
+      "key": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "result": "fail",
+      "want": false
+    }
+  ],
+  "warning": "the profile does not enable break_glass"
+}

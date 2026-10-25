@@ -1,0 +1,66 @@
+{
+  "entries": [
+    {
+      "actions": [
+        "create"
+      ],
+      "address": "aws_dynamodb_table.new",
+      "keys": [
+        {
+          "after": {
+            "attribute": [
+              {
+                "name": "s:sk",
+                "type": "s:N"
+              },
+              {
+                "name": "s:pk",
+                "type": "s:S"
+              }
+            ],
+            "billing_mode": "s:PAY_PER_REQUEST",
+            "hash_key": "s:pk",
+            "import_table": [],
+            "local_secondary_index": [],
+            "name": "s:bobthecorp-events",
+            "on_demand_throughput": [],
+            "range_key": "s:sk",
+            "region": "s:us-east-1",
+            "replica": []
+          },
+          "after_hashed_jcs": "{\"attribute\":[{\"name\":\"29dd0406792be61b60f3686b6fc1a6f80c8fd1efdaf89aced6cee4cb072dd573\",\"type\":\"106ac1d417c50aeae0720008ea2d82d43d74dc5db33675e8bee3aa34df98067a\"},{\"name\":\"8b21528f98d75d8622e6e5fe2d974843878c1faaad42da87f23739f14ce49870\",\"type\":\"fc8aec6d1f8cbf9709644bf6e6af29a73c3a60045b7e8ac06f2d90e323bfc283\"}],\"billing_mode\":\"abc549be1f281da59f0a448f2dcd45ccb532ba5a17455772b496c416b1f0ea10\",\"hash_key\":\"8b21528f98d75d8622e6e5fe2d974843878c1faaad42da87f23739f14ce49870\",\"import_table\":[],\"local_secondary_index\":[],\"name\":\"76b1053b0e8e58a8640834378afdfca1cdbff65cd606abff6d71efa32c8c5675\",\"on_demand_throughput\":[],\"range_key\":\"29dd0406792be61b60f3686b6fc1a6f80c8fd1efdaf89aced6cee4cb072dd573\",\"region\":\"8df8ff45a31e55a282b554a4217667bd534d60853102522fb525315732856f2a\",\"replica\":[]}",
+          "field": "instance_key",
+          "form": "create",
+          "prior_identity": null,
+          "prior_identity_hashed_jcs": "null",
+          "prior_identity_kind": "none"
+        }
+      ]
+    },
+    {
+      "action_reason": "delete_because_no_resource_config",
+      "actions": [
+        "delete"
+      ],
+      "address": "aws_dynamodb_table.this",
+      "keys": [
+        {
+          "after": null,
+          "after_hashed_jcs": "null",
+          "field": "delete_key",
+          "form": "delete",
+          "prior_identity": {
+            "account_id": "s:111111111111",
+            "name": "s:bobthecorp-items",
+            "region": "s:us-east-1"
+          },
+          "prior_identity_hashed_jcs": "{\"account_id\":\"47e7ec2525e1a3e184c7844d068e98ee8789c5c565812114c46d959065728ced\",\"name\":\"6d7ff927a5d7285a6c94b43c1f1a2ce4b20f3cccfbed824f7b4ba9884392a7d1\",\"region\":\"8df8ff45a31e55a282b554a4217667bd534d60853102522fb525315732856f2a\"}",
+          "prior_identity_kind": "identity"
+        }
+      ]
+    }
+  ],
+  "format": "compliancetf.instancekey.golden/v1",
+  "provider_version": "hashicorp/aws 6.65.0",
+  "terraform_version": "1.16.3"
+}

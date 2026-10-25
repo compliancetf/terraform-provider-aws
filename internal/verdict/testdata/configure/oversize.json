@@ -1,0 +1,8 @@
+{
+  "description": "a verdict file above 32 MiB is refused",
+  "oversize": true,
+  "want": {
+    "summary": "Invalid verdict file",
+    "detail": "The verdict file is larger than 32 MiB."
+  }
+}

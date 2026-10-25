@@ -1,0 +1,25 @@
+{
+  "evaluator": "lifecycle",
+  "env": {
+    "COMPLIANCETF_ORG_ID": "bobthecorp",
+    "COMPLIANCETF_PROFILE_PATH": "{work}/profile.dsse.json",
+    "COMPLIANCETF_BUNDLE_PATH": "{work}/bundle.tar.gz"
+  },
+  "steps": [
+    {"cmd": ["apply", "-no-color", "-auto-approve", "-refresh-only"], "exit": 0},
+    {"cmd": ["apply", "-no-color", "-auto-approve"], "exit": 1, "stderr_contains": ["[fake_thing_id_not_bad] cannot be verified before apply"], "state_unchanged": true},
+    {"cmd": ["apply", "-no-color", "-auto-approve"], "exit": 1, "stderr_contains": ["Invalid compliance plan envelope"], "state_unchanged": true, "envelope": {"v": 2}},
+    {"cmd": ["apply", "-no-color", "-auto-approve"], "exit": 1, "stderr_contains": ["[fake_thing_id_not_bad] cannot be verified before apply"], "state_unchanged": true, "envelope": {"ctf": {"op": "update"}}},
+    {"cmd": ["apply", "-no-color", "-auto-approve"], "exit": 1, "stderr_contains": ["[fake_thing_id_not_bad] cannot be verified before apply"], "state_unchanged": true, "envelope": {"ctf": {"op": "replace"}}},
+    {"cmd": ["apply", "-no-color", "-auto-approve"], "exit": 1, "stderr_contains": ["[fake_thing_id_not_bad] cannot be verified before apply"], "state_unchanged": true, "envelope": {"ctf": {"op": "delete"}}},
+    {"cmd": ["apply", "-no-color", "-auto-approve"], "exit": 1, "stderr_contains": ["[fake_thing_id_not_bad] cannot be verified before apply"], "state_unchanged": true, "envelope": {"ctf": {"op": "import"}}},
+    {"cmd": ["apply", "-no-color", "-auto-approve"], "exit": 1, "stderr_contains": ["Invalid compliance plan envelope"], "state_unchanged": true, "envelope": {"ctf": {"op": "change"}}},
+    {"cmd": ["apply", "-no-color", "-auto-approve"], "exit": 1, "stderr_contains": ["Controls changed between plan and apply"], "state_unchanged": true, "envelope": {"ctf": {"control_versions_digest": "sha256:0000000000000000000000000000000000000000000000000000000000000000"}}},
+    {"cmd": ["apply", "-no-color", "-auto-approve"], "exit": 1, "stderr_contains": ["Controls changed between plan and apply"], "state_unchanged": true, "envelope": {"ctf": {"control_versions_digest": null}}},
+    {"cmd": ["apply", "-no-color", "-auto-approve"], "exit": 1, "stderr_contains": ["Invalid compliance plan envelope"], "state_unchanged": true, "envelope": {"ctf": {"prior_identity_kind": "identity", "prior_identity": {"id": "bobthecorp-n"}}}},
+    {"cmd": ["apply", "-no-color", "-auto-approve"], "exit": 1, "stderr_contains": ["Invalid compliance plan envelope"], "state_unchanged": true, "envelope": {"ctf": {"prior_identity_kind": "id"}}},
+    {"cmd": ["apply", "-no-color", "-auto-approve"], "exit": 1, "stderr_contains": ["[fake_thing_id_not_bad] cannot be verified before apply"], "state_unchanged": true, "envelope": {"ctf": {"prior_identity_kind": "none"}}},
+    {"cmd": ["apply", "-no-color", "-auto-approve"], "exit": 1, "stderr_contains": ["[fake_thing_id_not_bad] cannot be verified before apply"], "state_unchanged": true, "envelope": {"ctf": {"imported": true}}},
+    {"cmd": ["apply", "-no-color", "-auto-approve"], "exit": 1, "stderr_contains": ["[fake_thing_id_not_bad] cannot be verified before apply"], "state_unchanged": true, "envelope": {"strip": true}}
+  ]
+}

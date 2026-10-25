@@ -1,0 +1,62 @@
+{
+  "entries": [
+    {
+      "actions": [
+        "create"
+      ],
+      "address": "aws_s3_bucket_versioning.new",
+      "keys": [
+        {
+          "after": {
+            "region": "s:us-east-1",
+            "versioning_configuration": [
+              {
+                "status": "s:Enabled"
+              }
+            ]
+          },
+          "after_hashed_jcs": "{\"region\":\"8df8ff45a31e55a282b554a4217667bd534d60853102522fb525315732856f2a\",\"versioning_configuration\":[{\"status\":\"b8397ef68fecd7ffe48f201f4d35dc8ea99ca2587359c3195aa4c8b37c3212e9\"}]}",
+          "field": "instance_key",
+          "form": "create",
+          "prior_identity": null,
+          "prior_identity_hashed_jcs": "null",
+          "prior_identity_kind": "none"
+        }
+      ]
+    },
+    {
+      "actions": [
+        "update"
+      ],
+      "address": "aws_s3_bucket_versioning.old",
+      "keys": [
+        {
+          "after": {
+            "bucket": "s:bobthecorp-logs",
+            "id": "s:bobthecorp-logs",
+            "region": "s:us-east-1",
+            "versioning_configuration": [
+              {
+                "mfa_delete": "s:bobthecorp-fake-mfa_delete",
+                "status": "s:Suspended"
+              }
+            ]
+          },
+          "after_hashed_jcs": "{\"bucket\":\"295689b7646b304d72862eea6ce37d89220600ca4760bde4bbd155c701c99ae0\",\"id\":\"295689b7646b304d72862eea6ce37d89220600ca4760bde4bbd155c701c99ae0\",\"region\":\"8df8ff45a31e55a282b554a4217667bd534d60853102522fb525315732856f2a\",\"versioning_configuration\":[{\"mfa_delete\":\"bf12b4f37ede20fd9352f35cae24f05000d36b12527c76775d6f512a3495c94b\",\"status\":\"47833208aec23238886497b37048bb508e2b895ef6961729797e6f546dfc4938\"}]}",
+          "field": "instance_key",
+          "form": "update",
+          "prior_identity": {
+            "account_id": "s:111111111111",
+            "bucket": "s:bobthecorp-logs",
+            "region": "s:us-east-1"
+          },
+          "prior_identity_hashed_jcs": "{\"account_id\":\"47e7ec2525e1a3e184c7844d068e98ee8789c5c565812114c46d959065728ced\",\"bucket\":\"295689b7646b304d72862eea6ce37d89220600ca4760bde4bbd155c701c99ae0\",\"region\":\"8df8ff45a31e55a282b554a4217667bd534d60853102522fb525315732856f2a\"}",
+          "prior_identity_kind": "identity"
+        }
+      ]
+    }
+  ],
+  "format": "compliancetf.instancekey.golden/v1",
+  "provider_version": "hashicorp/aws 6.65.0",
+  "terraform_version": "1.16.3"
+}

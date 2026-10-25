@@ -1,0 +1,147 @@
+name: Nightly conformance
+
+# Owner setup, variables and gating: test/conformance/nightly/README.md.
+
+# Manual only: no schedule until pins.json and the sandbox
+# account are ready. Never add push or pull_request triggers.
+on:
+  workflow_dispatch:
+
+permissions: {}
+
+concurrency:
+  group: nightly-sandbox
+  cancel-in-progress: false
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  dry-run:
+    name: Dry run (no AWS)
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
+        with:
+          go-version-file: go.mod
+      - uses: hashicorp/setup-terraform@dfe3c3f87815947d99a8997f908cb6525fc44e9e # v4.0.1
+        with:
+          terraform_wrapper: false
+      - id: upstream
+        run: echo "path=$(test/conformance/nightly/upstream.sh)" >> "$GITHUB_OUTPUT"
+      - name: Render, check and validate scenarios
+        env:
+          UPSTREAM: ${{ steps.upstream.outputs.path }}
+        run: go test -count=1 -v -tags conformance,nightly ./test/conformance/... -run Nightly -plan-only -tf "$(command -v terraform)" -upstream "$UPSTREAM"
+      - if: vars.NIGHTLY_ROLE_ARN == '' || vars.NIGHTLY_ACCOUNT_ID == ''
+        run: echo "::notice::NIGHTLY_ROLE_ARN or NIGHTLY_ACCOUNT_ID unset; the live nightly is skipped until the sandbox account exists (test/conformance/nightly/README.md)"
+
+  nightly:
+    name: Real upstream in the sandbox account
+    needs: dry-run
+    if: vars.NIGHTLY_ROLE_ARN != '' && vars.NIGHTLY_ACCOUNT_ID != '' && github.ref == 'refs/heads/master'
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    environment: nightly-sandbox
+    permissions:
+      contents: read
+      id-token: write
+    env:
+      EXPECTED_ACCOUNT: ${{ vars.NIGHTLY_ACCOUNT_ID }}
+      PREFIX: bobthecorp-ctf-conf-${{ github.run_id }}-${{ github.run_attempt }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
+        with:
+          go-version-file: go.mod
+      # Newest stable Terraform: the terraform-latest cell of matrix.json.
+      - uses: hashicorp/setup-terraform@dfe3c3f87815947d99a8997f908cb6525fc44e9e # v4.0.1
+        with:
+          terraform_wrapper: false
+      - id: upstream
+        run: echo "path=$(test/conformance/nightly/upstream.sh)" >> "$GITHUB_OUTPUT"
+      - uses: aws-actions/configure-aws-credentials@e1253824e5c10ff9df46874f81ed3ec929e19cfd # v6.3.0
+        with:
+          role-to-assume: ${{ vars.NIGHTLY_ROLE_ARN }}
+          role-session-name: ctf-conf-nightly-${{ github.run_id }}
+          role-duration-seconds: 3600
+          aws-region: ${{ vars.NIGHTLY_AWS_REGION || 'us-east-1' }}
+          mask-aws-account-id: true
+      - name: Refuse any account but the sandbox
+        id: guard
+        run: |
+          set -euo pipefail
+          [[ "$EXPECTED_ACCOUNT" =~ ^[0-9]{12}$ ]] || { echo "::error::NIGHTLY_ACCOUNT_ID is not a 12-digit account id"; exit 1; }
+          [[ "$(aws sts get-caller-identity --query Account --output text)" == "$EXPECTED_ACCOUNT" ]] || { echo "::error::credentials are not for the sandbox account"; exit 1; }
+      - name: Janitor (bobthecorp-ctf-conf-* older than 24 h)
+        run: test/conformance/nightly/janitor.sh
+      - name: Conformance against real hashicorp/aws
+        env:
+          UPSTREAM: ${{ steps.upstream.outputs.path }}
+        run: go test -count=1 -v -timeout 35m -tags conformance,nightly ./test/conformance/... -run 'Nightly$' -tf "$(command -v terraform)" -upstream "$UPSTREAM" -prefix "$PREFIX"
+      # A go test timeout panics past t.Cleanup; sweep this run's names at any age.
+      - name: Sweep this run's resources
+        if: always() && steps.guard.outcome == 'success'
+        run: test/conformance/nightly/janitor.sh "$PREFIX-" 0
+
+  nuke:
+    name: Account nuke
+    needs: nightly
+    # After the nightly whatever its result; lists only unless NIGHTLY_NUKE_LIVE is "true".
+    if: >-
+      always() && vars.NIGHTLY_NUKE_ROLE_ARN != '' && vars.NIGHTLY_ACCOUNT_ID != '' &&
+      vars.NIGHTLY_NUKE_BLOCKLIST != '' && github.ref == 'refs/heads/master'
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    environment: nightly-nuke
+    permissions:
+      contents: read
+      id-token: write
+    env:
+      EXPECTED_ACCOUNT: ${{ vars.NIGHTLY_ACCOUNT_ID }}
+      BLOCKLIST: ${{ vars.NIGHTLY_NUKE_BLOCKLIST }}
+      REGION: ${{ vars.NIGHTLY_AWS_REGION || 'us-east-1' }}
+      LIVE: ${{ vars.NIGHTLY_NUKE_LIVE }}
+      NUKE_VERSION: v3.68.3
+      NUKE_SHA256: ec43c22b2a433a3f6da87006b281451d8cd5bab5eb25047f7a671dfbeebc15a4
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: aws-actions/configure-aws-credentials@e1253824e5c10ff9df46874f81ed3ec929e19cfd # v6.3.0
+        with:
+          role-to-assume: ${{ vars.NIGHTLY_NUKE_ROLE_ARN }}
+          role-session-name: ctf-conf-nuke-${{ github.run_id }}
+          role-duration-seconds: 3600
+          aws-region: ${{ vars.NIGHTLY_AWS_REGION || 'us-east-1' }}
+          mask-aws-account-id: true
+      - name: Refuse any account but the sandbox
+        run: |
+          set -euo pipefail
+          [[ "$EXPECTED_ACCOUNT" =~ ^[0-9]{12}$ && "$BLOCKLIST" =~ ^[0-9]{12}$ && "$BLOCKLIST" != "$EXPECTED_ACCOUNT" ]] || { echo "::error::NIGHTLY_ACCOUNT_ID and NIGHTLY_NUKE_BLOCKLIST must be two different 12-digit account ids"; exit 1; }
+          [[ "$REGION" =~ ^[a-z]{2}(-[a-z]+)+-[0-9]$ ]] || { echo "::error::NIGHTLY_AWS_REGION is not a region"; exit 1; }
+          [[ "$(aws sts get-caller-identity --query Account --output text)" == "$EXPECTED_ACCOUNT" ]] || { echo "::error::credentials are not for the sandbox account"; exit 1; }
+      - name: Install aws-nuke
+        run: |
+          set -euo pipefail
+          f="aws-nuke-${NUKE_VERSION}-linux-amd64.tar.gz"
+          curl -fsSLo "$RUNNER_TEMP/$f" "https://github.com/ekristen/aws-nuke/releases/download/${NUKE_VERSION}/$f"
+          echo "${NUKE_SHA256}  $RUNNER_TEMP/$f" | sha256sum -c -
+          tar -xzf "$RUNNER_TEMP/$f" -C "$RUNNER_TEMP" aws-nuke
+      - name: Nuke
+        run: |
+          set -euo pipefail
+          sed -e "s/@SANDBOX_ACCOUNT_ID@/$EXPECTED_ACCOUNT/" -e "s/@BLOCKLIST_ACCOUNT_ID@/$BLOCKLIST/" -e "s/@REGION@/$REGION/" \
+            test/conformance/nightly/nuke-config.yml >"$RUNNER_TEMP/nuke.yml"
+          live=()
+          if [[ "$LIVE" == "true" ]]; then live=(--no-dry-run); fi
+          "$RUNNER_TEMP/aws-nuke" run --config "$RUNNER_TEMP/nuke.yml" --force --force-sleep 3 "${live[@]}"

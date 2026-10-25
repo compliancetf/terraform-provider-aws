@@ -1,0 +1,58 @@
+{
+  "description": "collision excepted",
+  "verdict": true,
+  "required": true,
+  "delete": false,
+  "type": "aws_s3_bucket",
+  "matches": [
+    {
+      "address": "aws_s3_bucket.a",
+      "type": "aws_s3_bucket",
+      "action": "create",
+      "decisions": [
+        {
+          "control": "s3_bucket_public_access_block_present",
+          "version": "1.0.0",
+          "result": "pass",
+          "action": "deny"
+        }
+      ],
+      "not_evaluable": [],
+      "exceptions": []
+    },
+    {
+      "address": "aws_s3_bucket.b",
+      "type": "aws_s3_bucket",
+      "action": "create",
+      "decisions": [
+        {
+          "control": "s3_bucket_public_access_block_present",
+          "version": "1.0.0",
+          "result": "fail",
+          "action": "deny"
+        }
+      ],
+      "not_evaluable": [],
+      "exceptions": []
+    }
+  ],
+  "graph": [
+    {
+      "id": "s3_bucket_public_access_block_present",
+      "version": "1.0.0",
+      "message": "S3 bucket has no public access block.",
+      "fail_severity": "error"
+    }
+  ],
+  "excepted": [
+    "s3_bucket_public_access_block_present"
+  ],
+  "want": [
+    {
+      "control": "s3_bucket_public_access_block_present",
+      "version": "1.0.0",
+      "result": "excepted",
+      "severity": "none"
+    }
+  ]
+}

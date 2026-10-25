@@ -1,0 +1,19 @@
+{
+  "description": "the decision is on an action key the receipt does not list",
+  "policy": {},
+  "queries": [
+    {
+      "control": "CTF.S3.1",
+      "key": "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "result": "fail",
+      "want": false
+    },
+    {
+      "control": "CTF.S3.1",
+      "key": "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "result": "not_evaluable",
+      "want": false
+    }
+  ],
+  "warning": ""
+}

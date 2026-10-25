@@ -1,0 +1,3 @@
+[
+  {"id": "iam_policy_no_star_star", "version": "1.0.0", "kind": "resource", "resource_type": "fake_thing", "reads": ["name"], "presence_mode": "effective", "on": ["create", "update"], "expr": "iam.parse(resource.name).statements.all(s, !(s.effect == \"Allow\" && s.resource_any && iam.grants(s, \"iam:passrole\") && !iam.principal_is(s, \"arn:aws:iam::222222222222:role/bobthecorp-admin\")))", "action": "deny", "severity": "high", "message": "Only bobthecorp-admin may pass any role.", "exemption_coverable": []}
+]

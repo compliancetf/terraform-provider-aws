@@ -1,0 +1,9 @@
+{"about": "equals_any [true] on root_block_device[0].delete_on_termination, coalescing an absent block or null to the AWS default true: only an explicit false fails; an unknown value stays unknown and is never read as the default. reads lists the block (size) and the attribute.",
+ "control": {"id": "bobthecorp_sample_instance_root_volume_deleted", "version": "1.0.0", "kind": "resource", "resource_type": "aws_instance", "reads": ["root_block_device", "root_block_device.delete_on_termination"], "presence_mode": "effective", "on": ["create", "update"], "expr": "size(resource.root_block_device) == 0 || resource.root_block_device[0].delete_on_termination != false", "action": "deny", "severity": "low", "message": "Sample: the root volume must be deleted on termination."},
+ "cases": [
+  {"id": "P-01-true", "resource": {"root_block_device": [{"delete_on_termination": true}]}, "expect": {"state": "pass", "err_class": ""}},
+  {"id": "P-02-default-null", "resource": {"root_block_device": [{"volume_size": 20}]}, "expect": {"state": "pass", "err_class": ""}},
+  {"id": "P-03-no-block", "resource": {}, "expect": {"state": "pass", "err_class": ""}},
+  {"id": "F-01-false", "resource": {"root_block_device": [{"delete_on_termination": false}]}, "expect": {"state": "fail", "err_class": ""}},
+  {"id": "U-01-unknown-not-default", "resource": {"root_block_device": [{"delete_on_termination": {"$unknown": true}}]}, "expect": {"state": "unknown", "err_class": ""}}
+ ]}

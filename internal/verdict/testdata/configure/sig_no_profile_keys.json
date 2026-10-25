@@ -1,0 +1,8 @@
+{
+  "description": "a profile without a verdict block trusts no verdict key",
+  "sign": "no_profile_keys",
+  "want": {
+    "summary": "Verdict signature invalid: kid unknown",
+    "detail": "Re-run terraform plan and ctfkit gate, then apply through ctfkit apply."
+  }
+}

@@ -1,0 +1,94 @@
+{
+  "format_version": "1.2",
+  "resource_changes": [
+    {
+      "address": "aws_vpc_security_group_ingress_rule.new",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "after": {
+          "cidr_ipv4": "10.2.0.0/16",
+          "cidr_ipv6": null,
+          "description": null,
+          "from_port": 8443,
+          "ip_protocol": "tcp",
+          "prefix_list_id": null,
+          "referenced_security_group_id": null,
+          "region": "us-east-1",
+          "tags": {
+            "Name": "bobthecorp-batch-8443"
+          },
+          "to_port": 8443
+        },
+        "after_sensitive": {
+          "tags": {},
+          "tags_all": {}
+        },
+        "after_unknown": {
+          "arn": true,
+          "id": true,
+          "security_group_id": true,
+          "security_group_rule_id": true,
+          "tags": {
+            "Group": true
+          },
+          "tags_all": true
+        },
+        "before": null,
+        "before_sensitive": false
+      },
+      "mode": "managed",
+      "name": "new",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "type": "aws_vpc_security_group_ingress_rule"
+    },
+    {
+      "action_reason": "delete_because_no_resource_config",
+      "address": "aws_vpc_security_group_ingress_rule.old",
+      "change": {
+        "actions": [
+          "delete"
+        ],
+        "after": null,
+        "after_identity": {
+          "account_id": "111111111111",
+          "id": "sgr-0eeeeeeeeeeeeeee1",
+          "region": "us-east-1"
+        },
+        "after_sensitive": false,
+        "after_unknown": {},
+        "before": {
+          "arn": "arn:aws:ec2:us-east-1:111111111111:security-group-rule/sgr-0eeeeeeeeeeeeeee1",
+          "cidr_ipv4": "10.1.0.0/16",
+          "cidr_ipv6": null,
+          "description": null,
+          "from_port": 22,
+          "id": "sgr-0eeeeeeeeeeeeeee1",
+          "ip_protocol": "tcp",
+          "prefix_list_id": null,
+          "referenced_security_group_id": null,
+          "region": "us-east-1",
+          "security_group_id": "sg-0ccccccccccccccc1",
+          "security_group_rule_id": "bobthecorp-fake-security_group_rule_id",
+          "tags": null,
+          "tags_all": {},
+          "to_port": 22
+        },
+        "before_identity": {
+          "account_id": "111111111111",
+          "id": "sgr-0eeeeeeeeeeeeeee1",
+          "region": "us-east-1"
+        },
+        "before_sensitive": {
+          "tags_all": {}
+        }
+      },
+      "mode": "managed",
+      "name": "old",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "type": "aws_vpc_security_group_ingress_rule"
+    }
+  ],
+  "terraform_version": "1.16.3"
+}

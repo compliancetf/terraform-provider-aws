@@ -1,0 +1,886 @@
+{
+  "format_version": "1.2",
+  "resource_changes": [
+    {
+      "address": "edge_thing.numbers",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "after": {
+          "dyn": {
+            "a": 1
+          },
+          "empty_lst": [],
+          "flag": false,
+          "id": null,
+          "item": [],
+          "lst": null,
+          "n": 0.1,
+          "nt": null,
+          "nums": [
+            1e21,
+            9223372036854775808,
+            9007199254740993,
+            18446744073709551617,
+            1234567.5,
+            0.00001,
+            -0,
+            0.0001,
+            0.1,
+            1e1000,
+            0.1e1001,
+            1e-1000
+          ],
+          "obj": null,
+          "st": [
+            "b",
+            "a",
+            "b"
+          ],
+          "tags": null
+        },
+        "after_identity": null,
+        "after_sensitive": {},
+        "after_unknown": {
+          "id": true
+        },
+        "before": null,
+        "before_identity": null,
+        "before_sensitive": false
+      },
+      "mode": "managed",
+      "name": "numbers",
+      "provider_name": "registry.terraform.io/bobthecorp/edge",
+      "type": "edge_thing"
+    },
+    {
+      "address": "edge_thing.empties",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "after": {
+          "empty_lst": [],
+          "id": null,
+          "item": [],
+          "nt": [],
+          "st": [],
+          "tags": {}
+        },
+        "after_identity": null,
+        "after_sensitive": {},
+        "after_unknown": {
+          "id": true
+        },
+        "before": null,
+        "before_identity": null,
+        "before_sensitive": false
+      },
+      "mode": "managed",
+      "name": "empties",
+      "provider_name": "registry.terraform.io/bobthecorp/edge",
+      "type": "edge_thing"
+    },
+    {
+      "address": "edge_thing.unknowns",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "after": {
+          "dyn": null,
+          "empty_lst": null,
+          "flag": true,
+          "id": null,
+          "item": [
+            {
+              "name": "one",
+              "vals": [
+                "x",
+                null
+              ]
+            },
+            {
+              "name": "two",
+              "vals": [
+                "y"
+              ]
+            }
+          ],
+          "lst": [
+            "a",
+            null,
+            "c"
+          ],
+          "n": null,
+          "nt": [
+            {
+              "a": "k",
+              "b": null
+            }
+          ],
+          "nums": null,
+          "obj": {
+            "x": "keep",
+            "y": null
+          },
+          "st": null,
+          "tags": {
+            "Name": "bobthecorp-edge",
+            "Owner": null
+          }
+        },
+        "after_identity": null,
+        "after_sensitive": {},
+        "after_unknown": {
+          "dyn": true,
+          "id": true,
+          "item": [
+            {
+              "vals": [
+                false,
+                true
+              ]
+            },
+            {}
+          ],
+          "lst": [
+            false,
+            true,
+            false
+          ],
+          "nt": [
+            {
+              "b": true
+            }
+          ],
+          "obj": {
+            "y": true
+          },
+          "tags": {
+            "Owner": true
+          }
+        },
+        "before": null,
+        "before_identity": null,
+        "before_sensitive": false
+      },
+      "mode": "managed",
+      "name": "unknowns",
+      "provider_name": "registry.terraform.io/bobthecorp/edge",
+      "type": "edge_thing"
+    },
+    {
+      "address": "edge_thing.allunknown",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "after": {},
+        "after_identity": null,
+        "after_sensitive": {},
+        "after_unknown": true,
+        "before": null,
+        "before_identity": null,
+        "before_sensitive": false
+      },
+      "mode": "managed",
+      "name": "allunknown",
+      "provider_name": "registry.terraform.io/bobthecorp/edge",
+      "type": "edge_thing"
+    },
+    {
+      "address": "edge_thing.allnull",
+      "change": {
+        "actions": [
+          "update"
+        ],
+        "after": {
+          "flag": true,
+          "id": "edge-allnull",
+          "item": []
+        },
+        "after_identity": null,
+        "after_sensitive": {},
+        "after_unknown": {},
+        "before": {
+          "flag": false,
+          "id": "edge-allnull",
+          "item": []
+        },
+        "before_identity": {
+          "name": null
+        },
+        "before_sensitive": {}
+      },
+      "mode": "managed",
+      "name": "allnull",
+      "provider_name": "registry.terraform.io/bobthecorp/edge",
+      "type": "edge_thing"
+    },
+    {
+      "address": "edge_thing.noid",
+      "change": {
+        "actions": [
+          "update"
+        ],
+        "after": {
+          "flag": true,
+          "id": null,
+          "item": []
+        },
+        "after_identity": null,
+        "after_sensitive": {},
+        "after_unknown": {},
+        "before": {
+          "flag": false,
+          "id": null,
+          "item": []
+        },
+        "before_identity": {
+          "name": null
+        },
+        "before_sensitive": {}
+      },
+      "mode": "managed",
+      "name": "noid",
+      "provider_name": "registry.terraform.io/bobthecorp/edge",
+      "type": "edge_thing"
+    },
+    {
+      "address": "edge_thing.emptyid",
+      "change": {
+        "actions": [
+          "delete"
+        ],
+        "after": null,
+        "after_identity": null,
+        "after_sensitive": false,
+        "after_unknown": false,
+        "before": {
+          "id": "",
+          "item": []
+        },
+        "before_identity": null,
+        "before_sensitive": {}
+      },
+      "mode": "managed",
+      "name": "emptyid",
+      "provider_name": "registry.terraform.io/bobthecorp/edge",
+      "type": "edge_thing"
+    },
+    {
+      "address": "edge_thing.numid",
+      "change": {
+        "actions": [
+          "delete"
+        ],
+        "after": null,
+        "after_identity": null,
+        "after_sensitive": false,
+        "after_unknown": false,
+        "before": {
+          "id": 7,
+          "item": []
+        },
+        "before_identity": null,
+        "before_sensitive": {}
+      },
+      "mode": "managed",
+      "name": "numid",
+      "provider_name": "registry.terraform.io/bobthecorp/edge",
+      "type": "edge_thing"
+    },
+    {
+      "address": "edge_thing.bigexp",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "after": {
+          "id": null,
+          "item": [],
+          "n": 10e1000
+        },
+        "after_identity": null,
+        "after_sensitive": {},
+        "after_unknown": {
+          "id": true
+        },
+        "before": null,
+        "before_identity": null,
+        "before_sensitive": false
+      },
+      "mode": "managed",
+      "name": "bigexp",
+      "provider_name": "registry.terraform.io/bobthecorp/edge",
+      "type": "edge_thing"
+    },
+    {
+      "address": "edge_thing.smallexp",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "after": {
+          "id": null,
+          "item": [],
+          "n": 1e-1001
+        },
+        "after_identity": null,
+        "after_sensitive": {},
+        "after_unknown": {
+          "id": true
+        },
+        "before": null,
+        "before_identity": null,
+        "before_sensitive": false
+      },
+      "mode": "managed",
+      "name": "smallexp",
+      "provider_name": "registry.terraform.io/bobthecorp/edge",
+      "type": "edge_thing"
+    },
+    {
+      "address": "edge_thing.dynmix",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "after": {
+          "dynlist": [
+            1,
+            "x"
+          ],
+          "id": null,
+          "item": [],
+          "mix": {
+            "d": {
+              "any": "thing"
+            },
+            "s": "kept"
+          }
+        },
+        "after_identity": null,
+        "after_sensitive": {},
+        "after_unknown": {
+          "id": true
+        },
+        "before": null,
+        "before_identity": null,
+        "before_sensitive": false
+      },
+      "mode": "managed",
+      "name": "dynmix",
+      "provider_name": "registry.terraform.io/bobthecorp/edge",
+      "type": "edge_thing"
+    },
+    {
+      "address": "edge_thing.identstr",
+      "change": {
+        "actions": [
+          "delete"
+        ],
+        "after": null,
+        "after_identity": null,
+        "after_sensitive": false,
+        "after_unknown": false,
+        "before": {
+          "id": "edge-identstr",
+          "item": []
+        },
+        "before_identity": "not-an-object",
+        "before_sensitive": {}
+      },
+      "mode": "managed",
+      "name": "identstr",
+      "provider_name": "registry.terraform.io/bobthecorp/edge",
+      "type": "edge_thing"
+    },
+    {
+      "address": "edge_thing.afterfalse",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "after": false,
+        "after_identity": null,
+        "after_sensitive": {},
+        "after_unknown": false,
+        "before": null,
+        "before_identity": null,
+        "before_sensitive": false
+      },
+      "mode": "managed",
+      "name": "afterfalse",
+      "provider_name": "registry.terraform.io/bobthecorp/edge",
+      "type": "edge_thing"
+    },
+    {
+      "address": "edge_thing.zeroexp",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "after": {
+          "id": null,
+          "item": [],
+          "n": 0e9999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999
+        },
+        "after_identity": null,
+        "after_sensitive": {},
+        "after_unknown": {
+          "id": true
+        },
+        "before": null,
+        "before_identity": null,
+        "before_sensitive": false
+      },
+      "mode": "managed",
+      "name": "zeroexp",
+      "provider_name": "registry.terraform.io/bobthecorp/edge",
+      "type": "edge_thing"
+    },
+    {
+      "address": "edge_thing.maskedbad",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "after": {
+          "flag": "wrong",
+          "id": null,
+          "item": []
+        },
+        "after_identity": null,
+        "after_sensitive": {},
+        "after_unknown": {
+          "flag": true,
+          "id": true
+        },
+        "before": null,
+        "before_identity": null,
+        "before_sensitive": false
+      },
+      "mode": "managed",
+      "name": "maskedbad",
+      "provider_name": "registry.terraform.io/bobthecorp/edge",
+      "type": "edge_thing"
+    },
+    {
+      "address": "edge_thing.setscalar",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "after": {
+          "id": null,
+          "item": [],
+          "st": [
+            "a"
+          ]
+        },
+        "after_identity": null,
+        "after_sensitive": {},
+        "after_unknown": {
+          "id": true,
+          "st": "yes"
+        },
+        "before": null,
+        "before_identity": null,
+        "before_sensitive": false
+      },
+      "mode": "managed",
+      "name": "setscalar",
+      "provider_name": "registry.terraform.io/bobthecorp/edge",
+      "type": "edge_thing"
+    },
+    {
+      "address": "edge_thing.setmixed",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "after": {
+          "id": null,
+          "item": [],
+          "st": [
+            "a",
+            "b"
+          ]
+        },
+        "after_identity": null,
+        "after_sensitive": {},
+        "after_unknown": {
+          "id": true,
+          "st": [
+            true,
+            "yes"
+          ]
+        },
+        "before": null,
+        "before_identity": null,
+        "before_sensitive": false
+      },
+      "mode": "managed",
+      "name": "setmixed",
+      "provider_name": "registry.terraform.io/bobthecorp/edge",
+      "type": "edge_thing"
+    },
+    {
+      "address": "edge_thing.setshape",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "after": {
+          "id": null,
+          "item": [],
+          "st": [
+            "a"
+          ]
+        },
+        "after_identity": null,
+        "after_sensitive": {},
+        "after_unknown": {
+          "id": true,
+          "st": [
+            {
+              "x": true
+            }
+          ]
+        },
+        "before": null,
+        "before_identity": null,
+        "before_sensitive": false
+      },
+      "mode": "managed",
+      "name": "setshape",
+      "provider_name": "registry.terraform.io/bobthecorp/edge",
+      "type": "edge_thing"
+    },
+    {
+      "address": "edge_thing.beforestridentity",
+      "change": {
+        "actions": [
+          "update"
+        ],
+        "after": {
+          "id": "x",
+          "item": []
+        },
+        "after_identity": null,
+        "after_sensitive": {},
+        "after_unknown": {},
+        "before": "bad",
+        "before_identity": {
+          "name": "valid"
+        },
+        "before_sensitive": {}
+      },
+      "mode": "managed",
+      "name": "beforestridentity",
+      "provider_name": "registry.terraform.io/bobthecorp/edge",
+      "type": "edge_thing"
+    },
+    {
+      "address": "edge_thing.beforestr",
+      "change": {
+        "actions": [
+          "update"
+        ],
+        "after": {
+          "id": "x",
+          "item": []
+        },
+        "after_identity": null,
+        "after_sensitive": {},
+        "after_unknown": {},
+        "before": "not-an-object",
+        "before_identity": null,
+        "before_sensitive": {}
+      },
+      "mode": "managed",
+      "name": "beforestr",
+      "provider_name": "registry.terraform.io/bobthecorp/edge",
+      "type": "edge_thing"
+    },
+    {
+      "address": "edge_thing.depnoop",
+      "change": {
+        "actions": [
+          "no-op"
+        ],
+        "after": {
+          "id": "edge-depnoop",
+          "item": []
+        },
+        "after_identity": null,
+        "after_sensitive": {},
+        "after_unknown": {},
+        "before": {
+          "id": "edge-depnoop",
+          "item": []
+        },
+        "before_identity": {
+          "name": "depnoop"
+        },
+        "before_sensitive": {}
+      },
+      "deposed": "0bad0bad",
+      "mode": "managed",
+      "name": "depnoop",
+      "provider_name": "registry.terraform.io/bobthecorp/edge",
+      "type": "edge_thing"
+    },
+    {
+      "address": "data.edge_thing.datasrc",
+      "change": {
+        "actions": [
+          "read"
+        ],
+        "after": {
+          "id": null,
+          "item": []
+        },
+        "after_identity": null,
+        "after_sensitive": {},
+        "after_unknown": {
+          "id": true
+        },
+        "before": null,
+        "before_identity": null,
+        "before_sensitive": false
+      },
+      "mode": "data",
+      "name": "datasrc",
+      "provider_name": "registry.terraform.io/bobthecorp/edge",
+      "type": "edge_thing"
+    },
+    {
+      "address": "edge_thing.longnum",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "after": {
+          "id": null,
+          "item": [],
+          "n": 1111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111
+        },
+        "after_identity": null,
+        "after_sensitive": {},
+        "after_unknown": {
+          "id": true
+        },
+        "before": null,
+        "before_identity": null,
+        "before_sensitive": false
+      },
+      "mode": "managed",
+      "name": "longnum",
+      "provider_name": "registry.terraform.io/bobthecorp/edge",
+      "type": "edge_thing"
+    },
+    {
+      "address": "edge_thing.extra",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "after": {
+          "bogus": "x",
+          "id": null,
+          "item": []
+        },
+        "after_identity": null,
+        "after_sensitive": {},
+        "after_unknown": {
+          "id": true
+        },
+        "before": null,
+        "before_identity": null,
+        "before_sensitive": false
+      },
+      "mode": "managed",
+      "name": "extra",
+      "provider_name": "registry.terraform.io/bobthecorp/edge",
+      "type": "edge_thing"
+    },
+    {
+      "address": "edge_thing.noschema",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "after": {
+          "id": null,
+          "item": []
+        },
+        "after_identity": null,
+        "after_sensitive": {},
+        "after_unknown": {
+          "id": true
+        },
+        "before": null,
+        "before_identity": null,
+        "before_sensitive": false
+      },
+      "mode": "managed",
+      "name": "noschema",
+      "provider_name": "registry.terraform.io/bobthecorp/other",
+      "type": "edge_thing"
+    },
+    {
+      "address": "edge_thing.unicode",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "after": {
+          "id": null,
+          "item": [],
+          "tags": {
+            "back\\slash": "été",
+            "html<&>": "<script>&amp;</script>",
+            "q\"uote": "line\nbreak\ttab\u0001",
+            "sep line": "para graph",
+            "｡halfwidth": "a",
+            "😀smile": "b"
+          }
+        },
+        "after_identity": null,
+        "after_sensitive": {},
+        "after_unknown": {
+          "id": true
+        },
+        "before": null,
+        "before_identity": null,
+        "before_sensitive": false
+      },
+      "mode": "managed",
+      "name": "unicode",
+      "provider_name": "registry.terraform.io/bobthecorp/edge",
+      "type": "edge_thing"
+    },
+    {
+      "address": "edge_thing.gone",
+      "change": {
+        "actions": [
+          "delete"
+        ],
+        "after": null,
+        "after_identity": null,
+        "after_sensitive": false,
+        "after_unknown": false,
+        "before": {
+          "id": "edge-gone",
+          "item": []
+        },
+        "before_identity": {
+          "name": "gone"
+        },
+        "before_sensitive": {}
+      },
+      "mode": "managed",
+      "name": "gone",
+      "provider_name": "registry.terraform.io/bobthecorp/edge",
+      "type": "edge_thing"
+    },
+    {
+      "address": "edge_thing.gone",
+      "change": {
+        "actions": [
+          "delete"
+        ],
+        "after": null,
+        "after_identity": null,
+        "after_sensitive": false,
+        "after_unknown": false,
+        "before": {
+          "id": "edge-gone-old",
+          "item": []
+        },
+        "before_identity": {
+          "name": "gone-old"
+        },
+        "before_sensitive": {}
+      },
+      "deposed": "0bad0bad",
+      "mode": "managed",
+      "name": "gone",
+      "provider_name": "registry.terraform.io/bobthecorp/edge",
+      "type": "edge_thing"
+    },
+    {
+      "address": "edge_thing.depbad",
+      "change": {
+        "actions": [
+          "delete",
+          "create"
+        ],
+        "after": {
+          "id": null,
+          "item": []
+        },
+        "after_identity": null,
+        "after_sensitive": {},
+        "after_unknown": {
+          "id": true
+        },
+        "before": {
+          "id": "edge-depbad",
+          "item": []
+        },
+        "before_identity": {
+          "name": "depbad"
+        },
+        "before_sensitive": {}
+      },
+      "deposed": "0bad0bad",
+      "mode": "managed",
+      "name": "depbad",
+      "provider_name": "registry.terraform.io/bobthecorp/edge",
+      "type": "edge_thing"
+    },
+    {
+      "action_reason": "replace_because_tainted",
+      "address": "edge_thing.tainted",
+      "change": {
+        "actions": [
+          "delete",
+          "create"
+        ],
+        "after": {
+          "id": null,
+          "item": [],
+          "lst": [
+            "a"
+          ]
+        },
+        "after_identity": null,
+        "after_sensitive": {},
+        "after_unknown": {
+          "id": true
+        },
+        "before": {
+          "id": "edge-tainted",
+          "item": [],
+          "lst": [
+            "a"
+          ]
+        },
+        "before_identity": {
+          "name": "tainted"
+        },
+        "before_sensitive": {}
+      },
+      "mode": "managed",
+      "name": "tainted",
+      "provider_name": "registry.terraform.io/bobthecorp/edge",
+      "type": "edge_thing"
+    }
+  ],
+  "terraform_version": "1.16.3"
+}

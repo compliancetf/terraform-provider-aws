@@ -1,0 +1,15 @@
+{
+  "description": "no online floor was obtained: receipts are ignored",
+  "policy": {
+    "floor_mode": ""
+  },
+  "queries": [
+    {
+      "control": "CTF.S3.1",
+      "key": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "result": "fail",
+      "want": false
+    }
+  ],
+  "warning": "the floor was not obtained online"
+}

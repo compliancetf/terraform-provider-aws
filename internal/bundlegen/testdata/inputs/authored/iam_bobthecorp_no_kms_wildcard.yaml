@@ -1,0 +1,23 @@
+targets:
+  - kind: resource
+    type: aws_iam_policy
+    reads: [policy]
+    presence_mode: effective
+    on: [create, update]
+    expr: 'iam.parse(resource.policy).statements.all(s, !(s.effect == "Allow" && iam.grants_all(s, "kms")))'
+    action: deny
+fixtures:
+  - kind: resource
+    type: aws_iam_policy
+    name: pass
+    bindings:
+      op: create
+      resource: {policy: '{"Version":"2012-10-17","Statement":[{"Effect":"Allow","Action":"s3:GetObject","Resource":"*"}]}'}
+    expect: {state: pass}
+  - kind: resource
+    type: aws_iam_policy
+    name: fail
+    bindings:
+      op: create
+      resource: {policy: '{"Version":"2012-10-17","Statement":[{"Effect":"Allow","Action":"kms:*","Resource":"*"}]}'}
+    expect: {state: fail}

@@ -1,0 +1,12 @@
+{
+  "description": "delete with a null Prior has nothing to guard: fail closed",
+  "stage": "plan",
+  "mode": "hard_fail",
+  "op": "delete",
+  "config": null,
+  "prior": null,
+  "planned": null,
+  "want": {
+    "error": "delete plan without prior state"
+  }
+}

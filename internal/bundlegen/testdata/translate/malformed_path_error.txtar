@@ -1,0 +1,23 @@
+an unparsable path is malformed input: E_INTENT
+-- intent.json --
+{
+ "id": "kms_cmk_rotation_enabled",
+ "resource_type": "aws_kms_key",
+ "attributes": [
+  {
+   "schema_path": "enable_key_rotation[",
+   "condition": "equals_any",
+   "values": [
+    true
+   ],
+   "values_from_ref": null
+  }
+ ],
+ "explanation": "Explanation of kms_cmk_rotation_enabled.",
+ "postcondition": "",
+ "has_strategy_condition": false
+}
+-- want.json --
+{
+  "error": "E_INTENT"
+}

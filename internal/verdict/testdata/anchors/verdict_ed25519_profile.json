@@ -1,0 +1,8 @@
+{
+  "description": "an Ed25519 verdict key in the profile is rejected in the release build, verifies under ctftest",
+  "use": "verdict",
+  "source": "profile",
+  "key": "ed25519",
+  "want_release": "algorithm not allowed",
+  "want_ctftest": ""
+}

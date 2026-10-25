@@ -1,0 +1,12 @@
+{
+  "evaluator": "lifecycle",
+  "env": {
+    "COMPLIANCETF_ORG_ID": "bobthecorp",
+    "COMPLIANCETF_PROFILE_PATH": "{work}/profile.dsse.json",
+    "COMPLIANCETF_FLOOR_PATH": "{work}/floor.dsse.json",
+    "COMPLIANCETF_BUNDLE_PATH": ""
+  },
+  "steps": [
+    {"cmd": ["plan", "-no-color"], "exit": 1, "stderr_contains": ["Compliance configuration failed", "no usable cached bobthecorp-fake at or above v3"]}
+  ]
+}

@@ -1,0 +1,40 @@
+Optional+Computed string: configured
+-- intent.json --
+{
+ "id": "ec2_instance_iam_profile_attached",
+ "resource_type": "aws_instance",
+ "attributes": [
+  {
+   "schema_path": "iam_instance_profile",
+   "condition": "not_empty",
+   "values": [],
+   "values_from_ref": null
+  }
+ ],
+ "explanation": "Explanation of ec2_instance_iam_profile_attached.",
+ "postcondition": "",
+ "has_strategy_condition": false
+}
+-- want.json --
+{
+  "control": {
+    "id": "ec2_instance_iam_profile_attached",
+    "version": "1.0.0",
+    "kind": "resource",
+    "resource_type": "aws_instance",
+    "reads": [
+      "iam_instance_profile"
+    ],
+    "presence_mode": "configured",
+    "on": [
+      "create",
+      "update"
+    ],
+    "expr": "config.iam_instance_profile != null && size(config.iam_instance_profile) > 0",
+    "action": "deny",
+    "severity": "",
+    "message": "",
+    "fix": "Explanation of ec2_instance_iam_profile_attached.",
+    "exemption_coverable": []
+  }
+}

@@ -1,0 +1,30 @@
+contains: review with a proposal
+-- intent.json --
+{
+ "id": "s3_bucket_policy_restricts_cross_account_permission_changes",
+ "resource_type": "aws_s3_bucket_policy",
+ "attributes": [
+  {
+   "schema_path": "policy",
+   "condition": "contains",
+   "values": [
+    "StringNotEquals",
+    "aws:PrincipalAccount"
+   ],
+   "values_from_ref": null
+  }
+ ],
+ "explanation": "Explanation of s3_bucket_policy_restricts_cross_account_permission_changes.",
+ "postcondition": "",
+ "has_strategy_condition": false
+}
+-- want.json --
+{
+  "review": {
+    "id": "s3_bucket_policy_restricts_cross_account_permission_changes",
+    "resource_type": "aws_s3_bucket_policy",
+    "reason": "condition",
+    "detail": "policy contains: contains needs review",
+    "proposal": "resource.policy != null && resource.policy.contains(\"StringNotEquals\") && resource.policy.contains(\"aws:PrincipalAccount\")"
+  }
+}

@@ -1,0 +1,32 @@
+[
+  {
+    "id": "bobthecorp_rds_multi_az_enabled",
+    "version": "1.0.0",
+    "kind": "resource",
+    "resource_type": "aws_db_instance",
+    "reads": ["multi_az"],
+    "presence_mode": "effective",
+    "on": ["create", "update"],
+    "expr": "resource.multi_az == true",
+    "action": "deny",
+    "severity": "high",
+    "message": "RDS instances must run in more than one availability zone.",
+    "fix": "Set multi_az = true.",
+    "framework_refs": ["bobthecorp:ha-1"]
+  },
+  {
+    "id": "bobthecorp_s3_bucket_force_destroy_disabled",
+    "version": "1.0.0",
+    "kind": "resource",
+    "resource_type": "aws_s3_bucket",
+    "reads": ["force_destroy"],
+    "presence_mode": "effective",
+    "on": ["create", "update"],
+    "expr": "resource.force_destroy == false",
+    "action": "warn",
+    "severity": "medium",
+    "message": "S3 buckets should not allow force_destroy.",
+    "fix": "Remove force_destroy or set it to false.",
+    "framework_refs": ["bobthecorp:data-2"]
+  }
+]

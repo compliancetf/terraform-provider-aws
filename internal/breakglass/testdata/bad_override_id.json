@@ -1,0 +1,16 @@
+{
+  "description": "an override_id that is not an evidence token",
+  "policy": {},
+  "receipt_set": {
+    "override_id": "has space"
+  },
+  "queries": [
+    {
+      "control": "CTF.S3.1",
+      "key": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "result": "fail",
+      "want": false
+    }
+  ],
+  "warning": "is not a valid"
+}

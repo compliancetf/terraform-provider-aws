@@ -1,0 +1,5 @@
+{
+  "description": "a baselines[] digest that is not sha256:<64 hex> is refused",
+  "set": {"baselines": [{"digest": "sha256:XYZ"}]},
+  "want": {"summary": "Invalid verdict file", "detail": "The file is not a compliancetf.verdict/v1 document."}
+}

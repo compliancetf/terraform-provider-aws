@@ -1,0 +1,10 @@
+{
+  "description": "times must be RFC 3339 UTC",
+  "set": {
+    "issued_at": "2026-10-18T12:00:00+02:00"
+  },
+  "want": {
+    "summary": "Invalid verdict file",
+    "detail": "issued_at and expires_at must be RFC 3339 UTC times."
+  }
+}

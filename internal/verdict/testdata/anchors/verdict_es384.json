@@ -1,0 +1,7 @@
+{
+  "description": "an ES384 key is outside the allowlist",
+  "use": "verdict",
+  "source": "profile",
+  "key": "p384",
+  "want_release": "algorithm not allowed"
+}

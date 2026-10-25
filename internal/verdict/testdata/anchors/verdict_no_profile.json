@@ -1,0 +1,6 @@
+{
+  "description": "without a floor-validated profile no verdict key is trusted",
+  "use": "verdict",
+  "source": "none",
+  "want_release": "kid unknown"
+}

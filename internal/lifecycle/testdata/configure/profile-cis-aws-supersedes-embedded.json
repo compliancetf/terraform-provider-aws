@@ -1,0 +1,1 @@
+{"block": {"org_id": "bobthecorp"}, "env": {"COMPLIANCETF_OFFLINE": "true"}, "floor": {}, "profiles": {"env": {"bundles": [{"bundle_id": "cis-aws", "min_version": 5}], "floor_mode": "airgap"}}, "want": {"error": "COMPLIANCETF_OFFLINE is set: no usable cached cis-aws at or above v5."}}

@@ -1,0 +1,33 @@
+{
+  "description": "evidence.required with no evidence chain: apply_pre blocks before forwarding",
+  "stage": "apply_pre",
+  "mode": "hard_fail",
+  "op": "create",
+  "envelope": {
+    "op": "create",
+    "digest": "current"
+  },
+  "config": {
+    "storage_encrypted": true,
+    "kms_key_id": "arn:aws:kms:us-east-1:111122223333:key/bobthecorp-rds",
+    "engine": "postgres"
+  },
+  "prior": null,
+  "planned": {
+    "storage_encrypted": true,
+    "kms_key_id": "arn:aws:kms:us-east-1:111122223333:key/bobthecorp-rds",
+    "engine": "postgres",
+    "deletion_protection": true
+  },
+  "evidence_required": true,
+  "evidence_unavailable": true,
+  "want": {
+    "diagnostics": [
+      {
+        "severity": "error",
+        "summary": "Evidence required",
+        "detail": "evidence write failed: open; profile requires evidence before apply"
+      }
+    ]
+  }
+}

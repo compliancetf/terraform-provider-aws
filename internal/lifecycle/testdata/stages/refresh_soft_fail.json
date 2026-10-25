@@ -1,0 +1,27 @@
+{
+  "description": "non-blocking violation on refresh warns",
+  "stage": "read",
+  "mode": "soft_fail",
+  "prior": {
+    "storage_encrypted": true,
+    "kms_key_id": "arn:aws:kms:us-east-1:111122223333:key/bobthecorp-rds",
+    "engine": "postgres",
+    "deletion_protection": true
+  },
+  "new": {
+    "storage_encrypted": false,
+    "kms_key_id": "arn:aws:kms:us-east-1:111122223333:key/bobthecorp-rds",
+    "engine": "postgres",
+    "deletion_protection": true
+  },
+  "want": {
+    "diagnostics": [
+      {
+        "severity": "warning",
+        "summary": "[rds_db_instance_encryption_at_rest_enabled] RDS storage must be encrypted at rest.",
+        "detail": "Fix: Set storage_encrypted = true.\nSeverity: high\nMode: soft_fail\nStage: refresh\nFrameworks: soc_2:CC6.1, cis_aws:2.3.1\nTo waive: add an exception for rds_db_instance_encryption_at_rest_enabled in compliance-exceptions.hcl",
+        "attribute": "AttributeName(\"storage_encrypted\")"
+      }
+    ]
+  }
+}

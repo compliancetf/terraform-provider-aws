@@ -1,0 +1,8 @@
+{
+  "description": "an Ed25519 label on a P-256 key is rejected in every build",
+  "use": "receipt",
+  "source": "profile",
+  "key_alg": "Ed25519",
+  "sig_alg": "Ed25519",
+  "want_release": "algorithm not allowed"
+}

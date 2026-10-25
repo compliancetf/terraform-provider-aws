@@ -1,0 +1,15 @@
+{
+  "description": "validate evaluates nothing even with a violating config (L4)",
+  "stage": "validate",
+  "mode": "hard_fail",
+  "op": "",
+  "config": {
+    "storage_encrypted": false,
+    "kms_key_id": null,
+    "engine": "postgres"
+  },
+  "want": {
+    "diagnostics": [],
+    "stamp": false
+  }
+}

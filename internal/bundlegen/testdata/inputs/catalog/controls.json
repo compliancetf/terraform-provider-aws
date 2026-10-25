@@ -1,0 +1,47 @@
+{
+  "acct_bobthecorp_contact_set": {
+    "metadata": {
+      "name": "Sample account contact is set",
+      "frameworks": ["cis_v600"],
+      "clause_titles": {"cis_v600": ["2 Sample identity section"]}
+    },
+    "AWS_CONFIG": ["bobthecorp-account-contact-rule"]
+  },
+  "iam_bobthecorp_no_kms_wildcard": {
+    "metadata": {
+      "name": "Sample policy grants no KMS wildcard",
+      "frameworks": ["soc_2"],
+      "clause_titles": {"soc_2": ["SC6.3: Sample role clause"]}
+    }
+  },
+  "rds_bobthecorp_storage_encrypted": {
+    "metadata": {
+      "name": "Sample database storage is encrypted",
+      "frameworks": ["cis_v600", "soc_2"],
+      "clause_titles": {"cis_v600": ["3.2 Sample database section"], "soc_2": ["SC6.1: Sample access clause"]}
+    },
+    "CKV": ["CKV_AWS_9016"]
+  },
+  "s3_bobthecorp_versioning_on": {
+    "metadata": {
+      "name": "Sample bucket versioning is on",
+      "frameworks": ["pci_dss_v40", "soc_2"],
+      "clause_titles": {"pci_dss_v40": ["S10.5: Sample log history clause"], "soc_2": ["SA1: Sample recovery clause"]}
+    }
+  },
+  "rds_bobthecorp_deletion_guard": {
+    "metadata": {
+      "name": "Sample database deletion guard is on",
+      "frameworks": ["hipaa_security_2003", "pci_dss_v40"],
+      "clause_titles": {"hipaa_security_2003": ["S-312: Sample integrity clause"], "pci_dss_v40": ["S3.5: Sample stored data clause"]}
+    },
+    "TRIVY": ["AVD-AWS-9177"]
+  },
+  "s3_bobthecorp_lifecycle_versioned": {
+    "metadata": {
+      "name": "Sample bucket lifecycle is versioned",
+      "frameworks": ["soc_2"],
+      "clause_titles": {"soc_2": ["SA1: Sample recovery clause"]}
+    }
+  }
+}

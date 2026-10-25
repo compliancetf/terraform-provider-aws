@@ -1,0 +1,8 @@
+{
+  "description": "expires_at within the 5 min skew still loads",
+  "now": "2026-10-18T22:05:00Z",
+  "want": {
+    "summary": "",
+    "detail": ""
+  }
+}

@@ -1,0 +1,219 @@
+{
+  "format_version": "1.2",
+  "resource_changes": [
+    {
+      "address": "aws_sns_topic.new",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "after": {
+          "application_failure_feedback_role_arn": null,
+          "application_success_feedback_role_arn": null,
+          "application_success_feedback_sample_rate": null,
+          "archive_policy": null,
+          "content_based_deduplication": false,
+          "delivery_policy": null,
+          "display_name": null,
+          "fifo_topic": false,
+          "firehose_failure_feedback_role_arn": null,
+          "firehose_success_feedback_role_arn": null,
+          "firehose_success_feedback_sample_rate": null,
+          "http_failure_feedback_role_arn": null,
+          "http_success_feedback_role_arn": null,
+          "http_success_feedback_sample_rate": null,
+          "lambda_failure_feedback_role_arn": null,
+          "lambda_success_feedback_role_arn": null,
+          "lambda_success_feedback_sample_rate": null,
+          "name": "bobthecorp-reports",
+          "region": "us-east-1",
+          "sqs_failure_feedback_role_arn": null,
+          "sqs_success_feedback_role_arn": null,
+          "sqs_success_feedback_sample_rate": null,
+          "tags": null
+        },
+        "after_identity": {
+          "arn": null
+        },
+        "after_sensitive": {
+          "tags_all": {}
+        },
+        "after_unknown": {
+          "arn": true,
+          "beginning_archive_time": true,
+          "fifo_throughput_scope": true,
+          "id": true,
+          "kms_master_key_id": true,
+          "name_prefix": true,
+          "owner": true,
+          "policy": true,
+          "signature_version": true,
+          "tags_all": true,
+          "tracing_config": true
+        },
+        "before": null,
+        "before_sensitive": false
+      },
+      "mode": "managed",
+      "name": "new",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "type": "aws_sns_topic"
+    },
+    {
+      "address": "aws_sns_topic.this",
+      "change": {
+        "actions": [
+          "no-op"
+        ],
+        "after": {
+          "application_failure_feedback_role_arn": null,
+          "application_success_feedback_role_arn": null,
+          "application_success_feedback_sample_rate": null,
+          "archive_policy": null,
+          "arn": "arn:aws:sns:us-east-1:111111111111:bobthecorp-alerts",
+          "beginning_archive_time": "bobthecorp-fake-beginning_archive_time",
+          "content_based_deduplication": false,
+          "delivery_policy": null,
+          "display_name": null,
+          "fifo_throughput_scope": null,
+          "fifo_topic": false,
+          "firehose_failure_feedback_role_arn": null,
+          "firehose_success_feedback_role_arn": null,
+          "firehose_success_feedback_sample_rate": null,
+          "http_failure_feedback_role_arn": null,
+          "http_success_feedback_role_arn": null,
+          "http_success_feedback_sample_rate": null,
+          "id": "arn:aws:sns:us-east-1:111111111111:bobthecorp-alerts",
+          "kms_master_key_id": null,
+          "lambda_failure_feedback_role_arn": null,
+          "lambda_success_feedback_role_arn": null,
+          "lambda_success_feedback_sample_rate": null,
+          "name": "bobthecorp-alerts",
+          "name_prefix": "bobthecorp-fake-name_prefix",
+          "owner": "bobthecorp-fake-owner",
+          "policy": "bobthecorp-fake-policy",
+          "region": "us-east-1",
+          "signature_version": 0,
+          "sqs_failure_feedback_role_arn": null,
+          "sqs_success_feedback_role_arn": null,
+          "sqs_success_feedback_sample_rate": null,
+          "tags": null,
+          "tags_all": {},
+          "tracing_config": "bobthecorp-fake-tracing_config"
+        },
+        "after_identity": {
+          "arn": "arn:aws:sns:us-east-1:111111111111:bobthecorp-alerts"
+        },
+        "after_sensitive": {
+          "tags_all": {}
+        },
+        "after_unknown": {},
+        "before": {
+          "application_failure_feedback_role_arn": null,
+          "application_success_feedback_role_arn": null,
+          "application_success_feedback_sample_rate": null,
+          "archive_policy": null,
+          "arn": "arn:aws:sns:us-east-1:111111111111:bobthecorp-alerts",
+          "beginning_archive_time": "bobthecorp-fake-beginning_archive_time",
+          "content_based_deduplication": false,
+          "delivery_policy": null,
+          "display_name": null,
+          "fifo_throughput_scope": null,
+          "fifo_topic": false,
+          "firehose_failure_feedback_role_arn": null,
+          "firehose_success_feedback_role_arn": null,
+          "firehose_success_feedback_sample_rate": null,
+          "http_failure_feedback_role_arn": null,
+          "http_success_feedback_role_arn": null,
+          "http_success_feedback_sample_rate": null,
+          "id": "arn:aws:sns:us-east-1:111111111111:bobthecorp-alerts",
+          "kms_master_key_id": null,
+          "lambda_failure_feedback_role_arn": null,
+          "lambda_success_feedback_role_arn": null,
+          "lambda_success_feedback_sample_rate": null,
+          "name": "bobthecorp-alerts",
+          "name_prefix": "bobthecorp-fake-name_prefix",
+          "owner": "bobthecorp-fake-owner",
+          "policy": "bobthecorp-fake-policy",
+          "region": "us-east-1",
+          "signature_version": 0,
+          "sqs_failure_feedback_role_arn": null,
+          "sqs_success_feedback_role_arn": null,
+          "sqs_success_feedback_sample_rate": null,
+          "tags": null,
+          "tags_all": {},
+          "tracing_config": "bobthecorp-fake-tracing_config"
+        },
+        "before_identity": {
+          "arn": "arn:aws:sns:us-east-1:111111111111:bobthecorp-alerts"
+        },
+        "before_sensitive": {
+          "tags_all": {}
+        }
+      },
+      "mode": "managed",
+      "name": "this",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "type": "aws_sns_topic"
+    },
+    {
+      "address": "aws_sns_topic.this",
+      "change": {
+        "actions": [
+          "delete"
+        ],
+        "after": null,
+        "after_sensitive": false,
+        "after_unknown": {},
+        "before": {
+          "application_failure_feedback_role_arn": null,
+          "application_success_feedback_role_arn": null,
+          "application_success_feedback_sample_rate": null,
+          "archive_policy": null,
+          "arn": "arn:aws:sns:us-east-1:111111111111:bobthecorp-alerts-old",
+          "beginning_archive_time": "bobthecorp-fake-beginning_archive_time",
+          "content_based_deduplication": false,
+          "delivery_policy": null,
+          "display_name": null,
+          "fifo_throughput_scope": null,
+          "fifo_topic": false,
+          "firehose_failure_feedback_role_arn": null,
+          "firehose_success_feedback_role_arn": null,
+          "firehose_success_feedback_sample_rate": null,
+          "http_failure_feedback_role_arn": null,
+          "http_success_feedback_role_arn": null,
+          "http_success_feedback_sample_rate": null,
+          "id": "arn:aws:sns:us-east-1:111111111111:bobthecorp-alerts-old",
+          "kms_master_key_id": null,
+          "lambda_failure_feedback_role_arn": null,
+          "lambda_success_feedback_role_arn": null,
+          "lambda_success_feedback_sample_rate": null,
+          "name": "bobthecorp-alerts-old",
+          "name_prefix": "bobthecorp-fake-name_prefix",
+          "owner": "bobthecorp-fake-owner",
+          "policy": "bobthecorp-fake-policy",
+          "region": "us-east-1",
+          "signature_version": 0,
+          "sqs_failure_feedback_role_arn": null,
+          "sqs_success_feedback_role_arn": null,
+          "sqs_success_feedback_sample_rate": null,
+          "tags": null,
+          "tags_all": {},
+          "tracing_config": "bobthecorp-fake-tracing_config"
+        },
+        "before_identity": {
+          "arn": "arn:aws:sns:us-east-1:111111111111:bobthecorp-alerts-old"
+        },
+        "before_sensitive": {
+          "tags_all": {}
+        }
+      },
+      "deposed": "b0b7ec01",
+      "mode": "managed",
+      "name": "this",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "type": "aws_sns_topic"
+    }
+  ],
+  "terraform_version": "1.16.3"
+}

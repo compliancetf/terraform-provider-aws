@@ -1,0 +1,39 @@
+{
+  "id": "iam_bobthecorp_no_kms_wildcard.resource.aws_iam_policy.fail",
+  "resource_type": "aws_iam_policy",
+  "schema": "schema.json",
+  "control": {
+    "id": "iam_bobthecorp_no_kms_wildcard",
+    "version": "1.0.0",
+    "kind": "resource",
+    "resource_type": "aws_iam_policy",
+    "reads": [
+      "policy"
+    ],
+    "presence_mode": "effective",
+    "on": [
+      "create",
+      "update"
+    ],
+    "expr": "iam.parse(resource.policy).statements.all(s, !(s.effect == \"Allow\" && iam.grants_all(s, \"kms\")))",
+    "action": "deny",
+    "severity": "high",
+    "message": "Sample policy grants no KMS wildcard",
+    "framework_refs": [
+      "soc_2:SC6.3"
+    ],
+    "exemption_coverable": []
+  },
+  "bindings": {
+    "op": "create",
+    "provider": {},
+    "resource": {
+      "policy": "{\"Version\":\"2012-10-17\",\"Statement\":[{\"Effect\":\"Allow\",\"Action\":\"kms:*\",\"Resource\":\"*\"}]}"
+    }
+  },
+  "expect": {
+    "state": "fail",
+    "err_class": "",
+    "unknown_paths": []
+  }
+}

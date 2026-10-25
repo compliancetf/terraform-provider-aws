@@ -1,0 +1,50 @@
+{
+  "format": "compliancetf.iampolicy/v1",
+  "version": "2012-10-17",
+  "statements": [
+    {
+      "sid": "",
+      "effect": "Allow",
+      "actions": [
+        "s3:listbucket"
+      ],
+      "not_actions": [],
+      "resources": [
+        "arn:aws:s3:::bobthecorp-home"
+      ],
+      "not_resources": [],
+      "principals": {},
+      "not_principals": {},
+      "conditions": [
+        {
+          "op": "StringLike",
+          "set_op": "",
+          "if_exists": false,
+          "key": "s3:prefix",
+          "values": [
+            "${aws:username}/*",
+            "home/"
+          ]
+        }
+      ],
+      "action_all": false,
+      "principal_any": false,
+      "resource_any": false,
+      "action_any": false,
+      "principal_all": false,
+      "resource_all": false,
+      "unconditional": false,
+      "ambiguous": [
+        "conditional",
+        "principal_absent",
+        "variable"
+      ],
+      "actions_expanded": [],
+      "not_actions_expanded": [],
+      "unresolved_actions": [],
+      "unresolved_principals": {},
+      "unresolved_resources": []
+    }
+  ],
+  "catalog": ""
+}

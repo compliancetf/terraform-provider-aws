@@ -1,0 +1,50 @@
+{
+  "description": "imported object violating a blocking control: warning only (import marks evidence; plan enforces)",
+  "stage": "import",
+  "mode": "hard_fail",
+  "op": "import",
+  "new": {
+    "storage_encrypted": false,
+    "kms_key_id": "arn:aws:kms:us-east-1:111122223333:key/bobthecorp-rds",
+    "engine": "postgres",
+    "deletion_protection": true,
+    "id": "bobthecorp-db"
+  },
+  "want": {
+    "diagnostics": [
+      {
+        "severity": "warning",
+        "summary": "[rds_db_instance_encryption_at_rest_enabled] RDS storage must be encrypted at rest.",
+        "detail": "Fix: Set storage_encrypted = true.\nSeverity: high\nMode: hard_fail\nStage: import\nFrameworks: soc_2:CC6.1, cis_aws:2.3.1\nTo waive: add an exception for rds_db_instance_encryption_at_rest_enabled in compliance-exceptions.hcl",
+        "attribute": "AttributeName(\"storage_encrypted\")"
+      }
+    ],
+    "evidence": {
+      "op": "import",
+      "results": [
+        {
+          "control": "rds_db_instance_encryption_at_rest_enabled",
+          "state": "fail",
+          "decision": "warning"
+        },
+        {
+          "control": "rds_instance_engine_not_mysql",
+          "state": "pass",
+          "decision": "logged"
+        },
+        {
+          "control": "rds_instance_deletion_protection_enabled",
+          "state": "pass",
+          "decision": "logged"
+        }
+      ],
+      "resource": {
+        "id": "bobthecorp-db",
+        "identity": null,
+        "identity_kind": "id",
+        "op": "import",
+        "type": "aws_db_instance"
+      }
+    }
+  }
+}

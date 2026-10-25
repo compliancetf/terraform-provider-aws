@@ -1,0 +1,14 @@
+{
+  "format": "compliancetf.profile/v1",
+  "org_id": "bobthecorp",
+  "profile_version": 1,
+  "issued_at": "2026-10-01T00:00:00Z",
+  "expires_at": "2026-10-20T00:00:00Z",
+  "governed": true,
+  "mode_floor": {"default": "soft_fail"},
+  "floor_mode": "online",
+  "verdict_required": false,
+  "exceptions": {"coverable": {"rds_kms_key_policy_denies": ["baseline", "break_glass"]}},
+  "evidence": {"required": false},
+  "budgets": {"per_resource_ms": 2000, "per_run_s": 300}
+}

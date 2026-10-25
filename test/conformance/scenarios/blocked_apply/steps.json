@@ -1,0 +1,9 @@
+{
+  "evaluator": "deny:fake_thing",
+  "steps": [
+    {"cmd": ["apply", "-no-color", "-auto-approve", "-refresh-only"], "exit": 0, "stdout_contains": ["No changes."]},
+    {"cmd": ["apply", "-no-color", "-auto-approve", "-var", "size=2"], "exit": 1, "stdout_contains": ["fake_thing.a will be updated in-place"], "stderr_contains": ["Conformance test evaluator: deny", "deny:fake_thing blocks apply_pre of fake_thing"], "state_unchanged": true},
+    {"cmd": ["destroy", "-no-color", "-auto-approve"], "exit": 1, "stdout_contains": ["fake_thing.a will be destroyed"], "stderr_contains": ["Conformance test evaluator: deny"], "state_unchanged": true},
+    {"cmd": ["plan", "-no-color", "-detailed-exitcode", "-var", "size=2"], "exit": 2, "stdout_contains": ["fake_thing.a will be updated in-place", "Plan: 0 to add, 1 to change, 0 to destroy."], "state_unchanged": true}
+  ]
+}

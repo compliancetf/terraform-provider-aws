@@ -1,0 +1,69 @@
+{
+  "entries": [
+    {
+      "actions": [
+        "create"
+      ],
+      "address": "aws_ebs_volume.new",
+      "keys": [
+        {
+          "after": {
+            "encrypted": "b:true",
+            "final_snapshot": "b:false",
+            "region": "s:us-east-1",
+            "size": "n:100",
+            "type": "s:gp3"
+          },
+          "after_hashed_jcs": "{\"encrypted\":\"b68daeb52706f9e937299d1a17344104761b9d0971847be00331406c41f0e9a4\",\"final_snapshot\":\"bd2697924fc3dbc2684e37198d7f4911d738e969f1d3a4db9e113420c2e90f17\",\"region\":\"8df8ff45a31e55a282b554a4217667bd534d60853102522fb525315732856f2a\",\"size\":\"8f4500172ed4c1eab8f60aa8f787243daafe926120cbb0f4ff9c95e639d02827\",\"type\":\"a434793ecb50bf027d9e90f49febc74cdb8e650c28192359e632260f14a05189\"}",
+          "field": "instance_key",
+          "form": "create",
+          "prior_identity": null,
+          "prior_identity_hashed_jcs": "null",
+          "prior_identity_kind": "none"
+        }
+      ]
+    },
+    {
+      "actions": [
+        "update"
+      ],
+      "address": "aws_ebs_volume.this",
+      "keys": [
+        {
+          "after": {
+            "arn": "s:arn:aws:ec2:us-east-1:111111111111:volume/vol-0fffffffffffffff1",
+            "availability_zone": "s:us-east-1a",
+            "create_time": "s:bobthecorp-fake-create_time",
+            "encrypted": "b:true",
+            "final_snapshot": "b:false",
+            "id": "s:vol-0fffffffffffffff1",
+            "iops": "n:0",
+            "kms_key_id": "s:bobthecorp-fake-kms_key_id",
+            "region": "s:us-east-1",
+            "size": "n:20",
+            "snapshot_id": "s:bobthecorp-fake-snapshot_id",
+            "tags": {
+              "Name": "s:bobthecorp-vol"
+            },
+            "tags_all": {
+              "Name": "s:bobthecorp-vol"
+            },
+            "throughput": "n:0",
+            "type": "s:gp3"
+          },
+          "after_hashed_jcs": "{\"arn\":\"88e41fa7e02c06cdcd92a808a92e1cb8089233be45010d6c41cb077ad3def703\",\"availability_zone\":\"4ed049e5cc0ee1b02f351b2aed1d2a858c95245eacf3080ae9ddbb6b24769df0\",\"create_time\":\"ba3f9d6f090418c37679a9c05275627086eecc09b576bd422c85cebbb7f58d38\",\"encrypted\":\"b68daeb52706f9e937299d1a17344104761b9d0971847be00331406c41f0e9a4\",\"final_snapshot\":\"bd2697924fc3dbc2684e37198d7f4911d738e969f1d3a4db9e113420c2e90f17\",\"id\":\"36b56b93a65be0ea95ed629e0f4fe8588bf957dc257d292c826685e31b41b642\",\"iops\":\"dbc1ba5eae39dfb316df813dce9a556086f045ebdb47b91c1cadfbe46b6c0741\",\"kms_key_id\":\"c4f69da0dd5a34d9a644fb78fcc12232402767fccbb224ebc85193b9cf85cca6\",\"region\":\"8df8ff45a31e55a282b554a4217667bd534d60853102522fb525315732856f2a\",\"size\":\"7068079081b9f666c8f8b119fd6c055b71c86325cb9d6a14e9eecdf9de0827af\",\"snapshot_id\":\"cb2f42f9dc46f6188cf0d5039b697a060600bacdb768abd6af2dfe88a75516ba\",\"tags\":{\"Name\":\"280a79f27401fc2ff93580bd52066439e22b807d0ab1ba75209feb41e9862bd6\"},\"tags_all\":{\"Name\":\"280a79f27401fc2ff93580bd52066439e22b807d0ab1ba75209feb41e9862bd6\"},\"throughput\":\"dbc1ba5eae39dfb316df813dce9a556086f045ebdb47b91c1cadfbe46b6c0741\",\"type\":\"a434793ecb50bf027d9e90f49febc74cdb8e650c28192359e632260f14a05189\"}",
+          "field": "instance_key",
+          "form": "update",
+          "prior_identity": {
+            "id": "s:vol-0fffffffffffffff1"
+          },
+          "prior_identity_hashed_jcs": "{\"id\":\"36b56b93a65be0ea95ed629e0f4fe8588bf957dc257d292c826685e31b41b642\"}",
+          "prior_identity_kind": "id"
+        }
+      ]
+    }
+  ],
+  "format": "compliancetf.instancekey.golden/v1",
+  "provider_version": "hashicorp/aws 6.65.0",
+  "terraform_version": "1.16.3"
+}

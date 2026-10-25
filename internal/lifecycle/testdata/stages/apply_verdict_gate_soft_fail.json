@@ -1,0 +1,39 @@
+{
+  "description": "soft_fail never downgrades the verdict gate",
+  "stage": "apply_pre",
+  "type_name": "aws_s3_bucket",
+  "mode": "soft_fail",
+  "verdict_required": true,
+  "op": "create",
+  "config": {
+    "storage_encrypted": true,
+    "kms_key_id": "arn:aws:kms:us-east-1:111122223333:key/bobthecorp-rds",
+    "engine": "postgres"
+  },
+  "prior": null,
+  "planned": {
+    "storage_encrypted": true,
+    "kms_key_id": "arn:aws:kms:us-east-1:111122223333:key/bobthecorp-rds",
+    "engine": "postgres",
+    "deletion_protection": true
+  },
+  "want": {
+    "diagnostics": [
+      {
+        "severity": "error",
+        "summary": "Verdict required",
+        "detail": "This change needs a verdict (profile sets verdict_required). Apply through ctfkit apply or the configured runner."
+      }
+    ],
+    "evidence": {
+      "op": "create",
+      "results": [
+        {
+          "control": "verdict_required",
+          "state": "fail",
+          "decision": "blocked"
+        }
+      ]
+    }
+  }
+}

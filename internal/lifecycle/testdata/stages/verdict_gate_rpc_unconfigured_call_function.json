@@ -1,0 +1,19 @@
+{
+  "description": "CallFunction before Configure is allowed (Terraform calls it during validate)",
+  "stage": "rpc",
+  "method": "/tfplugin5.Provider/CallFunction",
+  "mode": "hard_fail",
+  "verdict_required": true,
+  "op": "",
+  "gated": true,
+  "type_name": "rpc_call_function",
+  "unconfigured": true,
+  "verdict": {
+    "entries": [],
+    "want_keys": []
+  },
+  "want": {
+    "diagnostics": [],
+    "no_record": true
+  }
+}

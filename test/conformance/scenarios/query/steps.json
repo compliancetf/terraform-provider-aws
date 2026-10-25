@@ -1,0 +1,6 @@
+{
+  "requires": ["query"],
+  "steps": [
+    {"cmd": ["query", "-no-color"], "exit": 0, "stdout_contains": ["list.fake_thing.all   id=bobthecorp-1   bobthecorp-1", "list.fake_thing.all   id=bobthecorp-2   bobthecorp-2"], "state_unchanged": true}
+  ]
+}

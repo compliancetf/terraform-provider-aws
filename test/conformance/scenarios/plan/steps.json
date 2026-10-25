@@ -1,0 +1,6 @@
+{
+  "steps": [
+    {"cmd": ["validate", "-no-color"], "exit": 0, "stdout_contains": ["Success! The configuration is valid"]},
+    {"cmd": ["plan", "-no-color", "-detailed-exitcode"], "exit": 2, "stdout_contains": ["fake_thing.a will be created", "Plan: 1 to add, 0 to change, 0 to destroy."], "state_unchanged": true}
+  ]
+}

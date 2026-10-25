@@ -1,0 +1,40 @@
+set of strings: size, configured
+-- intent.json --
+{
+ "id": "rds_db_instance_logging_enabled",
+ "resource_type": "aws_db_instance",
+ "attributes": [
+  {
+   "schema_path": "enabled_cloudwatch_logs_exports",
+   "condition": "not_empty",
+   "values": [],
+   "values_from_ref": null
+  }
+ ],
+ "explanation": "Explanation of rds_db_instance_logging_enabled.",
+ "postcondition": "",
+ "has_strategy_condition": false
+}
+-- want.json --
+{
+  "control": {
+    "id": "rds_db_instance_logging_enabled",
+    "version": "1.0.0",
+    "kind": "resource",
+    "resource_type": "aws_db_instance",
+    "reads": [
+      "enabled_cloudwatch_logs_exports"
+    ],
+    "presence_mode": "configured",
+    "on": [
+      "create",
+      "update"
+    ],
+    "expr": "config.enabled_cloudwatch_logs_exports != null && size(config.enabled_cloudwatch_logs_exports) > 0",
+    "action": "deny",
+    "severity": "",
+    "message": "",
+    "fix": "Explanation of rds_db_instance_logging_enabled.",
+    "exemption_coverable": []
+  }
+}

@@ -1,0 +1,167 @@
+{
+  "catalog_snapshot_id": "snap_20261004_000000_000000",
+  "bundles": {
+    "all": {
+      "frameworks": [],
+      "release": "preview",
+      "controls": 6,
+      "dispositions": {
+        "companion-local": 1,
+        "graph": 1,
+        "not-expressible": 0,
+        "provider-local": 3,
+        "runtime": 1
+      },
+      "generated": 0,
+      "pending_review": [
+        "iam_bobthecorp_no_kms_wildcard",
+        "rds_bobthecorp_storage_encrypted",
+        "s3_bobthecorp_versioning_on"
+      ],
+      "pending_authoring": [
+        "rds_bobthecorp_deletion_guard"
+      ],
+      "with_iac_tool_id": 2,
+      "clauses": {},
+      "not_visible": {
+        "aws_s3_bucket_versioning": {
+          "graph": [
+            "s3_bobthecorp_lifecycle_versioned"
+          ]
+        }
+      },
+      "not_visible_untargeted": [
+        "acct_bobthecorp_contact_set"
+      ]
+    },
+    "cis-aws": {
+      "frameworks": [
+        "cis_v600"
+      ],
+      "release": "preview",
+      "controls": 2,
+      "dispositions": {
+        "companion-local": 0,
+        "graph": 0,
+        "not-expressible": 0,
+        "provider-local": 1,
+        "runtime": 1
+      },
+      "generated": 0,
+      "pending_review": [
+        "rds_bobthecorp_storage_encrypted"
+      ],
+      "pending_authoring": [],
+      "with_iac_tool_id": 1,
+      "clauses": {
+        "cis_v600": {
+          "covered": 0,
+          "total": 3
+        }
+      },
+      "not_visible": {},
+      "not_visible_untargeted": [
+        "acct_bobthecorp_contact_set"
+      ]
+    },
+    "hipaa-aws": {
+      "frameworks": [
+        "hipaa_security_2003",
+        "hipaa_final_omnibus_2013"
+      ],
+      "release": "preview",
+      "controls": 1,
+      "dispositions": {
+        "companion-local": 0,
+        "graph": 0,
+        "not-expressible": 0,
+        "provider-local": 1,
+        "runtime": 0
+      },
+      "generated": 0,
+      "pending_review": [],
+      "pending_authoring": [
+        "rds_bobthecorp_deletion_guard"
+      ],
+      "with_iac_tool_id": 1,
+      "clauses": {
+        "hipaa_final_omnibus_2013": {
+          "covered": 0,
+          "total": 1
+        },
+        "hipaa_security_2003": {
+          "covered": 0,
+          "total": 1
+        }
+      },
+      "not_visible": {},
+      "not_visible_untargeted": []
+    },
+    "pci-dss-aws": {
+      "frameworks": [
+        "pci_dss_v40"
+      ],
+      "release": "preview",
+      "controls": 2,
+      "dispositions": {
+        "companion-local": 1,
+        "graph": 0,
+        "not-expressible": 0,
+        "provider-local": 1,
+        "runtime": 0
+      },
+      "generated": 0,
+      "pending_review": [
+        "s3_bobthecorp_versioning_on"
+      ],
+      "pending_authoring": [
+        "rds_bobthecorp_deletion_guard"
+      ],
+      "with_iac_tool_id": 1,
+      "clauses": {
+        "pci_dss_v40": {
+          "covered": 0,
+          "total": 2
+        }
+      },
+      "not_visible": {},
+      "not_visible_untargeted": []
+    },
+    "soc2-aws": {
+      "frameworks": [
+        "soc_2"
+      ],
+      "release": "preview",
+      "controls": 4,
+      "dispositions": {
+        "companion-local": 1,
+        "graph": 1,
+        "not-expressible": 0,
+        "provider-local": 2,
+        "runtime": 0
+      },
+      "generated": 0,
+      "pending_review": [
+        "iam_bobthecorp_no_kms_wildcard",
+        "rds_bobthecorp_storage_encrypted",
+        "s3_bobthecorp_versioning_on"
+      ],
+      "pending_authoring": [],
+      "with_iac_tool_id": 1,
+      "clauses": {
+        "soc_2": {
+          "covered": 0,
+          "total": 4
+        }
+      },
+      "not_visible": {
+        "aws_s3_bucket_versioning": {
+          "graph": [
+            "s3_bobthecorp_lifecycle_versioned"
+          ]
+        }
+      },
+      "not_visible_untargeted": []
+    }
+  }
+}

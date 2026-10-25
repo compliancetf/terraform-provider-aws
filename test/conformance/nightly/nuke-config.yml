@@ -1,0 +1,37 @@
+# aws-nuke v3 config for the sandbox account (nightly.yml, job nuke), which
+# renders the @...@ placeholders from repository variables. Everything in these
+# regions that no filter matches is deleted; the filters keep the owner setup
+# from README.md and the organization's access and SSO roles.
+blocklist:
+  - "@BLOCKLIST_ACCOUNT_ID@"
+
+regions:
+  - global
+  - "@REGION@"
+
+accounts:
+  "@SANDBOX_ACCOUNT_ID@":
+    filters:
+      IAMOpenIDConnectProvider:
+        - type: contains
+          value: "token.actions.githubusercontent.com"
+      IAMRole:
+        - type: glob
+          value: "bobthecorp-ctf-conf-*"
+        - "OrganizationAccountAccessRole"
+        - type: glob
+          value: "AWSReservedSSO_*"
+      IAMRolePolicy: &rolepolicies
+        - type: glob
+          value: "bobthecorp-ctf-conf-* -> *"
+        - type: glob
+          value: "OrganizationAccountAccessRole -> *"
+        - type: glob
+          value: "AWSReservedSSO_* -> *"
+      IAMRolePolicyAttachment: *rolepolicies
+      IAMPolicy:
+        - type: contains
+          value: ":policy/bobthecorp-ctf-conf-"
+      BudgetsBudget:
+        - type: glob
+          value: "bobthecorp-ctf-conf-*"

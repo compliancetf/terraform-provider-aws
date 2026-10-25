@@ -1,0 +1,21 @@
+{
+  "description": "refresh before Configure fails (the proxy reports it as a warning)",
+  "stage": "read",
+  "mode": "hard_fail",
+  "unconfigured": true,
+  "prior": {
+    "storage_encrypted": true,
+    "kms_key_id": "arn:aws:kms:us-east-1:111122223333:key/bobthecorp-rds",
+    "engine": "postgres",
+    "deletion_protection": true
+  },
+  "new": {
+    "storage_encrypted": true,
+    "kms_key_id": "arn:aws:kms:us-east-1:111122223333:key/bobthecorp-rds",
+    "engine": "postgres",
+    "deletion_protection": true
+  },
+  "want": {
+    "error": "refresh before Configure"
+  }
+}

@@ -1,0 +1,50 @@
+{
+  "description": "stamp mismatch: every blocking control fails closed with a re-plan message, the non-blocking one warns, even on compliant values",
+  "stage": "apply_pre",
+  "mode": "hard_fail",
+  "op": "create",
+  "envelope": {
+    "op": "create",
+    "digest": "sha256:stale"
+  },
+  "config": {
+    "storage_encrypted": true,
+    "kms_key_id": "arn:aws:kms:us-east-1:111122223333:key/bobthecorp-rds",
+    "engine": "postgres"
+  },
+  "prior": null,
+  "planned": {
+    "storage_encrypted": true,
+    "kms_key_id": "arn:aws:kms:us-east-1:111122223333:key/bobthecorp-rds",
+    "engine": "postgres",
+    "deletion_protection": true
+  },
+  "want": {
+    "diagnostics": [
+      {
+        "severity": "error",
+        "summary": "[rds_db_instance_encryption_at_rest_enabled] controls changed between plan and apply",
+        "detail": "Controls changed between plan and apply: plan used sha256:stale, provider loaded <current>. Re-run plan.",
+        "attribute": "AttributeName(\"storage_encrypted\")"
+      },
+      {
+        "severity": "error",
+        "summary": "[rds_instance_kms_key_configured] controls changed between plan and apply",
+        "detail": "Controls changed between plan and apply: plan used sha256:stale, provider loaded <current>. Re-run plan.",
+        "attribute": "AttributeName(\"kms_key_id\")"
+      },
+      {
+        "severity": "warning",
+        "summary": "[rds_instance_engine_not_mysql] controls changed between plan and apply",
+        "detail": "Controls changed between plan and apply: plan used sha256:stale, provider loaded <current>. Re-run plan.",
+        "attribute": "AttributeName(\"engine\")"
+      },
+      {
+        "severity": "error",
+        "summary": "[rds_instance_deletion_protection_enabled] controls changed between plan and apply",
+        "detail": "Controls changed between plan and apply: plan used sha256:stale, provider loaded <current>. Re-run plan.",
+        "attribute": "AttributeName(\"deletion_protection\")"
+      }
+    ]
+  }
+}

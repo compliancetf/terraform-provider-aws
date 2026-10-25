@@ -1,0 +1,8 @@
+{"id": "M-02-variables", "schema": "testdata/schemas/aws-subset.json",
+ "about": "The same values read through two variables: swapping them changes the result, so the memo key must name the variable of each read. One control cannot read config beside resource (variable-by-mode table), so this uses resource and prior; celeng TestPrefilterVariables pins config against resource at the key.",
+ "controls": [
+  {"id": "crosscheck_m_02_variables", "version": "1.0.0", "kind": "resource", "resource_type": "aws_db_instance", "reads": ["storage_encrypted"], "presence_mode": "effective", "on": ["create", "update"], "expr": "resource.storage_encrypted == true && prior.storage_encrypted == false", "action": "deny", "severity": "high", "message": "Fixture control."}],
+ "steps": [
+  {"resource_type": "aws_db_instance", "bindings": {"op": "create", "env": "prod", "provider": {"region": "eu-west-1", "account_id": "111111111111"}, "resource": {"storage_encrypted": true}, "prior": {"storage_encrypted": false}}, "expect": {"state": "pass", "err_class": "", "unknown_paths": []}},
+  {"resource_type": "aws_db_instance", "bindings": {"op": "create", "env": "prod", "provider": {"region": "eu-west-1", "account_id": "111111111111"}, "resource": {"storage_encrypted": false}, "prior": {"storage_encrypted": true}}, "expect": {"state": "fail", "err_class": "", "unknown_paths": []}},
+  {"resource_type": "aws_db_instance", "bindings": {"op": "create", "env": "prod", "provider": {"region": "eu-west-1", "account_id": "111111111111"}, "resource": {"storage_encrypted": true}, "prior": {"storage_encrypted": false}}, "expect": {"state": "pass", "err_class": "", "unknown_paths": [], "memoized": true}}]}

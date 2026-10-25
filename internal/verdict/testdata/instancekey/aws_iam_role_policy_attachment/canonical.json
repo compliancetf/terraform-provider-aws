@@ -1,0 +1,42 @@
+{
+  "entries": [
+    {
+      "action_reason": "replace_because_cannot_update",
+      "actions": [
+        "create",
+        "delete"
+      ],
+      "address": "aws_iam_role_policy_attachment.this",
+      "keys": [
+        {
+          "after": {
+            "policy_arn": "s:arn:aws:iam::aws:policy/AmazonS3ReadOnlyAccess",
+            "role": "s:bobthecorp-app"
+          },
+          "after_hashed_jcs": "{\"policy_arn\":\"51c8e0acd0c86144d9582ca377d36878b9c65131dee4bfe4e23b4c63d2e4607d\",\"role\":\"109229a95cf126951bb1625de7ecc3cdefec5e3bfcfa4efa6c6613f73e893a35\"}",
+          "field": "instance_key",
+          "form": "create",
+          "prior_identity": null,
+          "prior_identity_hashed_jcs": "null",
+          "prior_identity_kind": "none"
+        },
+        {
+          "after": null,
+          "after_hashed_jcs": "null",
+          "field": "delete_key",
+          "form": "delete",
+          "prior_identity": {
+            "account_id": "s:111111111111",
+            "policy_arn": "s:arn:aws:iam::aws:policy/ReadOnlyAccess",
+            "role": "s:bobthecorp-app"
+          },
+          "prior_identity_hashed_jcs": "{\"account_id\":\"47e7ec2525e1a3e184c7844d068e98ee8789c5c565812114c46d959065728ced\",\"policy_arn\":\"ea3875aa614cef04aa64cc1b0fa93a604f4b12cfd8d2538d5c91b06c6fe2dcdc\",\"role\":\"109229a95cf126951bb1625de7ecc3cdefec5e3bfcfa4efa6c6613f73e893a35\"}",
+          "prior_identity_kind": "identity"
+        }
+      ]
+    }
+  ],
+  "format": "compliancetf.instancekey.golden/v1",
+  "provider_version": "hashicorp/aws 6.65.0",
+  "terraform_version": "1.16.3"
+}

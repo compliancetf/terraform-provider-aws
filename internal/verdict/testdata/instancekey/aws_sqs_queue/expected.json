@@ -1,0 +1,80 @@
+{
+  "entries": [
+    {
+      "actions": [
+        "create"
+      ],
+      "address": "aws_sqs_queue.new",
+      "keys": [
+        {
+          "field": "instance_key",
+          "form": "create",
+          "key": "sha256:23e9e32ddbfa825bccbaeeee91ca338138a83784a5ae58d9d22934963e4fafe0",
+          "prior_identity_kind": "none",
+          "unknown_paths": [
+            [
+              "arn"
+            ],
+            [
+              "deduplication_scope"
+            ],
+            [
+              "fifo_throughput_limit"
+            ],
+            [
+              "id"
+            ],
+            [
+              "kms_data_key_reuse_period_seconds"
+            ],
+            [
+              "kms_master_key_id"
+            ],
+            [
+              "name_prefix"
+            ],
+            [
+              "policy"
+            ],
+            [
+              "redrive_allow_policy"
+            ],
+            [
+              "redrive_policy"
+            ],
+            [
+              "sqs_managed_sse_enabled"
+            ],
+            [
+              "tags_all"
+            ],
+            [
+              "url"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "actions": [
+        "update"
+      ],
+      "address": "aws_sqs_queue.this",
+      "keys": [
+        {
+          "field": "instance_key",
+          "form": "update",
+          "key": "sha256:cebeb42304df822ee841594cfbcdbdb303ea4d2e87d69d56c455aa4200ada392",
+          "prior_identity_kind": "identity",
+          "unknown_paths": []
+        }
+      ]
+    }
+  ],
+  "format": "compliancetf.instancekey.golden/v1",
+  "k_leaf_hex": "845cba3b9048a0ea701ceebf35bf8d23f96345d369ee41f24777d11aee0609eb",
+  "key_check": "278a53702bed79d81258d55c57dbfd708733a1e9d04c6fe3e8a7e5d0ca565a63",
+  "provider_version": "hashicorp/aws 6.65.0",
+  "terraform_version": "1.16.3",
+  "test_secret_hex": "494e5345435552452d544553542d5345435245542d696e7374616e63656b6579"
+}

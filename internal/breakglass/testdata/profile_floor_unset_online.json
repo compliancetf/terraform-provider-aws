@@ -1,0 +1,15 @@
+{
+  "description": "profile floor_mode unset under a governed online floor honors the receipt",
+  "policy": {
+    "profile_floor_mode": ""
+  },
+  "queries": [
+    {
+      "control": "CTF.S3.1",
+      "key": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "result": "fail",
+      "want": true
+    }
+  ],
+  "warning": ""
+}

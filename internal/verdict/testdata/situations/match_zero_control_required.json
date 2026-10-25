@@ -1,0 +1,20 @@
+{
+  "description": "match zero control required",
+  "verdict": true,
+  "required": true,
+  "delete": false,
+  "type": "aws_s3_bucket",
+  "matches": [
+    {
+      "address": "aws_s3_bucket.logs",
+      "type": "aws_s3_bucket",
+      "action": "create",
+      "decisions": [],
+      "not_evaluable": [],
+      "exceptions": []
+    }
+  ],
+  "graph": [],
+  "excepted": [],
+  "want": []
+}

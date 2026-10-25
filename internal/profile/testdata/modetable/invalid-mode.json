@@ -1,0 +1,8 @@
+{"profile": null, "cases": [
+{"name": "hcl-uppercase", "input": {"fallback": "free_tier", "hcl_mode": "HARD_FAIL"},
+ "want": {"error": "enforcement_mode \"HARD_FAIL\": want advisory, soft_fail, grandfather or hard_fail"}},
+{"name": "env-invalid-hcl-valid", "input": {"fallback": "free_tier", "hcl_mode": "hard_fail", "env_mode": "strict"},
+ "want": {"error": "enforcement_mode \"strict\": want advisory, soft_fail, grandfather or hard_fail"}},
+{"name": "both-invalid-hcl-first", "input": {"fallback": "free_tier", "hcl_mode": "off", "env_mode": "strict"},
+ "want": {"error": "enforcement_mode \"off\": want advisory, soft_fail, grandfather or hard_fail"}}
+]}

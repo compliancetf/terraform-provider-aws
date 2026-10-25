@@ -1,0 +1,239 @@
+name: Upstream watch
+
+# Opens the pin-bump PR for the next hashicorp/aws release
+# (version parity: compliancetf/aws X.Y.Z proxies hashicorp/aws X.Y.Z).
+# tools/upstreamwatch picks the version: the oldest release newer than
+# pins.json, one pin PR at a time (each rewrites the same files), none
+# skipped; nothing while a pin/hashicorp-aws-* branch has an open PR, and a
+# red run when such a branch has none. A dispatch may name a newer release.
+#
+# The pin job runs `make pin` (it executes the downloaded, signature-checked
+# upstream provider) with a read-only token and hands its one commit over as
+# a git bundle. The publish job runs no repository or upstream code: it
+# checks the commit (one commit on the run's master SHA, make pin outputs
+# only),
+# pushes the branch and opens the PR. When `make pin` stops for an owner
+# decision, the partial commit opens as a draft PR carrying the message.
+# No auto-merge, no tag. PRs opened with GITHUB_TOKEN start no workflows.
+on:
+  schedule:
+    - cron: "41 5 * * *"
+  workflow_dispatch:
+    inputs:
+      version:
+        description: hashicorp/aws release to pin, X.Y.Z (default the oldest newer than pins.json)
+        type: string
+        default: ""
+
+permissions: {}
+
+concurrency:
+  group: upstream-watch
+  cancel-in-progress: false
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  pin:
+    name: Pick and pin
+    if: github.ref == 'refs/heads/master'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: read
+      pull-requests: read
+    outputs:
+      next: ${{ steps.pick.outputs.next }}
+      branch: ${{ steps.pick.outputs.branch }}
+      status: ${{ steps.pin.outputs.status }}
+    steps:
+      # The run's SHA in both jobs: the bundle's prerequisite and parent check.
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
+        with:
+          go-version-file: go.mod
+          cache: false
+      - name: Pick the version
+        id: pick
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          WANT: ${{ inputs.version }}
+        run: |
+          set -euo pipefail
+          d="$RUNNER_TEMP/watch"
+          mkdir -p "$d"
+          curl -fsSL --proto '=https' --max-filesize 16777216 -o "$d/versions.json" \
+            https://registry.terraform.io/v1/providers/hashicorp/aws/versions
+          gh api "repos/$REPO/git/matching-refs/heads/pin/hashicorp-aws-" --jq '.[].ref' \
+            | sed 's|^refs/heads/||' >"$d/branches.txt"
+          # Same-repo heads only: a fork branch of the same name is not a pin PR.
+          gh api --paginate "repos/$REPO/pulls?state=open&per_page=100" \
+            | jq -r --arg repo "$REPO" '.[] | select(.head.repo.full_name == $repo) | .head.ref' >"$d/open.txt"
+          go run ./tools/upstreamwatch -versions "$d/versions.json" -branches "$d/branches.txt" \
+            -open "$d/open.txt" -version "$WANT" | tee -a "$GITHUB_OUTPUT"
+
+      - if: steps.pick.outputs.next != ''
+        uses: hashicorp/setup-terraform@dfe3c3f87815947d99a8997f908cb6525fc44e9e # v4.0.1
+        with:
+          terraform_version: 1.16.3
+          terraform_wrapper: false
+      # The jq that captured testdata/schemas (aws-subset.provenance.json).
+      - name: Install jq (pinned sha256)
+        if: steps.pick.outputs.next != ''
+        env:
+          JQ_VERSION: jq-1.8.2
+          JQ_SHA256: b1c22172dd303f3be49e935aa56aa48a8b7a46e0bc838b4997d3bb451495870f
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/bin"
+          curl -fsSL --proto '=https' -o "$RUNNER_TEMP/bin/jq" \
+            "https://github.com/jqlang/jq/releases/download/$JQ_VERSION/jq-linux-amd64"
+          echo "$JQ_SHA256  $RUNNER_TEMP/bin/jq" | sha256sum -c -
+          chmod +x "$RUNNER_TEMP/bin/jq"
+          echo "$RUNNER_TEMP/bin" >>"$GITHUB_PATH"
+
+      - name: make pin
+        id: pin
+        if: steps.pick.outputs.next != ''
+        env:
+          NEXT: ${{ steps.pick.outputs.next }}
+          BRANCH: ${{ steps.pick.outputs.branch }}
+          PINNED: ${{ steps.pick.outputs.pinned }}
+          QUEUED: ${{ steps.pick.outputs.queued }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          set -euo pipefail
+          out="$RUNNER_TEMP/out"
+          mkdir -p "$out"
+          status=ok
+          make pin VERSION="$NEXT" >"$out/pin.log" 2>&1 || status=failed
+          cat "$out/pin.log"
+          # Only tools/cispin's owner-decision stop opens a draft; any other failure is a red run.
+          if [ "$status" = failed ]; then
+            grep -q '^cispin: owner decision:' "$out/pin.log" || { echo "::error::make pin VERSION=$NEXT failed; see the log above"; exit 1; }
+            status=owner-action
+          fi
+          git switch -c "$BRANCH"
+          git add -A
+          if git diff --cached --quiet; then
+            echo "::error::make pin VERSION=$NEXT changed nothing (pinupstream failed?); see the log above"
+            exit 1
+          fi
+          git -c user.name='github-actions[bot]' -c user.email='41898282+github-actions[bot]@users.noreply.github.com' \
+            commit -q -m "chore(pin): hashicorp/aws $NEXT"
+          resign=false
+          git diff --quiet HEAD~1 HEAD -- internal/embedded/cis/ || resign=true
+          git bundle create "$out/pin.bundle" "$BRANCH" "^$GITHUB_SHA"
+          {
+            if [ "$status" = owner-action ]; then
+              echo "> [!WARNING]"
+              echo "> \`make pin VERSION=$NEXT\` stopped for an owner decision (log below). This draft carries what it wrote before it stopped. Resolve it (for example review the controls and widen the CIS manifest \`version_range\`), then on this branch run \`make pin VERSION=$NEXT\` again and push."
+              echo
+            fi
+            echo "Pins hashicorp/aws **$NEXT** (was $PINNED): \`make pin VERSION=$NEXT\` from the [upstream watch run]($RUN_URL)."
+            echo
+            echo "## Changed"
+            echo
+            echo '```'
+            git diff --stat HEAD~1 HEAD
+            echo '```'
+            echo
+            echo "## Owner steps"
+            echo
+            if [ "$status" = owner-action ]; then
+              echo "1. Re-signing is decided after the owner decision: once \`make pin VERSION=$NEXT\` passes on this branch, re-sign \`internal/embedded/cis.tar.gz\` with \`KEY=<production bundle key PEM> scripts/owner-sign-cis.sh\` if it changed \`internal/embedded/cis/\`."
+            elif [ "$resign" = true ]; then
+              echo "1. The CIS manifest changed, so \`internal/embedded/cis.tar.gz\` must be re-signed; until then TestReleaseKeyGuard fails and \`make test\` stays red (expected):"
+              echo
+              echo '   ```bash'
+              echo "   git fetch origin && git switch $BRANCH"
+              echo "   KEY=<production bundle key PEM> scripts/owner-sign-cis.sh"
+              echo "   git add internal/embedded/cis.tar.gz && git commit -m \"chore(pin): re-sign cis.tar.gz for hashicorp/aws $NEXT\" && git push"
+              echo '   ```'
+            else
+              echo "1. The CIS manifest did not change: \`cis.tar.gz\` needs no re-signing."
+            fi
+            echo "2. No CI runs on this PR: it was opened with GITHUB_TOKEN, which starts no workflows (the protected-paths gate included), and the repo has no PR CI. Run \`make test\` and \`GOTOOLCHAIN=go1.26.2 make lint\` locally."
+            echo "3. Merge by hand (no auto-merge). Then tag the merge commit on master: \`git tag v$NEXT <merge SHA> && git push origin v$NEXT\` (release.yml requires the tag to equal the pins.json version)."
+            echo
+            if [ -n "$QUEUED" ]; then
+              echo "Newer releases wait for this PR to merge, then open one per day in order: $QUEUED."
+            fi
+            echo
+            echo "<details><summary>make pin output</summary>"
+            echo
+            echo '~~~'
+            # Tool output: no markup can close the fence or the details block.
+            tail -n 60 "$out/pin.log" | tr '<>`~' '    '
+            echo '~~~'
+            echo
+            echo "</details>"
+          } >"$out/body.md"
+          echo "status=$status" >>"$GITHUB_OUTPUT"
+      - if: steps.pick.outputs.next != ''
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: pin
+          path: |
+            ${{ runner.temp }}/out/pin.bundle
+            ${{ runner.temp }}/out/body.md
+          retention-days: 3
+          if-no-files-found: error
+
+  publish:
+    name: Open the pin PR
+    needs: pin
+    if: needs.pin.outputs.next != ''
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      # The run's SHA in both jobs: the bundle's prerequisite and parent check.
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: pin
+          path: ${{ runner.temp }}/pin
+      - name: Check the commit, push the branch, open the PR
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          NEXT: ${{ needs.pin.outputs.next }}
+          BRANCH: ${{ needs.pin.outputs.branch }}
+          STATUS: ${{ needs.pin.outputs.status }}
+        run: |
+          set -euo pipefail
+          [[ "$NEXT" =~ ^(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)$ && "$BRANCH" == "pin/hashicorp-aws-$NEXT" ]] \
+            || { echo "::error::bad version or branch: $NEXT $BRANCH"; exit 1; }
+          [[ "$STATUS" == ok || "$STATUS" == owner-action ]] || { echo "::error::bad status: $STATUS"; exit 1; }
+          d="$RUNNER_TEMP/pin"
+          git bundle verify -q "$d/pin.bundle"
+          git fetch -q "$d/pin.bundle" "refs/heads/$BRANCH:refs/heads/$BRANCH"
+          # Exactly one commit, whose only parent is the run's master SHA, touching
+          # the make pin outputs only (renames listed as delete plus add).
+          [ "$(git show -s --format=%P "$BRANCH")" = "$GITHUB_SHA" ] || { echo "::error::$BRANCH is not one commit on $GITHUB_SHA"; exit 1; }
+          allowed='^(pins\.json|releases\.json|testdata/schemas/aws/(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.json|testdata/schemas/aws-subset(\.provenance)?\.json|internal/embedded/cis/manifest\.json|internal/embedded/testdata/schema_compat\.tsv|internal/embedded/cis_ctftest\.tar\.gz)$'
+          if other=$(git diff --no-renames --name-only "$GITHUB_SHA" "$BRANCH" | grep -Ev "$allowed"); then
+            echo "::error::the pin commit touches paths outside the pin outputs: $other"
+            exit 1
+          fi
+          auth="AUTHORIZATION: basic $(printf 'x-access-token:%s' "$GH_TOKEN" | base64 -w0)"
+          echo "::add-mask::$auth"
+          git -c http.https://github.com/.extraheader="$auth" push origin "refs/heads/$BRANCH:refs/heads/$BRANCH"
+          title="chore(pin): hashicorp/aws $NEXT"
+          draft=false
+          if [ "$STATUS" = owner-action ]; then title="$title (needs owner action)"; draft=true; fi
+          url=$(gh api "repos/$REPO/pulls" -f title="$title" -f head="$BRANCH" -f base=master \
+            -F body=@"$d/body.md" -F draft="$draft" --jq .html_url)
+          echo "::notice::opened $url"

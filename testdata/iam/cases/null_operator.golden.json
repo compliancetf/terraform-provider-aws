@@ -1,0 +1,57 @@
+{
+  "format": "compliancetf.iampolicy/v1",
+  "version": "2012-10-17",
+  "statements": [
+    {
+      "sid": "",
+      "effect": "Deny",
+      "actions": [
+        "ec2:createvolume"
+      ],
+      "not_actions": [],
+      "resources": [
+        "*"
+      ],
+      "not_resources": [],
+      "principals": {},
+      "not_principals": {},
+      "conditions": [
+        {
+          "op": "Null",
+          "set_op": "",
+          "if_exists": false,
+          "key": "aws:requesttag/owner",
+          "values": [
+            "true"
+          ]
+        },
+        {
+          "op": "Null",
+          "set_op": "",
+          "if_exists": false,
+          "key": "ec2:encrypted",
+          "values": [
+            "false"
+          ]
+        }
+      ],
+      "action_all": false,
+      "principal_any": false,
+      "resource_any": true,
+      "action_any": false,
+      "principal_all": false,
+      "resource_all": true,
+      "unconditional": false,
+      "ambiguous": [
+        "conditional",
+        "principal_absent"
+      ],
+      "actions_expanded": [],
+      "not_actions_expanded": [],
+      "unresolved_actions": [],
+      "unresolved_principals": {},
+      "unresolved_resources": []
+    }
+  ],
+  "catalog": ""
+}

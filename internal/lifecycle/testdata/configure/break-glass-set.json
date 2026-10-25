@@ -1,0 +1,1 @@
+{"block": {"enforcement_mode": "hard_fail"}, "env": {"COMPLIANCETF_BREAK_GLASS": "receipt.json"}, "want": {"error": "COMPLIANCETF_BREAK_GLASS is set, but this provider version cannot verify break-glass overrides. Unset it or upgrade."}}

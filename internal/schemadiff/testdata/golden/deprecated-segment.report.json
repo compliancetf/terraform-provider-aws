@@ -1,0 +1,21 @@
+{
+  "result": "warn",
+  "findings": [
+    {
+      "control_id": "elb_listener_no_fixed_response",
+      "kind": "resource",
+      "resource_type": "aws_lb_listener",
+      "read": "default_action.type",
+      "check": "deprecated",
+      "result": "warn"
+    },
+    {
+      "control_id": "elb_listener_prior_forward_target",
+      "kind": "resource",
+      "resource_type": "aws_lb_listener",
+      "read": "default_action",
+      "check": "deprecated",
+      "result": "warn"
+    }
+  ]
+}

@@ -1,0 +1,14 @@
+No fixtures at all.
+-- rds_bobthecorp_storage_encrypted.yaml --
+targets:
+  - kind: resource
+    type: aws_db_instance
+    reads: [storage_encrypted]
+    presence_mode: effective
+    on: [create, update]
+    expr: resource.storage_encrypted == true
+    action: deny
+-- want.json --
+{
+  "error": "E_FIXTURE_MISSING"
+}

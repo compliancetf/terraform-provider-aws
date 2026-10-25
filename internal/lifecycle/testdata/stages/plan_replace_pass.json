@@ -1,0 +1,29 @@
+{
+  "description": "replace with a guard-clear Prior and a compliant Planned passes",
+  "stage": "plan",
+  "mode": "hard_fail",
+  "op": "replace",
+  "requires_replace": [
+    "engine"
+  ],
+  "config": {
+    "storage_encrypted": true,
+    "kms_key_id": "arn:aws:kms:us-east-1:111122223333:key/bobthecorp-rds",
+    "engine": "aurora-postgresql"
+  },
+  "prior": {
+    "storage_encrypted": true,
+    "kms_key_id": "arn:aws:kms:us-east-1:111122223333:key/bobthecorp-rds",
+    "engine": "postgres",
+    "deletion_protection": false
+  },
+  "planned": {
+    "storage_encrypted": true,
+    "kms_key_id": "arn:aws:kms:us-east-1:111122223333:key/bobthecorp-rds",
+    "engine": "aurora-postgresql",
+    "deletion_protection": true
+  },
+  "want": {
+    "stamp": true
+  }
+}

@@ -1,0 +1,33 @@
+{
+  "description": "no envelope on a non-delete: one warning, controls still evaluated",
+  "stage": "apply_pre",
+  "mode": "hard_fail",
+  "op": "create",
+  "config": {
+    "storage_encrypted": false,
+    "kms_key_id": "arn:aws:kms:us-east-1:111122223333:key/bobthecorp-rds",
+    "engine": "postgres"
+  },
+  "prior": null,
+  "planned": {
+    "storage_encrypted": false,
+    "kms_key_id": "arn:aws:kms:us-east-1:111122223333:key/bobthecorp-rds",
+    "engine": "postgres",
+    "deletion_protection": true
+  },
+  "want": {
+    "diagnostics": [
+      {
+        "severity": "warning",
+        "summary": "Compliance plan envelope absent",
+        "detail": "The plan for aws_db_instance carried no compliance envelope; every control is evaluated at apply."
+      },
+      {
+        "severity": "error",
+        "summary": "[rds_db_instance_encryption_at_rest_enabled] RDS storage must be encrypted at rest.",
+        "detail": "Fix: Set storage_encrypted = true.\nSeverity: high\nMode: hard_fail\nStage: apply_pre\nFrameworks: soc_2:CC6.1, cis_aws:2.3.1\nTo waive: add an exception for rds_db_instance_encryption_at_rest_enabled in compliance-exceptions.hcl",
+        "attribute": "AttributeName(\"storage_encrypted\")"
+      }
+    ]
+  }
+}

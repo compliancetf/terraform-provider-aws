@@ -1,0 +1,15 @@
+{
+  "description": "the profile pins no receipt key",
+  "policy": {
+    "no_keys": true
+  },
+  "queries": [
+    {
+      "control": "CTF.S3.1",
+      "key": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "result": "fail",
+      "want": false
+    }
+  ],
+  "warning": "the profile lists no break_glass.receipt_keys"
+}

@@ -1,0 +1,1 @@
+{"block": {"org_id": "bobthecorp"}, "floor": {"min_wrapper_version": "7.0.0"}, "profiles": {"env": {"floor_mode": "airgap", "governed": true}}, "want": {"error": "provider 6.40.0 is below the org minimum 7.0.0"}}

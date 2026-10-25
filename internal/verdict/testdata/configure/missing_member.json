@@ -1,0 +1,10 @@
+{
+  "description": "a missing member is refused",
+  "set": {
+    "nonce": null
+  },
+  "want": {
+    "summary": "Invalid verdict file",
+    "detail": "The file is not a compliancetf.verdict/v1 document."
+  }
+}

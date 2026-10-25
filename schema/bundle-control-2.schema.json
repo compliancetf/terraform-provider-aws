@@ -1,0 +1,65 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://compliance.tf/schema/bundle-control-2.schema.json",
+  "title": "compliance.tf bundle 2.0 controls.json",
+  "description": "A non-empty array of controls. The provider decoder (internal/bundle.DecodeControls) is the authority; it also enforces what this schema cannot: sorted reads and exemption_coverable, expr length in bytes, unique (id, kind, resource_type). The legacy v0.1 predicate form is rejected (control_predicate). celeng.Load adds the expr compile, reads and variable rules. A graph control sets graph instead of expr and reads; the archive reader rejects it without a signed graph.json, and provider builds that cannot evaluate a kind reject it at Configure (control_kind_not_evaluated).",
+  "type": "array",
+  "minItems": 1,
+  "items": {"$ref": "#/$defs/control"},
+  "$defs": {
+    "control": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "version", "kind", "resource_type", "action", "severity", "message"],
+      "properties": {
+        "id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9_]{2,127}$"},
+        "version": {"type": "string", "pattern": "^(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)$"},
+        "kind": {"enum": ["resource", "data_source", "ephemeral", "deletion_guard", "graph"]},
+        "resource_type": {"type": "string", "pattern": "^[a-z0-9_]+$"},
+        "reads": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {"type": "string", "pattern": "^[a-z0-9_]+(\\.[a-z0-9_]+)*$"}
+        },
+        "presence_mode": {"enum": ["effective", "configured"]},
+        "on": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"enum": ["create", "update", "delete"]}},
+        "expr": {"type": "string", "minLength": 1, "maxLength": 4096},
+        "graph": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["rule", "companion_type", "link_attr", "target_attrs"],
+          "properties": {
+            "rule": {"enum": ["companion_present", "companion_absent_forbidden"]},
+            "companion_type": {"type": "string", "pattern": "^[a-z0-9_]+$"},
+            "link_attr": {"type": "string", "pattern": "^[a-z0-9_]+(\\.[a-z0-9_]+)*$"},
+            "target_attrs": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string", "pattern": "^[a-z0-9_]+(\\.[a-z0-9_]+)*$"}},
+            "companion_expr": {"type": "string", "minLength": 1, "maxLength": 4096}
+          }
+        },
+        "action": {"enum": ["deny", "warn"]},
+        "severity": {"enum": ["critical", "high", "medium", "low", "info"]},
+        "message": {"type": "string", "minLength": 1, "maxLength": 256, "pattern": "^[^\\r\\n]*$"},
+        "fix": {"type": "string", "maxLength": 512},
+        "framework_refs": {"type": "array", "items": {"type": "string", "pattern": "^[A-Za-z0-9_.\\-]+:.+$"}},
+        "tool_refs": {
+          "type": "object",
+          "propertyNames": {"enum": ["aws_config", "checkov", "control_tower", "kics", "powerpipe", "prowler", "security_hub", "trivy"]},
+          "additionalProperties": {"type": "array", "items": {"type": "string", "minLength": 1}}
+        },
+        "exemption_coverable": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {"enum": ["baseline", "break_glass", "grant", "self_service"]}
+        }
+      },
+      "allOf": [
+        {"if": {"properties": {"kind": {"const": "graph"}}}, "then": {"required": ["graph"], "not": {"anyOf": [{"required": ["expr"]}, {"required": ["reads"]}, {"required": ["presence_mode"]}, {"required": ["on"]}]}}, "else": {"required": ["reads", "expr"], "not": {"required": ["graph"]}}},
+        {"if": {"properties": {"kind": {"const": "resource"}}}, "then": {"required": ["presence_mode", "on"], "properties": {"on": {"items": {"enum": ["create", "update"]}}}}},
+        {"if": {"properties": {"kind": {"const": "data_source"}}}, "then": {"required": ["presence_mode"], "not": {"required": ["on"]}}},
+        {"if": {"properties": {"kind": {"const": "ephemeral"}}}, "then": {"not": {"anyOf": [{"required": ["presence_mode"]}, {"required": ["on"]}]}}},
+        {"if": {"properties": {"kind": {"const": "deletion_guard"}}}, "then": {"required": ["on"], "not": {"required": ["presence_mode"]}, "properties": {"on": {"const": ["delete"]}}}}
+      ]
+    }
+  }
+}

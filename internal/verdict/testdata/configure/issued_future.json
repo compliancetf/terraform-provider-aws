@@ -1,0 +1,8 @@
+{
+  "description": "issued_at more than 5 min ahead",
+  "now": "2026-10-18T09:54:59Z",
+  "want": {
+    "summary": "Invalid verdict file",
+    "detail": "The verdict issued_at lies in the future."
+  }
+}

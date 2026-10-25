@@ -1,0 +1,25 @@
+{
+  "description": "a gated RPC before Configure is refused",
+  "stage": "rpc",
+  "method": "/tfplugin5.Provider/InvokeAction",
+  "mode": "hard_fail",
+  "verdict_required": true,
+  "op": "",
+  "gated": true,
+  "type_name": "rpc_invoke_action",
+  "unconfigured": true,
+  "verdict": {
+    "entries": [],
+    "want_keys": []
+  },
+  "want": {
+    "diagnostics": [
+      {
+        "severity": "error",
+        "summary": "Compliance not configured",
+        "detail": "/tfplugin5.Provider/InvokeAction was called before the provider was configured; under compliance.tf it is refused until configuration loads."
+      }
+    ],
+    "no_record": true
+  }
+}

@@ -1,0 +1,34 @@
+{
+  "description": "update with an unknown effective read: pending warning",
+  "stage": "plan",
+  "mode": "hard_fail",
+  "op": "update",
+  "config": {
+    "storage_encrypted": null,
+    "kms_key_id": "arn:aws:kms:us-east-1:111122223333:key/bobthecorp-rds",
+    "engine": "postgres"
+  },
+  "prior": {
+    "storage_encrypted": true,
+    "kms_key_id": "arn:aws:kms:us-east-1:111122223333:key/bobthecorp-rds",
+    "engine": "postgres",
+    "deletion_protection": true
+  },
+  "planned": {
+    "storage_encrypted": "<unknown>",
+    "kms_key_id": "arn:aws:kms:us-east-1:111122223333:key/bobthecorp-rds",
+    "engine": "postgres",
+    "deletion_protection": true
+  },
+  "want": {
+    "diagnostics": [
+      {
+        "severity": "warning",
+        "summary": "[rds_db_instance_encryption_at_rest_enabled] pending: re-checked at apply",
+        "detail": "Unknown until apply: storage_encrypted.",
+        "attribute": "AttributeName(\"storage_encrypted\")"
+      }
+    ],
+    "stamp": true
+  }
+}

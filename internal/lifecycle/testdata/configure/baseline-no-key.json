@@ -1,0 +1,1 @@
+{"block": {"enforcement_mode": "grandfather", "baseline_file": "baseline.json"}, "want": {"error": "Baseline file present but COMPLIANCETF_BASELINE_KEY_FILE is not set: grandfather cannot be evaluated"}}

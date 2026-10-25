@@ -1,0 +1,14 @@
+{
+  "requires": ["ephemeral"],
+  "evaluator": "lifecycle",
+  "env": {
+    "COMPLIANCETF_ORG_ID": "bobthecorp",
+    "COMPLIANCETF_PROFILE_PATH": "{work}/profile.dsse.json",
+    "COMPLIANCETF_BUNDLE_PATH": "{work}/bundle.tar.gz"
+  },
+  "expect_no_applies": true,
+  "steps": [
+    {"cmd": ["plan", "-no-color"], "exit": 1, "stderr_contains": ["[fake_secret_name_allowed] This fake_secret name is not allowed.", "Opening ephemeral fake_secret was blocked; the secret was not opened."], "stdout_excludes": ["ephemeral.fake_secret.s: Closing..."], "state_unchanged": true},
+    {"cmd": ["plan", "-no-color", "-var", "secret_name=bobthecorp-allowed"], "exit": 0, "stdout_contains": ["ephemeral.fake_secret.s: Opening...", "ephemeral.fake_secret.s: Closing..."], "stderr_excludes": ["fake_secret_name_allowed"], "state_unchanged": true}
+  ]
+}

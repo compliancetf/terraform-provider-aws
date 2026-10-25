@@ -1,0 +1,7 @@
+A file with fixtures and no target.
+-- rds_bobthecorp_storage_encrypted.yaml --
+fix: none
+-- want.json --
+{
+  "error": "E_AUTHORED"
+}

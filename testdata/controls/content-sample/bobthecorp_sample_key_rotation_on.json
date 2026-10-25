@@ -1,0 +1,7 @@
+{"about": "equals_any [true] on an optional bool.",
+ "control": {"id": "bobthecorp_sample_key_rotation_on", "version": "1.0.0", "kind": "resource", "resource_type": "aws_kms_key", "reads": ["enable_key_rotation"], "presence_mode": "effective", "on": ["create", "update"], "expr": "resource.enable_key_rotation in [true]", "action": "deny", "severity": "medium", "message": "Sample: key rotation must be on."},
+ "cases": [
+  {"id": "P-01-true", "resource": {"description": "bobthecorp", "enable_key_rotation": true}, "expect": {"state": "pass", "err_class": ""}},
+  {"id": "F-01-false", "resource": {"enable_key_rotation": false}, "expect": {"state": "fail", "err_class": ""}},
+  {"id": "F-02-null", "resource": {"description": "bobthecorp"}, "expect": {"state": "fail", "err_class": ""}}
+ ]}

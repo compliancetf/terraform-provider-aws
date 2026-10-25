@@ -1,0 +1,6 @@
+{
+  "description": "a tool_refs alias expands to its control; an unresolved id warns and is ignored",
+  "warnings": ["exception alias: CKV_AWS_999 is not a known control id or alias; ignored"],
+  "events": ["exception_unresolved_id"],
+  "lookups": [{"resource": {"identifier": "db1", "storage_encrypted": false}, "want": {"applied": true, "status": "applied", "id": "alias", "expires": "2027-01-01T00:00:00Z", "workspace": "bobthecorp-reporting-prod"}}]
+}

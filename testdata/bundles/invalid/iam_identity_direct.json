@@ -1,0 +1,20 @@
+[
+  {
+    "id": "s3_bucket_policy_no_bobthecorp_app",
+    "version": "1.0.0",
+    "kind": "resource",
+    "resource_type": "aws_s3_bucket_policy",
+    "reads": [
+      "policy"
+    ],
+    "presence_mode": "effective",
+    "on": [
+      "create",
+      "update"
+    ],
+    "expr": "iam.parse(resource.policy).statements.all(s, !(s.effect == \"Allow\" && \"arn:aws:iam::222222222222:role/bobthecorp-app\" in s.principals.aws))",
+    "action": "deny",
+    "severity": "high",
+    "message": "Direct principal read: rejected, a role name or unique id alias would read as no match."
+  }
+]

@@ -1,0 +1,179 @@
+[
+  {
+    "id": "db_instance_delete_guard_password",
+    "version": "1.0.0",
+    "kind": "deletion_guard",
+    "resource_type": "aws_db_instance",
+    "reads": [
+      "password_length"
+    ],
+    "on": [
+      "delete"
+    ],
+    "expr": "prior.password_length >= 14",
+    "action": "deny",
+    "severity": "low",
+    "message": "Strong-password instances are not deleted."
+  },
+  {
+    "id": "db_instance_identifier_or_prior_password",
+    "version": "1.0.0",
+    "kind": "resource",
+    "resource_type": "aws_db_instance",
+    "reads": [
+      "identifier",
+      "password_length"
+    ],
+    "presence_mode": "configured",
+    "on": [
+      "update"
+    ],
+    "expr": "config.identifier != null || prior.password_length >= 14",
+    "action": "deny",
+    "severity": "low",
+    "message": "Instances keep an identifier or a strong password."
+  },
+  {
+    "id": "db_instance_password_length_min_14",
+    "version": "1.0.0",
+    "kind": "resource",
+    "resource_type": "aws_db_instance",
+    "reads": [
+      "password_length"
+    ],
+    "presence_mode": "effective",
+    "on": [
+      "create",
+      "update"
+    ],
+    "expr": "resource.password_length >= 14",
+    "action": "deny",
+    "severity": "medium",
+    "message": "Database passwords are at least 14 characters."
+  },
+  {
+    "id": "ec2_instance_ebs_min_size",
+    "version": "1.0.0",
+    "kind": "resource",
+    "resource_type": "aws_instance",
+    "reads": [
+      "ebs.size"
+    ],
+    "presence_mode": "configured",
+    "on": [
+      "create",
+      "update"
+    ],
+    "expr": "config.ebs.all(e, e.size >= 8)",
+    "action": "warn",
+    "severity": "low",
+    "message": "EBS volumes are at least 8 GiB."
+  },
+  {
+    "id": "ec2_instance_env_tag",
+    "version": "1.0.0",
+    "kind": "resource",
+    "resource_type": "aws_instance",
+    "reads": [
+      "tags"
+    ],
+    "presence_mode": "configured",
+    "on": [
+      "create",
+      "update"
+    ],
+    "expr": "config.tags != null && \"env\" in config.tags",
+    "action": "warn",
+    "severity": "low",
+    "message": "Instances carry an env tag."
+  },
+  {
+    "id": "elb_listener_has_forward",
+    "version": "1.0.0",
+    "kind": "resource",
+    "resource_type": "aws_lb_listener",
+    "reads": [
+      "default_action.forward"
+    ],
+    "presence_mode": "configured",
+    "on": [
+      "create",
+      "update"
+    ],
+    "expr": "config.default_action.all(a, size(a.forward) > 0)",
+    "action": "warn",
+    "severity": "low",
+    "message": "Listener actions forward."
+  },
+  {
+    "id": "elb_listener_no_fixed_response",
+    "version": "1.0.0",
+    "kind": "resource",
+    "resource_type": "aws_lb_listener",
+    "reads": [
+      "default_action.type"
+    ],
+    "presence_mode": "configured",
+    "on": [
+      "create",
+      "update"
+    ],
+    "expr": "config.default_action.all(a, a.type != \"fixed-response\")",
+    "action": "warn",
+    "severity": "low",
+    "message": "Listeners forward traffic."
+  },
+  {
+    "id": "elb_listener_prior_forward_target",
+    "version": "1.0.0",
+    "kind": "resource",
+    "resource_type": "aws_lb_listener",
+    "reads": [
+      "default_action"
+    ],
+    "presence_mode": "configured",
+    "on": [
+      "update"
+    ],
+    "expr": "config.default_action.all(a, a.type != '') && prior.default_action.all(a, a.forward.all(f, f.target_group_arn != ''))",
+    "action": "warn",
+    "severity": "low",
+    "message": "Listener actions keep their forward targets."
+  },
+  {
+    "id": "s3_bucket_logging_target_set",
+    "version": "1.0.0",
+    "kind": "resource",
+    "resource_type": "aws_s3_bucket_logging",
+    "reads": [
+      "target_bucket"
+    ],
+    "presence_mode": "configured",
+    "on": [
+      "create",
+      "update"
+    ],
+    "expr": "config.target_bucket != null",
+    "action": "warn",
+    "severity": "low",
+    "message": "Bucket logging names a target bucket."
+  },
+  {
+    "id": "vpc_security_group_no_open_ingress",
+    "version": "1.0.0",
+    "kind": "resource",
+    "resource_type": "aws_security_group",
+    "reads": [
+      "ingress.cidr_blocks"
+    ],
+    "presence_mode": "configured",
+    "expr": "config.ingress.all(i, !(\"0.0.0.0/0\" in i.cidr_blocks))",
+    "action": "warn",
+    "severity": "low",
+    "message": "Security groups do not open ingress to the internet.",
+    "on": [
+      "create",
+      "update"
+    ]
+  }
+]

@@ -1,0 +1,13 @@
+{
+  "description": "the decision is for a control the receipt does not list",
+  "policy": {},
+  "queries": [
+    {
+      "control": "CTF.S3.2",
+      "key": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "result": "fail",
+      "want": false
+    }
+  ],
+  "warning": ""
+}

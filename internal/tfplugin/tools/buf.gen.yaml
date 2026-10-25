@@ -1,0 +1,20 @@
+# buf generate template for make proto (scripts/proto.sh). Paths are relative
+# to this directory: buf runs here so `go tool` resolves the generators from
+# this module's tool directives.
+version: v2
+managed:
+  enabled: true
+  override:
+    - file_option: go_package
+      path: tfplugin5.proto
+      value: github.com/compliancetf/terraform-provider-aws/internal/tfplugin/tfplugin5
+    - file_option: go_package
+      path: tfplugin6.proto
+      value: github.com/compliancetf/terraform-provider-aws/internal/tfplugin/tfplugin6
+plugins:
+  - local: [go, tool, protoc-gen-go]
+    out: ../../..
+    opt: module=github.com/compliancetf/terraform-provider-aws
+  - local: [go, tool, protoc-gen-go-grpc]
+    out: ../../..
+    opt: module=github.com/compliancetf/terraform-provider-aws

@@ -1,0 +1,12 @@
+{
+  "evaluator": "lifecycle",
+  "env": {
+    "COMPLIANCETF_ORG_ID": "bobthecorp",
+    "COMPLIANCETF_PROFILE_PATH": "{work}/profile.dsse.json",
+    "COMPLIANCETF_BUNDLE_PATH": "{work}/bundle.tar.gz"
+  },
+  "expect_no_applies": true,
+  "steps": [
+    {"cmd": ["plan", "-no-color"], "exit": 0, "stdout_contains": ["Warning: [lookup_name_bobthecorp] Look up bobthecorp-db only.", "Stage: data_source", "Type: fake_lookup"], "stderr_excludes": ["Error:"], "state_unchanged": true}
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "description": "verdict for another org",
+  "set": {
+    "org_id": "othercorp"
+  },
+  "want": {
+    "summary": "Verdict issued for org othercorp, profile is for org bobthecorp",
+    "detail": "Re-run terraform plan and ctfkit gate, then apply through ctfkit apply."
+  }
+}

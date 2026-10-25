@@ -1,0 +1,6 @@
+{
+  "bundle_id": "bobthecorp-coverable-source",
+  "generator": {"version": "0.0.0-test", "commit": "test"},
+  "coverable": {"rds_db_instance_encryption_at_rest_enabled": ["baseline", "break_glass", "grant", "self_service"]},
+  "exemption_coverable": {"rds_db_instance_encryption_at_rest_enabled": ["baseline", "break_glass", "grant", "self_service"]}
+}

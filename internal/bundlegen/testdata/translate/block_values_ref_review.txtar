@@ -1,0 +1,15 @@
+not_empty on a block with values_from_ref: values_ref review, as for attributes
+-- schema.json --
+{"format_version": "1.0", "provider_schemas": {"registry.terraform.io/hashicorp/aws": {"resource_schemas": {"aws_bobthecorp_thing": {"version": 0, "block": {"attributes": {"name": {"type": "string", "optional": true}}, "block_types": {"parent": {"nesting_mode": "list", "block": {"block_types": {"child": {"nesting_mode": "list", "max_items": 1, "block": {"attributes": {"mode": {"type": "string", "optional": true}}}}}}}}}}}}}}
+-- intent.json --
+{"id": "bobthecorp_thing_check", "resource_type": "aws_bobthecorp_thing", "attributes": [{"schema_path": "parent", "condition": "not_empty", "values": [], "values_from_ref": "bobthecorp_ref"}], "explanation": "", "postcondition": "", "has_strategy_condition": false}
+-- want.json --
+{
+  "review": {
+    "id": "bobthecorp_thing_check",
+    "resource_type": "aws_bobthecorp_thing",
+    "reason": "values_ref",
+    "detail": "parent not_empty: values from bobthecorp_ref",
+    "proposal": "size(config.parent) >= 1"
+  }
+}

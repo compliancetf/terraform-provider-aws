@@ -1,0 +1,8 @@
+{"about": "not_empty on a string.",
+ "control": {"id": "bobthecorp_sample_trail_log_group_set", "version": "1.0.0", "kind": "resource", "resource_type": "aws_cloudtrail", "reads": ["cloud_watch_logs_group_arn"], "presence_mode": "effective", "on": ["create", "update"], "expr": "resource.cloud_watch_logs_group_arn != null && resource.cloud_watch_logs_group_arn != \"\"", "action": "deny", "severity": "medium", "message": "Sample: the trail log group must be set."},
+ "cases": [
+  {"id": "P-01-arn", "resource": {"cloud_watch_logs_group_arn": "arn:aws:logs:eu-west-1:111111111111:log-group:bobthecorp:*"}, "expect": {"state": "pass", "err_class": ""}},
+  {"id": "F-01-null", "resource": {}, "expect": {"state": "fail", "err_class": ""}},
+  {"id": "F-02-empty", "resource": {"cloud_watch_logs_group_arn": ""}, "expect": {"state": "fail", "err_class": ""}},
+  {"id": "U-01-unknown", "resource": {"cloud_watch_logs_group_arn": {"$unknown": true}}, "expect": {"state": "unknown", "err_class": ""}}
+ ]}

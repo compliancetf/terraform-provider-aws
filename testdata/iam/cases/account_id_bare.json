@@ -1,0 +1,1 @@
+{"Version":"2012-10-17","Statement":[{"Effect":"Allow","Principal":{"AWS":["111111111111","arn:aws:iam::111111111111:root","222222222222"]},"Action":"kms:Decrypt","Resource":"*"}]}

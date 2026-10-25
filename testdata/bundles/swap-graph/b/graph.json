@@ -1,0 +1,1 @@
+{"edges":[{"from":"aws_db_instance","to":"aws_kms_key"}]}

@@ -1,0 +1,8 @@
+{
+  "description": "a world-readable run key is refused",
+  "key_mode": "644",
+  "want": {
+    "summary": "Verdict key missing or does not belong to this verdict: run apply through ctfkit apply",
+    "detail": "COMPLIANCETF_VERDICT_KEY_FILE must name the ctfkit-run.key of this verdict's plan artifact set: a regular file owned by this user that group and others cannot read."
+  }
+}

@@ -1,0 +1,28 @@
+an index other than [0]: path refusal
+-- intent.json --
+{
+ "id": "s3_bobthecorp_versioning_on",
+ "resource_type": "aws_s3_bucket_versioning",
+ "attributes": [
+  {
+   "schema_path": "versioning_configuration[1].status",
+   "condition": "equals_any",
+   "values": [
+    "Enabled"
+   ],
+   "values_from_ref": null
+  }
+ ],
+ "explanation": "Explanation of s3_bobthecorp_versioning_on.",
+ "postcondition": "",
+ "has_strategy_condition": false
+}
+-- want.json --
+{
+  "review": {
+    "id": "s3_bobthecorp_versioning_on",
+    "resource_type": "aws_s3_bucket_versioning",
+    "reason": "path",
+    "detail": "versioning_configuration[1].status equals_any: index [1] on versioning_configuration"
+  }
+}

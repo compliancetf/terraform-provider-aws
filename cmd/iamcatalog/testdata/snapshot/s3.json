@@ -1,0 +1,1 @@
+{"Name":"S3","Actions":[{"Name":"PutObject"},{"Name":"GetObject"}],"Version":"v1.4"}

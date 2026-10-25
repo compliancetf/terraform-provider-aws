@@ -1,0 +1,20 @@
+{
+  "iam_bobthecorp_no_kms_wildcard/resource/aws_iam_policy": {
+    "expr_digest": "sha256:a8bee5bd17216f9ff2c65aacf7ee1a22e3b3aa08c2a09ba49ade1ed5a2230a9f",
+    "reads_digest": "sha256:0a2d927b984db5059a82155b7d774276ab92c4b944b3e35e9230bc9c68020549",
+    "semantics_digest": "sha256:504f7292b88a4df03c2498d4cfcac09d9e5954fdc7203f4e0bf0a474caa7a527",
+    "version": "1.0.0"
+  },
+  "rds_bobthecorp_storage_encrypted/resource/aws_db_instance": {
+    "expr_digest": "sha256:f25e3380adf877e67d8eb00ae15d66ecbbdfb1424e360e25da28b875d23dc78b",
+    "reads_digest": "sha256:2880cab30a80ecb82e12143b9a5a8065a2e0d228c197f17db9fbe0269e78e317",
+    "semantics_digest": "sha256:504f7292b88a4df03c2498d4cfcac09d9e5954fdc7203f4e0bf0a474caa7a527",
+    "version": "1.0.0"
+  },
+  "s3_bobthecorp_versioning_on/resource/aws_s3_bucket_versioning": {
+    "expr_digest": "sha256:ea467bf56f13c042667dab9d9fd6166314e3aa37d4386a50fda9f4f902d0b114",
+    "reads_digest": "sha256:fca4c55811774689d0cc0e99d6f13893af4c8415edb5fa74f2833460698a2265",
+    "semantics_digest": "sha256:0c6d892a9e0f160f8e013a444b877e506f73a4de4020c5c495958fb11031606f",
+    "version": "1.0.0"
+  }
+}

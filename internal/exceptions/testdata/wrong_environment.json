@@ -1,0 +1,4 @@
+{
+  "description": "an entry for another environment is not applied",
+  "lookups": [{"resource": {"identifier": "db1", "storage_encrypted": false}, "want": {"status": "wrong_environment"}}]
+}

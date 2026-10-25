@@ -1,0 +1,15 @@
+targets:
+  - kind: resource
+    type: aws_s3_bucket_versioning
+    reads: [bucket]
+    presence_mode: configured
+    on: [create, update]
+    expr: config.bucket != null
+    action: warn
+fixtures:
+  - kind: resource
+    type: aws_s3_bucket_versioning
+    name: pass
+    bindings: {op: create, provider: {region: eu-west-1, account_id: "111111111111"}, config: {bucket: bobthecorp-logs}}
+    expect: {state: pass}
+  - {kind: resource, type: aws_s3_bucket_versioning, name: fail, bindings: {op: create, config: {}}, expect: {state: fail}}

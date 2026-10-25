@@ -1,0 +1,20 @@
+[
+  {
+    "id": "db_instance_kms_key_set",
+    "version": "1.0.0",
+    "kind": "resource",
+    "resource_type": "aws_db_instance",
+    "reads": [
+      "storage_encrypted"
+    ],
+    "presence_mode": "effective",
+    "on": [
+      "create",
+      "update"
+    ],
+    "expr": "resource.storage_encrypted == true && resource.kms_key_id != null",
+    "action": "deny",
+    "severity": "high",
+    "message": "RDS storage must use a customer managed KMS key."
+  }
+]

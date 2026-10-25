@@ -1,0 +1,32 @@
+{
+  "description": "compliance environment dev without trusted scope: never bound, still scope_untrusted",
+  "stage": "plan",
+  "mode": "hard_fail",
+  "op": "create",
+  "trusted_env": {
+    "hcl_environment": "dev"
+  },
+  "config": {
+    "storage_encrypted": false,
+    "kms_key_id": "arn:aws:kms:us-east-1:111122223333:key/bobthecorp-rds",
+    "engine": "postgres"
+  },
+  "prior": null,
+  "planned": {
+    "storage_encrypted": false,
+    "kms_key_id": "arn:aws:kms:us-east-1:111122223333:key/bobthecorp-rds",
+    "engine": "postgres",
+    "deletion_protection": true
+  },
+  "want": {
+    "diagnostics": [
+      {
+        "severity": "error",
+        "summary": "[rds_db_instance_encryption_at_rest_enabled] not evaluable (scope_untrusted)",
+        "detail": "Treated as a failure of this control.",
+        "attribute": "AttributeName(\"storage_encrypted\")"
+      }
+    ],
+    "stamp": true
+  }
+}

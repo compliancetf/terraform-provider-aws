@@ -1,0 +1,145 @@
+{
+  "format_version": "1.0",
+  "provider_schemas": {
+    "registry.terraform.io/hashicorp/aws": {
+      "resource_identity_schemas": {
+        "aws_iam_role": {
+          "attributes": {
+            "account_id": {
+              "optional_for_import": true,
+              "type": "string"
+            },
+            "name": {
+              "required_for_import": true,
+              "type": "string"
+            }
+          },
+          "version": 0
+        }
+      },
+      "resource_schemas": {
+        "aws_iam_role": {
+          "block": {
+            "attributes": {
+              "arn": {
+                "computed": true,
+                "description_kind": "plain",
+                "type": "string"
+              },
+              "assume_role_policy": {
+                "description_kind": "plain",
+                "required": true,
+                "type": "string"
+              },
+              "create_date": {
+                "computed": true,
+                "description_kind": "plain",
+                "type": "string"
+              },
+              "description": {
+                "description_kind": "plain",
+                "optional": true,
+                "type": "string"
+              },
+              "force_detach_policies": {
+                "description_kind": "plain",
+                "optional": true,
+                "type": "bool"
+              },
+              "id": {
+                "computed": true,
+                "description_kind": "plain",
+                "optional": true,
+                "type": "string"
+              },
+              "managed_policy_arns": {
+                "computed": true,
+                "deprecated": true,
+                "deprecation_message": "managed_policy_arns is deprecated. Use the aws_iam_role_policy_attachment resource instead. If Terraform should exclusively manage all managed policy attachments (the current behavior of this argument), use the aws_iam_role_policy_attachments_exclusive resource as well.",
+                "description_kind": "plain",
+                "optional": true,
+                "type": [
+                  "set",
+                  "string"
+                ]
+              },
+              "max_session_duration": {
+                "description_kind": "plain",
+                "optional": true,
+                "type": "number"
+              },
+              "name": {
+                "computed": true,
+                "description_kind": "plain",
+                "optional": true,
+                "type": "string"
+              },
+              "name_prefix": {
+                "computed": true,
+                "description_kind": "plain",
+                "optional": true,
+                "type": "string"
+              },
+              "path": {
+                "description_kind": "plain",
+                "optional": true,
+                "type": "string"
+              },
+              "permissions_boundary": {
+                "description_kind": "plain",
+                "optional": true,
+                "type": "string"
+              },
+              "tags": {
+                "description_kind": "plain",
+                "optional": true,
+                "type": [
+                  "map",
+                  "string"
+                ]
+              },
+              "tags_all": {
+                "computed": true,
+                "description_kind": "plain",
+                "optional": true,
+                "type": [
+                  "map",
+                  "string"
+                ]
+              },
+              "unique_id": {
+                "computed": true,
+                "description_kind": "plain",
+                "type": "string"
+              }
+            },
+            "block_types": {
+              "inline_policy": {
+                "block": {
+                  "attributes": {
+                    "name": {
+                      "description_kind": "plain",
+                      "optional": true,
+                      "type": "string"
+                    },
+                    "policy": {
+                      "description_kind": "plain",
+                      "optional": true,
+                      "type": "string"
+                    }
+                  },
+                  "deprecated": true,
+                  "deprecation_message": "inline_policy is deprecated. Use the aws_iam_role_policy resource instead. If Terraform should exclusively manage all inline policy associations (the current behavior of this argument), use the aws_iam_role_policies_exclusive resource as well.",
+                  "description_kind": "plain"
+                },
+                "nesting_mode": "set"
+              }
+            },
+            "description_kind": "plain"
+          },
+          "version": 0
+        }
+      }
+    }
+  }
+}

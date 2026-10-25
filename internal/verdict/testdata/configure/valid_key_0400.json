@@ -1,0 +1,8 @@
+{
+  "description": "a 0400 run key loads (group and others cannot read it)",
+  "key_mode": "400",
+  "want": {
+    "summary": "",
+    "detail": ""
+  }
+}

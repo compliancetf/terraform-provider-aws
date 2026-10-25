@@ -1,0 +1,61 @@
+{
+  "entries": [
+    {
+      "actions": [
+        "create"
+      ],
+      "address": "aws_vpc_security_group_ingress_rule.new",
+      "keys": [
+        {
+          "field": "instance_key",
+          "form": "create",
+          "key": "sha256:4dc884c23c9fb0ad14c4962a1790bd705b2a0adff2bf520e81607210b6f8814b",
+          "prior_identity_kind": "none",
+          "unknown_paths": [
+            [
+              "arn"
+            ],
+            [
+              "id"
+            ],
+            [
+              "security_group_id"
+            ],
+            [
+              "security_group_rule_id"
+            ],
+            [
+              "tags",
+              "Group"
+            ],
+            [
+              "tags_all"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "action_reason": "delete_because_no_resource_config",
+      "actions": [
+        "delete"
+      ],
+      "address": "aws_vpc_security_group_ingress_rule.old",
+      "keys": [
+        {
+          "field": "delete_key",
+          "form": "delete",
+          "key": "sha256:a840cc609a2ade604fb31de440a6728da251bf222895e253f3d532bc197be2f2",
+          "prior_identity_kind": "identity",
+          "unknown_paths": []
+        }
+      ]
+    }
+  ],
+  "format": "compliancetf.instancekey.golden/v1",
+  "k_leaf_hex": "845cba3b9048a0ea701ceebf35bf8d23f96345d369ee41f24777d11aee0609eb",
+  "key_check": "278a53702bed79d81258d55c57dbfd708733a1e9d04c6fe3e8a7e5d0ca565a63",
+  "provider_version": "hashicorp/aws 6.65.0",
+  "terraform_version": "1.16.3",
+  "test_secret_hex": "494e5345435552452d544553542d5345435245542d696e7374616e63656b6579"
+}

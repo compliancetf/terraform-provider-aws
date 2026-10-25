@@ -1,0 +1,14 @@
+{
+  "description": "a member changed after signing",
+  "policy": {},
+  "sign": "tampered",
+  "queries": [
+    {
+      "control": "CTF.S3.1",
+      "key": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "result": "fail",
+      "want": false
+    }
+  ],
+  "warning": "receipt signature invalid: signature does not verify"
+}

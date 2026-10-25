@@ -1,0 +1,37 @@
+{
+  "description": "replace-unknown: a blocking control unknown on Planned errors at plan instead of pending",
+  "stage": "plan",
+  "mode": "hard_fail",
+  "op": "replace",
+  "requires_replace": [
+    "engine"
+  ],
+  "config": {
+    "storage_encrypted": null,
+    "kms_key_id": "arn:aws:kms:us-east-1:111122223333:key/bobthecorp-rds",
+    "engine": "aurora-postgresql"
+  },
+  "prior": {
+    "storage_encrypted": true,
+    "kms_key_id": "arn:aws:kms:us-east-1:111122223333:key/bobthecorp-rds",
+    "engine": "postgres",
+    "deletion_protection": false
+  },
+  "planned": {
+    "storage_encrypted": "<unknown>",
+    "kms_key_id": "arn:aws:kms:us-east-1:111122223333:key/bobthecorp-rds",
+    "engine": "aurora-postgresql",
+    "deletion_protection": true
+  },
+  "want": {
+    "diagnostics": [
+      {
+        "severity": "error",
+        "summary": "[rds_db_instance_encryption_at_rest_enabled] replacement blocked: control undecided at plan",
+        "detail": "The prior object would be destroyed before this control runs.",
+        "attribute": "AttributeName(\"storage_encrypted\")"
+      }
+    ],
+    "stamp": true
+  }
+}

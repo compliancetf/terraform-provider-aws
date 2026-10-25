@@ -1,0 +1,16 @@
+{
+  "description": "a receipt issued for another org",
+  "policy": {},
+  "issued_for": {
+    "org_id": "othercorp"
+  },
+  "queries": [
+    {
+      "control": "CTF.S3.1",
+      "key": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "result": "fail",
+      "want": false
+    }
+  ],
+  "warning": "it was issued for another org"
+}

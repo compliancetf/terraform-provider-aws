@@ -1,0 +1,14 @@
+{
+  "description": "a copy with the same override_id made invalid by a duplicate override_id member with a number drops the valid receipt too",
+  "policy": {},
+  "malformed_copy": "duplicate_number",
+  "queries": [
+    {
+      "control": "CTF.S3.1",
+      "key": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "result": "fail",
+      "want": false
+    }
+  ],
+  "warning": "not honored"
+}

@@ -1,0 +1,10 @@
+{"about": "port_range_excludes [7101, 9101, 8101] on from_port/to_port, scoped to rules open to 0.0.0.0/0 or ::/0.",
+ "control": {"id": "bobthecorp_sample_ingress_listed_ports_closed", "version": "1.0.0", "kind": "resource", "resource_type": "aws_vpc_security_group_ingress_rule", "reads": ["cidr_ipv4", "cidr_ipv6", "from_port", "ip_protocol", "to_port"], "presence_mode": "effective", "on": ["create", "update"], "expr": "(resource.cidr_ipv4 != \"0.0.0.0/0\" && resource.cidr_ipv6 != \"::/0\") || (resource.ip_protocol != \"-1\" && resource.from_port != null && [7101, 8101, 9101].all(p, p < resource.from_port || p > (resource.to_port != null ? resource.to_port : resource.from_port)))", "action": "deny", "severity": "high", "message": "Sample: internet ingress must not reach a listed port."},
+ "cases": [
+  {"id": "P-01-https", "resource": {"cidr_ipv4": "0.0.0.0/0", "ip_protocol": "tcp", "from_port": 443, "to_port": 443}, "expect": {"state": "pass", "err_class": ""}},
+  {"id": "P-02-private-cidr", "resource": {"cidr_ipv4": "10.0.0.0/8", "ip_protocol": "tcp", "from_port": 9101, "to_port": 9101}, "expect": {"state": "pass", "err_class": ""}},
+  {"id": "F-01-listed-port", "resource": {"cidr_ipv4": "0.0.0.0/0", "ip_protocol": "tcp", "from_port": 9101, "to_port": 9101}, "expect": {"state": "fail", "err_class": ""}},
+  {"id": "F-02-range-covers-listed", "resource": {"cidr_ipv6": "::/0", "ip_protocol": "tcp", "from_port": 7000, "to_port": 7999}, "expect": {"state": "fail", "err_class": ""}},
+  {"id": "F-03-all-protocols", "resource": {"cidr_ipv4": "0.0.0.0/0", "ip_protocol": "-1"}, "expect": {"state": "fail", "err_class": ""}},
+  {"id": "U-01-port-unknown", "resource": {"cidr_ipv4": "0.0.0.0/0", "ip_protocol": "tcp", "from_port": {"$unknown": true}, "to_port": 9101}, "expect": {"state": "unknown", "err_class": ""}}
+ ]}

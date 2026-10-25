@@ -1,0 +1,8 @@
+{
+  "description": "a kid in the profile revoked_kids",
+  "sign": "revoked",
+  "want": {
+    "summary": "Verdict signature invalid: kid revoked",
+    "detail": "Re-run terraform plan and ctfkit gate, then apply through ctfkit apply."
+  }
+}

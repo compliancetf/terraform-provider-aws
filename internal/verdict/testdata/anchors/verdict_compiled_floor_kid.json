@@ -1,0 +1,6 @@
+{
+  "description": "a compiled floor issuer kid never vouches for a verdict signature",
+  "use": "verdict",
+  "source": "compiled",
+  "want_release": "kid unknown"
+}

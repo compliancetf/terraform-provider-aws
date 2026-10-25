@@ -1,0 +1,104 @@
+name: Test
+
+# The workflow runs on demand: owner PRs and pushes do not run this;
+# run `make test` and `GOTOOLCHAIN=go1.26.2 make lint` locally.
+# Dependabot PRs run it (read-only token, no secrets): a success on a
+# Dependabot PR lets dependabot-merge.yml merge an eligible update. On other
+# PRs every job is skipped.
+#
+# The bench job runs only when dispatched with bench: true. Its runner
+# class is pinned here; it gates against test/bench/baseline/<class>.json, and
+# a missing baseline fails with the measured p99 so a bench-baseline PR can
+# record one.
+on:
+  workflow_dispatch:
+    inputs:
+      bench:
+        description: Run the p99 benchmark gate (make bench-gate)
+        type: boolean
+        default: false
+  pull_request:
+    branches: [master]
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: Test
+    if: github.event_name != 'pull_request' || github.actor == 'dependabot[bot]'
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
+        with:
+          go-version-file: go.mod
+      - run: make test
+      # Dependabot PRs: module checksums in every module, and known
+      # vulnerabilities in the modules with packages (the tools module only
+      # declares tool directives). go run verifies govulncheck via the sumdb.
+      - name: go mod verify and govulncheck
+        if: github.event_name == 'pull_request' && runner.os == 'Linux'
+        run: |
+          set -euo pipefail
+          for d in . test/fakeupstream test/sdkregion internal/tfplugin/tools; do
+            (cd "$d" && go mod verify)
+          done
+          for d in . test/fakeupstream; do
+            (cd "$d" && go run golang.org/x/vuln/cmd/govulncheck@v1.8.0 ./...)
+          done
+          # test/sdkregion has only _test.go files: scan the tests.
+          (cd test/sdkregion && go run golang.org/x/vuln/cmd/govulncheck@v1.8.0 -test ./...)
+
+  lint:
+    name: Lint
+    if: github.event_name != 'pull_request' || github.actor == 'dependabot[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
+        with:
+          go-version-file: go.mod
+      - name: Install golangci-lint v2
+        run: go install github.com/golangci/golangci-lint/v2/cmd/golangci-lint@v2.11.4
+      # make lint: the public-repo hygiene guard, go mod tidy -diff of every
+      # module, then golangci-lint, as run locally.
+      - name: Run linter
+        run: make lint
+      - name: Protected paths self-test
+        run: scripts/protected-paths.sh --self-test
+
+  build:
+    name: Build
+    if: github.event_name != 'pull_request' || github.actor == 'dependabot[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
+        with:
+          go-version-file: go.mod
+      - run: make build
+
+  bench:
+    name: Benchmark gate
+    if: github.event_name == 'workflow_dispatch' && inputs.bench
+    runs-on: ubuntu-24.04
+    env:
+      COMPLIANCETF_BENCH_RUNNER_CLASS: github-ubuntu-24.04
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
+        with:
+          go-version-file: go.mod
+      - run: make bench-gate

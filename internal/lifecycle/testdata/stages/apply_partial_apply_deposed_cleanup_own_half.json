@@ -1,0 +1,55 @@
+{
+  "description": "after a partial create_before_destroy apply (create done, destroy failed) the next apply destroys the deposed object alone: it passes with only the delete entry",
+  "stage": "apply_pre",
+  "mode": "hard_fail",
+  "verdict_required": true,
+  "op": "delete",
+  "envelope": {
+    "op": "delete",
+    "digest": "current",
+    "prior_identity_kind": "id"
+  },
+  "config": null,
+  "prior": {
+    "storage_encrypted": true,
+    "kms_key_id": "arn:aws:kms:us-east-1:111122223333:key/bobthecorp-rds",
+    "engine": "postgres",
+    "deletion_protection": false,
+    "id": "db-old"
+  },
+  "planned": null,
+  "verdict": {
+    "entries": [
+      {
+        "form": "delete",
+        "prior_identity_kind": "id",
+        "prior_identity": {
+          "id": "db-old"
+        }
+      }
+    ],
+    "want_keys": [
+      {
+        "form": "delete",
+        "prior_identity_kind": "id",
+        "prior_identity": {
+          "id": "db-old"
+        },
+        "type_name": "aws_db_instance"
+      }
+    ]
+  },
+  "want": {
+    "diagnostics": [],
+    "evidence": {
+      "op": "delete",
+      "results": [
+        {
+          "control": "rds_instance_deletion_guard",
+          "state": "pass",
+          "decision": "logged"
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,9 @@
+{"profile": null, "cases": [
+{"name": "defaults", "input": {"fallback": "free_tier"},
+ "want": {"run_mode": "soft_fail", "deny_floor": "advisory", "control_modes": {"UNKNOWN-1": {"deny": "soft_fail", "warn": "soft_fail"}}, "environment": {}, "workspace": {}, "scope_checks": {"unscoped":"","workspace":"exception_scope_untrusted: workspace","environment":"exception_scope_untrusted: environment","both":"exception_scope_untrusted: workspace, environment","sidecar":"exception_scope_untrusted: workspace","sidecar_environment":"exception_scope_untrusted: workspace, environment"}}},
+{"name": "sidecar-ignored", "input": {"fallback": "free_tier", "sidecar_configured": true},
+ "want": {"run_mode": "soft_fail", "deny_floor": "advisory", "control_modes": {"UNKNOWN-1": {"deny": "soft_fail", "warn": "soft_fail"}}, "environment": {}, "workspace": {}, "scope_checks": {"unscoped":"","workspace":"exception_scope_untrusted: workspace","environment":"exception_scope_untrusted: environment","both":"exception_scope_untrusted: workspace, environment","sidecar":"exception_scope_untrusted: workspace","sidecar_environment":"exception_scope_untrusted: workspace, environment"},
+  "warnings": ["exceptions file ignored: no org profile enables self-service exceptions"]}},
+{"name": "local-scope-recorded-not-trusted", "input": {"fallback": "free_tier", "hcl_environment": "prod", "workspace": "bobthecorp-prod"},
+ "want": {"run_mode": "soft_fail", "deny_floor": "advisory", "control_modes": {"UNKNOWN-1": {"deny": "soft_fail", "warn": "soft_fail"}}, "environment": {}, "workspace": {}, "local_environment": ["prod"], "scope_checks": {"unscoped":"","workspace":"exception_scope_untrusted: workspace","environment":"exception_scope_untrusted: environment","both":"exception_scope_untrusted: workspace, environment","sidecar":"exception_scope_untrusted: workspace","sidecar_environment":"exception_scope_untrusted: workspace, environment"}}}
+]}

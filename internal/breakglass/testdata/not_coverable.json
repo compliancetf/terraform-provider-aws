@@ -1,0 +1,17 @@
+{
+  "description": "the control's signed coverable list holds no break_glass after the airgap drop",
+  "policy": {
+    "coverable": [
+      "CTF.S3.2"
+    ]
+  },
+  "queries": [
+    {
+      "control": "CTF.S3.1",
+      "key": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "result": "fail",
+      "want": false
+    }
+  ],
+  "warning": ""
+}

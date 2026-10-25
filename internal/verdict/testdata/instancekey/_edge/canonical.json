@@ -1,0 +1,419 @@
+{
+  "entries": [
+    {
+      "actions": [
+        "create"
+      ],
+      "address": "edge_thing.numbers",
+      "keys": [
+        {
+          "after": {
+            "empty_lst": [],
+            "flag": "b:false",
+            "item": [],
+            "n": "n:0.1",
+            "nums": [
+              "n:1000000000000000000000",
+              "n:9223372036854775808",
+              "n:9007199254740993",
+              "n:18446744073709551617",
+              "n:1.2345675e+06",
+              "n:1e-05",
+              "n:0",
+              "n:0.0001",
+              "n:0.1",
+              "n:9999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999693940679946805331252853031194903272982978579617601411150451581761718943074574497991308520178542475529210540076501467742223439900918374195422689113838122723510951694237613928088926423686203551479511601364647419843902018142463850890471049881158302117015422162645538043954228644764379878506716534392079456062393009576834024061433075251332487440062396481636136602993447315730814463942123608330746555769193165621192880232333875591806916345109813896930949610701644441201340229259485897213832031859719502083324549475635386724317317845019723755147186149527416800747664813141254754190752143388688038950743404739696341312349426941211446300994077612085867498809944551121192127009103241400682537095827170747797422112905477809171227492538436719882379481741238019265316627407510958180062202368356257098704741260358986518066308469110208988934330964365914669056",
+              "n:9999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999693940679946805331252853031194903272982978579617601411150451581761718943074574497991308520178542475529210540076501467742223439900918374195422689113838122723510951694237613928088926423686203551479511601364647419843902018142463850890471049881158302117015422162645538043954228644764379878506716534392079456062393009576834024061433075251332487440062396481636136602993447315730814463942123608330746555769193165621192880232333875591806916345109813896930949610701644441201340229259485897213832031859719502083324549475635386724317317845019723755147186149527416800747664813141254754190752143388688038950743404739696341312349426941211446300994077612085867498809944551121192127009103241400682537095827170747797422112905477809171227492538436719882379481741238019265316627407510958180062202368356257098704741260358986518066308469110208988934330964365914669056",
+              "n:1e-1000"
+            ],
+            "st": [
+              "s:b",
+              "s:b",
+              "s:a"
+            ]
+          },
+          "after_hashed_jcs": "{\"empty_lst\":[],\"flag\":\"bd2697924fc3dbc2684e37198d7f4911d738e969f1d3a4db9e113420c2e90f17\",\"item\":[],\"n\":\"94155314511948477f0f54b5451ba0659e2fcebe1aee4061ee5967c306e79322\",\"nums\":[\"7304eb0f56dc6f4cc9501dc1a8c6ab5f197d7505c9e8bc7007527ff7a8380dd2\",\"34b33072be3d226b6060ca27e37260cc231b1ced6cffa18aebbf455519daf708\",\"8709c8496a3332ba06a60d199087185e579adbbed846b09901dc3573c0c0c631\",\"abf5a50862a72eabf1bad2a9e9cf5b2c88f344ce3f1f1ffbc799f73aeb68481e\",\"5e54cc5fe401c08a85e4aa057410c86237fda79563b288445fe95e68c557126c\",\"af07f8066685df097da42e5b88920cb8eaac999aaa4211e8f0764d600976b29e\",\"dbc1ba5eae39dfb316df813dce9a556086f045ebdb47b91c1cadfbe46b6c0741\",\"96a65d7bd76fee67f2025e748302b903271c321d4572fac70c8939bb2c71028b\",\"94155314511948477f0f54b5451ba0659e2fcebe1aee4061ee5967c306e79322\",\"4911598285a9540f4d170d04ef236f34f8d222a380a03cdae180eb56e13b7fb4\",\"4911598285a9540f4d170d04ef236f34f8d222a380a03cdae180eb56e13b7fb4\",\"aac23b595d2b8ce3ad9d93ee611044b0cbffa94588c7481d1f01fedad6047046\"],\"st\":[\"1ce6a20d043f3e8e8c6f7cb911e5079cf004a86c172521bafe886952dfc63b0a\",\"1ce6a20d043f3e8e8c6f7cb911e5079cf004a86c172521bafe886952dfc63b0a\",\"c317c702fdcbeda7390dbd1a3f42820808e9dd90393cd186a8309de1dc9fbc2c\"]}",
+          "field": "instance_key",
+          "form": "create",
+          "prior_identity": null,
+          "prior_identity_hashed_jcs": "null",
+          "prior_identity_kind": "none"
+        }
+      ]
+    },
+    {
+      "actions": [
+        "create"
+      ],
+      "address": "edge_thing.empties",
+      "keys": [
+        {
+          "after": {
+            "empty_lst": [],
+            "item": [],
+            "nt": [],
+            "st": [],
+            "tags": {}
+          },
+          "after_hashed_jcs": "{\"empty_lst\":[],\"item\":[],\"nt\":[],\"st\":[],\"tags\":{}}",
+          "field": "instance_key",
+          "form": "create",
+          "prior_identity": null,
+          "prior_identity_hashed_jcs": "null",
+          "prior_identity_kind": "none"
+        }
+      ]
+    },
+    {
+      "actions": [
+        "create"
+      ],
+      "address": "edge_thing.unknowns",
+      "keys": [
+        {
+          "after": {
+            "flag": "b:true",
+            "item": [
+              {
+                "name": "s:one"
+              },
+              {
+                "name": "s:two",
+                "vals": [
+                  "s:y"
+                ]
+              }
+            ],
+            "lst": [
+              "s:a",
+              null,
+              "s:c"
+            ],
+            "nt": [
+              {
+                "a": "s:k"
+              }
+            ],
+            "obj": {
+              "x": "s:keep"
+            },
+            "tags": {
+              "Name": "s:bobthecorp-edge"
+            }
+          },
+          "after_hashed_jcs": "{\"flag\":\"b68daeb52706f9e937299d1a17344104761b9d0971847be00331406c41f0e9a4\",\"item\":[{\"name\":\"5e50c4c2d8b1d09f536182dedaca2a57dc4441d0b82d5d2bd7409537bb4eacfc\"},{\"name\":\"f64b85bf548386f854fd8bb18ad46b0f044878be63a9b71e081b75d1026671f8\",\"vals\":[\"655c432f4bce0ba1d668ec00475adb412f42036278e13bc1e8ad95189eaa2d51\"]}],\"lst\":[\"c317c702fdcbeda7390dbd1a3f42820808e9dd90393cd186a8309de1dc9fbc2c\",null,\"654bdbb9cc28670405740e93e7d12ed38f337415e7d3cc49429f18f1162ca64f\"],\"nt\":[{\"a\":\"fe95bd6b167721672b1574b2b2f05e6c8857a6ac20eda2105a3a465a4e2be8f0\"}],\"obj\":{\"x\":\"7d272482c441736d60291457d4862c2a8fa8474ab4cc32e08dc2c82602290f5c\"},\"tags\":{\"Name\":\"f66c91d8f19a48a98f75d1f5dba19a6357ef23578abaec5ff2fdc13b04508150\"}}",
+          "field": "instance_key",
+          "form": "create",
+          "prior_identity": null,
+          "prior_identity_hashed_jcs": "null",
+          "prior_identity_kind": "none"
+        }
+      ]
+    },
+    {
+      "actions": [
+        "create"
+      ],
+      "address": "edge_thing.allunknown",
+      "error": "whole planned value unknown"
+    },
+    {
+      "actions": [
+        "update"
+      ],
+      "address": "edge_thing.allnull",
+      "keys": [
+        {
+          "after": {
+            "flag": "b:true",
+            "id": "s:edge-allnull",
+            "item": []
+          },
+          "after_hashed_jcs": "{\"flag\":\"b68daeb52706f9e937299d1a17344104761b9d0971847be00331406c41f0e9a4\",\"id\":\"46165583f7e6f701afffd85c4c6d83814700b47d6491cb7ca3326312199b4c5d\",\"item\":[]}",
+          "field": "instance_key",
+          "form": "update",
+          "prior_identity": {
+            "id": "s:edge-allnull"
+          },
+          "prior_identity_hashed_jcs": "{\"id\":\"46165583f7e6f701afffd85c4c6d83814700b47d6491cb7ca3326312199b4c5d\"}",
+          "prior_identity_kind": "id"
+        }
+      ]
+    },
+    {
+      "actions": [
+        "update"
+      ],
+      "address": "edge_thing.noid",
+      "error": "no usable prior identity and no non-empty prior id"
+    },
+    {
+      "actions": [
+        "delete"
+      ],
+      "address": "edge_thing.emptyid",
+      "error": "no usable prior identity and no non-empty prior id"
+    },
+    {
+      "actions": [
+        "delete"
+      ],
+      "address": "edge_thing.numid",
+      "error": "no usable prior identity and no non-empty prior id"
+    },
+    {
+      "actions": [
+        "create"
+      ],
+      "address": "edge_thing.bigexp",
+      "error": "number exponent out of range: 10e1000"
+    },
+    {
+      "actions": [
+        "create"
+      ],
+      "address": "edge_thing.smallexp",
+      "error": "number exponent out of range: 1e-1001"
+    },
+    {
+      "actions": [
+        "create"
+      ],
+      "address": "edge_thing.dynmix",
+      "keys": [
+        {
+          "after": {
+            "item": [],
+            "mix": {
+              "s": "s:kept"
+            }
+          },
+          "after_hashed_jcs": "{\"item\":[],\"mix\":{\"s\":\"2a4bf8bd8e7acfb3c7c55d081800143f7e18b947a6d56c9b0e341e06bc7d8c89\"}}",
+          "field": "instance_key",
+          "form": "create",
+          "prior_identity": null,
+          "prior_identity_hashed_jcs": "null",
+          "prior_identity_kind": "none"
+        }
+      ]
+    },
+    {
+      "actions": [
+        "delete"
+      ],
+      "address": "edge_thing.identstr",
+      "error": "before_identity is not an object"
+    },
+    {
+      "actions": [
+        "create"
+      ],
+      "address": "edge_thing.afterfalse",
+      "error": "planned after is not an object"
+    },
+    {
+      "actions": [
+        "create"
+      ],
+      "address": "edge_thing.zeroexp",
+      "keys": [
+        {
+          "after": {
+            "item": [],
+            "n": "n:0"
+          },
+          "after_hashed_jcs": "{\"item\":[],\"n\":\"dbc1ba5eae39dfb316df813dce9a556086f045ebdb47b91c1cadfbe46b6c0741\"}",
+          "field": "instance_key",
+          "form": "create",
+          "prior_identity": null,
+          "prior_identity_hashed_jcs": "null",
+          "prior_identity_kind": "none"
+        }
+      ]
+    },
+    {
+      "actions": [
+        "create"
+      ],
+      "address": "edge_thing.maskedbad",
+      "error": "['flag']: expected bool"
+    },
+    {
+      "actions": [
+        "create"
+      ],
+      "address": "edge_thing.setscalar",
+      "error": "after_unknown shape does not match schema at ['st']"
+    },
+    {
+      "actions": [
+        "create"
+      ],
+      "address": "edge_thing.setmixed",
+      "error": "after_unknown shape does not match schema at ['st', '1']"
+    },
+    {
+      "actions": [
+        "create"
+      ],
+      "address": "edge_thing.setshape",
+      "error": "after_unknown shape does not match schema at ['st', '0']"
+    },
+    {
+      "actions": [
+        "update"
+      ],
+      "address": "edge_thing.beforestridentity",
+      "error": "before is not an object"
+    },
+    {
+      "actions": [
+        "update"
+      ],
+      "address": "edge_thing.beforestr",
+      "error": "before is not an object"
+    },
+    {
+      "actions": [
+        "no-op"
+      ],
+      "address": "edge_thing.depnoop",
+      "deposed": "0bad0bad",
+      "error": "unsupported actions ['no-op']"
+    },
+    {
+      "actions": [
+        "create"
+      ],
+      "address": "edge_thing.longnum",
+      "error": "number text longer than 1200 bytes"
+    },
+    {
+      "actions": [
+        "create"
+      ],
+      "address": "edge_thing.extra",
+      "error": "attribute 'bogus' not in schema"
+    },
+    {
+      "actions": [
+        "create"
+      ],
+      "address": "edge_thing.noschema",
+      "error": "schema has no entry for this provider and type"
+    },
+    {
+      "actions": [
+        "create"
+      ],
+      "address": "edge_thing.unicode",
+      "keys": [
+        {
+          "after": {
+            "item": [],
+            "tags": {
+              "back\\slash": "s:été",
+              "html<&>": "s:<script>&amp;</script>",
+              "q\"uote": "s:line\nbreak\ttab\u0001",
+              "sep line": "s:para graph",
+              "｡halfwidth": "s:a",
+              "😀smile": "s:b"
+            }
+          },
+          "after_hashed_jcs": "{\"item\":[],\"tags\":{\"back\\\\slash\":\"8c3f383e7f1fda186d0e7b404d41d7d5c896df5bb4acac6ee8bfb08f08e42fbe\",\"html<&>\":\"7d39ae6f20dfbbaeca824eb652600141da95ce34d6c51f2de4c67ce4f64aff4f\",\"q\\\"uote\":\"782b68af8e724ed08eab55c2181098c1a3a98caa04c81960f48b9fa205e04f57\",\"sep line\":\"ae0f60106a888424fbef3bea2378f7d1a9c5cd24f106dbf78dded85d80d2f288\",\"😀smile\":\"1ce6a20d043f3e8e8c6f7cb911e5079cf004a86c172521bafe886952dfc63b0a\",\"｡halfwidth\":\"c317c702fdcbeda7390dbd1a3f42820808e9dd90393cd186a8309de1dc9fbc2c\"}}",
+          "field": "instance_key",
+          "form": "create",
+          "prior_identity": null,
+          "prior_identity_hashed_jcs": "null",
+          "prior_identity_kind": "none"
+        }
+      ]
+    },
+    {
+      "actions": [
+        "delete"
+      ],
+      "address": "edge_thing.gone",
+      "keys": [
+        {
+          "after": null,
+          "after_hashed_jcs": "null",
+          "field": "delete_key",
+          "form": "delete",
+          "prior_identity": {
+            "name": "s:gone"
+          },
+          "prior_identity_hashed_jcs": "{\"name\":\"d63135b441c6a6bf47aa0b9ce716eea949caa650390559c669b87e3006eb9c31\"}",
+          "prior_identity_kind": "identity"
+        }
+      ]
+    },
+    {
+      "actions": [
+        "delete"
+      ],
+      "address": "edge_thing.gone",
+      "deposed": "0bad0bad",
+      "keys": [
+        {
+          "after": null,
+          "after_hashed_jcs": "null",
+          "field": "delete_key",
+          "form": "delete",
+          "prior_identity": {
+            "name": "s:gone-old"
+          },
+          "prior_identity_hashed_jcs": "{\"name\":\"4697eec44f4fb67ee44772da2ef957886f9ac7231582f2fcab2f72de6634de37\"}",
+          "prior_identity_kind": "identity"
+        }
+      ]
+    },
+    {
+      "actions": [
+        "delete",
+        "create"
+      ],
+      "address": "edge_thing.depbad",
+      "deposed": "0bad0bad",
+      "error": "a deposed object takes only a delete entry"
+    },
+    {
+      "action_reason": "replace_because_tainted",
+      "actions": [
+        "delete",
+        "create"
+      ],
+      "address": "edge_thing.tainted",
+      "keys": [
+        {
+          "after": null,
+          "after_hashed_jcs": "null",
+          "field": "delete_key",
+          "form": "delete",
+          "prior_identity": {
+            "id": "s:edge-tainted"
+          },
+          "prior_identity_hashed_jcs": "{\"id\":\"181bcc4fdef86f3058a674987d20a5452430404d21d4987dc1e6c07b1470e8c1\"}",
+          "prior_identity_kind": "id"
+        },
+        {
+          "after": {
+            "item": [],
+            "lst": [
+              "s:a"
+            ]
+          },
+          "after_hashed_jcs": "{\"item\":[],\"lst\":[\"c317c702fdcbeda7390dbd1a3f42820808e9dd90393cd186a8309de1dc9fbc2c\"]}",
+          "field": "instance_key",
+          "form": "create",
+          "prior_identity": null,
+          "prior_identity_hashed_jcs": "null",
+          "prior_identity_kind": "none"
+        }
+      ]
+    }
+  ],
+  "format": "compliancetf.instancekey.golden/v1",
+  "provider_version": "hashicorp/aws 6.65.0",
+  "terraform_version": "1.16.3"
+}

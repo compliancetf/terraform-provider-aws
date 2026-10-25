@@ -1,0 +1,14 @@
+{
+  "description": "the receipt key was not yet valid at consumed_at",
+  "policy": {},
+  "sign": "starts_between",
+  "queries": [
+    {
+      "control": "CTF.S3.1",
+      "key": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "result": "fail",
+      "want": false
+    }
+  ],
+  "warning": "receipt signature invalid: key not valid at this time"
+}

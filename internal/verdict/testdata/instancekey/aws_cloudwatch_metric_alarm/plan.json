@@ -1,0 +1,286 @@
+{
+  "format_version": "1.2",
+  "resource_changes": [
+    {
+      "address": "aws_cloudwatch_metric_alarm.big1",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "after": {
+          "actions_enabled": true,
+          "alarm_actions": null,
+          "alarm_description": null,
+          "alarm_name": "bobthecorp-big1",
+          "comparison_operator": "GreaterThanThreshold",
+          "datapoints_to_alarm": null,
+          "dimensions": null,
+          "evaluation_criteria": [],
+          "evaluation_interval": null,
+          "evaluation_periods": 1,
+          "extended_statistic": null,
+          "insufficient_data_actions": null,
+          "metric_name": "BytesProcessed",
+          "metric_query": [],
+          "namespace": "BobTheCorp/Batch",
+          "ok_actions": null,
+          "period": 300,
+          "region": "us-east-1",
+          "statistic": "Sum",
+          "tags": null,
+          "threshold": 9007199254740992,
+          "threshold_metric_id": null,
+          "treat_missing_data": "missing",
+          "unit": null,
+          "warm_up_configuration": []
+        },
+        "after_identity": {
+          "account_id": null,
+          "alarm_name": null,
+          "region": null
+        },
+        "after_sensitive": {
+          "evaluation_criteria": [],
+          "metric_query": [],
+          "tags_all": {},
+          "warm_up_configuration": []
+        },
+        "after_unknown": {
+          "arn": true,
+          "evaluate_low_sample_count_percentiles": true,
+          "evaluation_criteria": [],
+          "id": true,
+          "metric_query": [],
+          "tags_all": true,
+          "warm_up_configuration": []
+        },
+        "before": null,
+        "before_sensitive": false
+      },
+      "mode": "managed",
+      "name": "big1",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "type": "aws_cloudwatch_metric_alarm"
+    },
+    {
+      "address": "aws_cloudwatch_metric_alarm.big2",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "after": {
+          "actions_enabled": true,
+          "alarm_actions": null,
+          "alarm_description": null,
+          "alarm_name": "bobthecorp-big2",
+          "comparison_operator": "GreaterThanThreshold",
+          "datapoints_to_alarm": null,
+          "dimensions": null,
+          "evaluation_criteria": [],
+          "evaluation_interval": null,
+          "evaluation_periods": 1,
+          "extended_statistic": null,
+          "insufficient_data_actions": null,
+          "metric_name": "BytesProcessed",
+          "metric_query": [],
+          "namespace": "BobTheCorp/Batch",
+          "ok_actions": null,
+          "period": 300,
+          "region": "us-east-1",
+          "statistic": "Sum",
+          "tags": null,
+          "threshold": 18446744073709552000,
+          "threshold_metric_id": null,
+          "treat_missing_data": "missing",
+          "unit": null,
+          "warm_up_configuration": []
+        },
+        "after_identity": {
+          "account_id": null,
+          "alarm_name": null,
+          "region": null
+        },
+        "after_sensitive": {
+          "evaluation_criteria": [],
+          "metric_query": [],
+          "tags_all": {},
+          "warm_up_configuration": []
+        },
+        "after_unknown": {
+          "arn": true,
+          "evaluate_low_sample_count_percentiles": true,
+          "evaluation_criteria": [],
+          "id": true,
+          "metric_query": [],
+          "tags_all": true,
+          "warm_up_configuration": []
+        },
+        "before": null,
+        "before_sensitive": false
+      },
+      "mode": "managed",
+      "name": "big2",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "type": "aws_cloudwatch_metric_alarm"
+    },
+    {
+      "address": "aws_cloudwatch_metric_alarm.frac",
+      "change": {
+        "actions": [
+          "update"
+        ],
+        "after": {
+          "actions_enabled": true,
+          "alarm_actions": null,
+          "alarm_description": null,
+          "alarm_name": "bobthecorp-frac",
+          "arn": "arn:aws:cloudwatch:us-east-1:111111111111:alarm:bobthecorp-frac",
+          "comparison_operator": "GreaterThanThreshold",
+          "datapoints_to_alarm": null,
+          "dimensions": null,
+          "evaluate_low_sample_count_percentiles": "bobthecorp-fake-evaluate_low_sample_count_percentiles",
+          "evaluation_criteria": [],
+          "evaluation_interval": null,
+          "evaluation_periods": 1,
+          "extended_statistic": null,
+          "id": "bobthecorp-frac",
+          "insufficient_data_actions": null,
+          "metric_name": "CPUUtilization",
+          "metric_query": [],
+          "namespace": "AWS/EC2",
+          "ok_actions": null,
+          "period": 60,
+          "region": "us-east-1",
+          "statistic": "Average",
+          "tags": null,
+          "tags_all": {},
+          "threshold": 1234567.5,
+          "threshold_metric_id": null,
+          "treat_missing_data": "missing",
+          "unit": null,
+          "warm_up_configuration": []
+        },
+        "after_identity": {
+          "account_id": "111111111111",
+          "alarm_name": "bobthecorp-frac",
+          "region": "us-east-1"
+        },
+        "after_sensitive": {
+          "evaluation_criteria": [],
+          "metric_query": [],
+          "tags_all": {},
+          "warm_up_configuration": []
+        },
+        "after_unknown": {},
+        "before": {
+          "actions_enabled": true,
+          "alarm_actions": null,
+          "alarm_description": null,
+          "alarm_name": "bobthecorp-frac",
+          "arn": "arn:aws:cloudwatch:us-east-1:111111111111:alarm:bobthecorp-frac",
+          "comparison_operator": "GreaterThanThreshold",
+          "datapoints_to_alarm": null,
+          "dimensions": null,
+          "evaluate_low_sample_count_percentiles": "bobthecorp-fake-evaluate_low_sample_count_percentiles",
+          "evaluation_criteria": [],
+          "evaluation_interval": null,
+          "evaluation_periods": 1,
+          "extended_statistic": null,
+          "id": "bobthecorp-frac",
+          "insufficient_data_actions": null,
+          "metric_name": "CPUUtilization",
+          "metric_query": [],
+          "namespace": "AWS/EC2",
+          "ok_actions": null,
+          "period": 60,
+          "region": "us-east-1",
+          "statistic": "Average",
+          "tags": null,
+          "tags_all": {},
+          "threshold": 1000,
+          "threshold_metric_id": null,
+          "treat_missing_data": "missing",
+          "unit": null,
+          "warm_up_configuration": []
+        },
+        "before_identity": {
+          "account_id": "111111111111",
+          "alarm_name": "bobthecorp-frac",
+          "region": "us-east-1"
+        },
+        "before_sensitive": {
+          "evaluation_criteria": [],
+          "metric_query": [],
+          "tags_all": {},
+          "warm_up_configuration": []
+        }
+      },
+      "mode": "managed",
+      "name": "frac",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "type": "aws_cloudwatch_metric_alarm"
+    },
+    {
+      "address": "aws_cloudwatch_metric_alarm.tenth",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "after": {
+          "actions_enabled": true,
+          "alarm_actions": null,
+          "alarm_description": null,
+          "alarm_name": "bobthecorp-tenth",
+          "comparison_operator": "LessThanThreshold",
+          "datapoints_to_alarm": null,
+          "dimensions": null,
+          "evaluation_criteria": [],
+          "evaluation_interval": null,
+          "evaluation_periods": 2,
+          "extended_statistic": null,
+          "insufficient_data_actions": null,
+          "metric_name": "SuccessRate",
+          "metric_query": [],
+          "namespace": "BobTheCorp/Batch",
+          "ok_actions": null,
+          "period": 60,
+          "region": "us-east-1",
+          "statistic": "Average",
+          "tags": null,
+          "threshold": 0.1,
+          "threshold_metric_id": null,
+          "treat_missing_data": "missing",
+          "unit": null,
+          "warm_up_configuration": []
+        },
+        "after_identity": {
+          "account_id": null,
+          "alarm_name": null,
+          "region": null
+        },
+        "after_sensitive": {
+          "evaluation_criteria": [],
+          "metric_query": [],
+          "tags_all": {},
+          "warm_up_configuration": []
+        },
+        "after_unknown": {
+          "arn": true,
+          "evaluate_low_sample_count_percentiles": true,
+          "evaluation_criteria": [],
+          "id": true,
+          "metric_query": [],
+          "tags_all": true,
+          "warm_up_configuration": []
+        },
+        "before": null,
+        "before_sensitive": false
+      },
+      "mode": "managed",
+      "name": "tenth",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "type": "aws_cloudwatch_metric_alarm"
+    }
+  ],
+  "terraform_version": "1.16.3"
+}

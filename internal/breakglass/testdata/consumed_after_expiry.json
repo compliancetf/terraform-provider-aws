@@ -1,0 +1,17 @@
+{
+  "description": "consumed after the receipt expiry",
+  "policy": {},
+  "receipt_set": {
+    "consumed_at": "2026-10-18T10:04:00Z",
+    "expires_at": "2026-10-18T10:03:00Z"
+  },
+  "queries": [
+    {
+      "control": "CTF.S3.1",
+      "key": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "result": "fail",
+      "want": false
+    }
+  ],
+  "warning": "consumed_at lies after"
+}

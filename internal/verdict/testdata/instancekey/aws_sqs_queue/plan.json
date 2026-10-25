@@ -1,0 +1,131 @@
+{
+  "format_version": "1.2",
+  "resource_changes": [
+    {
+      "address": "aws_sqs_queue.new",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "after": {
+          "content_based_deduplication": false,
+          "delay_seconds": 0,
+          "fifo_queue": false,
+          "max_message_size": 262144,
+          "message_retention_seconds": 345600,
+          "name": "bobthecorp-reports",
+          "receive_wait_time_seconds": 0,
+          "region": "us-east-1",
+          "tags": null,
+          "timeouts": null,
+          "visibility_timeout_seconds": 30
+        },
+        "after_identity": {
+          "url": null
+        },
+        "after_sensitive": {
+          "tags_all": {}
+        },
+        "after_unknown": {
+          "arn": true,
+          "deduplication_scope": true,
+          "fifo_throughput_limit": true,
+          "id": true,
+          "kms_data_key_reuse_period_seconds": true,
+          "kms_master_key_id": true,
+          "name_prefix": true,
+          "policy": true,
+          "redrive_allow_policy": true,
+          "redrive_policy": true,
+          "sqs_managed_sse_enabled": true,
+          "tags_all": true,
+          "url": true
+        },
+        "before": null,
+        "before_sensitive": false
+      },
+      "mode": "managed",
+      "name": "new",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "type": "aws_sqs_queue"
+    },
+    {
+      "address": "aws_sqs_queue.this",
+      "change": {
+        "actions": [
+          "update"
+        ],
+        "after": {
+          "arn": "arn:aws:sqs:us-east-1:111111111111:bobthecorp-jobs",
+          "content_based_deduplication": false,
+          "deduplication_scope": "bobthecorp-fake-deduplication_scope",
+          "delay_seconds": 0,
+          "fifo_queue": false,
+          "fifo_throughput_limit": "bobthecorp-fake-fifo_throughput_limit",
+          "id": "https://sqs.us-east-1.amazonaws.com/111111111111/bobthecorp-jobs",
+          "kms_data_key_reuse_period_seconds": 0,
+          "kms_master_key_id": null,
+          "max_message_size": 262144,
+          "message_retention_seconds": 345600,
+          "name": "bobthecorp-jobs",
+          "name_prefix": "bobthecorp-fake-name_prefix",
+          "policy": "bobthecorp-fake-policy",
+          "receive_wait_time_seconds": 0,
+          "redrive_allow_policy": "bobthecorp-fake-redrive_allow_policy",
+          "redrive_policy": "bobthecorp-fake-redrive_policy",
+          "region": "us-east-1",
+          "sqs_managed_sse_enabled": false,
+          "tags": null,
+          "tags_all": {},
+          "timeouts": null,
+          "url": "https://sqs.us-east-1.amazonaws.com/111111111111/bobthecorp-jobs",
+          "visibility_timeout_seconds": 60
+        },
+        "after_identity": {
+          "url": "https://sqs.us-east-1.amazonaws.com/111111111111/bobthecorp-jobs"
+        },
+        "after_sensitive": {
+          "tags_all": {}
+        },
+        "after_unknown": {},
+        "before": {
+          "arn": "arn:aws:sqs:us-east-1:111111111111:bobthecorp-jobs",
+          "content_based_deduplication": false,
+          "deduplication_scope": "bobthecorp-fake-deduplication_scope",
+          "delay_seconds": 0,
+          "fifo_queue": false,
+          "fifo_throughput_limit": "bobthecorp-fake-fifo_throughput_limit",
+          "id": "https://sqs.us-east-1.amazonaws.com/111111111111/bobthecorp-jobs",
+          "kms_data_key_reuse_period_seconds": 0,
+          "kms_master_key_id": null,
+          "max_message_size": 262144,
+          "message_retention_seconds": 345600,
+          "name": "bobthecorp-jobs",
+          "name_prefix": "bobthecorp-fake-name_prefix",
+          "policy": "bobthecorp-fake-policy",
+          "receive_wait_time_seconds": 0,
+          "redrive_allow_policy": "bobthecorp-fake-redrive_allow_policy",
+          "redrive_policy": "bobthecorp-fake-redrive_policy",
+          "region": "us-east-1",
+          "sqs_managed_sse_enabled": false,
+          "tags": null,
+          "tags_all": {},
+          "timeouts": null,
+          "url": "https://sqs.us-east-1.amazonaws.com/111111111111/bobthecorp-jobs",
+          "visibility_timeout_seconds": 30
+        },
+        "before_identity": {
+          "url": "https://sqs.us-east-1.amazonaws.com/111111111111/bobthecorp-jobs"
+        },
+        "before_sensitive": {
+          "tags_all": {}
+        }
+      },
+      "mode": "managed",
+      "name": "this",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "type": "aws_sqs_queue"
+    }
+  ],
+  "terraform_version": "1.16.3"
+}

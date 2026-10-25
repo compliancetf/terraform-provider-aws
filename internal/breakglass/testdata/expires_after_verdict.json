@@ -1,0 +1,16 @@
+{
+  "description": "receipt expiry past the verdict expires_at",
+  "policy": {},
+  "receipt_set": {
+    "expires_at": "2026-10-18T22:00:01Z"
+  },
+  "queries": [
+    {
+      "control": "CTF.S3.1",
+      "key": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "result": "fail",
+      "want": false
+    }
+  ],
+  "warning": "outside the verdict lifetime"
+}

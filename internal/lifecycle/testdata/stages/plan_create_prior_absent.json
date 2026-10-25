@@ -1,0 +1,28 @@
+{
+  "description": "absent Prior is not proof of a create: update-only controls run too",
+  "stage": "plan",
+  "mode": "hard_fail",
+  "op": "create",
+  "config": {
+    "storage_encrypted": true,
+    "kms_key_id": "arn:aws:kms:us-east-1:111122223333:key/bobthecorp-rds",
+    "engine": "postgres"
+  },
+  "planned": {
+    "storage_encrypted": true,
+    "kms_key_id": "arn:aws:kms:us-east-1:111122223333:key/bobthecorp-rds",
+    "engine": "postgres",
+    "deletion_protection": false
+  },
+  "want": {
+    "diagnostics": [
+      {
+        "severity": "error",
+        "summary": "[rds_instance_deletion_protection_enabled] RDS instances must keep deletion protection on.",
+        "detail": "Fix: Set deletion_protection = true.\nSeverity: medium\nMode: hard_fail\nStage: plan\nTo waive: add an exception for rds_instance_deletion_protection_enabled in compliance-exceptions.hcl",
+        "attribute": "AttributeName(\"deletion_protection\")"
+      }
+    ],
+    "stamp": true
+  }
+}

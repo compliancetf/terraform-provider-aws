@@ -1,0 +1,27 @@
+[
+  {
+    "id": "rds_db_instance_deletion_protection_enabled",
+    "version": "1.0.0",
+    "kind": "deletion_guard",
+    "resource_type": "aws_db_instance",
+    "reads": ["deletion_protection"],
+    "on": ["delete"],
+    "expr": "prior.deletion_protection == false",
+    "action": "deny",
+    "severity": "medium",
+    "message": "Disable deletion_protection before destroying this instance."
+  },
+  {
+    "id": "rds_db_instance_deletion_protection_enabled",
+    "version": "1.0.0",
+    "kind": "resource",
+    "resource_type": "aws_db_instance",
+    "reads": ["deletion_protection"],
+    "presence_mode": "effective",
+    "on": ["create"],
+    "expr": "resource.deletion_protection == true",
+    "action": "warn",
+    "severity": "medium",
+    "message": "RDS instances should have deletion protection enabled."
+  }
+]

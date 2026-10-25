@@ -1,0 +1,75 @@
+{
+  "description": "a stamp mismatch records the evaluated state and the blocked decision",
+  "stage": "apply_pre",
+  "mode": "hard_fail",
+  "op": "create",
+  "envelope": {
+    "op": "create",
+    "digest": "sha256:stale"
+  },
+  "config": {
+    "storage_encrypted": true,
+    "kms_key_id": "arn:aws:kms:us-east-1:111122223333:key/bobthecorp-rds",
+    "engine": "postgres"
+  },
+  "prior": null,
+  "planned": {
+    "storage_encrypted": true,
+    "kms_key_id": "arn:aws:kms:us-east-1:111122223333:key/bobthecorp-rds",
+    "engine": "postgres",
+    "deletion_protection": true
+  },
+  "want": {
+    "diagnostics": [
+      {
+        "severity": "error",
+        "summary": "[rds_db_instance_encryption_at_rest_enabled] controls changed between plan and apply",
+        "detail": "Controls changed between plan and apply: plan used sha256:stale, provider loaded <current>. Re-run plan.",
+        "attribute": "AttributeName(\"storage_encrypted\")"
+      },
+      {
+        "severity": "error",
+        "summary": "[rds_instance_kms_key_configured] controls changed between plan and apply",
+        "detail": "Controls changed between plan and apply: plan used sha256:stale, provider loaded <current>. Re-run plan.",
+        "attribute": "AttributeName(\"kms_key_id\")"
+      },
+      {
+        "severity": "warning",
+        "summary": "[rds_instance_engine_not_mysql] controls changed between plan and apply",
+        "detail": "Controls changed between plan and apply: plan used sha256:stale, provider loaded <current>. Re-run plan.",
+        "attribute": "AttributeName(\"engine\")"
+      },
+      {
+        "severity": "error",
+        "summary": "[rds_instance_deletion_protection_enabled] controls changed between plan and apply",
+        "detail": "Controls changed between plan and apply: plan used sha256:stale, provider loaded <current>. Re-run plan.",
+        "attribute": "AttributeName(\"deletion_protection\")"
+      }
+    ],
+    "evidence": {
+      "op": "create",
+      "results": [
+        {
+          "control": "rds_db_instance_encryption_at_rest_enabled",
+          "state": "pass",
+          "decision": "blocked"
+        },
+        {
+          "control": "rds_instance_kms_key_configured",
+          "state": "pass",
+          "decision": "blocked"
+        },
+        {
+          "control": "rds_instance_engine_not_mysql",
+          "state": "pass",
+          "decision": "warning"
+        },
+        {
+          "control": "rds_instance_deletion_protection_enabled",
+          "state": "pass",
+          "decision": "blocked"
+        }
+      ]
+    }
+  }
+}

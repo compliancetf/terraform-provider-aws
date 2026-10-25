@@ -1,0 +1,14 @@
+an intent without attributes: E_INTENT
+-- intent.json --
+{
+ "id": "kms_cmk_rotation_enabled",
+ "resource_type": "aws_kms_key",
+ "attributes": [],
+ "explanation": "Explanation of kms_cmk_rotation_enabled.",
+ "postcondition": "",
+ "has_strategy_condition": false
+}
+-- want.json --
+{
+  "error": "E_INTENT"
+}

@@ -1,0 +1,10 @@
+{
+  "description": "a case variant of a member name is refused",
+  "set": {
+    "ORG_ID": "bobthecorp"
+  },
+  "want": {
+    "summary": "Invalid verdict file",
+    "detail": "The file is not a compliancetf.verdict/v1 document."
+  }
+}

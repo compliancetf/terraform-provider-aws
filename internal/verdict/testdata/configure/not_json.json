@@ -1,0 +1,8 @@
+{
+  "description": "a file that is not JSON",
+  "raw": "not json",
+  "want": {
+    "summary": "Invalid verdict file",
+    "detail": "The file is not a compliancetf.verdict/v1 document."
+  }
+}

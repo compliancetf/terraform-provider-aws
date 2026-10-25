@@ -1,0 +1,90 @@
+[
+  {
+    "id": "acct_bobthecorp_contact_set",
+    "disposition": "runtime",
+    "content": "none",
+    "targets": [],
+    "generation_status": "pending_review",
+    "bundles": [
+      "cis-aws"
+    ]
+  },
+  {
+    "id": "iam_bobthecorp_no_kms_wildcard",
+    "disposition": "provider-local",
+    "content": "intents",
+    "targets": [
+      {
+        "kind": "resource",
+        "type": "aws_iam_policy"
+      }
+    ],
+    "generation_status": "pending_review",
+    "bundles": [
+      "soc2-aws"
+    ]
+  },
+  {
+    "id": "rds_bobthecorp_deletion_guard",
+    "disposition": "provider-local",
+    "content": "none",
+    "targets": [
+      {
+        "kind": "resource",
+        "type": "aws_db_instance"
+      }
+    ],
+    "generation_status": "pending_review",
+    "bundles": [
+      "pci-dss-aws",
+      "hipaa-aws"
+    ]
+  },
+  {
+    "id": "rds_bobthecorp_storage_encrypted",
+    "disposition": "provider-local",
+    "content": "intents",
+    "targets": [
+      {
+        "kind": "resource",
+        "type": "aws_db_instance"
+      }
+    ],
+    "generation_status": "pending_review",
+    "bundles": [
+      "cis-aws",
+      "soc2-aws"
+    ]
+  },
+  {
+    "id": "s3_bobthecorp_lifecycle_versioned",
+    "disposition": "graph",
+    "content": "none",
+    "targets": [
+      {
+        "kind": "resource",
+        "type": "aws_s3_bucket_versioning"
+      }
+    ],
+    "generation_status": "pending_review",
+    "bundles": [
+      "soc2-aws"
+    ]
+  },
+  {
+    "id": "s3_bobthecorp_versioning_on",
+    "disposition": "companion-local",
+    "content": "intents",
+    "targets": [
+      {
+        "kind": "resource",
+        "type": "aws_s3_bucket_versioning"
+      }
+    ],
+    "generation_status": "pending_review",
+    "bundles": [
+      "soc2-aws",
+      "pci-dss-aws"
+    ]
+  }
+]

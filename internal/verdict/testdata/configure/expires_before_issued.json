@@ -1,0 +1,11 @@
+{
+  "description": "expires_at not after issued_at",
+  "set": {
+    "issued_at": "2026-10-18T11:02:00Z",
+    "expires_at": "2026-10-18T11:02:00Z"
+  },
+  "want": {
+    "summary": "Invalid verdict file",
+    "detail": "The verdict expires_at must be after issued_at."
+  }
+}

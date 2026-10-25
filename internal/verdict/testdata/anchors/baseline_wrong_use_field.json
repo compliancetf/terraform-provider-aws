@@ -1,0 +1,7 @@
+{
+  "description": "a key in the baseline list whose use is verdict is rejected",
+  "use": "baseline",
+  "source": "profile",
+  "key_use": "verdict",
+  "want_release": "key use is not baseline"
+}

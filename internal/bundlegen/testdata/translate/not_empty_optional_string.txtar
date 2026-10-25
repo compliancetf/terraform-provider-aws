@@ -1,0 +1,40 @@
+Optional string: configured
+-- intent.json --
+{
+ "id": "cloudtrail_trail_logs_encrypted_with_kms_cmk",
+ "resource_type": "aws_cloudtrail",
+ "attributes": [
+  {
+   "schema_path": "kms_key_id",
+   "condition": "not_empty",
+   "values": [],
+   "values_from_ref": null
+  }
+ ],
+ "explanation": "Explanation of cloudtrail_trail_logs_encrypted_with_kms_cmk.",
+ "postcondition": "",
+ "has_strategy_condition": false
+}
+-- want.json --
+{
+  "control": {
+    "id": "cloudtrail_trail_logs_encrypted_with_kms_cmk",
+    "version": "1.0.0",
+    "kind": "resource",
+    "resource_type": "aws_cloudtrail",
+    "reads": [
+      "kms_key_id"
+    ],
+    "presence_mode": "configured",
+    "on": [
+      "create",
+      "update"
+    ],
+    "expr": "config.kms_key_id != null && size(config.kms_key_id) > 0",
+    "action": "deny",
+    "severity": "",
+    "message": "",
+    "fix": "Explanation of cloudtrail_trail_logs_encrypted_with_kms_cmk.",
+    "exemption_coverable": []
+  }
+}

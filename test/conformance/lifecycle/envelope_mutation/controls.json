@@ -1,0 +1,3 @@
+[
+  {"id": "fake_thing_id_not_bad", "version": "1.0.0", "kind": "resource", "resource_type": "fake_thing", "reads": ["id"], "presence_mode": "effective", "on": ["create", "update"], "expr": "resource.id == null || !resource.id.matches(\"-bad$\")", "action": "deny", "severity": "high", "message": "fake_thing id must not end in -bad.", "exemption_coverable": []}
+]

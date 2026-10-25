@@ -1,0 +1,16 @@
+A target without a fail fixture.
+-- rds_bobthecorp_storage_encrypted.yaml --
+targets:
+  - kind: resource
+    type: aws_db_instance
+    reads: [storage_encrypted]
+    presence_mode: effective
+    on: [create, update]
+    expr: resource.storage_encrypted == true
+    action: deny
+fixtures:
+  - {kind: resource, type: aws_db_instance, name: pass, bindings: {op: create, resource: {storage_encrypted: true}}, expect: {state: pass}}
+-- want.json --
+{
+  "error": "E_FIXTURE_MISSING"
+}

@@ -1,0 +1,144 @@
+{
+  "format_version": "1.0",
+  "provider_schemas": {
+    "registry.terraform.io/bobthecorp/edge": {
+      "resource_identity_schemas": {
+        "edge_thing": {
+          "attributes": {
+            "name": {
+              "optional_for_import": true,
+              "type": "string"
+            }
+          },
+          "version": 0
+        }
+      },
+      "resource_schemas": {
+        "edge_thing": {
+          "block": {
+            "attributes": {
+              "dyn": {
+                "optional": true,
+                "type": "dynamic"
+              },
+              "dynlist": {
+                "optional": true,
+                "type": [
+                  "list",
+                  "dynamic"
+                ]
+              },
+              "empty_lst": {
+                "optional": true,
+                "type": [
+                  "list",
+                  "string"
+                ]
+              },
+              "flag": {
+                "optional": true,
+                "type": "bool"
+              },
+              "id": {
+                "computed": true,
+                "type": "string"
+              },
+              "lst": {
+                "optional": true,
+                "type": [
+                  "list",
+                  "string"
+                ]
+              },
+              "mix": {
+                "optional": true,
+                "type": [
+                  "object",
+                  {
+                    "d": "dynamic",
+                    "s": "string"
+                  }
+                ]
+              },
+              "n": {
+                "optional": true,
+                "type": "number"
+              },
+              "nt": {
+                "nested_type": {
+                  "attributes": {
+                    "a": {
+                      "optional": true,
+                      "type": "string"
+                    },
+                    "b": {
+                      "optional": true,
+                      "type": "number"
+                    }
+                  },
+                  "nesting_mode": "list"
+                },
+                "optional": true
+              },
+              "nums": {
+                "optional": true,
+                "type": [
+                  "list",
+                  "number"
+                ]
+              },
+              "obj": {
+                "optional": true,
+                "type": [
+                  "object",
+                  {
+                    "x": "string",
+                    "y": [
+                      "list",
+                      "string"
+                    ]
+                  }
+                ]
+              },
+              "st": {
+                "optional": true,
+                "type": [
+                  "set",
+                  "string"
+                ]
+              },
+              "tags": {
+                "optional": true,
+                "type": [
+                  "map",
+                  "string"
+                ]
+              }
+            },
+            "block_types": {
+              "item": {
+                "block": {
+                  "attributes": {
+                    "name": {
+                      "optional": true,
+                      "type": "string"
+                    },
+                    "vals": {
+                      "optional": true,
+                      "type": [
+                        "set",
+                        "string"
+                      ]
+                    }
+                  }
+                },
+                "nesting_mode": "list"
+              }
+            }
+          },
+          "version": 0
+        }
+      }
+    }
+  }
+}

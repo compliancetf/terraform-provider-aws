@@ -1,0 +1,16 @@
+{
+  "description": "a receipt whose request_digest binds another workspace",
+  "policy": {},
+  "issued_for": {
+    "workspace": "staging"
+  },
+  "queries": [
+    {
+      "control": "CTF.S3.1",
+      "key": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "result": "fail",
+      "want": false
+    }
+  ],
+  "warning": "request_digest does not match"
+}

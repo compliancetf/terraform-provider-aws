@@ -1,0 +1,53 @@
+{
+  "description": "apply_pre without an envelope records envelope absent",
+  "stage": "apply_pre",
+  "mode": "hard_fail",
+  "op": "create",
+  "config": {
+    "storage_encrypted": true,
+    "kms_key_id": "arn:aws:kms:us-east-1:111122223333:key/bobthecorp-rds",
+    "engine": "postgres"
+  },
+  "prior": null,
+  "planned": {
+    "storage_encrypted": true,
+    "kms_key_id": "arn:aws:kms:us-east-1:111122223333:key/bobthecorp-rds",
+    "engine": "postgres",
+    "deletion_protection": true
+  },
+  "want": {
+    "diagnostics": [
+      {
+        "severity": "warning",
+        "summary": "Compliance plan envelope absent",
+        "detail": "The plan for aws_db_instance carried no compliance envelope; every control is evaluated at apply."
+      }
+    ],
+    "evidence": {
+      "envelope": "absent",
+      "op": "create",
+      "results": [
+        {
+          "control": "rds_db_instance_encryption_at_rest_enabled",
+          "state": "pass",
+          "decision": "logged"
+        },
+        {
+          "control": "rds_instance_kms_key_configured",
+          "state": "pass",
+          "decision": "logged"
+        },
+        {
+          "control": "rds_instance_engine_not_mysql",
+          "state": "pass",
+          "decision": "logged"
+        },
+        {
+          "control": "rds_instance_deletion_protection_enabled",
+          "state": "pass",
+          "decision": "logged"
+        }
+      ]
+    }
+  }
+}

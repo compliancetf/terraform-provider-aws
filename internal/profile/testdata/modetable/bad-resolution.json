@@ -1,0 +1,20 @@
+{"profile": {"org_id":"bobthecorp","profile_version":7,"mode_floor":{"default":"soft_fail","environments":{"dev":"soft_fail","staging":"grandfather","prod":"hard_fail"}},"scope":{"environment":"staging","workspace":"bobthecorp-staging"},"control_floors":{"CTL-1":"hard_fail","CTL-2":"grandfather"},"verdict_required":true,"exceptions":{"coverable":{"CTL-3":["grant","self_service"]},"self_service":["CTL-3"]}}, "cases": [
+{"name": "governed-without-profile", "input": {"fallback": "hard_fail_floor", "org_id": "bobthecorp", "governed": true},
+ "want": {"error": "mode table: governed org bobthecorp has no acceptable profile"}},
+{"name": "free-tier-with-org", "input": {"fallback": "free_tier", "org_id": "bobthecorp"},
+ "want": {"error": "mode table: inconsistent resolution: free tier with org_id bobthecorp"}},
+{"name": "free-tier-with-profile", "input": {"fallback": "free_tier", "profile": {"org_id":"bobthecorp","profile_version":7,"mode_floor":{"default":"soft_fail","environments":{"dev":"soft_fail","staging":"grandfather","prod":"hard_fail"}},"scope":{"environment":"staging","workspace":"bobthecorp-staging"},"control_floors":{"CTL-1":"hard_fail","CTL-2":"grandfather"},"verdict_required":true,"exceptions":{"coverable":{"CTL-3":["grant","self_service"]},"self_service":["CTL-3"]}}},
+ "want": {"error": "mode table: inconsistent resolution: free tier with a profile"}},
+{"name": "applied-without-profile", "input": {"fallback": "profile", "org_id": "bobthecorp", "no_profile": true},
+ "want": {"error": "mode table: inconsistent resolution: profile applied without a profile"}},
+{"name": "applied-without-org", "input": {"fallback": "profile"},
+ "want": {"error": "mode table: inconsistent resolution: profile applied without org_id"}},
+{"name": "applied-other-org", "input": {"fallback": "profile", "org_id": "bobthecorp", "profile": {"org_id": "othercorp", "profile_version": 1, "mode_floor": {"default": "soft_fail"}, "exceptions": {}}},
+ "want": {"error": "mode table: inconsistent resolution: profile org othercorp, run org bobthecorp"}},
+{"name": "hard-fail-floor-with-profile", "input": {"fallback": "hard_fail_floor", "org_id": "bobthecorp", "profile": {"org_id":"bobthecorp","profile_version":7,"mode_floor":{"default":"soft_fail","environments":{"dev":"soft_fail","staging":"grandfather","prod":"hard_fail"}},"scope":{"environment":"staging","workspace":"bobthecorp-staging"},"control_floors":{"CTL-1":"hard_fail","CTL-2":"grandfather"},"verdict_required":true,"exceptions":{"coverable":{"CTL-3":["grant","self_service"]},"self_service":["CTL-3"]}}},
+ "want": {"error": "mode table: inconsistent resolution: hard_fail floor with a profile"}},
+{"name": "hard-fail-floor-without-org", "input": {"fallback": "hard_fail_floor"},
+ "want": {"error": "mode table: inconsistent resolution: hard_fail floor without org_id"}},
+{"name": "unknown-fallback", "input": {"fallback": "bogus", "org_id": "bobthecorp"},
+ "want": {"error": "mode table: inconsistent resolution: unknown fallback 99"}}
+]}

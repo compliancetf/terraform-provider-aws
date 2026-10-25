@@ -1,0 +1,68 @@
+{
+  "entries": [
+    {
+      "actions": [
+        "create"
+      ],
+      "address": "aws_kms_key.new",
+      "keys": [
+        {
+          "after": {
+            "bypass_policy_lockout_safety_check": "b:false",
+            "customer_master_key_spec": "s:SYMMETRIC_DEFAULT",
+            "deletion_window_in_days": "n:30",
+            "description": "s:bobthecorp reports key",
+            "enable_key_rotation": "b:true",
+            "is_enabled": "b:true",
+            "key_usage": "s:ENCRYPT_DECRYPT",
+            "region": "s:us-east-1"
+          },
+          "after_hashed_jcs": "{\"bypass_policy_lockout_safety_check\":\"bd2697924fc3dbc2684e37198d7f4911d738e969f1d3a4db9e113420c2e90f17\",\"customer_master_key_spec\":\"a7839be44fb00fda566a991dabc4fe59a0c4f0834f398285938580184cf808c2\",\"deletion_window_in_days\":\"339bedb23495f51c63a4cd8e5503900041c74f9b3c421f2479bbe167b4509cff\",\"description\":\"6b6ab81281d41528151d5650952897dc330e6b37055835d9d9840fa9c7ace01c\",\"enable_key_rotation\":\"b68daeb52706f9e937299d1a17344104761b9d0971847be00331406c41f0e9a4\",\"is_enabled\":\"b68daeb52706f9e937299d1a17344104761b9d0971847be00331406c41f0e9a4\",\"key_usage\":\"de2aa4090eac9d12bf2823688947eb478791be4e57a8bd779f36b201ce6584e8\",\"region\":\"8df8ff45a31e55a282b554a4217667bd534d60853102522fb525315732856f2a\"}",
+          "field": "instance_key",
+          "form": "create",
+          "prior_identity": null,
+          "prior_identity_hashed_jcs": "null",
+          "prior_identity_kind": "none"
+        }
+      ]
+    },
+    {
+      "actions": [
+        "update"
+      ],
+      "address": "aws_kms_key.this",
+      "keys": [
+        {
+          "after": {
+            "arn": "s:arn:aws:kms:us-east-1:111111111111:key/1111aaaa-2222-3333-4444-555566667777",
+            "bypass_policy_lockout_safety_check": "b:false",
+            "customer_master_key_spec": "s:SYMMETRIC_DEFAULT",
+            "deletion_window_in_days": "n:7",
+            "description": "s:bobthecorp data key v2",
+            "enable_key_rotation": "b:true",
+            "id": "s:1111aaaa-2222-3333-4444-555566667777",
+            "is_enabled": "b:true",
+            "key_id": "s:bobthecorp-fake-key_id",
+            "key_usage": "s:ENCRYPT_DECRYPT",
+            "multi_region": "b:false",
+            "policy": "s:bobthecorp-fake-policy",
+            "region": "s:us-east-1",
+            "rotation_period_in_days": "n:0",
+            "tags_all": {}
+          },
+          "after_hashed_jcs": "{\"arn\":\"359b3824ae9eebb1778a2ab62b2a24ebc1b9e7379353f7e6c8b8430e3cdbb952\",\"bypass_policy_lockout_safety_check\":\"bd2697924fc3dbc2684e37198d7f4911d738e969f1d3a4db9e113420c2e90f17\",\"customer_master_key_spec\":\"a7839be44fb00fda566a991dabc4fe59a0c4f0834f398285938580184cf808c2\",\"deletion_window_in_days\":\"3d72a734e379b75b84b6ec9b03925b14e4e699692bd9cf1302cf97f7ba857308\",\"description\":\"ab5887e9b2d0d2f864a4c9e611f625e594db1229f0fb8c1e5cb4b49435d79b05\",\"enable_key_rotation\":\"b68daeb52706f9e937299d1a17344104761b9d0971847be00331406c41f0e9a4\",\"id\":\"8b2f7c18bdee7f087eb1d80ba8a1fdd54768baf1f21aa51841721edcb18344a5\",\"is_enabled\":\"b68daeb52706f9e937299d1a17344104761b9d0971847be00331406c41f0e9a4\",\"key_id\":\"2db191a5681bd7b92f1309772e55c2d29c12698d8c5283a27263b9b985b5147d\",\"key_usage\":\"de2aa4090eac9d12bf2823688947eb478791be4e57a8bd779f36b201ce6584e8\",\"multi_region\":\"bd2697924fc3dbc2684e37198d7f4911d738e969f1d3a4db9e113420c2e90f17\",\"policy\":\"88d3f721a44450cb3ae8621982839a8cfc5ae300a233b97b67b0913855e572cf\",\"region\":\"8df8ff45a31e55a282b554a4217667bd534d60853102522fb525315732856f2a\",\"rotation_period_in_days\":\"dbc1ba5eae39dfb316df813dce9a556086f045ebdb47b91c1cadfbe46b6c0741\",\"tags_all\":{}}",
+          "field": "instance_key",
+          "form": "update",
+          "prior_identity": {
+            "id": "s:1111aaaa-2222-3333-4444-555566667777"
+          },
+          "prior_identity_hashed_jcs": "{\"id\":\"8b2f7c18bdee7f087eb1d80ba8a1fdd54768baf1f21aa51841721edcb18344a5\"}",
+          "prior_identity_kind": "id"
+        }
+      ]
+    }
+  ],
+  "format": "compliancetf.instancekey.golden/v1",
+  "provider_version": "hashicorp/aws 6.65.0",
+  "terraform_version": "1.16.3"
+}

@@ -1,0 +1,15 @@
+{
+  "description": "profile floor_mode airgap: the provider ignores receipts (B18)",
+  "policy": {
+    "profile_floor_mode": "airgap"
+  },
+  "queries": [
+    {
+      "control": "CTF.S3.1",
+      "key": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "result": "fail",
+      "want": false
+    }
+  ],
+  "warning": "the profile floor_mode is not online"
+}

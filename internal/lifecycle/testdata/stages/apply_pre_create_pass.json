@@ -1,0 +1,25 @@
+{
+  "description": "create with a current stamp and compliant values: no diagnostics",
+  "stage": "apply_pre",
+  "mode": "hard_fail",
+  "op": "create",
+  "envelope": {
+    "op": "create",
+    "digest": "current"
+  },
+  "config": {
+    "storage_encrypted": true,
+    "kms_key_id": "arn:aws:kms:us-east-1:111122223333:key/bobthecorp-rds",
+    "engine": "postgres"
+  },
+  "prior": null,
+  "planned": {
+    "storage_encrypted": true,
+    "kms_key_id": "arn:aws:kms:us-east-1:111122223333:key/bobthecorp-rds",
+    "engine": "postgres",
+    "deletion_protection": true
+  },
+  "want": {
+    "diagnostics": []
+  }
+}

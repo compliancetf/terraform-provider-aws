@@ -1,0 +1,59 @@
+{
+  "format_version": "1.0",
+  "provider_schemas": {
+    "registry.terraform.io/hashicorp/aws": {
+      "resource_schemas": {
+        "aws_db_instance": {
+          "block": {
+            "attributes": {
+              "storage_encrypted": {
+                "computed": true,
+                "optional": true,
+                "type": "bool"
+              }
+            }
+          },
+          "version": 2
+        },
+        "aws_iam_policy": {
+          "block": {
+            "attributes": {
+              "policy": {
+                "required": true,
+                "type": "string"
+              }
+            }
+          },
+          "version": 0
+        },
+        "aws_s3_bucket_versioning": {
+          "block": {
+            "attributes": {
+              "bucket": {
+                "required": true,
+                "type": "string"
+              }
+            }
+          },
+          "version": 0
+        }
+      },
+      "data_source_schemas": {},
+      "ephemeral_resource_schemas": {},
+      "type_names": {
+        "data_source_schemas": [
+          "aws_caller_identity"
+        ],
+        "ephemeral_resource_schemas": [
+          "aws_secretsmanager_random_password"
+        ],
+        "resource_schemas": [
+          "aws_db_instance",
+          "aws_iam_policy",
+          "aws_instance",
+          "aws_s3_bucket_versioning"
+        ]
+      }
+    }
+  }
+}

@@ -1,0 +1,179 @@
+package iampolicy
+
+import (
+	"errors"
+	"testing"
+)
+
+// TestIdentity pins PrincipalIs / ResourceIs: canonical matches decide,
+// everything else is ErrUnresolved, never a non-match.
+func TestIdentity(t *testing.T) {
+	const role = "arn:aws:iam::222222222222:role/bobthecorp-app"
+	const bucket = "arn:aws:s3:::bobthecorp-logs"
+	stmt := func(rest string) Statement {
+		t.Helper()
+		p, err := Normalize(`{"Version":"2012-10-17","Statement":{"Effect":"Allow","Action":"s3:getobject",`+rest+`}}`, Options{})
+		if err != nil {
+			t.Fatal(err)
+		}
+		return p.Statements[0]
+	}
+	const unres = "unresolved"
+	for _, tc := range []struct {
+		name, rest, query string
+		resource          bool
+		want              string // "true", "false" or unresolved
+	}{
+		{"principal match", `"Principal":{"AWS":"` + role + `"},"Resource":"*"`, role, false, "true"},
+		{"principal other", `"Principal":{"AWS":"arn:aws:iam::222222222222:role/x"},"Resource":"*"`, role, false, "false"},
+		{"principal star", `"Principal":"*","Resource":"*"`, role, false, "true"},
+		{"service match", `"Principal":{"Service":"ec2.amazonaws.com"},"Resource":"*"`, "ec2.amazonaws.com", false, "true"},
+		{"federated provider arn", `"Principal":{"Federated":"arn:aws:iam::222222222222:saml-provider/bobthecorp"},"Resource":"*"`, role, false, "false"},
+		{"role name", `"Principal":{"AWS":"bobthecorp-app"},"Resource":"*"`, role, false, unres},
+		{"unique id beside canonical", `"Principal":{"AWS":["` + role + `","AIDAEXAMPLEBOBTHECORP"]},"Resource":"*"`, role, false, unres},
+		{"bare account without partition", `"Principal":{"AWS":"222222222222"},"Resource":"*"`, "arn:aws:iam::222222222222:root", false, unres},
+		{"principal absent", `"Resource":"*"`, role, false, unres},
+		{"not principal", `"NotPrincipal":{"AWS":"` + role + `"},"Resource":"*"`, role, false, unres},
+		{"query name", `"Principal":"*","Resource":"*"`, "bobthecorp-app", false, unres},
+		{"query wildcard", `"Principal":"*","Resource":"*"`, "arn:aws:iam::222222222222:role/*", false, unres},
+		{"query dotted role name", `"Principal":{"AWS":"arn:aws:iam::222222222222:role/bob.app"},"Resource":"*"`, "bob.app", false, unres},
+		{"principal non-aws host", `"Principal":{"Service":"bobthecorp.example"},"Resource":"*"`, role, false, unres},
+		{"query upper-case service", `"Principal":{"AWS":"` + role + `"},"Resource":"*"`, "arn:aws:IAM::222222222222:role/bobthecorp-app", false, unres},
+		{"query star", `"Principal":"*","Resource":"*"`, "*", false, "true"},
+		{"service star is not a role", `"Principal":{"Service":"*"},"Resource":"*"`, role, false, "false"},
+		{"aws star is every service", `"Principal":"*","Resource":"*"`, "ec2.amazonaws.com", false, "true"},
+		{"unresolved resource refuses principal_is", `"Principal":{"AWS":"` + role + `"},"Resource":"arn:aws:s3:::b/*"`, role, false, unres},
+		{"unresolved principal refuses resource_is", `"Principal":{"AWS":"app"},"Resource":"` + bucket + `"`, bucket, true, unres},
+		{"query unknown partition", `"Principal":"*","Resource":"*"`, "arn:bobthecorp:iam::222222222222:root", false, unres},
+		{"resource match", `"Principal":"*","Resource":"` + bucket + `"`, bucket, true, "true"},
+		{"resource other", `"Principal":"*","Resource":"arn:aws:s3:::bobthecorp-other"`, bucket, true, "false"},
+		{"resource star", `"Principal":"*","Resource":"*"`, bucket, true, "true"},
+		{"resource path wildcard", `"Principal":"*","Resource":"arn:aws:s3:::bobthecorp-logs/*"`, bucket, true, unres},
+		{"resource question mark", `"Principal":"*","Resource":"arn:aws:s3:::bobthecorp-log?"`, bucket, true, unres},
+		{"resource variable", `"Principal":"*","Resource":"arn:aws:s3:::${aws:username}"`, bucket, true, unres},
+		{"resource name only", `"Principal":"*","Resource":"bobthecorp-logs"`, bucket, true, unres},
+		{"resource absent", `"Principal":"*"`, bucket, true, unres},
+		{"not resource", `"Principal":"*","NotResource":"arn:aws:s3:::bobthecorp-other"`, bucket, true, unres},
+		{"query resource wildcard", `"Principal":"*","Resource":"*"`, "arn:aws:s3:::bobthecorp-*", true, unres},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			f := PrincipalIs
+			if tc.resource {
+				f = ResourceIs
+			}
+			got, err := f(stmt(tc.rest), tc.query)
+			switch {
+			case tc.want == unres:
+				if !errors.Is(err, ErrUnresolved) {
+					t.Fatalf("got %v, %v; want ErrUnresolved", got, err)
+				}
+			case err != nil || (got != (tc.want == "true")):
+				t.Fatalf("got %v, %v; want %s", got, err, tc.want)
+			}
+		})
+	}
+}
+
+// TestPrincipalsInAccount pins the subset helper: true only when every
+// principal is an IAM or STS ARN of the account; another account, "*", a
+// service or federated principal is false; Not*, absent or unresolved
+// principals and a malformed account are ErrUnresolved.
+func TestPrincipalsInAccount(t *testing.T) {
+	const own, other = "111111111111", "222222222222"
+	stmt := func(principal string) Statement {
+		t.Helper()
+		p, err := Normalize(`{"Version":"2012-10-17","Statement":{"Effect":"Allow","Action":"s3:getobject","Resource":"*"`+principal+`}}`, Options{})
+		if err != nil {
+			t.Fatal(err)
+		}
+		return p.Statements[0]
+	}
+	const unres = "unresolved"
+	for _, tc := range []struct{ name, principal, account, want string }{
+		{"own root", `,"Principal":{"AWS":"arn:aws:iam::111111111111:root"}`, own, "true"},
+		{"own role and assumed role", `,"Principal":{"AWS":["arn:aws:iam::111111111111:role/bobthecorp-app","arn:aws:sts::111111111111:assumed-role/bobthecorp-app/s"]}`, own, "true"},
+		{"own and other account", `,"Principal":{"AWS":["arn:aws:iam::111111111111:root","arn:aws:iam::222222222222:root"]}`, own, "false"},
+		{"other account only", `,"Principal":{"AWS":"arn:aws:iam::222222222222:root"}`, own, "false"},
+		{"other account query", `,"Principal":{"AWS":"arn:aws:iam::222222222222:root"}`, other, "true"},
+		{"everyone", `,"Principal":"*"`, own, "false"},
+		{"aws star", `,"Principal":{"AWS":"*"}`, own, "false"},
+		{"own root and service", `,"Principal":{"AWS":"arn:aws:iam::111111111111:root","Service":"logging.s3.amazonaws.com"}`, own, "false"},
+		{"own federated provider", `,"Principal":{"Federated":"arn:aws:iam::111111111111:saml-provider/bobthecorp"}`, own, "false"},
+		{"non-iam arn with account", `,"Principal":{"AWS":"arn:aws:lambda:eu-west-1:111111111111:function:bobthecorp"}`, own, "false"},
+		{"own federated user", `,"Principal":{"AWS":"arn:aws:sts::111111111111:federated-user/bob"}`, own, "true"},
+		{"other partition same account", `,"Principal":{"AWS":"arn:aws-cn:iam::111111111111:root"}`, own, "false"},
+		{"gov partition beside own", `,"Principal":{"AWS":["arn:aws:iam::111111111111:root","arn:aws-us-gov:sts::111111111111:assumed-role/r/s"]}`, own, "false"},
+		{"iam arn with region", `,"Principal":{"AWS":"arn:aws:iam:eu-west-1:111111111111:root"}`, own, "false"},
+		{"own non-principal iam form", `,"Principal":{"AWS":"arn:aws:iam::111111111111:instance-profile/bobthecorp"}`, own, "false"},
+		{"own policy arn", `,"Principal":{"AWS":"arn:aws:iam::111111111111:policy/bobthecorp"}`, own, "false"},
+		{"own role with path", `,"Principal":{"AWS":"arn:aws:iam::111111111111:role/ops/bobthecorp"}`, own, "true"},
+		{"empty user name", `,"Principal":{"AWS":"arn:aws:iam::111111111111:user/"}`, own, "false"},
+		{"empty role name", `,"Principal":{"AWS":"arn:aws:iam::111111111111:role/"}`, own, "false"},
+		{"assumed role without session", `,"Principal":{"AWS":"arn:aws:sts::111111111111:assumed-role/r"}`, own, "false"},
+		{"assumed role empty session", `,"Principal":{"AWS":"arn:aws:sts::111111111111:assumed-role/r/"}`, own, "false"},
+		{"assumed role extra component", `,"Principal":{"AWS":"arn:aws:sts::111111111111:assumed-role/r/s/x"}`, own, "false"},
+		{"federated user extra component", `,"Principal":{"AWS":"arn:aws:sts::111111111111:federated-user/bob/x"}`, own, "false"},
+		{"empty federated user", `,"Principal":{"AWS":"arn:aws:sts::111111111111:federated-user/"}`, own, "false"},
+		{"lower-case principal key", `,"Principal":{"aws":"arn:aws:iam::111111111111:root"}`, own, "true"},
+		{"root prefix is not root", `,"Principal":{"AWS":"arn:aws:iam::111111111111:rootx"}`, own, "false"},
+		{"bare account id", `,"Principal":{"AWS":"111111111111"}`, own, unres},
+		{"account with letter", `,"Principal":{"AWS":"arn:aws:iam::111111111111:root"}`, "11111111111a", unres},
+		{"own root and role name", `,"Principal":{"AWS":["arn:aws:iam::111111111111:root","bobthecorp-app"]}`, own, unres},
+		{"not principal", `,"NotPrincipal":{"AWS":"arn:aws:iam::111111111111:root"}`, own, unres},
+		{"principal absent", ``, own, unres},
+		{"account not 12 digits", `,"Principal":{"AWS":"arn:aws:iam::111111111111:root"}`, "11111111111", unres},
+		{"account arn", `,"Principal":{"AWS":"arn:aws:iam::111111111111:root"}`, "arn:aws:iam::111111111111:root", unres},
+		{"empty account", `,"Principal":{"AWS":"arn:aws:iam::111111111111:root"}`, "", unres},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			got, err := PrincipalsInAccount(stmt(tc.principal), tc.account, "aws")
+			switch {
+			case tc.want == unres:
+				if !errors.Is(err, ErrUnresolved) {
+					t.Fatalf("got %v, %v; want ErrUnresolved", got, err)
+				}
+			case err != nil || (got != (tc.want == "true")):
+				t.Fatalf("got %v, %v; want %s", got, err, tc.want)
+			}
+		})
+	}
+}
+
+// TestPrincipalsInAccountPartition pins the partition binding:
+// own-account principals match only in the bound partition; an empty or
+// unknown partition is ErrUnresolved.
+func TestPrincipalsInAccountPartition(t *testing.T) {
+	const own = "111111111111"
+	stmt := func(principal string) Statement {
+		t.Helper()
+		p, err := Normalize(`{"Version":"2012-10-17","Statement":{"Effect":"Allow","Action":"s3:getobject","Resource":"*","Principal":{"AWS":`+principal+`}}}`, Options{})
+		if err != nil {
+			t.Fatal(err)
+		}
+		return p.Statements[0]
+	}
+	const unres = "unresolved"
+	for _, tc := range []struct{ name, principal, partition, want string }{
+		{"china root", `"arn:aws-cn:iam::111111111111:root"`, "aws-cn", "true"},
+		{"gov assumed role and user", `["arn:aws-us-gov:sts::111111111111:assumed-role/r/s","arn:aws-us-gov:iam::111111111111:user/bob"]`, "aws-us-gov", "true"},
+		{"iso role", `"arn:aws-iso:iam::111111111111:role/r"`, "aws-iso", "true"},
+		{"aws root in china", `"arn:aws:iam::111111111111:root"`, "aws-cn", "false"},
+		{"china and aws", `["arn:aws-cn:iam::111111111111:root","arn:aws:iam::111111111111:root"]`, "aws-cn", "false"},
+		{"china other account", `"arn:aws-cn:iam::222222222222:root"`, "aws-cn", "false"},
+		{"empty partition", `"arn:aws:iam::111111111111:root"`, "", unres},
+		{"unknown partition", `"arn:aws:iam::111111111111:root"`, "aws-mars", unres},
+		{"upper-case partition", `"arn:aws:iam::111111111111:root"`, "AWS", unres},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			got, err := PrincipalsInAccount(stmt(tc.principal), own, tc.partition)
+			switch {
+			case tc.want == unres:
+				if !errors.Is(err, ErrUnresolved) {
+					t.Fatalf("got %v, %v; want ErrUnresolved", got, err)
+				}
+			case err != nil || (got != (tc.want == "true")):
+				t.Fatalf("got %v, %v; want %s", got, err, tc.want)
+			}
+		})
+	}
+}

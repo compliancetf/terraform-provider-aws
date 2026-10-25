@@ -1,0 +1,133 @@
+{
+  "entries": [
+    {
+      "actions": [
+        "create"
+      ],
+      "address": "aws_db_instance.new",
+      "keys": [
+        {
+          "after": {
+            "allocated_storage": "n:50",
+            "apply_immediately": "b:false",
+            "auto_minor_version_upgrade": "b:true",
+            "blue_green_update": [],
+            "copy_tags_to_snapshot": "b:false",
+            "dedicated_log_volume": "b:false",
+            "delete_automated_backups": "b:true",
+            "engine": "s:postgres",
+            "engine_version": "s:16.3",
+            "identifier": "s:bobthecorp-db-reports",
+            "instance_class": "s:db.t3.small",
+            "monitoring_interval": "n:0",
+            "password": "s:bobthecorp-fake-password-4",
+            "performance_insights_enabled": "b:false",
+            "publicly_accessible": "b:false",
+            "region": "s:us-east-1",
+            "restore_to_point_in_time": [],
+            "s3_import": [],
+            "skip_final_snapshot": "b:true",
+            "storage_encrypted": "b:true",
+            "username": "s:bobthecorp"
+          },
+          "after_hashed_jcs": "{\"allocated_storage\":\"3a8a9cbd39681c6116f3da541110e1abf425b12f2b1efb6c703a5b62ed05292d\",\"apply_immediately\":\"bd2697924fc3dbc2684e37198d7f4911d738e969f1d3a4db9e113420c2e90f17\",\"auto_minor_version_upgrade\":\"b68daeb52706f9e937299d1a17344104761b9d0971847be00331406c41f0e9a4\",\"blue_green_update\":[],\"copy_tags_to_snapshot\":\"bd2697924fc3dbc2684e37198d7f4911d738e969f1d3a4db9e113420c2e90f17\",\"dedicated_log_volume\":\"bd2697924fc3dbc2684e37198d7f4911d738e969f1d3a4db9e113420c2e90f17\",\"delete_automated_backups\":\"b68daeb52706f9e937299d1a17344104761b9d0971847be00331406c41f0e9a4\",\"engine\":\"0659549d3d1d68d95f7ae9627a0863c7e17381dbe50fe6e16120dfd121b9ec55\",\"engine_version\":\"8c92e16e1b4512b97dc14a80f6e06ea8504b45e5e33fcdf42e3818751c2dd64c\",\"identifier\":\"4509e2e59de2d3c62096d3ce31912bbdbcebd87d288e99ad886362783334bd2d\",\"instance_class\":\"dc48bb2cdb3ee31fd3124e45d2ae314e6415e2aeb85b6cffe7b139ab6915bfc6\",\"monitoring_interval\":\"dbc1ba5eae39dfb316df813dce9a556086f045ebdb47b91c1cadfbe46b6c0741\",\"password\":\"d99a509289a431954c822ccd8492a9315c82f12b7f0283c58855a7ae6e667780\",\"performance_insights_enabled\":\"bd2697924fc3dbc2684e37198d7f4911d738e969f1d3a4db9e113420c2e90f17\",\"publicly_accessible\":\"bd2697924fc3dbc2684e37198d7f4911d738e969f1d3a4db9e113420c2e90f17\",\"region\":\"8df8ff45a31e55a282b554a4217667bd534d60853102522fb525315732856f2a\",\"restore_to_point_in_time\":[],\"s3_import\":[],\"skip_final_snapshot\":\"b68daeb52706f9e937299d1a17344104761b9d0971847be00331406c41f0e9a4\",\"storage_encrypted\":\"b68daeb52706f9e937299d1a17344104761b9d0971847be00331406c41f0e9a4\",\"username\":\"6c09fadcccf6adc7ce9aed7fb96b2e319a1a741ff4c9aeb261b6a79b15de530f\"}",
+          "field": "instance_key",
+          "form": "create",
+          "prior_identity": null,
+          "prior_identity_hashed_jcs": "null",
+          "prior_identity_kind": "none"
+        }
+      ]
+    },
+    {
+      "actions": [
+        "update"
+      ],
+      "address": "aws_db_instance.this",
+      "keys": [
+        {
+          "after": {
+            "address": "s:bobthecorp-fake-address",
+            "allocated_storage": "n:20",
+            "apply_immediately": "b:false",
+            "arn": "s:arn:aws:rds:us-east-1:111111111111:db:bobthecorp-db",
+            "auto_minor_version_upgrade": "b:true",
+            "availability_zone": "s:us-east-1a",
+            "backup_retention_period": "n:0",
+            "backup_target": "s:bobthecorp-fake-backup_target",
+            "backup_window": "s:bobthecorp-fake-backup_window",
+            "blue_green_update": [],
+            "ca_cert_identifier": "s:bobthecorp-fake-ca_cert_identifier",
+            "character_set_name": "s:bobthecorp-fake-character_set_name",
+            "copy_tags_to_snapshot": "b:false",
+            "database_insights_mode": "s:standard",
+            "db_name": "s:bobthecorp-fake-db_name",
+            "db_subnet_group_name": "s:bobthecorp-fake-db_subnet_group_name",
+            "dedicated_log_volume": "b:false",
+            "delete_automated_backups": "b:true",
+            "domain_fqdn": "s:bobthecorp-fake-domain_fqdn",
+            "endpoint": "s:bobthecorp-fake-endpoint",
+            "engine": "s:postgres",
+            "engine_lifecycle_support": "s:open-source-rds-extended-support",
+            "engine_version": "s:16.3",
+            "engine_version_actual": "s:bobthecorp-fake-engine_version_actual",
+            "hosted_zone_id": "s:bobthecorp-fake-hosted_zone_id",
+            "id": "s:bobthecorp-db",
+            "identifier": "s:bobthecorp-db",
+            "identifier_prefix": "s:bobthecorp-fake-identifier_prefix",
+            "instance_class": "s:db.t3.micro",
+            "iops": "n:0",
+            "kms_key_id": "s:bobthecorp-fake-kms_key_id",
+            "latest_restorable_time": "s:bobthecorp-fake-latest_restorable_time",
+            "license_model": "s:bobthecorp-fake-license_model",
+            "listener_endpoint": [],
+            "maintenance_window": "s:bobthecorp-fake-maintenance_window",
+            "master_user_secret": [],
+            "master_user_secret_kms_key_id": "s:bobthecorp-fake-master_user_secret_kms_key_id",
+            "monitoring_interval": "n:0",
+            "monitoring_role_arn": "s:bobthecorp-fake-monitoring_role_arn",
+            "multi_az": "b:false",
+            "nchar_character_set_name": "s:bobthecorp-fake-nchar_character_set_name",
+            "network_type": "s:IPV4",
+            "option_group_name": "s:bobthecorp-fake-option_group_name",
+            "parameter_group_name": "s:bobthecorp-fake-parameter_group_name",
+            "password": "s:bobthecorp-fake-password-1b",
+            "performance_insights_enabled": "b:false",
+            "performance_insights_kms_key_id": "s:bobthecorp-fake-performance_insights_kms_key_id",
+            "performance_insights_retention_period": "n:0",
+            "port": "n:0",
+            "publicly_accessible": "b:false",
+            "region": "s:us-east-1",
+            "replica_mode": "s:bobthecorp-fake-replica_mode",
+            "replicas": [],
+            "resource_id": "s:bobthecorp-fake-resource_id",
+            "restore_to_point_in_time": [],
+            "s3_import": [],
+            "skip_final_snapshot": "b:true",
+            "snapshot_identifier": "s:bobthecorp-fake-snapshot_identifier",
+            "storage_encrypted": "b:true",
+            "storage_throughput": "n:0",
+            "tags_all": {},
+            "timezone": "s:bobthecorp-fake-timezone",
+            "upgrade_rollout_order": "s:bobthecorp-fake-upgrade_rollout_order",
+            "username": "s:bobthecorp",
+            "vpc_security_group_ids": []
+          },
+          "after_hashed_jcs": "{\"address\":\"6a2289fab49e6664e8e969eafe6ad2118a05bcf0f0880d3b9b32d75820cb2807\",\"allocated_storage\":\"7068079081b9f666c8f8b119fd6c055b71c86325cb9d6a14e9eecdf9de0827af\",\"apply_immediately\":\"bd2697924fc3dbc2684e37198d7f4911d738e969f1d3a4db9e113420c2e90f17\",\"arn\":\"f69fbeb2b116b14c55b80a080f5b29795b4985f743a1ef0e4ec4ab4c05902d75\",\"auto_minor_version_upgrade\":\"b68daeb52706f9e937299d1a17344104761b9d0971847be00331406c41f0e9a4\",\"availability_zone\":\"4ed049e5cc0ee1b02f351b2aed1d2a858c95245eacf3080ae9ddbb6b24769df0\",\"backup_retention_period\":\"dbc1ba5eae39dfb316df813dce9a556086f045ebdb47b91c1cadfbe46b6c0741\",\"backup_target\":\"3025c3c2abe6dccc15561892010e0eb7ebdc0c89f6045b91e7065a82150a1f71\",\"backup_window\":\"22395ba81d578bd2bda32372f3fe14d11c2812b319e431d8820428e8fc5cafb7\",\"blue_green_update\":[],\"ca_cert_identifier\":\"95ce75c91f183b608d8062803d81acdcd17736dc9c54ec9c382ec11cef97e159\",\"character_set_name\":\"dfe86ba7c357f2333dd29576d06b62e80d8077995d2dd88962261fe8483cff7a\",\"copy_tags_to_snapshot\":\"bd2697924fc3dbc2684e37198d7f4911d738e969f1d3a4db9e113420c2e90f17\",\"database_insights_mode\":\"c19be49b9cb1df2d34339b4576b9b78044cb1c75e614da03cfb23184056fe6b4\",\"db_name\":\"5dbec4c0431e7eaf94eb37b73f841dea777d34920284d75b3c6887b86d4e8be4\",\"db_subnet_group_name\":\"33eadf36d5e23a322948b4b8c2826e8f0d5d58b77b1dabbdbe5473126b92f7bb\",\"dedicated_log_volume\":\"bd2697924fc3dbc2684e37198d7f4911d738e969f1d3a4db9e113420c2e90f17\",\"delete_automated_backups\":\"b68daeb52706f9e937299d1a17344104761b9d0971847be00331406c41f0e9a4\",\"domain_fqdn\":\"dfa5f2826955b9b103f6c65fdd8bda86b93632b1c745575f65798ce44fa4d95a\",\"endpoint\":\"8402182d685e53ceb550ae1d338b61e8d06d5839773d0aa7dc6cdd6e5e80a791\",\"engine\":\"0659549d3d1d68d95f7ae9627a0863c7e17381dbe50fe6e16120dfd121b9ec55\",\"engine_lifecycle_support\":\"324b94408b99f1a5a8eec98b8b259c3497ef8c264b906aca0812e5fd5d757df3\",\"engine_version\":\"8c92e16e1b4512b97dc14a80f6e06ea8504b45e5e33fcdf42e3818751c2dd64c\",\"engine_version_actual\":\"6340fe799bfc01b67ddf682df9778f2a71cec4dd74b5294eb97141bc677519d4\",\"hosted_zone_id\":\"52bb2a18a55101b63675aae24a4640c21953d0fe87be908537f999f37a0da54e\",\"id\":\"de6b42a20acfac29d846ea82aa963c643f02e70db4c68203849739bf12a0e0ca\",\"identifier\":\"de6b42a20acfac29d846ea82aa963c643f02e70db4c68203849739bf12a0e0ca\",\"identifier_prefix\":\"5a8990b040dd3b10c847c34a6e69ccca87c80df7b200254e04e0dc20ca08d054\",\"instance_class\":\"d1befb44cd693cfb88e8b20ad08bf5406ced9b00044ac20df5d03fd8c9afec80\",\"iops\":\"dbc1ba5eae39dfb316df813dce9a556086f045ebdb47b91c1cadfbe46b6c0741\",\"kms_key_id\":\"c4f69da0dd5a34d9a644fb78fcc12232402767fccbb224ebc85193b9cf85cca6\",\"latest_restorable_time\":\"160364270444c539bc3f48fde6e05b38a17d4d41a6c8ccfec99e4ad1f595e025\",\"license_model\":\"c9f9e1f95e0d060ad8e8c03bb764b0261ea08ea377b4efa2117d42c2a02dd6bd\",\"listener_endpoint\":[],\"maintenance_window\":\"cc4f91587ba463ea74aedffcb07f1ed34c779ec4f0ed2ba60d5fb1f49ecfa2cf\",\"master_user_secret\":[],\"master_user_secret_kms_key_id\":\"850e240bf5d516c45db08973e707e2f2ef899db144816891a7caca419d40adfd\",\"monitoring_interval\":\"dbc1ba5eae39dfb316df813dce9a556086f045ebdb47b91c1cadfbe46b6c0741\",\"monitoring_role_arn\":\"79c59db058ed0df3f2c38174a35d539f191ce0bf300f60bfcc759799ff686bd9\",\"multi_az\":\"bd2697924fc3dbc2684e37198d7f4911d738e969f1d3a4db9e113420c2e90f17\",\"nchar_character_set_name\":\"c92e003114a6f407bb9ed6346a29caaefdc7e8cc5070d11c3eb6aa9d3104b670\",\"network_type\":\"e90d89126e60b77692fd2fc3c11e36b0ef075304f29139f9c096ebbf057e6df6\",\"option_group_name\":\"c892553430e6e05bda207e3c158275bd0511d98729926fee31c1eb44ec4e78ba\",\"parameter_group_name\":\"a87057fa62d6024316b60cd8ba5fbed13358f2410b0af97261bc73e655912f4f\",\"password\":\"29d392bdd3d0a8f3d2cfa51c628b2f4a6004baed940cea380e06edf646b49041\",\"performance_insights_enabled\":\"bd2697924fc3dbc2684e37198d7f4911d738e969f1d3a4db9e113420c2e90f17\",\"performance_insights_kms_key_id\":\"1991e8e45cd291f4160b5e9c6e363bbb648f2302f0a0c31695263e9ec28c4e61\",\"performance_insights_retention_period\":\"dbc1ba5eae39dfb316df813dce9a556086f045ebdb47b91c1cadfbe46b6c0741\",\"port\":\"dbc1ba5eae39dfb316df813dce9a556086f045ebdb47b91c1cadfbe46b6c0741\",\"publicly_accessible\":\"bd2697924fc3dbc2684e37198d7f4911d738e969f1d3a4db9e113420c2e90f17\",\"region\":\"8df8ff45a31e55a282b554a4217667bd534d60853102522fb525315732856f2a\",\"replica_mode\":\"9820f2ab5a6885667492e0b5670a6f883260adc99fef6540776b51b3d218d1f7\",\"replicas\":[],\"resource_id\":\"286aa34166c91c1e559d4884c6ac7df948178f4c0a13cb211edb86068881ec1a\",\"restore_to_point_in_time\":[],\"s3_import\":[],\"skip_final_snapshot\":\"b68daeb52706f9e937299d1a17344104761b9d0971847be00331406c41f0e9a4\",\"snapshot_identifier\":\"1090cc416abd69e0b40e3f633b5fd0080138dcf692692d906a1f378efd2ecd1e\",\"storage_encrypted\":\"b68daeb52706f9e937299d1a17344104761b9d0971847be00331406c41f0e9a4\",\"storage_throughput\":\"dbc1ba5eae39dfb316df813dce9a556086f045ebdb47b91c1cadfbe46b6c0741\",\"tags_all\":{},\"timezone\":\"e51eac32758a5de6783ee2be1f6a472e5c9ebbba93bba4efbd270f845afbd4a7\",\"upgrade_rollout_order\":\"f8c0bab218f648dd20979c49e742aaa6ea7519e7a4be9bfeb6bfa33535fa5b7f\",\"username\":\"6c09fadcccf6adc7ce9aed7fb96b2e319a1a741ff4c9aeb261b6a79b15de530f\",\"vpc_security_group_ids\":[]}",
+          "field": "instance_key",
+          "form": "update",
+          "prior_identity": {
+            "account_id": "s:111111111111",
+            "identifier": "s:bobthecorp-db",
+            "region": "s:us-east-1"
+          },
+          "prior_identity_hashed_jcs": "{\"account_id\":\"47e7ec2525e1a3e184c7844d068e98ee8789c5c565812114c46d959065728ced\",\"identifier\":\"de6b42a20acfac29d846ea82aa963c643f02e70db4c68203849739bf12a0e0ca\",\"region\":\"8df8ff45a31e55a282b554a4217667bd534d60853102522fb525315732856f2a\"}",
+          "prior_identity_kind": "identity"
+        }
+      ]
+    }
+  ],
+  "format": "compliancetf.instancekey.golden/v1",
+  "provider_version": "hashicorp/aws 6.65.0",
+  "terraform_version": "1.16.3"
+}

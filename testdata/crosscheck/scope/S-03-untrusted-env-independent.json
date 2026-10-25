@@ -1,0 +1,3 @@
+{"id": "S-03-untrusted-env-independent", "resource_type": "aws_db_instance", "schema": "testdata/schemas/aws-subset.json",
+  "control": {"id": "crosscheck_s_03_untrusted_env_independent", "version": "1.0.0", "kind": "resource", "resource_type": "aws_db_instance", "reads": ["storage_encrypted"], "presence_mode": "effective", "on": ["create", "update"], "expr": "resource.storage_encrypted == true", "action": "deny", "severity": "high", "message": "Fixture control."},
+  "bindings": {"op": "create", "env": {"$unknown": true}, "provider": {"region": "eu-west-1", "account_id": "111111111111"}, "resource": {"storage_encrypted": false}}, "expect": {"state": "fail", "err_class": "", "unknown_paths": []}}

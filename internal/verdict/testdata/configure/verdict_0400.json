@@ -1,0 +1,8 @@
+{
+  "description": "a 0400 verdict file is not exactly 0600",
+  "verdict_mode": "400",
+  "want": {
+    "summary": "Invalid verdict file",
+    "detail": "The verdict file mode must be exactly 0600."
+  }
+}

@@ -1,0 +1,8 @@
+{"about": "not_empty on a set of strings: not null and size > 0.",
+ "control": {"id": "bobthecorp_sample_db_log_exports_set", "version": "1.0.0", "kind": "resource", "resource_type": "aws_db_instance", "reads": ["enabled_cloudwatch_logs_exports"], "presence_mode": "effective", "on": ["create", "update"], "expr": "resource.enabled_cloudwatch_logs_exports != null && size(resource.enabled_cloudwatch_logs_exports) > 0", "action": "deny", "severity": "medium", "message": "Sample: the database must export logs."},
+ "cases": [
+  {"id": "P-01-audit", "resource": {"identifier": "bobthecorp-db", "enabled_cloudwatch_logs_exports": ["audit", "error"]}, "expect": {"state": "pass", "err_class": ""}},
+  {"id": "F-01-null", "resource": {"identifier": "bobthecorp-db"}, "expect": {"state": "fail", "err_class": ""}},
+  {"id": "F-02-empty-set", "resource": {"identifier": "bobthecorp-db", "enabled_cloudwatch_logs_exports": []}, "expect": {"state": "fail", "err_class": ""}},
+  {"id": "U-01-unknown", "resource": {"identifier": "bobthecorp-db", "enabled_cloudwatch_logs_exports": {"$unknown": true}}, "expect": {"state": "unknown", "err_class": ""}}
+ ]}

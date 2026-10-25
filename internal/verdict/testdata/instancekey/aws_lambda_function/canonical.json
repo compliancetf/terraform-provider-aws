@@ -1,0 +1,121 @@
+{
+  "entries": [
+    {
+      "actions": [
+        "create"
+      ],
+      "address": "aws_lambda_function.new",
+      "keys": [
+        {
+          "after": {
+            "capacity_provider_config": [],
+            "dead_letter_config": [],
+            "durable_config": [],
+            "environment": [
+              {
+                "variables": {
+                  "API_TOKEN": "s:bobthecorp-fake-token-3",
+                  "BUCKET": "s:bobthecorp-reports"
+                }
+              }
+            ],
+            "file_system_config": [],
+            "filename": "s:../lambda.zip",
+            "function_name": "s:bobthecorp-reports",
+            "handler": "s:index.handler",
+            "image_config": [],
+            "memory_size": "n:128",
+            "package_type": "s:Zip",
+            "publish": "b:false",
+            "region": "s:us-east-1",
+            "reserved_concurrent_executions": "n:-1",
+            "runtime": "s:python3.12",
+            "skip_destroy": "b:false",
+            "snap_start": [],
+            "source_code_hash": "s:c5KX3fLBmDM8Nx/3IwZbWZXB2VmNXcssJZjxWaXm8gE=",
+            "tenancy_config": [],
+            "timeout": "n:3",
+            "vpc_config": []
+          },
+          "after_hashed_jcs": "{\"capacity_provider_config\":[],\"dead_letter_config\":[],\"durable_config\":[],\"environment\":[{\"variables\":{\"API_TOKEN\":\"bd2d4592029eec6e8dc0635050134c7b37e8bec7e4038e4b000186c35f7f7af7\",\"BUCKET\":\"beb34f177ac779ca6317a1da249e5418e7e84e4d25ba0cdbcbb0f733e1b5b784\"}}],\"file_system_config\":[],\"filename\":\"da50e7ff30dc3fc96ee93fbf1da05d64bed0ad89513d6b95a7f633498cd4ea24\",\"function_name\":\"beb34f177ac779ca6317a1da249e5418e7e84e4d25ba0cdbcbb0f733e1b5b784\",\"handler\":\"8ee2d4bcaf2cbc9bd8b6fb1ee41753b4fc1db35bf73badd17b3b24ec900d4614\",\"image_config\":[],\"memory_size\":\"136e8f44141ad182705bbcd9d1876b7afb42a3d930e00c74222c9c747646fc22\",\"package_type\":\"fd80fbb96172c57ec1c525505c2c896027841dbe44bad2f43abb21a2b92560ec\",\"publish\":\"bd2697924fc3dbc2684e37198d7f4911d738e969f1d3a4db9e113420c2e90f17\",\"region\":\"8df8ff45a31e55a282b554a4217667bd534d60853102522fb525315732856f2a\",\"reserved_concurrent_executions\":\"7f592587769d247b8e17cad6c5e375e5b76a6d26bee4bdced99d678df3147c98\",\"runtime\":\"f8845d10c03ae62e9a5bfc3617c42dae1cd40480650eb3245b848db55d72907d\",\"skip_destroy\":\"bd2697924fc3dbc2684e37198d7f4911d738e969f1d3a4db9e113420c2e90f17\",\"snap_start\":[],\"source_code_hash\":\"bdc3fcb8729301eafdb940fa8cebb0046944ce2fb4018d3c3979b8f00846d7f0\",\"tenancy_config\":[],\"timeout\":\"8177a97a744a25c7510d70d2e6f4cbfa6674732dcaeee42b523613d7ca9f6dc2\",\"vpc_config\":[]}",
+          "field": "instance_key",
+          "form": "create",
+          "prior_identity": null,
+          "prior_identity_hashed_jcs": "null",
+          "prior_identity_kind": "none"
+        }
+      ]
+    },
+    {
+      "actions": [
+        "update"
+      ],
+      "address": "aws_lambda_function.this",
+      "keys": [
+        {
+          "after": {
+            "architectures": [],
+            "arn": "s:arn:aws:lambda:us-east-1:111111111111:function:bobthecorp-fn",
+            "capacity_provider_config": [],
+            "code_sha256": "s:bobthecorp-fake-code_sha256",
+            "dead_letter_config": [],
+            "durable_config": [],
+            "environment": [
+              {
+                "variables": {
+                  "API_TOKEN": "s:bobthecorp-fake-token-2",
+                  "MODE": "s:prod"
+                }
+              }
+            ],
+            "ephemeral_storage": [],
+            "file_system_config": [],
+            "filename": "s:../lambda.zip",
+            "function_name": "s:bobthecorp-fn",
+            "handler": "s:index.handler",
+            "id": "s:bobthecorp-fn",
+            "image_config": [],
+            "invoke_arn": "s:bobthecorp-fake-invoke_arn",
+            "last_modified": "s:bobthecorp-fake-last_modified",
+            "logging_config": [],
+            "memory_size": "n:128",
+            "package_type": "s:Zip",
+            "publish": "b:false",
+            "qualified_arn": "s:bobthecorp-fake-qualified_arn",
+            "qualified_invoke_arn": "s:bobthecorp-fake-qualified_invoke_arn",
+            "region": "s:us-east-1",
+            "reserved_concurrent_executions": "n:-1",
+            "response_streaming_invoke_arn": "s:bobthecorp-fake-response_streaming_invoke_arn",
+            "role": "s:arn:aws:iam::111111111111:role/bobthecorp-lambda",
+            "runtime": "s:python3.12",
+            "signing_job_arn": "s:bobthecorp-fake-signing_job_arn",
+            "signing_profile_version_arn": "s:bobthecorp-fake-signing_profile_version_arn",
+            "skip_destroy": "b:false",
+            "snap_start": [],
+            "source_code_hash": "s:c5KX3fLBmDM8Nx/3IwZbWZXB2VmNXcssJZjxWaXm8gE=",
+            "source_code_size": "n:0",
+            "tags_all": {},
+            "tenancy_config": [],
+            "timeout": "n:3",
+            "tracing_config": [],
+            "version": "s:$LATEST",
+            "vpc_config": []
+          },
+          "after_hashed_jcs": "{\"architectures\":[],\"arn\":\"c876439b744d30e39b0eaf9450aadebeb1b94127b2c445ec3b82204f271ace89\",\"capacity_provider_config\":[],\"code_sha256\":\"d3f2637f144daa53d3c461dab8bb506ca12df8bf04cb3235b10b65ea291efc2d\",\"dead_letter_config\":[],\"durable_config\":[],\"environment\":[{\"variables\":{\"API_TOKEN\":\"85464ded2ccff05d54dd5e8d0b212f953c66be24f5027696b0e65a3746cfc766\",\"MODE\":\"05a839fe865f580ee3e193fa9a97cd376af02871d6dda4e87d4224dec613c855\"}}],\"ephemeral_storage\":[],\"file_system_config\":[],\"filename\":\"da50e7ff30dc3fc96ee93fbf1da05d64bed0ad89513d6b95a7f633498cd4ea24\",\"function_name\":\"0f1fdbccb0b6272098c07a4c23fe2719eed3a0b83b01c24e13c30ceb19e0b741\",\"handler\":\"8ee2d4bcaf2cbc9bd8b6fb1ee41753b4fc1db35bf73badd17b3b24ec900d4614\",\"id\":\"0f1fdbccb0b6272098c07a4c23fe2719eed3a0b83b01c24e13c30ceb19e0b741\",\"image_config\":[],\"invoke_arn\":\"cffbe35bd5f8f6a75487b48b6f45561e54fbd43cd53a1614e869b53a600a08bd\",\"last_modified\":\"07a3827076eaabfeaf3f89aa57e140f97327ea327da9fab15059378fae6c476b\",\"logging_config\":[],\"memory_size\":\"136e8f44141ad182705bbcd9d1876b7afb42a3d930e00c74222c9c747646fc22\",\"package_type\":\"fd80fbb96172c57ec1c525505c2c896027841dbe44bad2f43abb21a2b92560ec\",\"publish\":\"bd2697924fc3dbc2684e37198d7f4911d738e969f1d3a4db9e113420c2e90f17\",\"qualified_arn\":\"b3389052b063337fcb4d98f43d8e5011eb43085a5db0343c1e1ed95164e45057\",\"qualified_invoke_arn\":\"0566b38c688943d3fb1976e15ea52a98d69197d629fa163c77e4ae92cbb8f554\",\"region\":\"8df8ff45a31e55a282b554a4217667bd534d60853102522fb525315732856f2a\",\"reserved_concurrent_executions\":\"7f592587769d247b8e17cad6c5e375e5b76a6d26bee4bdced99d678df3147c98\",\"response_streaming_invoke_arn\":\"586f6ce053fd2badbb99cb2136bb58441e0918dc410b2df11c7b35aca2adcb1f\",\"role\":\"5d6e004b2ba2963f7b0d38531bb9c0535d27ce7f2fa3c839d83848a43ff4b124\",\"runtime\":\"f8845d10c03ae62e9a5bfc3617c42dae1cd40480650eb3245b848db55d72907d\",\"signing_job_arn\":\"23922359dac7c009a85954ed2f4872fe6b378cb5cc04a82789431034b9ab366f\",\"signing_profile_version_arn\":\"16cf90ff38c724cbf34244a3aa748b3f410d8824cea2d2bb63f2a4b290d3095c\",\"skip_destroy\":\"bd2697924fc3dbc2684e37198d7f4911d738e969f1d3a4db9e113420c2e90f17\",\"snap_start\":[],\"source_code_hash\":\"bdc3fcb8729301eafdb940fa8cebb0046944ce2fb4018d3c3979b8f00846d7f0\",\"source_code_size\":\"dbc1ba5eae39dfb316df813dce9a556086f045ebdb47b91c1cadfbe46b6c0741\",\"tags_all\":{},\"tenancy_config\":[],\"timeout\":\"8177a97a744a25c7510d70d2e6f4cbfa6674732dcaeee42b523613d7ca9f6dc2\",\"tracing_config\":[],\"version\":\"8c49ef6f1f64d840e559412b3691da4ed418349dcbe7e7afad9a63b08529b2c5\",\"vpc_config\":[]}",
+          "field": "instance_key",
+          "form": "update",
+          "prior_identity": {
+            "account_id": "s:111111111111",
+            "function_name": "s:bobthecorp-fn",
+            "region": "s:us-east-1"
+          },
+          "prior_identity_hashed_jcs": "{\"account_id\":\"47e7ec2525e1a3e184c7844d068e98ee8789c5c565812114c46d959065728ced\",\"function_name\":\"0f1fdbccb0b6272098c07a4c23fe2719eed3a0b83b01c24e13c30ceb19e0b741\",\"region\":\"8df8ff45a31e55a282b554a4217667bd534d60853102522fb525315732856f2a\"}",
+          "prior_identity_kind": "identity"
+        }
+      ]
+    }
+  ],
+  "format": "compliancetf.instancekey.golden/v1",
+  "provider_version": "hashicorp/aws 6.65.0",
+  "terraform_version": "1.16.3"
+}

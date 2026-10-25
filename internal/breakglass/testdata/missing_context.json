@@ -1,0 +1,16 @@
+{
+  "description": "the verdict carries no workspace: no request_digest can be recomputed",
+  "policy": {},
+  "verdict_set": {
+    "workspace": ""
+  },
+  "queries": [
+    {
+      "control": "CTF.S3.1",
+      "key": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "result": "fail",
+      "want": false
+    }
+  ],
+  "warning": "lacks the break-glass context"
+}

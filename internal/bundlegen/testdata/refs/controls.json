@@ -1,0 +1,56 @@
+{
+  "bobthecorp_cis_soc2": {
+    "metadata": {
+      "name": "Synthetic control in CIS 6, CIS 5 and SOC 2",
+      "frameworks": ["cis_v600", "cis_v500", "soc_2"],
+      "clause_titles": {
+        "cis_v600": ["3.2 Relational Database Service"],
+        "cis_v500": ["2.3.1 Ensure synthetic storage is encrypted"],
+        "soc_2": ["CC6.1: Logical access", "CC6.1 Logical access, second title"]
+      },
+      "supporting_clause_titles": {"soc_2": ["CC7.2: Monitoring"]}
+    },
+    "CKV": ["CKV_AWS_17", "CKV_AWS_16", "CKV_AWS_16"],
+    "AWS_CONFIG": [],
+    "TRIVY": ["AVD-AWS-0080"]
+  },
+  "bobthecorp_hipaa_omnibus": {
+    "metadata": {
+      "name": "Synthetic control in HIPAA omnibus and PCI without a clause title",
+      "frameworks": ["hipaa_final_omnibus_2013", "pci_dss_v40"],
+      "clause_titles": {"hipaa_final_omnibus_2013": ["164.312(a)(2)(iv) Encryption and decryption"]}
+    },
+    "SECURITY_HUB": ["RDS.3"],
+    "POWERPIPE": ["control.bobthecorp_b", "control.bobthecorp_a"]
+  },
+  "bobthecorp_hipaa_security": {
+    "metadata": {
+      "name": "Synthetic control in HIPAA security only",
+      "frameworks": ["hipaa_security_2003"],
+      "clause_titles": {"hipaa_security_2003": ["164.308(a)(1)(ii)(D): Information system activity review"]}
+    },
+    "PROWLER": ["bobthecorp_check"],
+    "CONTROL_TOWER": ["CT.BOBTHECORP.PR.1"],
+    "KICS": ["00000000-0000-0000-0000-000000000001"]
+  },
+  "bobthecorp_cis_v500_only": {
+    "metadata": {
+      "name": "Synthetic control in an earlier CIS version only",
+      "frameworks": ["cis_v500"],
+      "clause_titles": {"cis_v500": ["4 Logging"]}
+    }
+  },
+  "bobthecorp_prose_titles": {
+    "metadata": {
+      "name": "Synthetic control with prose clause titles",
+      "frameworks": ["aws_well_architected_v10", "cisa_cyber_essentials"],
+      "clause_titles": {
+        "aws_well_architected_v10": ["Data protection"],
+        "cisa_cyber_essentials": ["Your Data-1", "Your Surroundings-1", "  Your Data-1  "]
+      }
+    }
+  },
+  "bobthecorp_no_framework": {
+    "metadata": {"name": "Synthetic control in no framework"}
+  }
+}

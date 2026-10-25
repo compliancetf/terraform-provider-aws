@@ -1,0 +1,25 @@
+{
+  "description": "plain delete: a blocking deletion guard unknown on Prior warns pending (only replace raises unknown to an error)",
+  "stage": "plan",
+  "mode": "hard_fail",
+  "op": "delete",
+  "config": null,
+  "prior": {
+    "storage_encrypted": true,
+    "kms_key_id": "arn:aws:kms:us-east-1:111122223333:key/bobthecorp-rds",
+    "engine": "postgres",
+    "deletion_protection": "<unknown>"
+  },
+  "planned": null,
+  "want": {
+    "diagnostics": [
+      {
+        "severity": "warning",
+        "summary": "[rds_instance_deletion_guard] pending: re-checked at apply",
+        "detail": "Unknown until apply: deletion_protection.",
+        "attribute": "AttributeName(\"deletion_protection\")"
+      }
+    ],
+    "stamp": true
+  }
+}

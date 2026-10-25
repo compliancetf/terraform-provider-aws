@@ -1,0 +1,8 @@
+{"about": "Four equals_any [true] intents, one conjunction.",
+ "control": {"id": "bobthecorp_sample_bucket_public_block_all", "version": "1.0.0", "kind": "resource", "resource_type": "aws_s3_bucket_public_access_block", "reads": ["block_public_acls", "block_public_policy", "ignore_public_acls", "restrict_public_buckets"], "presence_mode": "effective", "on": ["create", "update"], "expr": "resource.block_public_acls in [true] && resource.block_public_policy in [true] && resource.ignore_public_acls in [true] && resource.restrict_public_buckets in [true]", "action": "deny", "severity": "high", "message": "Sample: all four public access block settings must be on."},
+ "cases": [
+  {"id": "P-01-all-true", "resource": {"block_public_acls": true, "block_public_policy": true, "ignore_public_acls": true, "restrict_public_buckets": true, "bucket": "bobthecorp-logs"}, "expect": {"state": "pass", "err_class": ""}},
+  {"id": "F-01-one-false", "resource": {"block_public_acls": true, "block_public_policy": true, "ignore_public_acls": false, "restrict_public_buckets": true}, "expect": {"state": "fail", "err_class": ""}},
+  {"id": "F-02-one-null", "resource": {"block_public_acls": true, "block_public_policy": true, "ignore_public_acls": true}, "expect": {"state": "fail", "err_class": ""}},
+  {"id": "U-01-one-unknown", "resource": {"block_public_acls": true, "block_public_policy": true, "ignore_public_acls": true, "restrict_public_buckets": {"$unknown": true}}, "expect": {"state": "unknown", "err_class": ""}}
+ ]}

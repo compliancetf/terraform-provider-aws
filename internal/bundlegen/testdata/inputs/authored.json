@@ -1,0 +1,45 @@
+[
+  {
+    "id": "iam_bobthecorp_no_kms_wildcard",
+    "version": "1.0.0",
+    "kind": "resource",
+    "resource_type": "aws_iam_policy",
+    "reads": ["policy"],
+    "presence_mode": "effective",
+    "on": ["create", "update"],
+    "expr": "iam.parse(resource.policy).statements.all(s, !(s.effect == \"Allow\" && iam.grants_all(s, \"kms\")))",
+    "action": "deny",
+    "severity": "medium",
+    "message": "Replaced by the catalog name.",
+    "exemption_coverable": []
+  },
+  {
+    "id": "rds_bobthecorp_storage_encrypted",
+    "version": "1.0.0",
+    "kind": "resource",
+    "resource_type": "aws_db_instance",
+    "reads": ["storage_encrypted"],
+    "presence_mode": "effective",
+    "on": ["create", "update"],
+    "expr": "resource.storage_encrypted == true",
+    "action": "deny",
+    "severity": "medium",
+    "message": "Replaced by the catalog name.",
+    "fix": "Set storage_encrypted = true.",
+    "exemption_coverable": []
+  },
+  {
+    "id": "s3_bobthecorp_versioning_on",
+    "version": "1.0.0",
+    "kind": "resource",
+    "resource_type": "aws_s3_bucket_versioning",
+    "reads": ["bucket"],
+    "presence_mode": "configured",
+    "on": ["create", "update"],
+    "expr": "config.bucket != null",
+    "action": "warn",
+    "severity": "medium",
+    "message": "Replaced by the catalog name.",
+    "exemption_coverable": []
+  }
+]

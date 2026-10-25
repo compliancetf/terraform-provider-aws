@@ -1,0 +1,18 @@
+{
+  "format_version": "1.0",
+  "profile": "test-expired",
+  "bundle_version": "1.0.0",
+  "expires_at": "2020-01-01T00:00:00Z",
+  "controls": [
+    {
+      "id": "TEST-001",
+      "resource_type": "aws_db_instance",
+      "attribute_path": "storage_encrypted",
+      "operator": "equals",
+      "expected": true,
+      "action": "deny",
+      "severity": "critical",
+      "message": "RDS encryption required"
+    }
+  ]
+}

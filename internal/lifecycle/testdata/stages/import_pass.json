@@ -1,0 +1,52 @@
+{
+  "description": "compliant imported object: no diagnostics",
+  "stage": "import",
+  "mode": "hard_fail",
+  "op": "import",
+  "new": {
+    "storage_encrypted": true,
+    "kms_key_id": "arn:aws:kms:us-east-1:111122223333:key/bobthecorp-rds",
+    "engine": "postgres",
+    "deletion_protection": true,
+    "id": "bobthecorp-db"
+  },
+  "want": {
+    "diagnostics": [],
+    "evidence": {
+      "op": "import",
+      "results": [
+        {
+          "control": "rds_db_instance_encryption_at_rest_enabled",
+          "state": "pass",
+          "decision": "logged"
+        },
+        {
+          "control": "rds_instance_engine_not_mysql",
+          "state": "pass",
+          "decision": "logged"
+        },
+        {
+          "control": "rds_instance_deletion_protection_enabled",
+          "state": "pass",
+          "decision": "logged"
+        }
+      ],
+      "resource": {
+        "id": "bobthecorp-db",
+        "identity": {
+          "account_id": "111122223333",
+          "identifier": "bobthecorp-db",
+          "region": "us-east-1"
+        },
+        "identity_kind": "identity",
+        "op": "import",
+        "type": "aws_db_instance"
+      }
+    }
+  },
+  "identity": {
+    "account_id": "111122223333",
+    "identifier": "bobthecorp-db",
+    "region": "us-east-1"
+  }
+}

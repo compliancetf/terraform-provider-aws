@@ -1,0 +1,6 @@
+{
+  "description": "an ES256 verdict key listed in the floor-validated profile verifies",
+  "use": "verdict",
+  "source": "profile",
+  "want_release": ""
+}

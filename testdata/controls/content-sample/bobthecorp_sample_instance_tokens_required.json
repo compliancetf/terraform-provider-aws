@@ -1,0 +1,8 @@
+{"about": "equals_any on metadata_options.http_tokens: the intent writes the path without [0]; metadata_options is a list block (max 1), so the CEL path is metadata_options[0].",
+ "control": {"id": "bobthecorp_sample_instance_tokens_required", "version": "1.0.0", "kind": "resource", "resource_type": "aws_instance", "reads": ["metadata_options", "metadata_options.http_tokens"], "presence_mode": "effective", "on": ["create", "update"], "expr": "size(resource.metadata_options) > 0 && resource.metadata_options[0].http_tokens in [\"required\"]", "action": "deny", "severity": "high", "message": "Sample: instance metadata tokens must be required."},
+ "cases": [
+  {"id": "P-01-required", "resource": {"ami": "ami-0bobthecorp", "metadata_options": [{"http_tokens": "required"}]}, "expect": {"state": "pass", "err_class": ""}},
+  {"id": "F-01-optional", "resource": {"ami": "ami-0bobthecorp", "metadata_options": [{"http_tokens": "optional"}]}, "expect": {"state": "fail", "err_class": ""}},
+  {"id": "F-02-no-block", "resource": {"ami": "ami-0bobthecorp"}, "expect": {"state": "fail", "err_class": ""}},
+  {"id": "U-01-computed", "resource": {"metadata_options": [{"http_tokens": {"$unknown": true}}]}, "expect": {"state": "unknown", "err_class": ""}}
+ ]}

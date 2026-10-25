@@ -1,0 +1,43 @@
+{
+  "description": "a state id the line format cannot carry unescaped is not written: kind falls back to none and the record is still written",
+  "stage": "apply_post",
+  "mode": "hard_fail",
+  "op": "create",
+  "new": {
+    "storage_encrypted": true,
+    "kms_key_id": "arn:aws:kms:us-east-1:111122223333:key/bobthecorp-rds",
+    "engine": "postgres",
+    "deletion_protection": true,
+    "id": "bobthecorp\"db\n"
+  },
+  "want": {
+    "diagnostics": [],
+    "evidence": {
+      "op": "create",
+      "results": [
+        {
+          "control": "rds_db_instance_encryption_at_rest_enabled",
+          "state": "pass",
+          "decision": "logged"
+        },
+        {
+          "control": "rds_instance_engine_not_mysql",
+          "state": "pass",
+          "decision": "logged"
+        },
+        {
+          "control": "rds_instance_deletion_protection_enabled",
+          "state": "pass",
+          "decision": "logged"
+        }
+      ],
+      "resource": {
+        "id": null,
+        "identity": null,
+        "identity_kind": "none",
+        "op": "create",
+        "type": "aws_db_instance"
+      }
+    }
+  }
+}

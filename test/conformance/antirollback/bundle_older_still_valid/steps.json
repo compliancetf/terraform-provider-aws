@@ -1,0 +1,12 @@
+{
+  "evaluator": "lifecycle",
+  "env": {
+    "COMPLIANCETF_ORG_ID": "bobthecorp",
+    "COMPLIANCETF_PROFILE_PATH": "{work}/profile.dsse.json",
+    "COMPLIANCETF_FLOOR_PATH": "{work}/floor.dsse.json",
+    "COMPLIANCETF_BUNDLE_PATH": "{work}/bundle.tar.gz"
+  },
+  "steps": [
+    {"cmd": ["plan", "-no-color"], "exit": 1, "stderr_contains": ["Compliance configuration failed", "control_bundle_path: bundle bobthecorp-fake v3 is below the minimum v4"]}
+  ]
+}

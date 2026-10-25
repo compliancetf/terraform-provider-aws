@@ -1,0 +1,1 @@
+{"block": {"org_id": "bobthecorp"}, "env": {"COMPLIANCETF_GOVERNED": "true"}, "want": {"error": "Org floor for bobthecorp unavailable: governed runs need a signed floor statement (floor_mode online). Reason: COMPLIANCETF_TOKEN is not set."}}

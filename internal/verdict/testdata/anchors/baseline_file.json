@@ -1,0 +1,6 @@
+{
+  "description": "a baseline key supplied only as files in the working dir, HOME, TF_DATA_DIR and the state dir is ignored",
+  "use": "baseline",
+  "source": "file",
+  "want_release": "kid unknown"
+}

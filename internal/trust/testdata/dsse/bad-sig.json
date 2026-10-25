@@ -1,0 +1,33 @@
+{
+  "description": "last signature byte flipped",
+  "envelope": {
+    "payload": "eyJmb3JtYXQiOiJjb21wbGlhbmNldGYuYnVuZGxlLW1hbmlmZXN0L3YyIiwiYnVuZGxlX2lkIjoiYm9idGhlY29ycC1jdXN0b20iLCJidW5kbGVfdmVyc2lvbiI6MSwib3JnX2lkIjoiYm9idGhlY29ycCIsImlzc3VlZF9hdCI6IjIwMjYtMTAtMDFUMDA6MDA6MDBaIiwiZXhwaXJlc19hdCI6IjIwMjYtMTItMzFUMDA6MDA6MDBaIn0=",
+    "payloadType": "application/vnd.compliancetf.bundle-manifest+json;v=2",
+    "signatures": [
+      {
+        "keyid": "sha256:77b6636d1aac850b6c3ed806541c4f2233233fda1a045e679b7b5dc21dc29f3e",
+        "sig": "MEUCIQDSCGr7i0I7A4xMsYYQwCOCpmP/69uPED6MbhpJKTK1TwIgbelWPiu1GbS6UIBd1IXC9cZTWbOW+JzWbhrjE3mS2FU="
+      }
+    ]
+  },
+  "keyring": {
+    "format": "compliancetf.keyring/v1",
+    "keys": [
+      {
+        "alg": "ES256",
+        "kid": "sha256:77b6636d1aac850b6c3ed806541c4f2233233fda1a045e679b7b5dc21dc29f3e",
+        "not_after": "2030-01-01T00:00:00Z",
+        "not_before": "2026-01-01T00:00:00Z",
+        "public_key": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAE7d+l0Rc6YiS9KkR7R/uHMHiVcqgPPmn31KsSHlItEsa0szmHrx4aVjGrkTiDMNaC6tjqAgdpwN5mbHqfCC4EkQ==",
+        "purpose": [
+          "bundle"
+        ]
+      }
+    ]
+  },
+  "payload_type": "application/vnd.compliancetf.bundle-manifest+json;v=2",
+  "want": {
+    "ok": false,
+    "error": "signature invalid"
+  }
+}

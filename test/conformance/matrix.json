@@ -1,0 +1,8 @@
+{
+  "cells": [
+    {"name": "terraform-1.5", "product": "terraform", "version": "1.5.x", "features": ["import_block"]},
+    {"name": "terraform-1.10", "product": "terraform", "version": "1.10.x", "features": ["import_block", "ephemeral"]},
+    {"name": "terraform-latest", "product": "terraform", "version": "latest", "features": ["import_block", "ephemeral", "query", "actions", "identity"]},
+    {"name": "opentofu-latest", "product": "opentofu", "version": "latest", "features": ["import_block", "ephemeral"]}
+  ]
+}

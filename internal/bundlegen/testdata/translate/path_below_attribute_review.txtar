@@ -1,0 +1,28 @@
+a step below an attribute: path refusal
+-- intent.json --
+{
+ "id": "kms_tag",
+ "resource_type": "aws_kms_key",
+ "attributes": [
+  {
+   "schema_path": "tags.owner",
+   "condition": "equals_any",
+   "values": [
+    "bobthecorp"
+   ],
+   "values_from_ref": null
+  }
+ ],
+ "explanation": "Explanation of kms_tag.",
+ "postcondition": "",
+ "has_strategy_condition": false
+}
+-- want.json --
+{
+  "review": {
+    "id": "kms_tag",
+    "resource_type": "aws_kms_key",
+    "reason": "path",
+    "detail": "tags.owner equals_any: tags is an attribute, not a block"
+  }
+}

@@ -1,0 +1,29 @@
+{
+  "result": "fail",
+  "findings": [
+    {
+      "control_id": "elb_listener_has_forward",
+      "kind": "resource",
+      "resource_type": "aws_lb_listener",
+      "read": "default_action.forward",
+      "check": "shape_changed",
+      "result": "fail"
+    },
+    {
+      "control_id": "elb_listener_no_fixed_response",
+      "kind": "resource",
+      "resource_type": "aws_lb_listener",
+      "read": "default_action.type",
+      "check": "shape_changed",
+      "result": "fail"
+    },
+    {
+      "control_id": "elb_listener_prior_forward_target",
+      "kind": "resource",
+      "resource_type": "aws_lb_listener",
+      "read": "default_action",
+      "check": "shape_changed",
+      "result": "fail"
+    }
+  ]
+}

@@ -1,0 +1,6 @@
+{
+  "description": "without a floor-validated profile no receipt key is trusted",
+  "use": "receipt",
+  "source": "none",
+  "want_release": "kid unknown"
+}

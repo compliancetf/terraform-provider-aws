@@ -1,0 +1,79 @@
+[
+  {
+    "id": "iam_bobthecorp_no_kms_wildcard",
+    "version": "1.0.0",
+    "kind": "resource",
+    "resource_type": "aws_iam_policy",
+    "reads": [
+      "policy"
+    ],
+    "presence_mode": "effective",
+    "on": [
+      "create",
+      "update"
+    ],
+    "expr": "iam.parse(resource.policy).statements.all(s, !(s.effect == \"Allow\" && iam.grants_all(s, \"kms\")))",
+    "action": "deny",
+    "severity": "high",
+    "message": "Sample policy grants no KMS wildcard",
+    "framework_refs": [
+      "soc_2:SC6.3"
+    ],
+    "exemption_coverable": []
+  },
+  {
+    "id": "rds_bobthecorp_storage_encrypted",
+    "version": "1.0.0",
+    "kind": "resource",
+    "resource_type": "aws_db_instance",
+    "reads": [
+      "storage_encrypted"
+    ],
+    "presence_mode": "effective",
+    "on": [
+      "create",
+      "update"
+    ],
+    "expr": "resource.storage_encrypted == true",
+    "action": "deny",
+    "severity": "high",
+    "message": "Sample database storage is encrypted",
+    "fix": "Set storage_encrypted = true.",
+    "framework_refs": [
+      "cis_v600:3.2",
+      "soc_2:SC6.1"
+    ],
+    "tool_refs": {
+      "checkov": [
+        "CKV_AWS_9016"
+      ]
+    },
+    "exemption_coverable": [
+      "baseline",
+      "grant"
+    ]
+  },
+  {
+    "id": "s3_bobthecorp_versioning_on",
+    "version": "1.0.0",
+    "kind": "resource",
+    "resource_type": "aws_s3_bucket_versioning",
+    "reads": [
+      "bucket"
+    ],
+    "presence_mode": "configured",
+    "on": [
+      "create",
+      "update"
+    ],
+    "expr": "config.bucket != null",
+    "action": "warn",
+    "severity": "medium",
+    "message": "Sample bucket versioning is on",
+    "framework_refs": [
+      "pci_dss_v40:S10.5",
+      "soc_2:SA1"
+    ],
+    "exemption_coverable": []
+  }
+]

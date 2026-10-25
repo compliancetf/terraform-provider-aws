@@ -1,0 +1,4 @@
+[
+  {"id": "iam_policy_no_full_access_to_kms", "version": "1.0.0", "kind": "resource", "resource_type": "aws_iam_policy", "reads": ["policy"], "presence_mode": "effective", "on": ["create", "update"], "expr": "iam.parse(resource.policy).statements.all(s, !(s.effect == \"Allow\" && iam.grants_all(s, \"kms\")))", "action": "deny", "severity": "high", "message": "IAM policies must not allow every KMS action."},
+  {"id": "iam_policy_inline_no_blocked_kms_actions", "version": "1.0.0", "kind": "resource", "resource_type": "aws_iam_role_policy", "reads": ["policy"], "presence_mode": "effective", "on": ["create", "update"], "expr": "iam.parse(resource.policy).statements.all(s, !(s.effect == \"Allow\" && s.resource_any && [\"kms:decrypt\", \"kms:reencryptfrom\"].exists(a, iam.grants(s, a))))", "action": "deny", "severity": "high", "message": "Inline policies must not allow kms:Decrypt or kms:ReEncryptFrom on all keys."}
+]

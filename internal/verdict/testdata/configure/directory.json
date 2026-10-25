@@ -1,0 +1,8 @@
+{
+  "description": "a directory is not a regular file",
+  "verdict": "dir",
+  "want": {
+    "summary": "Invalid verdict file",
+    "detail": "The file named by COMPLIANCETF_VERDICT is not a regular file."
+  }
+}

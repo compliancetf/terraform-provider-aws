@@ -1,0 +1,26 @@
+{
+  "description": "Under verdict_required, a blocking failure a grant could cover is a pending exemption warning at plan (A66) and plan succeeds; the apply of a matched entry recording the decision provisional, with no grant listed, receipt or baseline as final proof, blocks before upstream.",
+  "plan": {
+    "warnings": [
+      "pending exemption: grant fake_thing_size_max"
+    ]
+  },
+  "eligibility": {
+    "coverable": ["grant"]
+  },
+  "address": "fake_thing.a",
+  "apply": {
+    "errors": [
+      {
+        "summary": "fake_thing_size_max: provisional exemption for fake_thing.a has no final proof; re-run ctfkit gate with the grant, baseline or approved break-glass",
+        "detail": ""
+      }
+    ],
+    "evidence": {
+      "op": "create",
+      "results": [
+        {"control": "fake_thing_size_max", "version": "1.0.0", "state": "fail", "decision": "blocked", "situation": "exemption_unproven"}
+      ]
+    }
+  }
+}

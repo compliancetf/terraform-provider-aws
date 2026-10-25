@@ -1,0 +1,18 @@
+{
+  "description": "no match zero control update required",
+  "verdict": true,
+  "required": true,
+  "delete": false,
+  "type": "aws_s3_bucket",
+  "matches": [],
+  "graph": [],
+  "excepted": [],
+  "want": [
+    {
+      "control": "",
+      "version": "",
+      "result": "no_match",
+      "severity": "error"
+    }
+  ]
+}

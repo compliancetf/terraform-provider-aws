@@ -1,0 +1,28 @@
+a path not in the schema: path refusal
+-- intent.json --
+{
+ "id": "kms_cmk_rotation_enabled",
+ "resource_type": "aws_kms_key",
+ "attributes": [
+  {
+   "schema_path": "enable_key_rotaton",
+   "condition": "equals_any",
+   "values": [
+    true
+   ],
+   "values_from_ref": null
+  }
+ ],
+ "explanation": "Explanation of kms_cmk_rotation_enabled.",
+ "postcondition": "",
+ "has_strategy_condition": false
+}
+-- want.json --
+{
+  "review": {
+    "id": "kms_cmk_rotation_enabled",
+    "resource_type": "aws_kms_key",
+    "reason": "path",
+    "detail": "enable_key_rotaton equals_any: enable_key_rotaton is not in the schema"
+  }
+}

@@ -1,0 +1,19 @@
+[
+  {
+    "id": "s3_bucket_versioning_enabled",
+    "version": "1.0.0",
+    "kind": "deletion_guard",
+    "resource_type": "aws_s3_bucket",
+    "reads": [
+      "bucket"
+    ],
+    "presence_mode": "effective",
+    "on": [
+      "delete"
+    ],
+    "expr": "env != 'prod'",
+    "action": "deny",
+    "severity": "medium",
+    "message": "Production S3 buckets must not be deleted."
+  }
+]

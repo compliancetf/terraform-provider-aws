@@ -1,0 +1,15 @@
+{
+  "format": "compliancetf.keyring/v1",
+  "keys": [
+    {
+      "alg": "Ed25519",
+      "kid": "sha256:c9b5d9739838d85888cdf691d1072e07fcaa8899755ce1b8d6e30a43d627cfd5",
+      "not_after": "2030-01-01T00:00:00Z",
+      "not_before": "2026-01-01T00:00:00Z",
+      "public_key": "MCowBQYDK2VwAyEAx+5GbLvWMR98YtHin/Lwj8CTazvH1sjZ2Q8FssVGPyU=",
+      "purpose": [
+        "bundle"
+      ]
+    }
+  ]
+}

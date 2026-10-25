@@ -1,0 +1,117 @@
+{
+  "format_version": "1.2",
+  "resource_changes": [
+    {
+      "address": "aws_iam_role.new",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "after": {
+          "assume_role_policy": "{\"Statement\":[{\"Action\":\"sts:AssumeRole\",\"Effect\":\"Allow\",\"Principal\":{\"Service\":\"lambda.amazonaws.com\"}}],\"Version\":\"2012-10-17\"}",
+          "description": null,
+          "force_detach_policies": false,
+          "max_session_duration": 3600,
+          "name": "bobthecorp-reports",
+          "path": "/",
+          "permissions_boundary": null
+        },
+        "after_identity": {
+          "account_id": null,
+          "name": null
+        },
+        "after_sensitive": {
+          "inline_policy": [],
+          "managed_policy_arns": [],
+          "tags": {},
+          "tags_all": {}
+        },
+        "after_unknown": {
+          "arn": true,
+          "create_date": true,
+          "id": true,
+          "inline_policy": true,
+          "managed_policy_arns": true,
+          "name_prefix": true,
+          "tags": true,
+          "tags_all": true,
+          "unique_id": true
+        },
+        "before": null,
+        "before_sensitive": false
+      },
+      "mode": "managed",
+      "name": "new",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "type": "aws_iam_role"
+    },
+    {
+      "address": "aws_iam_role.this",
+      "change": {
+        "actions": [
+          "update"
+        ],
+        "after": {
+          "arn": "arn:aws:iam::111111111111:role/bobthecorp-app",
+          "assume_role_policy": "{\"Statement\":[{\"Action\":\"sts:AssumeRole\",\"Effect\":\"Allow\",\"Principal\":{\"Service\":\"ec2.amazonaws.com\"}}],\"Version\":\"2012-10-17\"}",
+          "create_date": "bobthecorp-fake-create_date",
+          "description": "bobthecorp app role v2",
+          "force_detach_policies": false,
+          "id": "bobthecorp-app",
+          "inline_policy": [],
+          "managed_policy_arns": [],
+          "max_session_duration": 3600,
+          "name": "bobthecorp-app",
+          "name_prefix": "bobthecorp-fake-name_prefix",
+          "path": "/",
+          "permissions_boundary": null,
+          "tags": null,
+          "tags_all": {},
+          "unique_id": "AROABOBTHECORP0000001"
+        },
+        "after_identity": {
+          "account_id": "111111111111",
+          "name": "bobthecorp-app"
+        },
+        "after_sensitive": {
+          "inline_policy": [],
+          "managed_policy_arns": [],
+          "tags_all": {}
+        },
+        "after_unknown": {},
+        "before": {
+          "arn": "arn:aws:iam::111111111111:role/bobthecorp-app",
+          "assume_role_policy": "{\"Statement\":[{\"Action\":\"sts:AssumeRole\",\"Effect\":\"Allow\",\"Principal\":{\"Service\":\"ec2.amazonaws.com\"}}],\"Version\":\"2012-10-17\"}",
+          "create_date": "bobthecorp-fake-create_date",
+          "description": "bobthecorp app role",
+          "force_detach_policies": false,
+          "id": "bobthecorp-app",
+          "inline_policy": [],
+          "managed_policy_arns": [],
+          "max_session_duration": 3600,
+          "name": "bobthecorp-app",
+          "name_prefix": "bobthecorp-fake-name_prefix",
+          "path": "/",
+          "permissions_boundary": null,
+          "tags": null,
+          "tags_all": {},
+          "unique_id": "AROABOBTHECORP0000001"
+        },
+        "before_identity": {
+          "account_id": "111111111111",
+          "name": "bobthecorp-app"
+        },
+        "before_sensitive": {
+          "inline_policy": [],
+          "managed_policy_arns": [],
+          "tags_all": {}
+        }
+      },
+      "mode": "managed",
+      "name": "this",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "type": "aws_iam_role"
+    }
+  ],
+  "terraform_version": "1.16.3"
+}

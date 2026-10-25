@@ -1,0 +1,52 @@
+{
+  "format_version": "1.0",
+  "provider_schemas": {
+    "registry.terraform.io/hashicorp/aws": {
+      "resource_identity_schemas": {
+        "aws_iam_role_policy_attachment": {
+          "attributes": {
+            "account_id": {
+              "optional_for_import": true,
+              "type": "string"
+            },
+            "policy_arn": {
+              "required_for_import": true,
+              "type": "string"
+            },
+            "role": {
+              "required_for_import": true,
+              "type": "string"
+            }
+          },
+          "version": 0
+        }
+      },
+      "resource_schemas": {
+        "aws_iam_role_policy_attachment": {
+          "block": {
+            "attributes": {
+              "id": {
+                "computed": true,
+                "description_kind": "plain",
+                "optional": true,
+                "type": "string"
+              },
+              "policy_arn": {
+                "description_kind": "plain",
+                "required": true,
+                "type": "string"
+              },
+              "role": {
+                "description_kind": "plain",
+                "required": true,
+                "type": "string"
+              }
+            },
+            "description_kind": "plain"
+          },
+          "version": 0
+        }
+      }
+    }
+  }
+}

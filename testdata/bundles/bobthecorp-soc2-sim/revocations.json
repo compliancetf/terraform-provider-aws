@@ -1,0 +1,1 @@
+{"format": "compliancetf.revocations/v1", "epoch": 1, "revoked_keys": [], "revoked_bundles": [{"bundle_id": "bobthecorp-soc2", "below_version": 10}], "revoked_controls": []}

@@ -1,0 +1,8 @@
+# version_bump declarations by ControlKey; from is the locked version the
+# bump applies to, so a bump left here after the lock is committed is inert.
+rds_bobthecorp_storage_encrypted/resource/aws_db_instance:
+  level: major
+  from: 1.0.0
+s3_bobthecorp_versioning_on/resource/aws_s3_bucket_versioning:
+  level: patch
+  from: 1.0.0

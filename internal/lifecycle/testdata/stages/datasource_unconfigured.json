@@ -1,0 +1,29 @@
+{
+  "description": "a data source read before Configure is blocked with an error diagnostic (a Go error would only warn at data_source); no evidence chain to record in",
+  "stage": "data_source",
+  "type_name": "aws_db_lookup",
+  "mode": "hard_fail",
+  "unconfigured": true,
+  "config": {
+    "storage_encrypted": true,
+    "kms_key_id": "arn:aws:kms:us-east-1:111122223333:key/bobthecorp-rds",
+    "engine": "postgres",
+    "deletion_protection": true
+  },
+  "new": {
+    "storage_encrypted": true,
+    "kms_key_id": "arn:aws:kms:us-east-1:111122223333:key/bobthecorp-rds",
+    "engine": "postgres",
+    "deletion_protection": true
+  },
+  "want": {
+    "no_record": true,
+    "diagnostics": [
+      {
+        "severity": "error",
+        "summary": "Compliance not configured",
+        "detail": "Data source aws_db_lookup was read before the compliance configuration loaded; the read is blocked."
+      }
+    ]
+  }
+}

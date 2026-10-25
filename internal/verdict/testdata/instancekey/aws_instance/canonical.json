@@ -1,0 +1,193 @@
+{
+  "entries": [
+    {
+      "actions": [
+        "create"
+      ],
+      "address": "aws_instance.new",
+      "keys": [
+        {
+          "after": {
+            "ami": "s:ami-0123456789abcdef0",
+            "credit_specification": [],
+            "force_destroy": "b:false",
+            "get_password_data": "b:false",
+            "instance_type": "s:t3.medium",
+            "launch_template": [],
+            "region": "s:us-east-1",
+            "root_block_device": [
+              {
+                "delete_on_termination": "b:true",
+                "encrypted": "b:true",
+                "volume_size": "n:50",
+                "volume_type": "s:gp3"
+              }
+            ],
+            "source_dest_check": "b:true",
+            "subnet_id": "s:subnet-0aaaaaaaaaaaaaaa2",
+            "tags": {
+              "Name": "s:bobthecorp-batch"
+            },
+            "tags_all": {
+              "Name": "s:bobthecorp-batch"
+            },
+            "user_data_replace_on_change": "b:false"
+          },
+          "after_hashed_jcs": "{\"ami\":\"04501641605950ae90261df8fa77856f0de0fadcc3055bee44b7a59a4fc69414\",\"credit_specification\":[],\"force_destroy\":\"bd2697924fc3dbc2684e37198d7f4911d738e969f1d3a4db9e113420c2e90f17\",\"get_password_data\":\"bd2697924fc3dbc2684e37198d7f4911d738e969f1d3a4db9e113420c2e90f17\",\"instance_type\":\"52d825f6207d52187af44c631e37efed486d1239eb8909825202088550f5f96a\",\"launch_template\":[],\"region\":\"8df8ff45a31e55a282b554a4217667bd534d60853102522fb525315732856f2a\",\"root_block_device\":[{\"delete_on_termination\":\"b68daeb52706f9e937299d1a17344104761b9d0971847be00331406c41f0e9a4\",\"encrypted\":\"b68daeb52706f9e937299d1a17344104761b9d0971847be00331406c41f0e9a4\",\"volume_size\":\"3a8a9cbd39681c6116f3da541110e1abf425b12f2b1efb6c703a5b62ed05292d\",\"volume_type\":\"a434793ecb50bf027d9e90f49febc74cdb8e650c28192359e632260f14a05189\"}],\"source_dest_check\":\"b68daeb52706f9e937299d1a17344104761b9d0971847be00331406c41f0e9a4\",\"subnet_id\":\"38d7c9bc6a482f26236345e7839f493c6734ec0ee12bb77cee5e7b43874138d9\",\"tags\":{\"Name\":\"d5fe28176228bf96c0c5e177f286e026c6ca9e463c013b2cf8b61dbec051bbd4\"},\"tags_all\":{\"Name\":\"d5fe28176228bf96c0c5e177f286e026c6ca9e463c013b2cf8b61dbec051bbd4\"},\"user_data_replace_on_change\":\"bd2697924fc3dbc2684e37198d7f4911d738e969f1d3a4db9e113420c2e90f17\"}",
+          "field": "instance_key",
+          "form": "create",
+          "prior_identity": null,
+          "prior_identity_hashed_jcs": "null",
+          "prior_identity_kind": "none"
+        }
+      ]
+    },
+    {
+      "action_reason": "replace_because_tainted",
+      "actions": [
+        "delete",
+        "create"
+      ],
+      "address": "aws_instance.tainted",
+      "keys": [
+        {
+          "after": null,
+          "after_hashed_jcs": "null",
+          "field": "delete_key",
+          "form": "delete",
+          "prior_identity": {
+            "id": "s:i-0a1b2c3d4e5f60002"
+          },
+          "prior_identity_hashed_jcs": "{\"id\":\"cc201e5fbc86622321de7312857cfdd60edbc1a72b1fb768652d33133824fe62\"}",
+          "prior_identity_kind": "id"
+        },
+        {
+          "after": {
+            "ami": "s:ami-0123456789abcdef0",
+            "credit_specification": [],
+            "force_destroy": "b:false",
+            "get_password_data": "b:false",
+            "instance_type": "s:t3.small",
+            "launch_template": [],
+            "region": "s:us-east-1",
+            "source_dest_check": "b:true",
+            "subnet_id": "s:subnet-0aaaaaaaaaaaaaaa1",
+            "tags": {
+              "Name": "s:bobthecorp-worker"
+            },
+            "tags_all": {
+              "Name": "s:bobthecorp-worker"
+            },
+            "user_data_replace_on_change": "b:false"
+          },
+          "after_hashed_jcs": "{\"ami\":\"04501641605950ae90261df8fa77856f0de0fadcc3055bee44b7a59a4fc69414\",\"credit_specification\":[],\"force_destroy\":\"bd2697924fc3dbc2684e37198d7f4911d738e969f1d3a4db9e113420c2e90f17\",\"get_password_data\":\"bd2697924fc3dbc2684e37198d7f4911d738e969f1d3a4db9e113420c2e90f17\",\"instance_type\":\"359f89a14f4d6b066a8f090197db7a7115ace60521a06a067331faea310317cb\",\"launch_template\":[],\"region\":\"8df8ff45a31e55a282b554a4217667bd534d60853102522fb525315732856f2a\",\"source_dest_check\":\"b68daeb52706f9e937299d1a17344104761b9d0971847be00331406c41f0e9a4\",\"subnet_id\":\"ab1b3bf74641b3d39c0ebcb316110ba5f00841527194f792dfaa2f8a52d8e9fe\",\"tags\":{\"Name\":\"337dbe88e4552addc61f3aee9941d047b6b8a92b14fc9a14ccb03ba255db582b\"},\"tags_all\":{\"Name\":\"337dbe88e4552addc61f3aee9941d047b6b8a92b14fc9a14ccb03ba255db582b\"},\"user_data_replace_on_change\":\"bd2697924fc3dbc2684e37198d7f4911d738e969f1d3a4db9e113420c2e90f17\"}",
+          "field": "instance_key",
+          "form": "create",
+          "prior_identity": null,
+          "prior_identity_hashed_jcs": "null",
+          "prior_identity_kind": "none"
+        }
+      ]
+    },
+    {
+      "actions": [
+        "update"
+      ],
+      "address": "aws_instance.this",
+      "keys": [
+        {
+          "after": {
+            "ami": "s:ami-0123456789abcdef0",
+            "arn": "s:arn:aws:ec2:us-east-1:111111111111:instance/i-0a1b2c3d4e5f60001",
+            "associate_public_ip_address": "b:false",
+            "availability_zone": "s:us-east-1a",
+            "capacity_reservation_specification": [],
+            "cpu_options": [],
+            "credit_specification": [],
+            "disable_api_stop": "b:false",
+            "disable_api_termination": "b:false",
+            "ebs_block_device": [],
+            "ebs_optimized": "b:false",
+            "enable_primary_ipv6": "b:false",
+            "enclave_options": [],
+            "ephemeral_block_device": [],
+            "force_destroy": "b:false",
+            "get_password_data": "b:false",
+            "host_id": "s:bobthecorp-fake-host_id",
+            "host_resource_group_arn": "s:bobthecorp-fake-host_resource_group_arn",
+            "iam_instance_profile": "s:bobthecorp-fake-iam_instance_profile",
+            "id": "s:i-0a1b2c3d4e5f60001",
+            "instance_initiated_shutdown_behavior": "s:stop",
+            "instance_lifecycle": "s:bobthecorp-fake-instance_lifecycle",
+            "instance_market_options": [],
+            "instance_state": "s:running",
+            "instance_type": "s:t3.small",
+            "ipv6_address_count": "n:0",
+            "ipv6_addresses": [],
+            "key_name": "s:bobthecorp-fake-key_name",
+            "launch_template": [],
+            "maintenance_options": [],
+            "metadata_options": [],
+            "monitoring": "b:false",
+            "network_interface": [],
+            "outpost_arn": "s:bobthecorp-fake-outpost_arn",
+            "password_data": "s:bobthecorp-fake-password_data",
+            "placement_group": "s:bobthecorp-fake-placement_group",
+            "placement_group_id": "s:bobthecorp-fake-placement_group_id",
+            "placement_partition_number": "n:0",
+            "primary_network_interface": [],
+            "primary_network_interface_id": "s:bobthecorp-fake-primary_network_interface_id",
+            "private_dns": "s:bobthecorp-fake-private_dns",
+            "private_dns_name_options": [],
+            "private_ip": "s:10.0.1.10",
+            "region": "s:us-east-1",
+            "root_block_device": [
+              {
+                "delete_on_termination": "b:true",
+                "device_name": "s:bobthecorp-fake-device_name",
+                "encrypted": "b:true",
+                "iops": "n:0",
+                "kms_key_id": "s:bobthecorp-fake-kms_key_id",
+                "tags": {},
+                "tags_all": {},
+                "throughput": "n:0",
+                "volume_id": "s:bobthecorp-fake-volume_id",
+                "volume_size": "n:20",
+                "volume_type": "s:gp3"
+              }
+            ],
+            "secondary_network_interface": [],
+            "secondary_private_ips": [],
+            "security_groups": [],
+            "source_dest_check": "b:true",
+            "spot_instance_request_id": "s:bobthecorp-fake-spot_instance_request_id",
+            "subnet_id": "s:subnet-0aaaaaaaaaaaaaaa1",
+            "tags": {
+              "Name": "s:bobthecorp-app"
+            },
+            "tags_all": {
+              "Name": "s:bobthecorp-app"
+            },
+            "tenancy": "s:default",
+            "user_data_base64": "s:bobthecorp-fake-user_data_base64",
+            "user_data_replace_on_change": "b:false",
+            "vpc_security_group_ids": []
+          },
+          "after_hashed_jcs": "{\"ami\":\"04501641605950ae90261df8fa77856f0de0fadcc3055bee44b7a59a4fc69414\",\"arn\":\"9d229b97beaa6d9d7d96a55bb2f888123e8df4c3c87f369bcb561543027a223c\",\"associate_public_ip_address\":\"bd2697924fc3dbc2684e37198d7f4911d738e969f1d3a4db9e113420c2e90f17\",\"availability_zone\":\"4ed049e5cc0ee1b02f351b2aed1d2a858c95245eacf3080ae9ddbb6b24769df0\",\"capacity_reservation_specification\":[],\"cpu_options\":[],\"credit_specification\":[],\"disable_api_stop\":\"bd2697924fc3dbc2684e37198d7f4911d738e969f1d3a4db9e113420c2e90f17\",\"disable_api_termination\":\"bd2697924fc3dbc2684e37198d7f4911d738e969f1d3a4db9e113420c2e90f17\",\"ebs_block_device\":[],\"ebs_optimized\":\"bd2697924fc3dbc2684e37198d7f4911d738e969f1d3a4db9e113420c2e90f17\",\"enable_primary_ipv6\":\"bd2697924fc3dbc2684e37198d7f4911d738e969f1d3a4db9e113420c2e90f17\",\"enclave_options\":[],\"ephemeral_block_device\":[],\"force_destroy\":\"bd2697924fc3dbc2684e37198d7f4911d738e969f1d3a4db9e113420c2e90f17\",\"get_password_data\":\"bd2697924fc3dbc2684e37198d7f4911d738e969f1d3a4db9e113420c2e90f17\",\"host_id\":\"85f42e82b0030a02b04101e470cb3245a728cea41c5462bfd42f91de1ce64b50\",\"host_resource_group_arn\":\"6f9a8e8e8aa91a4fba0c9a2700515273ac68c4b6edd518e49d86315bd378d3d0\",\"iam_instance_profile\":\"018e9eceb9d98abf73384eabf282d95f9ef43e5fbbe3615ed73607ecf99e59db\",\"id\":\"711999b272b8a4701718c0bc0c9ecdc4165b7c59cc211190adf4d5fc43c49002\",\"instance_initiated_shutdown_behavior\":\"a97b19c3f1f5de1f42b3e859516c18e65243c3f31b452441cc3154a68e8c3a89\",\"instance_lifecycle\":\"d7ce3a62153c821cf0782d2b6595e4d7aa5baa164037dafc2a6553b57d47b0ce\",\"instance_market_options\":[],\"instance_state\":\"4d5c164bca66b9f96769e876e1f96155c18f6aca2aa0afb1ecc851da57878630\",\"instance_type\":\"359f89a14f4d6b066a8f090197db7a7115ace60521a06a067331faea310317cb\",\"ipv6_address_count\":\"dbc1ba5eae39dfb316df813dce9a556086f045ebdb47b91c1cadfbe46b6c0741\",\"ipv6_addresses\":[],\"key_name\":\"566df8d168f16ea78c58f9f7711541587913261548da365d4c1041ce9a825fee\",\"launch_template\":[],\"maintenance_options\":[],\"metadata_options\":[],\"monitoring\":\"bd2697924fc3dbc2684e37198d7f4911d738e969f1d3a4db9e113420c2e90f17\",\"network_interface\":[],\"outpost_arn\":\"a3c0d34f88c874f87bd5c6526f9c3c15a3183f27a8162f41b76b481e4a3912fb\",\"password_data\":\"825ffda11a5c857545ef37b2a808eed8032f5ca791ad9514f69687186fdb1df6\",\"placement_group\":\"c0b584cc7ba7b343fa9fb6b4cc9e01f447f82665ff2763e295c7c41bfa56f19b\",\"placement_group_id\":\"b10ab7498bf0d97c6e13bfb036b60087261529f22c6cd3d02b1fd5c42d48e1ae\",\"placement_partition_number\":\"dbc1ba5eae39dfb316df813dce9a556086f045ebdb47b91c1cadfbe46b6c0741\",\"primary_network_interface\":[],\"primary_network_interface_id\":\"9e16d391570c1b48a6bd3dba42b87017826dedd3939b80d08093a42243bb53d7\",\"private_dns\":\"4bcc16db36534321e8ecd586a9df4f937ea69c632641cb73749887173bc7def3\",\"private_dns_name_options\":[],\"private_ip\":\"b2ecbbf691df253ec15f1328cda1ae04baa716efd670758c52436d99f0116b5a\",\"region\":\"8df8ff45a31e55a282b554a4217667bd534d60853102522fb525315732856f2a\",\"root_block_device\":[{\"delete_on_termination\":\"b68daeb52706f9e937299d1a17344104761b9d0971847be00331406c41f0e9a4\",\"device_name\":\"21cab48cd6c248404b10d2b3addd83b6e28bfce8e35c3877e863ddf24fdfe1ac\",\"encrypted\":\"b68daeb52706f9e937299d1a17344104761b9d0971847be00331406c41f0e9a4\",\"iops\":\"dbc1ba5eae39dfb316df813dce9a556086f045ebdb47b91c1cadfbe46b6c0741\",\"kms_key_id\":\"c4f69da0dd5a34d9a644fb78fcc12232402767fccbb224ebc85193b9cf85cca6\",\"tags\":{},\"tags_all\":{},\"throughput\":\"dbc1ba5eae39dfb316df813dce9a556086f045ebdb47b91c1cadfbe46b6c0741\",\"volume_id\":\"a5eb235c087f7d376564f8b866b33759b93ded8b355ffa2b7a09b3c7d2eb7476\",\"volume_size\":\"7068079081b9f666c8f8b119fd6c055b71c86325cb9d6a14e9eecdf9de0827af\",\"volume_type\":\"a434793ecb50bf027d9e90f49febc74cdb8e650c28192359e632260f14a05189\"}],\"secondary_network_interface\":[],\"secondary_private_ips\":[],\"security_groups\":[],\"source_dest_check\":\"b68daeb52706f9e937299d1a17344104761b9d0971847be00331406c41f0e9a4\",\"spot_instance_request_id\":\"784e11a3fe367f02318db6dabe15bd839c007450cacc1b5b266ddeecb564bd5f\",\"subnet_id\":\"ab1b3bf74641b3d39c0ebcb316110ba5f00841527194f792dfaa2f8a52d8e9fe\",\"tags\":{\"Name\":\"109229a95cf126951bb1625de7ecc3cdefec5e3bfcfa4efa6c6613f73e893a35\"},\"tags_all\":{\"Name\":\"109229a95cf126951bb1625de7ecc3cdefec5e3bfcfa4efa6c6613f73e893a35\"},\"tenancy\":\"d62aefc7681eb7fb63176877ca0f5a4f4e7b72cb39acb52b91d911b728b25493\",\"user_data_base64\":\"3ce9f6294504b6e9ec69e532592d08d1b3b1b794bf935fd14af4e88d16420978\",\"user_data_replace_on_change\":\"bd2697924fc3dbc2684e37198d7f4911d738e969f1d3a4db9e113420c2e90f17\",\"vpc_security_group_ids\":[]}",
+          "field": "instance_key",
+          "form": "update",
+          "prior_identity": {
+            "account_id": "s:111111111111",
+            "id": "s:i-0a1b2c3d4e5f60001",
+            "region": "s:us-east-1"
+          },
+          "prior_identity_hashed_jcs": "{\"account_id\":\"47e7ec2525e1a3e184c7844d068e98ee8789c5c565812114c46d959065728ced\",\"id\":\"711999b272b8a4701718c0bc0c9ecdc4165b7c59cc211190adf4d5fc43c49002\",\"region\":\"8df8ff45a31e55a282b554a4217667bd534d60853102522fb525315732856f2a\"}",
+          "prior_identity_kind": "identity"
+        }
+      ]
+    }
+  ],
+  "format": "compliancetf.instancekey.golden/v1",
+  "provider_version": "hashicorp/aws 6.65.0",
+  "terraform_version": "1.16.3"
+}

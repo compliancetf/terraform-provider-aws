@@ -1,0 +1,13 @@
+{
+  "description": "a pending decision is never exemptible",
+  "policy": {},
+  "queries": [
+    {
+      "control": "CTF.S3.1",
+      "key": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "result": "pending",
+      "want": false
+    }
+  ],
+  "warning": ""
+}

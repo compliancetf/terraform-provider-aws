@@ -1,0 +1,14 @@
+{
+  "evaluator": "lifecycle",
+  "env": {
+    "COMPLIANCETF_ORG_ID": "bobthecorp",
+    "COMPLIANCETF_PROFILE_PATH": "{work}/profile.dsse.json",
+    "COMPLIANCETF_BUNDLE_PATH": "{work}/bundle.tar.gz"
+  },
+  "expect_applies": 2,
+  "steps": [
+    {"cmd": ["plan", "-no-color", "-target=fake_thing.wildcard_principal"], "exit": 0, "stdout_contains": ["Warning: [iam_policy_no_star_star] not evaluable (type_error)\n\n  with fake_thing.wildcard_principal", "Treated as a failure of this control."], "stdout_excludes": ["pending", "with fake_thing.catalog_miss"], "stderr_excludes": ["pending"]},
+    {"cmd": ["plan", "-no-color", "-target=fake_thing.catalog_miss"], "exit": 0, "stdout_contains": ["Warning: [iam_policy_no_star_star] not evaluable (unresolved)\n\n  with fake_thing.catalog_miss", "Treated as a failure of this control."], "stdout_excludes": ["pending", "with fake_thing.wildcard_principal"], "stderr_excludes": ["pending"]},
+    {"cmd": ["apply", "-no-color", "-auto-approve"], "exit": 0, "stdout_contains": ["Warning: [iam_policy_no_star_star] not evaluable (", "Apply complete! Resources: 2 added"], "stdout_excludes": ["pending"], "stderr_excludes": ["pending"]}
+  ]
+}

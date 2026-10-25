@@ -1,0 +1,24 @@
+[
+  {
+    "id": "s3_bucket_versioning_enabled",
+    "version": "1.0.0",
+    "kind": "resource",
+    "resource_type": "aws_s3_bucket",
+    "reads": [
+      "versioning.enabled"
+    ],
+    "presence_mode": "effective",
+    "on": [
+      "create",
+      "update"
+    ],
+    "expr": "resource.versioning.all(v, v.enabled == true)",
+    "action": "deny",
+    "severity": "medium",
+    "message": "S3 bucket versioning must be enabled.",
+    "exemption_coverable": [
+      "grant",
+      "waiver"
+    ]
+  }
+]

@@ -1,0 +1,104 @@
+{
+  "format_version": "1.2",
+  "resource_changes": [
+    {
+      "address": "aws_s3_bucket_public_access_block.noop",
+      "change": {
+        "actions": [
+          "no-op"
+        ],
+        "after": {
+          "block_public_acls": true,
+          "block_public_policy": true,
+          "bucket": "bobthecorp-logs",
+          "id": "bobthecorp-logs",
+          "ignore_public_acls": true,
+          "region": "us-east-1",
+          "restrict_public_buckets": true,
+          "skip_destroy": null
+        },
+        "after_identity": {
+          "account_id": "111111111111",
+          "bucket": "bobthecorp-logs",
+          "region": "us-east-1"
+        },
+        "after_sensitive": {},
+        "after_unknown": {},
+        "before": {
+          "block_public_acls": true,
+          "block_public_policy": true,
+          "bucket": "bobthecorp-logs",
+          "id": "bobthecorp-logs",
+          "ignore_public_acls": true,
+          "region": "us-east-1",
+          "restrict_public_buckets": true,
+          "skip_destroy": null
+        },
+        "before_identity": {
+          "account_id": "111111111111",
+          "bucket": "bobthecorp-logs",
+          "region": "us-east-1"
+        },
+        "before_sensitive": {}
+      },
+      "mode": "managed",
+      "name": "noop",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "type": "aws_s3_bucket_public_access_block"
+    },
+    {
+      "action_reason": "replace_because_cannot_update",
+      "address": "aws_s3_bucket_public_access_block.this",
+      "change": {
+        "actions": [
+          "delete",
+          "create"
+        ],
+        "after": {
+          "block_public_acls": true,
+          "block_public_policy": true,
+          "bucket": "bobthecorp-data-v2",
+          "ignore_public_acls": true,
+          "region": "us-east-1",
+          "restrict_public_buckets": true,
+          "skip_destroy": null
+        },
+        "after_identity": {
+          "account_id": "111111111111",
+          "bucket": "bobthecorp-data",
+          "region": "us-east-1"
+        },
+        "after_sensitive": {},
+        "after_unknown": {
+          "id": true
+        },
+        "before": {
+          "block_public_acls": true,
+          "block_public_policy": true,
+          "bucket": "bobthecorp-data",
+          "id": "bobthecorp-data",
+          "ignore_public_acls": true,
+          "region": "us-east-1",
+          "restrict_public_buckets": true,
+          "skip_destroy": null
+        },
+        "before_identity": {
+          "account_id": "111111111111",
+          "bucket": "bobthecorp-data",
+          "region": "us-east-1"
+        },
+        "before_sensitive": {},
+        "replace_paths": [
+          [
+            "bucket"
+          ]
+        ]
+      },
+      "mode": "managed",
+      "name": "this",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "type": "aws_s3_bucket_public_access_block"
+    }
+  ],
+  "terraform_version": "1.16.3"
+}

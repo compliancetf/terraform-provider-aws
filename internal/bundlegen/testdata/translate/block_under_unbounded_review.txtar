@@ -1,0 +1,16 @@
+not_empty on a max-1 block below an unbounded list block: the unbounded_block refusal is kept (panel round 1)
+-- schema.json --
+{"format_version": "1.0", "provider_schemas": {"registry.terraform.io/hashicorp/aws": {"resource_schemas": {"aws_bobthecorp_thing": {"version": 0, "block": {"attributes": {"name": {"type": "string", "optional": true}}, "block_types": {"parent": {"nesting_mode": "list", "block": {"block_types": {"child": {"nesting_mode": "list", "max_items": 1, "block": {"attributes": {"mode": {"type": "string", "optional": true}}}}}}}}}}}}}}
+-- intent.json --
+{"id": "bobthecorp_thing_check", "resource_type": "aws_bobthecorp_thing", "attributes": [{"schema_path": "parent[0].child", "condition": "not_empty", "values": [], "values_from_ref": null}], "explanation": "", "postcondition": "", "has_strategy_condition": false}
+-- want.json --
+{
+  "review": {
+    "id": "bobthecorp_thing_check",
+    "resource_type": "aws_bobthecorp_thing",
+    "reason": "unbounded_block",
+    "detail": "parent[0].child not_empty: parent has no max_items = 1",
+    "proposal": "size(config.parent) > 0 && config.parent.all(e0, size(e0.child) >= 1)",
+    "alternative": "config.parent.exists(e0, size(e0.child) >= 1)"
+  }
+}

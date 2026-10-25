@@ -1,0 +1,12 @@
+{
+  "format": "compliancetf.wrapper/v1",
+  "address": "registry.compliance.tf/compliancetf/aws",
+  "upstream": "registry.terraform.io/hashicorp/aws",
+  "protocol": 5,
+  "resource_prefix": "aws_",
+  "cis_bundle_id": "cis-aws",
+  "cis_framework": "cis_v600",
+  "catalog_provider": "aws",
+  "evidence_sink": "s3_object_lock",
+  "verdict_kms": "aws_kms"
+}

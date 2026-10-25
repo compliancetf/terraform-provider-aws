@@ -1,0 +1,8 @@
+{"about": "equals_any on versioning_configuration[0].mfa_delete; computed attribute, null fails.",
+ "control": {"id": "bobthecorp_sample_bucket_mfa_delete_on", "version": "1.0.0", "kind": "resource", "resource_type": "aws_s3_bucket_versioning", "reads": ["versioning_configuration", "versioning_configuration.mfa_delete"], "presence_mode": "effective", "on": ["create", "update"], "expr": "size(resource.versioning_configuration) > 0 && resource.versioning_configuration[0].mfa_delete in [\"Enabled\"]", "action": "deny", "severity": "medium", "message": "Sample: bucket versioning must require MFA delete."},
+ "cases": [
+  {"id": "P-01-mfa-enabled", "resource": {"versioning_configuration": [{"status": "Enabled", "mfa_delete": "Enabled"}]}, "expect": {"state": "pass", "err_class": ""}},
+  {"id": "F-01-mfa-disabled", "resource": {"versioning_configuration": [{"status": "Enabled", "mfa_delete": "Disabled"}]}, "expect": {"state": "fail", "err_class": ""}},
+  {"id": "F-02-mfa-null", "resource": {"versioning_configuration": [{"status": "Enabled"}]}, "expect": {"state": "fail", "err_class": ""}},
+  {"id": "U-01-computed", "resource": {"versioning_configuration": [{"status": "Enabled", "mfa_delete": {"$unknown": true}}]}, "expect": {"state": "unknown", "err_class": ""}}
+ ]}

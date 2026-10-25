@@ -1,0 +1,12 @@
+{
+  "fakeupstream/v5": {
+    "protocol": 5,
+    "protocol_version": "5.11",
+    "server_capabilities": {
+      "plan_destroy": true,
+      "get_provider_schema_optional": false,
+      "move_resource_state": true,
+      "generate_resource_config": true
+    }
+  }
+}

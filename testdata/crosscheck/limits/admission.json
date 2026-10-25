@@ -1,0 +1,10 @@
+{"format": "compliancetf.lib-limits/v1",
+ "about": "json.path admission: the estimated decode work of a document is checked against the remaining per-resource budget before decode; over budget is limit without decoding, so a malformed document over budget is limit, never type_error. Same generated documents as doc_size.json.",
+ "cases": [
+  {"id": "A-01-no-budget", "doc_bytes": 64, "remaining_us": 0, "expect": {"err_class": "limit"}},
+  {"id": "A-02-no-budget-malformed", "doc_bytes": 64, "malformed": true, "remaining_us": 0, "expect": {"err_class": "limit"}},
+  {"id": "A-03-estimate-over-budget", "doc_bytes": 65536, "remaining_us": 1000, "expect": {"err_class": "limit"}},
+  {"id": "A-04-estimate-over-budget-malformed", "doc_bytes": 65536, "malformed": true, "remaining_us": 1000, "expect": {"err_class": "limit"}},
+  {"id": "A-05-within-budget", "doc_bytes": 65536, "remaining_us": 50000, "expect": {"err_class": ""}},
+  {"id": "A-06-within-budget-malformed", "doc_bytes": 65536, "malformed": true, "remaining_us": 50000, "expect": {"err_class": "type_error"}}
+ ]}

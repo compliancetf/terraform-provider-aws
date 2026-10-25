@@ -1,0 +1,13 @@
+{
+  "result": "warn",
+  "findings": [
+    {
+      "control_id": "s3_bucket_logging_target_set",
+      "kind": "resource",
+      "resource_type": "aws_s3_bucket_logging",
+      "read": "target_bucket",
+      "check": "read_not_in_base",
+      "result": "warn"
+    }
+  ]
+}

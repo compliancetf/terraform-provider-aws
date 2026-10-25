@@ -1,0 +1,1 @@
+{"Name":"kms","Actions":[{"Name":"Decrypt","Annotations":{"Properties":{"IsWrite":false}}},{"Name":"CreateKey"},{"Name":"Decrypt"}],"Resources":[{"Name":"key"}],"Version":"v1.4"}

@@ -1,0 +1,1 @@
+{"Version":"2012-10-17","Statement":[{"Effect":"Allow","Action":"s3:*","Resource":"*?"},{"Effect":"Allow","Action":"*:Get*","Resource":"arn:aws:*:eu-west-1:111111111111:x"},{"Effect":"Allow","Action":"s3:GetObject","Resource":"${aws:username}"},{"Effect":"Allow","Action":"s3:GetObject","Resource":"arn:aws:s3:::bobthecorp-${aws:username}/*"}]}

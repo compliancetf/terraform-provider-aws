@@ -1,0 +1,187 @@
+{
+  "format_version": "1.0",
+  "provider_schemas": {
+    "registry.terraform.io/hashicorp/aws": {
+      "resource_identity_schemas": {
+        "aws_sqs_queue": {
+          "attributes": {
+            "url": {
+              "required_for_import": true,
+              "type": "string"
+            }
+          },
+          "version": 1
+        }
+      },
+      "resource_schemas": {
+        "aws_sqs_queue": {
+          "block": {
+            "attributes": {
+              "arn": {
+                "computed": true,
+                "description_kind": "plain",
+                "type": "string"
+              },
+              "content_based_deduplication": {
+                "description_kind": "plain",
+                "optional": true,
+                "type": "bool"
+              },
+              "deduplication_scope": {
+                "computed": true,
+                "description_kind": "plain",
+                "optional": true,
+                "type": "string"
+              },
+              "delay_seconds": {
+                "description_kind": "plain",
+                "optional": true,
+                "type": "number"
+              },
+              "fifo_queue": {
+                "description_kind": "plain",
+                "optional": true,
+                "type": "bool"
+              },
+              "fifo_throughput_limit": {
+                "computed": true,
+                "description_kind": "plain",
+                "optional": true,
+                "type": "string"
+              },
+              "id": {
+                "computed": true,
+                "description_kind": "plain",
+                "optional": true,
+                "type": "string"
+              },
+              "kms_data_key_reuse_period_seconds": {
+                "computed": true,
+                "description_kind": "plain",
+                "optional": true,
+                "type": "number"
+              },
+              "kms_master_key_id": {
+                "description_kind": "plain",
+                "optional": true,
+                "type": "string"
+              },
+              "max_message_size": {
+                "description_kind": "plain",
+                "optional": true,
+                "type": "number"
+              },
+              "message_retention_seconds": {
+                "description_kind": "plain",
+                "optional": true,
+                "type": "number"
+              },
+              "name": {
+                "computed": true,
+                "description_kind": "plain",
+                "optional": true,
+                "type": "string"
+              },
+              "name_prefix": {
+                "computed": true,
+                "description_kind": "plain",
+                "optional": true,
+                "type": "string"
+              },
+              "policy": {
+                "computed": true,
+                "description_kind": "plain",
+                "optional": true,
+                "type": "string"
+              },
+              "receive_wait_time_seconds": {
+                "description_kind": "plain",
+                "optional": true,
+                "type": "number"
+              },
+              "redrive_allow_policy": {
+                "computed": true,
+                "description_kind": "plain",
+                "optional": true,
+                "type": "string"
+              },
+              "redrive_policy": {
+                "computed": true,
+                "description_kind": "plain",
+                "optional": true,
+                "type": "string"
+              },
+              "region": {
+                "computed": true,
+                "description": "Region where this resource will be [managed](https://docs.aws.amazon.com/general/latest/gr/rande.html#regional-endpoints). Defaults to the Region set in the [provider configuration](https://registry.terraform.io/providers/hashicorp/aws/latest/docs#aws-configuration-reference).",
+                "description_kind": "plain",
+                "optional": true,
+                "type": "string"
+              },
+              "sqs_managed_sse_enabled": {
+                "computed": true,
+                "description_kind": "plain",
+                "optional": true,
+                "type": "bool"
+              },
+              "tags": {
+                "description_kind": "plain",
+                "optional": true,
+                "type": [
+                  "map",
+                  "string"
+                ]
+              },
+              "tags_all": {
+                "computed": true,
+                "description_kind": "plain",
+                "optional": true,
+                "type": [
+                  "map",
+                  "string"
+                ]
+              },
+              "url": {
+                "computed": true,
+                "description_kind": "plain",
+                "type": "string"
+              },
+              "visibility_timeout_seconds": {
+                "description_kind": "plain",
+                "optional": true,
+                "type": "number"
+              }
+            },
+            "block_types": {
+              "timeouts": {
+                "block": {
+                  "attributes": {
+                    "create": {
+                      "description_kind": "plain",
+                      "optional": true,
+                      "type": "string"
+                    },
+                    "delete": {
+                      "description_kind": "plain",
+                      "optional": true,
+                      "type": "string"
+                    },
+                    "update": {
+                      "description_kind": "plain",
+                      "optional": true,
+                      "type": "string"
+                    }
+                  },
+                  "description_kind": "plain"
+                },
+                "nesting_mode": "single"
+              }
+            },
+            "description_kind": "plain"
+          },
+          "version": 0
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,30 @@
+a condition outside the table: review, no proposal
+-- intent.json --
+{
+ "id": "vpc_security_group_allows_ingress_to_cassandra_ports",
+ "resource_type": "aws_vpc_security_group_ingress_rule",
+ "attributes": [
+  {
+   "schema_path": "from_port",
+   "condition": "port_range_excludes",
+   "values": [
+    7199,
+    9160,
+    8888
+   ],
+   "values_from_ref": null
+  }
+ ],
+ "explanation": "Explanation of vpc_security_group_allows_ingress_to_cassandra_ports.",
+ "postcondition": "",
+ "has_strategy_condition": false
+}
+-- want.json --
+{
+  "review": {
+    "id": "vpc_security_group_allows_ingress_to_cassandra_ports",
+    "resource_type": "aws_vpc_security_group_ingress_rule",
+    "reason": "condition",
+    "detail": "from_port port_range_excludes: condition port_range_excludes is not in the translation table"
+  }
+}

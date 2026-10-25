@@ -1,0 +1,30 @@
+{
+  "description": "soft_fail never downgrades the rpc gate",
+  "stage": "rpc",
+  "method": "/tfplugin5.Provider/InvokeAction",
+  "mode": "soft_fail",
+  "verdict_required": true,
+  "op": "",
+  "gated": true,
+  "type_name": "rpc_invoke_action",
+  "rpc_request": "req-1",
+  "want": {
+    "diagnostics": [
+      {
+        "severity": "error",
+        "summary": "Verdict required",
+        "detail": "This change needs a verdict (profile sets verdict_required). Apply through ctfkit apply or the configured runner."
+      }
+    ],
+    "evidence": {
+      "op": "change",
+      "results": [
+        {
+          "control": "verdict_required",
+          "state": "fail",
+          "decision": "blocked"
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,117 @@
+{
+  "format_version": "1.2",
+  "resource_changes": [
+    {
+      "address": "aws_kms_key.new",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "after": {
+          "bypass_policy_lockout_safety_check": false,
+          "custom_key_store_id": null,
+          "customer_master_key_spec": "SYMMETRIC_DEFAULT",
+          "deletion_window_in_days": 30,
+          "description": "bobthecorp reports key",
+          "enable_key_rotation": true,
+          "is_enabled": true,
+          "key_usage": "ENCRYPT_DECRYPT",
+          "region": "us-east-1",
+          "tags": null,
+          "timeouts": null,
+          "xks_key_id": null
+        },
+        "after_identity": {
+          "account_id": null,
+          "id": null,
+          "region": null
+        },
+        "after_sensitive": {
+          "tags_all": {}
+        },
+        "after_unknown": {
+          "arn": true,
+          "id": true,
+          "key_id": true,
+          "multi_region": true,
+          "policy": true,
+          "rotation_period_in_days": true,
+          "tags_all": true
+        },
+        "before": null,
+        "before_sensitive": false
+      },
+      "mode": "managed",
+      "name": "new",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "type": "aws_kms_key"
+    },
+    {
+      "address": "aws_kms_key.this",
+      "change": {
+        "actions": [
+          "update"
+        ],
+        "after": {
+          "arn": "arn:aws:kms:us-east-1:111111111111:key/1111aaaa-2222-3333-4444-555566667777",
+          "bypass_policy_lockout_safety_check": false,
+          "custom_key_store_id": null,
+          "customer_master_key_spec": "SYMMETRIC_DEFAULT",
+          "deletion_window_in_days": 7,
+          "description": "bobthecorp data key v2",
+          "enable_key_rotation": true,
+          "id": "1111aaaa-2222-3333-4444-555566667777",
+          "is_enabled": true,
+          "key_id": "bobthecorp-fake-key_id",
+          "key_usage": "ENCRYPT_DECRYPT",
+          "multi_region": false,
+          "policy": "bobthecorp-fake-policy",
+          "region": "us-east-1",
+          "rotation_period_in_days": 0,
+          "tags": null,
+          "tags_all": {},
+          "timeouts": null,
+          "xks_key_id": null
+        },
+        "after_identity": {
+          "account_id": null,
+          "id": null,
+          "region": null
+        },
+        "after_sensitive": {
+          "tags_all": {}
+        },
+        "after_unknown": {},
+        "before": {
+          "arn": "arn:aws:kms:us-east-1:111111111111:key/1111aaaa-2222-3333-4444-555566667777",
+          "bypass_policy_lockout_safety_check": false,
+          "custom_key_store_id": null,
+          "customer_master_key_spec": "SYMMETRIC_DEFAULT",
+          "deletion_window_in_days": 7,
+          "description": "bobthecorp data key",
+          "enable_key_rotation": true,
+          "id": "1111aaaa-2222-3333-4444-555566667777",
+          "is_enabled": true,
+          "key_id": "bobthecorp-fake-key_id",
+          "key_usage": "ENCRYPT_DECRYPT",
+          "multi_region": false,
+          "policy": "bobthecorp-fake-policy",
+          "region": "us-east-1",
+          "rotation_period_in_days": 0,
+          "tags": null,
+          "tags_all": {},
+          "timeouts": null,
+          "xks_key_id": null
+        },
+        "before_sensitive": {
+          "tags_all": {}
+        }
+      },
+      "mode": "managed",
+      "name": "this",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "type": "aws_kms_key"
+    }
+  ],
+  "terraform_version": "1.16.3"
+}

@@ -1,0 +1,51 @@
+{
+  "format": "compliancetf.iampolicy/v1",
+  "version": "2012-10-17",
+  "statements": [
+    {
+      "sid": "TLS",
+      "effect": "Deny",
+      "actions": [
+        "*"
+      ],
+      "not_actions": [],
+      "resources": [
+        "*"
+      ],
+      "not_resources": [],
+      "principals": {
+        "aws": [
+          "*"
+        ]
+      },
+      "not_principals": {},
+      "conditions": [
+        {
+          "op": "Bool",
+          "set_op": "",
+          "if_exists": false,
+          "key": "aws:securetransport",
+          "values": [
+            "false"
+          ]
+        }
+      ],
+      "action_all": true,
+      "principal_any": true,
+      "resource_any": true,
+      "action_any": true,
+      "principal_all": true,
+      "resource_all": true,
+      "unconditional": false,
+      "ambiguous": [
+        "conditional"
+      ],
+      "actions_expanded": [],
+      "not_actions_expanded": [],
+      "unresolved_actions": [],
+      "unresolved_principals": {},
+      "unresolved_resources": []
+    }
+  ],
+  "catalog": ""
+}

@@ -1,0 +1,14 @@
+{"control": {"id": "iam_policy_no_full_access_to_kms", "version": "1.0.0", "kind": "resource", "resource_type": "aws_iam_policy", "reads": ["policy"], "presence_mode": "effective", "on": ["create", "update"], "expr": "iam.parse(resource.policy).statements.all(s, !(s.effect == \"Allow\" && iam.grants_all(s, \"kms\")))", "action": "deny", "severity": "high", "message": "IAM policies must not allow every KMS action."},
+ "cases": [
+  {"id": "P-01-kms-decrypt-only", "resource": {"policy": {"Version": "2012-10-17", "Statement": [{"Effect": "Allow", "Action": "kms:Decrypt", "Resource": "*"}]}}, "expect": {"state": "pass", "err_class": ""}},
+  {"id": "P-02-deny-kms-star", "resource": {"policy": {"Version": "2012-10-17", "Statement": [{"Effect": "Deny", "Action": "kms:*", "Resource": "*"}]}}, "expect": {"state": "pass", "err_class": ""}},
+  {"id": "P-03-not-action-kms-star", "resource": {"policy": {"Version": "2012-10-17", "Statement": [{"Effect": "Allow", "NotAction": "kms:*", "Resource": "*"}]}}, "expect": {"state": "pass", "err_class": ""}},
+  {"id": "P-04-kms-wildcard-subset", "resource": {"policy": {"Version": "2012-10-17", "Statement": [{"Effect": "Allow", "Action": ["kms:Encrypt", "kms:Re*"], "Resource": "*"}]}}, "expect": {"state": "pass", "err_class": ""}},
+  {"id": "F-01-kms-star", "resource": {"policy": {"Version": "2012-10-17", "Statement": [{"Effect": "Allow", "Action": "kms:*", "Resource": "*"}]}}, "expect": {"state": "fail", "err_class": ""}},
+  {"id": "F-02-mixed-case-one-key", "resource": {"policy": {"Version": "2012-10-17", "Statement": [{"Effect": "Allow", "Action": "KMS:*", "Resource": "arn:aws:kms:eu-west-1:111111111111:key/bobthecorp"}]}}, "expect": {"state": "fail", "err_class": ""}},
+  {"id": "F-03-star", "resource": {"policy": {"Version": "2012-10-17", "Statement": [{"Effect": "Allow", "Action": "*", "Resource": "*"}]}}, "expect": {"state": "fail", "err_class": ""}},
+  {"id": "F-04-not-action-other-service", "resource": {"policy": {"Version": "2012-10-17", "Statement": [{"Effect": "Allow", "NotAction": "s3:*", "Resource": "*"}]}}, "expect": {"state": "fail", "err_class": ""}},
+  {"id": "F-05-every-kms-action-listed", "resource": {"policy": {"Version": "2012-10-17", "Statement": [{"Effect": "Allow", "Action": ["kms:CreateKey", "kms:Decrypt", "kms:Encrypt", "kms:PutKeyPolicy", "kms:ReEncrypt*", "kms:ScheduleKeyDeletion"], "Resource": "*"}]}}, "expect": {"state": "fail", "err_class": ""}},
+  {"id": "N-01-catalog-miss", "resource": {"policy": {"Version": "2012-10-17", "Statement": [{"Effect": "Allow", "Action": ["kms:*", "kms:BobthecorpNoSuchAction"], "Resource": "*"}]}}, "expect": {"state": "not_evaluable", "err_class": "unresolved"}},
+  {"id": "N-02-unknown-service", "resource": {"policy": {"Version": "2012-10-17", "Statement": [{"Effect": "Allow", "Action": "bobthecorp:*", "Resource": "*"}]}}, "expect": {"state": "not_evaluable", "err_class": "unresolved"}}
+ ]}

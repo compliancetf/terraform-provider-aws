@@ -1,0 +1,8 @@
+{
+  "description": "a listed key whose use is not verdict",
+  "sign": "wrong_use",
+  "want": {
+    "summary": "Verdict signature invalid: key use is not verdict",
+    "detail": "Re-run terraform plan and ctfkit gate, then apply through ctfkit apply."
+  }
+}

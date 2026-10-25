@@ -1,0 +1,24 @@
+{
+  "description": "destroy without an envelope: no warning, guard runs",
+  "stage": "apply_pre",
+  "mode": "hard_fail",
+  "op": "delete",
+  "config": null,
+  "prior": {
+    "storage_encrypted": true,
+    "kms_key_id": "arn:aws:kms:us-east-1:111122223333:key/bobthecorp-rds",
+    "engine": "postgres",
+    "deletion_protection": true
+  },
+  "planned": null,
+  "want": {
+    "diagnostics": [
+      {
+        "severity": "error",
+        "summary": "[rds_instance_deletion_guard] Disable deletion_protection before destroying this instance.",
+        "detail": "Severity: medium\nMode: hard_fail\nStage: apply_pre\nTo waive: add an exception for rds_instance_deletion_guard in compliance-exceptions.hcl",
+        "attribute": "AttributeName(\"deletion_protection\")"
+      }
+    ]
+  }
+}

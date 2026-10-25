@@ -1,0 +1,8 @@
+{
+  "description": "a null member is refused",
+  "null_member": "provenance",
+  "want": {
+    "summary": "Invalid verdict file",
+    "detail": "The file is not a compliancetf.verdict/v1 document."
+  }
+}

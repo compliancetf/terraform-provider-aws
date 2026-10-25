@@ -1,0 +1,5 @@
+{
+  "description": "expires beyond max_lifetime_days (180) from the run clock is rejected",
+  "warnings": ["exception too_long: expires beyond max_lifetime_days 180; rds_db_instance_encryption_at_rest_enabled enforced"],
+  "lookups": [{"resource": {"identifier": "db1", "storage_encrypted": false}, "want": {"status": "rejected"}}]
+}

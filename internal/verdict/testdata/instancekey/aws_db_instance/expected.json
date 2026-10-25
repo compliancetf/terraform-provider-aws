@@ -1,0 +1,179 @@
+{
+  "entries": [
+    {
+      "actions": [
+        "create"
+      ],
+      "address": "aws_db_instance.new",
+      "keys": [
+        {
+          "field": "instance_key",
+          "form": "create",
+          "key": "sha256:140e16b53cd090cd8a1877bfccfb9e24b83968db73c8818a43142a78b6178a50",
+          "prior_identity_kind": "none",
+          "unknown_paths": [
+            [
+              "address"
+            ],
+            [
+              "arn"
+            ],
+            [
+              "availability_zone"
+            ],
+            [
+              "backup_retention_period"
+            ],
+            [
+              "backup_target"
+            ],
+            [
+              "backup_window"
+            ],
+            [
+              "ca_cert_identifier"
+            ],
+            [
+              "character_set_name"
+            ],
+            [
+              "database_insights_mode"
+            ],
+            [
+              "db_name"
+            ],
+            [
+              "db_subnet_group_name"
+            ],
+            [
+              "domain_fqdn"
+            ],
+            [
+              "endpoint"
+            ],
+            [
+              "engine_lifecycle_support"
+            ],
+            [
+              "engine_version_actual"
+            ],
+            [
+              "hosted_zone_id"
+            ],
+            [
+              "id"
+            ],
+            [
+              "identifier_prefix"
+            ],
+            [
+              "iops"
+            ],
+            [
+              "kms_key_id"
+            ],
+            [
+              "latest_restorable_time"
+            ],
+            [
+              "license_model"
+            ],
+            [
+              "listener_endpoint"
+            ],
+            [
+              "maintenance_window"
+            ],
+            [
+              "master_user_secret"
+            ],
+            [
+              "master_user_secret_kms_key_id"
+            ],
+            [
+              "monitoring_role_arn"
+            ],
+            [
+              "multi_az"
+            ],
+            [
+              "nchar_character_set_name"
+            ],
+            [
+              "network_type"
+            ],
+            [
+              "option_group_name"
+            ],
+            [
+              "parameter_group_name"
+            ],
+            [
+              "performance_insights_kms_key_id"
+            ],
+            [
+              "performance_insights_retention_period"
+            ],
+            [
+              "port"
+            ],
+            [
+              "replica_mode"
+            ],
+            [
+              "replicas"
+            ],
+            [
+              "resource_id"
+            ],
+            [
+              "snapshot_identifier"
+            ],
+            [
+              "status"
+            ],
+            [
+              "storage_throughput"
+            ],
+            [
+              "storage_type"
+            ],
+            [
+              "tags_all"
+            ],
+            [
+              "timezone"
+            ],
+            [
+              "upgrade_rollout_order"
+            ],
+            [
+              "vpc_security_group_ids"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "actions": [
+        "update"
+      ],
+      "address": "aws_db_instance.this",
+      "keys": [
+        {
+          "field": "instance_key",
+          "form": "update",
+          "key": "sha256:53252839bda24af7e8a577330a428092f296893981f16a80ca2a941235ea2cc6",
+          "prior_identity_kind": "identity",
+          "unknown_paths": []
+        }
+      ]
+    }
+  ],
+  "format": "compliancetf.instancekey.golden/v1",
+  "k_leaf_hex": "845cba3b9048a0ea701ceebf35bf8d23f96345d369ee41f24777d11aee0609eb",
+  "key_check": "278a53702bed79d81258d55c57dbfd708733a1e9d04c6fe3e8a7e5d0ca565a63",
+  "provider_version": "hashicorp/aws 6.65.0",
+  "terraform_version": "1.16.3",
+  "test_secret_hex": "494e5345435552452d544553542d5345435245542d696e7374616e63656b6579"
+}

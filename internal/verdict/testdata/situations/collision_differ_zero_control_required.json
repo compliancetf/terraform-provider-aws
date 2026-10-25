@@ -1,0 +1,40 @@
+{
+  "description": "collision differ zero control required",
+  "verdict": true,
+  "required": true,
+  "delete": false,
+  "type": "aws_s3_bucket",
+  "matches": [
+    {
+      "address": "aws_s3_bucket.a",
+      "type": "aws_s3_bucket",
+      "action": "create",
+      "decisions": [],
+      "not_evaluable": [
+        {
+          "control": "s3_bucket_public_access_block_present",
+          "reason": "wildcard"
+        }
+      ],
+      "exceptions": []
+    },
+    {
+      "address": "aws_s3_bucket.b",
+      "type": "aws_s3_bucket",
+      "action": "create",
+      "decisions": [],
+      "not_evaluable": [],
+      "exceptions": []
+    }
+  ],
+  "graph": [],
+  "excepted": [],
+  "want": [
+    {
+      "control": "",
+      "version": "",
+      "result": "collision",
+      "severity": "error"
+    }
+  ]
+}

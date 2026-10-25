@@ -1,0 +1,76 @@
+{
+  "description": "an update RPC passes the update-form key and never matches a create-form entry with identical planned attributes (H2)",
+  "stage": "apply_pre",
+  "type_name": "aws_s3_bucket",
+  "mode": "hard_fail",
+  "verdict_required": true,
+  "op": "update",
+  "envelope": {
+    "op": "update",
+    "digest": "current",
+    "prior_identity_kind": "id"
+  },
+  "config": {
+    "storage_encrypted": true,
+    "kms_key_id": "arn:aws:kms:us-east-1:111122223333:key/bobthecorp-rds",
+    "engine": "postgres"
+  },
+  "prior": {
+    "storage_encrypted": true,
+    "kms_key_id": "arn:aws:kms:us-east-1:111122223333:key/bobthecorp-rds",
+    "engine": "postgres",
+    "deletion_protection": true,
+    "id": "db-1"
+  },
+  "planned": {
+    "storage_encrypted": true,
+    "kms_key_id": "arn:aws:kms:us-east-1:111122223333:key/bobthecorp-rds",
+    "engine": "postgres",
+    "deletion_protection": true,
+    "id": "db-1"
+  },
+  "verdict": {
+    "entries": [
+      {
+        "form": "create",
+        "planned": {
+          "storage_encrypted": true,
+          "kms_key_id": "arn:aws:kms:us-east-1:111122223333:key/bobthecorp-rds",
+          "engine": "postgres",
+          "deletion_protection": true,
+          "id": "db-1"
+        },
+        "prior_identity_kind": "none"
+      }
+    ],
+    "want_keys": [
+      {
+        "form": "update",
+        "type_name": "aws_s3_bucket",
+        "prior_identity_kind": "id",
+        "prior_identity": {
+          "id": "db-1"
+        }
+      }
+    ]
+  },
+  "want": {
+    "diagnostics": [
+      {
+        "severity": "error",
+        "summary": "Verdict required",
+        "detail": "no verdict entry matches this instance"
+      }
+    ],
+    "evidence": {
+      "op": "update",
+      "results": [
+        {
+          "control": "verdict_required",
+          "state": "fail",
+          "decision": "blocked"
+        }
+      ]
+    }
+  }
+}

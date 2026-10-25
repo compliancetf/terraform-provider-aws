@@ -1,0 +1,15 @@
+{
+  "description": "object gone (null refreshed state): nothing to check",
+  "stage": "read",
+  "mode": "hard_fail",
+  "prior": {
+    "storage_encrypted": true,
+    "kms_key_id": "arn:aws:kms:us-east-1:111122223333:key/bobthecorp-rds",
+    "engine": "postgres",
+    "deletion_protection": true
+  },
+  "new": null,
+  "want": {
+    "diagnostics": []
+  }
+}

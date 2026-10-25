@@ -1,0 +1,10 @@
+{
+  "description": "a lifetime above the default 24h verdict.max_ttl",
+  "set": {
+    "expires_at": "2026-10-19T10:00:01Z"
+  },
+  "want": {
+    "summary": "Invalid verdict file",
+    "detail": "The verdict lifetime exceeds the profile verdict.max_ttl."
+  }
+}

@@ -1,0 +1,49 @@
+{
+  "description": "data_sources deny under soft_fail: the mode table keeps the deny control non-blocking",
+  "stage": "data_source",
+  "type_name": "aws_db_lookup",
+  "mode": "soft_fail",
+  "data_sources_deny": true,
+  "config": {
+    "storage_encrypted": true,
+    "kms_key_id": "arn:aws:kms:us-east-1:111122223333:key/bobthecorp-rds",
+    "engine": "postgres",
+    "deletion_protection": true
+  },
+  "new": {
+    "storage_encrypted": false,
+    "kms_key_id": "arn:aws:kms:us-east-1:111122223333:key/bobthecorp-rds",
+    "engine": "postgres",
+    "deletion_protection": true
+  },
+  "want": {
+    "diagnostics": [
+      {
+        "severity": "warning",
+        "summary": "[ds_lookup_encrypted] The looked-up instance must be encrypted at rest.",
+        "detail": "Fix: Look up an encrypted instance.\nSeverity: high\nMode: soft_fail\nStage: data_source\nType: aws_db_lookup\nTo waive: add an exception for ds_lookup_encrypted in compliance-exceptions.hcl",
+        "attribute": "AttributeName(\"storage_encrypted\")"
+      }
+    ],
+    "evidence": {
+      "op": "read",
+      "results": [
+        {
+          "control": "ds_lookup_engine_postgres",
+          "state": "pass",
+          "decision": "logged"
+        },
+        {
+          "control": "ds_lookup_encrypted",
+          "state": "fail",
+          "decision": "warning"
+        },
+        {
+          "control": "ds_lookup_deletion_protection",
+          "state": "pass",
+          "decision": "logged"
+        }
+      ]
+    }
+  }
+}

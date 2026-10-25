@@ -1,0 +1,68 @@
+{
+  "entries": [
+    {
+      "actions": [
+        "create"
+      ],
+      "address": "aws_iam_role.new",
+      "keys": [
+        {
+          "field": "instance_key",
+          "form": "create",
+          "key": "sha256:fb4d70e7b19ba01c51f3f210595d82ce0b15fce572601d81a9fa1087b7bed886",
+          "prior_identity_kind": "none",
+          "unknown_paths": [
+            [
+              "arn"
+            ],
+            [
+              "create_date"
+            ],
+            [
+              "id"
+            ],
+            [
+              "inline_policy"
+            ],
+            [
+              "managed_policy_arns"
+            ],
+            [
+              "name_prefix"
+            ],
+            [
+              "tags"
+            ],
+            [
+              "tags_all"
+            ],
+            [
+              "unique_id"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "actions": [
+        "update"
+      ],
+      "address": "aws_iam_role.this",
+      "keys": [
+        {
+          "field": "instance_key",
+          "form": "update",
+          "key": "sha256:f7bcae073a07934ecbe458f187e56fb3ce86894bcf614d648d14a6ca91f3c457",
+          "prior_identity_kind": "identity",
+          "unknown_paths": []
+        }
+      ]
+    }
+  ],
+  "format": "compliancetf.instancekey.golden/v1",
+  "k_leaf_hex": "845cba3b9048a0ea701ceebf35bf8d23f96345d369ee41f24777d11aee0609eb",
+  "key_check": "278a53702bed79d81258d55c57dbfd708733a1e9d04c6fe3e8a7e5d0ca565a63",
+  "provider_version": "hashicorp/aws 6.65.0",
+  "terraform_version": "1.16.3",
+  "test_secret_hex": "494e5345435552452d544553542d5345435245542d696e7374616e63656b6579"
+}

@@ -1,0 +1,28 @@
+{
+  "description": "Scope binding: a dimension is trusted only when the signed profile scope fixes it (under a verdict only when the verdict asserts the same value); local values only raise the floor. untrusted lists the scope checks that reject (workspace = a workspace-scoped grant, environment = an environment-scoped grant, sidecar = a self-service entry).",
+  "mode_floor": {"default": "soft_fail", "environments": {"dev": "soft_fail", "staging": "grandfather", "production": "hard_fail"}},
+  "cases": [
+    {"name": "no-trusted-context", "local_workspace": "bobthecorp-prod",
+     "want": {"run_mode": "hard_fail", "untrusted": ["workspace", "environment", "sidecar"]}},
+    {"name": "no-trusted-context-hcl-environment-spoof", "hcl_environment": "dev", "env_environment": "dev", "local_workspace": "bobthecorp-dev",
+     "want": {"run_mode": "hard_fail", "untrusted": ["workspace", "environment", "sidecar"]}},
+    {"name": "profile-scope", "profile_scope": {"environment": "dev", "workspace": "bobthecorp-dev"}, "hcl_environment": "production",
+     "want": {"run_mode": "hard_fail", "environment": {"value": "dev", "source": "profile"}, "workspace": {"value": "bobthecorp-dev", "source": "profile"}}},
+    {"name": "verdict-scope-unscoped-profile-not-trusted", "verdict_scope": {"environment": "dev", "workspace": "bobthecorp-dev"},
+     "want": {"run_mode": "hard_fail", "untrusted": ["workspace", "environment", "sidecar"]}},
+    {"name": "verdict-scope-honoured", "profile_scope": {"environment": "dev", "workspace": "bobthecorp-dev"}, "verdict_scope": {"environment": "dev", "workspace": "bobthecorp-dev"},
+     "want": {"run_mode": "soft_fail", "environment": {"value": "dev", "source": "verdict"}, "workspace": {"value": "bobthecorp-dev", "source": "verdict"}}},
+    {"name": "verdict-scope-hcl-environment-spoof-lower", "profile_scope": {"environment": "production", "workspace": "bobthecorp-prod"}, "verdict_scope": {"environment": "production", "workspace": "bobthecorp-prod"}, "hcl_environment": "dev", "env_environment": "dev",
+     "want": {"run_mode": "hard_fail", "environment": {"value": "production", "source": "verdict"}, "workspace": {"value": "bobthecorp-prod", "source": "verdict"}}},
+    {"name": "verdict-scope-local-raises", "profile_scope": {"environment": "dev", "workspace": "bobthecorp-dev"}, "verdict_scope": {"environment": "dev", "workspace": "bobthecorp-dev"}, "hcl_environment": "staging",
+     "want": {"run_mode": "grandfather", "environment": {"value": "dev", "source": "verdict"}, "workspace": {"value": "bobthecorp-dev", "source": "verdict"}}},
+    {"name": "verdict-scope-workspace-spoof", "profile_scope": {"environment": "dev", "workspace": "bobthecorp-dev"}, "verdict_scope": {"environment": "dev", "workspace": "bobthecorp-dev"}, "local_workspace": "bobthecorp-prod",
+     "want": {"run_mode": "soft_fail", "environment": {"value": "dev", "source": "verdict"}, "workspace": {"value": "bobthecorp-dev", "source": "verdict"}}},
+    {"name": "profile-fixes-environment-only", "profile_scope": {"environment": "dev"}, "verdict_scope": {"environment": "dev", "workspace": "bobthecorp-dev"}, "local_workspace": "bobthecorp-dev",
+     "want": {"run_mode": "soft_fail", "environment": {"value": "dev", "source": "verdict"}, "untrusted": ["workspace", "sidecar"]}},
+    {"name": "verdict-mismatch-untrusted", "profile_scope": {"environment": "dev", "workspace": "bobthecorp-dev"}, "verdict_scope": {"environment": "production", "workspace": "bobthecorp-prod"},
+     "want": {"run_mode": "hard_fail", "untrusted": ["workspace", "environment", "sidecar"]}},
+    {"name": "verdict-environment-not-listed", "profile_scope": {"environment": "sandbox", "workspace": "bobthecorp-sandbox"}, "verdict_scope": {"environment": "sandbox", "workspace": "bobthecorp-sandbox"},
+     "want": {"run_mode": "hard_fail", "environment": {"value": "sandbox", "source": "verdict"}, "workspace": {"value": "bobthecorp-sandbox", "source": "verdict"}}}
+  ]
+}

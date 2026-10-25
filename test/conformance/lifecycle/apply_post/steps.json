@@ -1,0 +1,12 @@
+{
+  "evaluator": "lifecycle",
+  "env": {
+    "COMPLIANCETF_ORG_ID": "bobthecorp",
+    "COMPLIANCETF_PROFILE_PATH": "{work}/profile.dsse.json",
+    "COMPLIANCETF_BUNDLE_PATH": "{work}/bundle.tar.gz"
+  },
+  "expect_applies": 2,
+  "steps": [
+    {"cmd": ["apply", "-no-color", "-auto-approve", "-var", "size=10"], "exit": 1, "stdout_contains": ["Warning: [fake_thing_size_max] applied value violates control"], "stderr_contains": ["Error: [fake_thing_size_max] applied value violates control"]}
+  ]
+}

@@ -1,0 +1,13 @@
+{
+  "evaluator": "lifecycle",
+  "env": {
+    "COMPLIANCETF_ORG_ID": "bobthecorp",
+    "COMPLIANCETF_PROFILE_PATH": "{work}/profile.dsse.json",
+    "COMPLIANCETF_BUNDLE_PATH": "{work}/bundle.tar.gz"
+  },
+  "expect_applies": 2,
+  "steps": [
+    {"cmd": ["apply", "-no-color", "-auto-approve"], "exit": 0, "stdout_contains": ["Warning: [fake_thing_size_max] applied value violates control"]},
+    {"cmd": ["destroy", "-no-color", "-auto-approve"], "exit": 0, "stdout_contains": ["fake_thing.a will be destroyed", "Destroy complete! Resources: 1 destroyed."]}
+  ]
+}

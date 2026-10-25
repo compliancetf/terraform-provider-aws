@@ -1,0 +1,8 @@
+{"about": "equals_any on versioning_configuration[0].status (list block, max 1): size guard, then [0].",
+ "control": {"id": "bobthecorp_sample_bucket_versioning_on", "version": "1.0.0", "kind": "resource", "resource_type": "aws_s3_bucket_versioning", "reads": ["versioning_configuration", "versioning_configuration.status"], "presence_mode": "effective", "on": ["create", "update"], "expr": "size(resource.versioning_configuration) > 0 && resource.versioning_configuration[0].status in [\"Enabled\"]", "action": "deny", "severity": "medium", "message": "Sample: bucket versioning must be on."},
+ "cases": [
+  {"id": "P-01-enabled", "resource": {"bucket": "bobthecorp-logs", "versioning_configuration": [{"status": "Enabled"}]}, "expect": {"state": "pass", "err_class": ""}},
+  {"id": "F-01-suspended", "resource": {"bucket": "bobthecorp-logs", "versioning_configuration": [{"status": "Suspended"}]}, "expect": {"state": "fail", "err_class": ""}},
+  {"id": "F-02-no-block", "resource": {"bucket": "bobthecorp-logs"}, "expect": {"state": "fail", "err_class": ""}},
+  {"id": "U-01-status-unknown", "resource": {"bucket": "bobthecorp-logs", "versioning_configuration": [{"status": {"$unknown": true}}]}, "expect": {"state": "unknown", "err_class": ""}}
+ ]}

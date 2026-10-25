@@ -1,0 +1,8 @@
+{
+  "steps": [
+    {"cmd": ["apply", "-no-color", "-auto-approve"], "exit": 0, "stdout_contains": ["Apply complete! Resources: 1 added"]},
+    {"cmd": ["destroy", "-no-color", "-auto-approve"], "exit": 0, "stdout_contains": ["fake_thing.a will be destroyed", "Destroy complete! Resources: 1 destroyed."]},
+    {"cmd": ["plan", "-no-color", "-detailed-exitcode"], "exit": 2, "stdout_contains": ["Plan: 1 to add, 0 to change, 0 to destroy."], "state_unchanged": true}
+  ],
+  "expect_applies": 2
+}

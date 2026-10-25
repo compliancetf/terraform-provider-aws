@@ -1,0 +1,8 @@
+{
+  "steps": [
+    {"cmd": ["apply", "-no-color", "-auto-approve"], "exit": 0, "stdout_contains": ["Apply complete! Resources: 1 added, 0 changed, 0 destroyed."]},
+    {"cmd": ["apply", "-no-color", "-auto-approve", "-var", "crash=true"], "exit": 1, "stderr_contains": ["Error: upstream provider exited", "during ApplyResourceChange"], "state_unchanged": true},
+    {"cmd": ["plan", "-no-color", "-detailed-exitcode"], "exit": 0, "stdout_contains": ["No changes."], "state_unchanged": true}
+  ],
+  "expect_applies": 1
+}

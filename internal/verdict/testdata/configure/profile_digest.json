@@ -1,0 +1,10 @@
+{
+  "description": "verdict for another profile",
+  "set": {
+    "profile_digest": "sha256:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+  },
+  "want": {
+    "summary": "verdict issued for profile sha256:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee, provider loaded sha256:1111111111111111111111111111111111111111111111111111111111111111: re-run plan and gate",
+    "detail": "Re-run terraform plan and ctfkit gate, then apply through ctfkit apply."
+  }
+}

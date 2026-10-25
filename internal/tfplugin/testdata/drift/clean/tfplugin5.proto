@@ -1,0 +1,33 @@
+syntax = "proto3";
+package tfplugin5;
+
+// Declaration order and comments differ from base; the shape does not,
+// except one new field on a passthrough-only message and a rename of Schema
+// to ResourceSchema (NOTICE and BEHIND, exit 0).
+service Provider {
+    rpc PlanResourceChange(PlanResourceChange.Request) returns (PlanResourceChange.Response);
+    rpc GetMetadata(GetMetadata.Request) returns (GetMetadata.Response);
+}
+
+message PlanResourceChange {
+    message Response { bytes planned_state = 1; }
+    message Request {
+        ResourceSchema schema = 2;
+        string type_name = 1;
+    }
+}
+
+message GetMetadata {
+    message Response {
+        repeated string resource_types = 1;
+        repeated string data_source_types = 2;
+    }
+    message Request {}
+}
+
+message ResourceSchema {
+    StringKind description_kind = 2;
+    int64 version = 1;
+}
+
+enum StringKind { PLAIN = 0; MARKDOWN = 1; }

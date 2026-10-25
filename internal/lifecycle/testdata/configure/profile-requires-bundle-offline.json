@@ -1,0 +1,1 @@
+{"block": {"org_id": "bobthecorp"}, "env": {"COMPLIANCETF_OFFLINE": "true"}, "floor": {}, "profiles": {"env": {"bundles": [{"bundle_id": "bobthecorp-soc2", "min_version": 3}], "floor_mode": "airgap"}}, "want": {"error": "COMPLIANCETF_OFFLINE is set: no usable cached bobthecorp-soc2 at or above v3."}}

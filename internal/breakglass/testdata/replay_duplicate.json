@@ -1,0 +1,14 @@
+{
+  "description": "the same receipt embedded twice (replay): every copy is dropped",
+  "policy": {},
+  "embed": 2,
+  "queries": [
+    {
+      "control": "CTF.S3.1",
+      "key": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "result": "fail",
+      "want": false
+    }
+  ],
+  "warning": "same override_id"
+}

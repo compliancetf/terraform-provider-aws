@@ -1,0 +1,326 @@
+{
+  "format_version": "1.0",
+  "provider_schemas": {
+    "registry.terraform.io/hashicorp/aws": {
+      "resource_identity_schemas": {
+        "aws_cloudwatch_metric_alarm": {
+          "attributes": {
+            "account_id": {
+              "optional_for_import": true,
+              "type": "string"
+            },
+            "alarm_name": {
+              "required_for_import": true,
+              "type": "string"
+            },
+            "region": {
+              "optional_for_import": true,
+              "type": "string"
+            }
+          },
+          "version": 0
+        }
+      },
+      "resource_schemas": {
+        "aws_cloudwatch_metric_alarm": {
+          "block": {
+            "attributes": {
+              "actions_enabled": {
+                "description_kind": "plain",
+                "optional": true,
+                "type": "bool"
+              },
+              "alarm_actions": {
+                "description_kind": "plain",
+                "optional": true,
+                "type": [
+                  "set",
+                  "string"
+                ]
+              },
+              "alarm_description": {
+                "description_kind": "plain",
+                "optional": true,
+                "type": "string"
+              },
+              "alarm_name": {
+                "description_kind": "plain",
+                "required": true,
+                "type": "string"
+              },
+              "arn": {
+                "computed": true,
+                "description_kind": "plain",
+                "type": "string"
+              },
+              "comparison_operator": {
+                "description_kind": "plain",
+                "optional": true,
+                "type": "string"
+              },
+              "datapoints_to_alarm": {
+                "description_kind": "plain",
+                "optional": true,
+                "type": "number"
+              },
+              "dimensions": {
+                "description_kind": "plain",
+                "optional": true,
+                "type": [
+                  "map",
+                  "string"
+                ]
+              },
+              "evaluate_low_sample_count_percentiles": {
+                "computed": true,
+                "description_kind": "plain",
+                "optional": true,
+                "type": "string"
+              },
+              "evaluation_interval": {
+                "description_kind": "plain",
+                "optional": true,
+                "type": "number"
+              },
+              "evaluation_periods": {
+                "description_kind": "plain",
+                "optional": true,
+                "type": "number"
+              },
+              "extended_statistic": {
+                "description_kind": "plain",
+                "optional": true,
+                "type": "string"
+              },
+              "id": {
+                "computed": true,
+                "description_kind": "plain",
+                "optional": true,
+                "type": "string"
+              },
+              "insufficient_data_actions": {
+                "description_kind": "plain",
+                "optional": true,
+                "type": [
+                  "set",
+                  "string"
+                ]
+              },
+              "metric_name": {
+                "description_kind": "plain",
+                "optional": true,
+                "type": "string"
+              },
+              "namespace": {
+                "description_kind": "plain",
+                "optional": true,
+                "type": "string"
+              },
+              "ok_actions": {
+                "description_kind": "plain",
+                "optional": true,
+                "type": [
+                  "set",
+                  "string"
+                ]
+              },
+              "period": {
+                "description_kind": "plain",
+                "optional": true,
+                "type": "number"
+              },
+              "region": {
+                "computed": true,
+                "description": "Region where this resource will be [managed](https://docs.aws.amazon.com/general/latest/gr/rande.html#regional-endpoints). Defaults to the Region set in the [provider configuration](https://registry.terraform.io/providers/hashicorp/aws/latest/docs#aws-configuration-reference).",
+                "description_kind": "plain",
+                "optional": true,
+                "type": "string"
+              },
+              "statistic": {
+                "description_kind": "plain",
+                "optional": true,
+                "type": "string"
+              },
+              "tags": {
+                "description_kind": "plain",
+                "optional": true,
+                "type": [
+                  "map",
+                  "string"
+                ]
+              },
+              "tags_all": {
+                "computed": true,
+                "description_kind": "plain",
+                "optional": true,
+                "type": [
+                  "map",
+                  "string"
+                ]
+              },
+              "threshold": {
+                "description_kind": "plain",
+                "optional": true,
+                "type": "number"
+              },
+              "threshold_metric_id": {
+                "description_kind": "plain",
+                "optional": true,
+                "type": "string"
+              },
+              "treat_missing_data": {
+                "description_kind": "plain",
+                "optional": true,
+                "type": "string"
+              },
+              "unit": {
+                "description_kind": "plain",
+                "optional": true,
+                "type": "string"
+              }
+            },
+            "block_types": {
+              "evaluation_criteria": {
+                "block": {
+                  "block_types": {
+                    "promql_criteria": {
+                      "block": {
+                        "attributes": {
+                          "pending_period": {
+                            "description_kind": "plain",
+                            "optional": true,
+                            "type": "number"
+                          },
+                          "query": {
+                            "description_kind": "plain",
+                            "required": true,
+                            "type": "string"
+                          },
+                          "recovery_period": {
+                            "description_kind": "plain",
+                            "optional": true,
+                            "type": "number"
+                          }
+                        },
+                        "description_kind": "plain"
+                      },
+                      "max_items": 1,
+                      "min_items": 1,
+                      "nesting_mode": "list"
+                    }
+                  },
+                  "description_kind": "plain"
+                },
+                "max_items": 1,
+                "nesting_mode": "list"
+              },
+              "metric_query": {
+                "block": {
+                  "attributes": {
+                    "account_id": {
+                      "description_kind": "plain",
+                      "optional": true,
+                      "type": "string"
+                    },
+                    "expression": {
+                      "description_kind": "plain",
+                      "optional": true,
+                      "type": "string"
+                    },
+                    "id": {
+                      "description_kind": "plain",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "label": {
+                      "description_kind": "plain",
+                      "optional": true,
+                      "type": "string"
+                    },
+                    "period": {
+                      "description_kind": "plain",
+                      "optional": true,
+                      "type": "number"
+                    },
+                    "return_data": {
+                      "description_kind": "plain",
+                      "optional": true,
+                      "type": "bool"
+                    }
+                  },
+                  "block_types": {
+                    "metric": {
+                      "block": {
+                        "attributes": {
+                          "dimensions": {
+                            "description_kind": "plain",
+                            "optional": true,
+                            "type": [
+                              "map",
+                              "string"
+                            ]
+                          },
+                          "metric_name": {
+                            "description_kind": "plain",
+                            "required": true,
+                            "type": "string"
+                          },
+                          "namespace": {
+                            "description_kind": "plain",
+                            "optional": true,
+                            "type": "string"
+                          },
+                          "period": {
+                            "description_kind": "plain",
+                            "required": true,
+                            "type": "number"
+                          },
+                          "stat": {
+                            "description_kind": "plain",
+                            "required": true,
+                            "type": "string"
+                          },
+                          "unit": {
+                            "description_kind": "plain",
+                            "optional": true,
+                            "type": "string"
+                          }
+                        },
+                        "description_kind": "plain"
+                      },
+                      "max_items": 1,
+                      "nesting_mode": "list"
+                    }
+                  },
+                  "description_kind": "plain"
+                },
+                "nesting_mode": "set"
+              },
+              "warm_up_configuration": {
+                "block": {
+                  "attributes": {
+                    "only_start_evaluating_after_warm_up_period_ends": {
+                      "description_kind": "plain",
+                      "optional": true,
+                      "type": "bool"
+                    },
+                    "warm_up_period_duration_in_minutes": {
+                      "description_kind": "plain",
+                      "required": true,
+                      "type": "number"
+                    }
+                  },
+                  "description_kind": "plain"
+                },
+                "max_items": 1,
+                "nesting_mode": "list"
+              }
+            },
+            "description_kind": "plain"
+          },
+          "version": 1
+        }
+      }
+    }
+  }
+}

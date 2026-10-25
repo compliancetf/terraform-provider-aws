@@ -1,0 +1,9 @@
+{
+  "format": "compliancetf.keyring/v1",
+  "keys": [
+    {"alg": "ES256", "kid": "sha256:e30da83e3ade8173c49db2276dcded43823bad5a0db75e90487e20691e930a2b", "purpose": ["bundle"], "public_key": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAE8P+nYV5/50EvcxRN9j0owlEEgnM+O2eR+HVzHLsPTUz1gmoxAWs5UHNdRlS4etuhuzC0BBYsDdHfRLpgH+DhaA==", "not_before": "2026-10-01T00:00:00Z", "not_after": "2028-10-08T00:00:00Z"},
+    {"alg": "ES256", "kid": "sha256:36ae24f4fab7a7a3ba79e4aa2cb76826e0fe56460cf0ccab4093215ab987a66d", "purpose": ["profile"], "public_key": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAE2kuFgINwOviI7i8bIWIbIzaoJaf7txcQMECuPmgIEekMj0BEg2JNS40TJjh2yKyfMW+pyhnkjOo2ilwJwuLnpQ==", "not_before": "2026-10-01T00:00:00Z", "not_after": "2028-10-08T00:00:00Z"},
+    {"alg": "ES256", "kid": "sha256:8a7086ec53e6fee3fd13321ea977869dec7fcfe5c34f9a4d5015fefada1a0c4c", "purpose": ["floor"], "generation": 1, "public_key": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEdNutorP24Q/Ey3DN5FlWa3zh4r9EyyWLfdaboqPEcTdg/haIqqsAjN91PJvEmWjtEDVD2h7SNW5OSXAjwiFYNQ==", "not_before": "2026-10-01T00:00:00Z", "not_after": "2028-10-08T00:00:00Z"},
+    {"alg": "ES256", "kid": "sha256:b9c6999b6cecda758be8f13bb0c8a361af8adc19f891d17d19b345f359e29628", "purpose": ["floor"], "generation": 2, "public_key": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEO1kladKdxGsDxHEaMQ/kU7iwrCaO+yzdWSMWA+dCOgXNkItTwiljGCG/4d+qheF8C1aZyjve5NIezyNU8wM5Ww==", "not_before": "2026-10-01T00:00:00Z", "not_after": "2028-10-08T00:00:00Z"}
+  ]
+}

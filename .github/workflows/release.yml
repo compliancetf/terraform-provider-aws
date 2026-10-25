@@ -1,0 +1,108 @@
+name: Release
+
+on:
+  push:
+    tags: ['v*']
+
+permissions:
+  contents: write
+
+# One release at a time: a running publish is never cancelled. GitHub keeps
+# one pending run per group, so a third tag pushed while one runs and one
+# waits replaces the waiting run; re-push that tag's run by hand if it happens.
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+jobs:
+  release:
+    name: Release
+    runs-on: ubuntu-latest
+    # Gate: the "release" environment has a required reviewer, and v* tags
+    # are restricted by a tag ruleset.
+    environment: release
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      # Only release commits that reached master through the protected-path
+      # gate. A tag commit can edit this file, so a tag ruleset (owner
+      # settings) must also restrict who may push v* tags.
+      - name: Require the tagged commit on master
+        run: git merge-base --is-ancestor "$GITHUB_SHA" origin/master
+      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
+        with:
+          go-version-file: go.mod
+      # refuse to publish a build that enforces no
+      # control. Fails unless main.go wires the Phase 0B lifecycle.
+      # A skipped, renamed or tag-excluded test exits 0, so require its PASS line.
+      - name: Refuse a release without a compliance evaluator
+        run: |
+          set -o pipefail
+          go test -v -count=1 -run '^TestReleaseGuard$' . | tee "$RUNNER_TEMP/guard.out"
+          grep -q '^--- PASS: TestReleaseGuard ' "$RUNNER_TEMP/guard.out"
+        env:
+          COMPLIANCETF_RELEASE_GUARD: '1'
+      # the release keyring must hold its floor keys (current and
+      # next generation); without the env var zero floor keys only log. The
+      # embedded CIS archive must be signed by a release bundle key over the
+      # payload built from cis/ (TestReleaseKeyGuard).
+      - name: Refuse a release keyring without floor keys or a stale CIS archive
+        run: |
+          set -o pipefail
+          go test -v -count=1 -run '^TestRelease' ./internal/trust ./internal/embedded | tee "$RUNNER_TEMP/keyring.out"
+          grep -q '^--- PASS: TestReleaseFloorKeyCount ' "$RUNNER_TEMP/keyring.out"
+          grep -q '^--- PASS: TestReleaseKeyGuard ' "$RUNNER_TEMP/keyring.out"
+        env:
+          COMPLIANCETF_RELEASE_KEYRING_CHECK: '1'
+      # compliancetf/aws X.Y.Z proxies exactly hashicorp/aws X.Y.Z: the tag
+      # must be the pins.json version, optionally with -beta.N or
+      # -compliancetf.N. The goreleaser before hook repeats this check.
+      - name: Require the tag to match the pinned upstream version
+        run: go run ./tools/releasemeta -version="$GITHUB_REF_NAME"
+      - name: Import GPG key
+        id: import_gpg
+        uses: crazy-max/ghaction-import-gpg@2dc316deee8e90f13e1a351ab510b4d5bc0c82cd # v7.0.0
+        with:
+          gpg_private_key: ${{ secrets.GPG_PRIVATE_KEY }}
+          passphrase: ${{ secrets.GPG_PASSPHRASE }}
+      # goreleaser is installed fail closed. The tarball must match
+      # the pinned sha256, and checksums.txt must carry goreleaser's own
+      # sigstore signature (cosign verify-blob, pinned identity and issuer).
+      # goreleaser-action skips the signature when the bundle download fails.
+      # Bump: scripts/bump-goreleaser.sh vX.Y.Z runs the same cosign verify-blob
+      # on that release's checksums.txt locally, checks the Linux_x86_64
+      # tarball against it and rewrites both pins; --check re-verifies the
+      # current pins. Never drop a step.
+      - uses: sigstore/cosign-installer@6f9f17788090df1f26f669e9d70d6ae9567deba6 # v4.1.2
+        with:
+          cosign-release: v3.0.6
+      - name: Install goreleaser (pinned sha256, cosign verified)
+        env:
+          GORELEASER_VERSION: v2.18.2
+          GORELEASER_SHA256: 0a96edc9d9bc594e4a41cc4d59467c182062910ab24d9d1f6dd7b667d32606d3
+        run: |
+          set -euo pipefail
+          dir="$RUNNER_TEMP/goreleaser"
+          mkdir -p "$dir"
+          cd "$dir"
+          base="https://github.com/goreleaser/goreleaser/releases/download/$GORELEASER_VERSION"
+          for f in goreleaser_Linux_x86_64.tar.gz checksums.txt checksums.txt.sigstore.json; do
+            curl -fsSL --proto '=https' -o "$f" "$base/$f"
+          done
+          echo "$GORELEASER_SHA256  goreleaser_Linux_x86_64.tar.gz" | sha256sum -c -
+          cosign verify-blob \
+            --certificate-identity "https://github.com/goreleaser/goreleaser/.github/workflows/release.yml@refs/tags/$GORELEASER_VERSION" \
+            --certificate-oidc-issuer https://token.actions.githubusercontent.com \
+            --bundle checksums.txt.sigstore.json checksums.txt
+          grep -qx "$GORELEASER_SHA256  goreleaser_Linux_x86_64.tar.gz" checksums.txt
+          tar -xzf goreleaser_Linux_x86_64.tar.gz goreleaser
+          echo "$dir" >> "$GITHUB_PATH"
+      # .goreleaser.yml runs tools/releasegate on every built binary (tags,
+      # HashiCorp key, org pin, evaluator); --skip=before cannot bypass it.
+      - name: Release
+        run: goreleaser release --clean
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GPG_FINGERPRINT: ${{ steps.import_gpg.outputs.fingerprint }}

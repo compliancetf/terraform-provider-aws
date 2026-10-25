@@ -1,0 +1,16 @@
+{
+  "description": "no format member",
+  "policy": {},
+  "receipt_set": {
+    "format": null
+  },
+  "queries": [
+    {
+      "control": "CTF.S3.1",
+      "key": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "result": "fail",
+      "want": false
+    }
+  ],
+  "warning": "is not a valid"
+}

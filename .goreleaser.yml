@@ -1,0 +1,137 @@
+# GoReleaser configuration for compliance.tf Terraform Provider
+# Follows Terraform Registry conventions: zip format, SHA256SUMS, GPG signing
+version: 2
+project_name: terraform-provider-aws
+
+before:
+  hooks:
+    # Fails closed on the placeholder pins.json or a malformed capabilities.json.
+    # bundle_signature_verification is claimed only once the v2 trust path
+    # is wired in. The tag must be the pins.json version, optionally with
+    # -beta.N or -compliancetf.N; snapshots skip that check.
+    - go run ./tools/releasemeta -version={{ .Tag }} -snapshot={{ .IsSnapshot }}
+    - go mod tidy
+    - go mod download
+
+builds:
+  - id: terraform-provider-aws
+    binary: "{{ .ProjectName }}_v{{ .Version }}"
+    main: .
+    flags:
+      - -trimpath
+    env:
+      - CGO_ENABLED=0
+    goos:
+      - linux
+      - darwin
+      - windows
+    goarch:
+      - amd64
+      - arm64
+    ldflags:
+      - -s -w
+      - -X main.version={{.Version}}
+      - -X main.commit={{.Commit}}
+      - -X main.date={{.Date}}
+    # Release gate on every built binary (tools/releasegate): no conformance,
+    # ctftest or orgpin tag; and, unless --snapshot, the embedded HashiCorp key,
+    # no org pin and a real evaluator. Build hooks run even with --skip=before.
+    hooks:
+      post:
+        - cmd: go run ./tools/releasegate -snapshot={{ .IsSnapshot }} {{ .Path }}
+          env:
+            - GOOS={{ .Runtime.Goos }}
+            - GOARCH={{ .Runtime.Goarch }}
+            - CGO_ENABLED=0
+          output: true
+
+archives:
+  - id: terraform-provider-aws
+    formats: [zip]
+    name_template: "{{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
+    files:
+      - none*
+
+checksum:
+  name_template: "{{ .ProjectName }}_{{ .Version }}_SHA256SUMS"
+  algorithm: sha256
+  extra_files:
+    - glob: terraform-registry-manifest.json
+      name_template: "{{ .ProjectName }}_{{ .Version }}_manifest.json"
+    - glob: pins.json
+      name_template: "{{ .ProjectName }}_{{ .Version }}_pins.json"
+    - glob: capabilities.json
+      name_template: "{{ .ProjectName }}_{{ .Version }}_capabilities.json"
+
+signs:
+  - artifacts: checksum
+    args:
+      - "--batch"
+      - "--local-user"
+      - "{{ .Env.GPG_FINGERPRINT }}"
+      - "--output"
+      - "${signature}"
+      - "--detach-sign"
+      - "${artifact}"
+
+snapshot:
+  version_template: "{{ incpatch .Version }}-next"
+
+changelog:
+  sort: asc
+  use: github
+  filters:
+    exclude:
+      - "^docs:"
+      - "^test:"
+      - "^chore:"
+      - "Merge pull request"
+      - "Merge branch"
+  groups:
+    - title: Features
+      regexp: "^.*feat[(\\w)]*:+.*$"
+      order: 0
+    - title: "Bug fixes"
+      regexp: "^.*fix[(\\w)]*:+.*$"
+      order: 1
+    - title: "Performance improvements"
+      regexp: "^.*perf[(\\w)]*:+.*$"
+      order: 2
+    - title: Others
+      order: 999
+
+release:
+  github:
+    owner: compliancetf
+    name: terraform-provider-aws
+  draft: false
+  prerelease: auto
+  mode: replace
+  name_template: "{{.ProjectName}} v{{.Version}}"
+  extra_files:
+    - glob: terraform-registry-manifest.json
+      name_template: "{{ .ProjectName }}_{{ .Version }}_manifest.json"
+    - glob: pins.json
+      name_template: "{{ .ProjectName }}_{{ .Version }}_pins.json"
+    - glob: capabilities.json
+      name_template: "{{ .ProjectName }}_{{ .Version }}_capabilities.json"
+  header: |
+    ## compliance.tf Terraform Provider v{{.Version}}
+
+    **terraform-provider-aws** - Compliance-enforcing proxy provider for AWS resources.
+
+    ### Installation
+
+    Add to your Terraform configuration:
+    ```hcl
+    terraform {
+      required_providers {
+        aws = {
+          source  = "compliancetf/aws"
+          version = "{{.Version}}"
+        }
+      }
+    }
+    ```
+
+    ### Changes in this release

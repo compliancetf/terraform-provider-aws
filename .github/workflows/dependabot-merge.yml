@@ -1,0 +1,133 @@
+# Merge an eligible Dependabot PR once the Test workflow passed on its head.
+#
+# master is protected by a ruleset requiring the owner-approval check. This
+# workflow merges only the exact SHA that Test passed, and the merge API
+# refuses if the PR head has moved since.
+#
+# Eligible: authored by dependabot[bot] with every commit by dependabot[bot]
+# and GitHub-verified, a Go modules branch (dependabot/go_modules/...), every
+# update in the commit's dependabot metadata a semver patch or minor, no go.mod
+# (root or nested) adding a module requirement, and no protected path
+# (scripts/protected-paths.sh --compare on base.sha...SHA, the tested commit;
+# it builds tools/gomodcheck, hence setup-go). Majors, new modules,
+# GitHub Actions bumps and protected changes wait for the owner.
+#
+# The squash lands on the current master, which Test did not run against, and
+# a merge by GITHUB_TOKEN starts no workflow on master.
+#
+# workflow_run runs this file from the default branch. Nothing from the Test
+# run is trusted except the head SHA, which is validated and re-checked
+# against the PR. PR code is never checked out; PR data reaches the shell
+# only through env and files.
+name: Dependabot merge
+
+on:
+  workflow_run:
+    workflows: [Test]
+    types: [completed]
+
+permissions: {}
+
+jobs:
+  merge:
+    name: dependabot-merge
+    if: >-
+      github.event.workflow_run.event == 'pull_request' &&
+      github.event.workflow_run.conclusion == 'success' &&
+      github.event.workflow_run.actor.login == 'dependabot[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: write
+      pull-requests: write
+    env:
+      GH_TOKEN: ${{ github.token }}
+      REPO: ${{ github.repository }}
+      SHA: ${{ github.event.workflow_run.head_sha }}
+    steps:
+      - name: Check out the default branch tip (never the PR)
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.event.repository.default_branch }}
+          persist-credentials: false
+
+      # Builds tools/gomodcheck for protected-paths.sh. No cache: this job
+      # holds a write token.
+      - name: Set up Go
+        uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
+        with:
+          go-version-file: go.mod
+          cache: false
+
+      - name: Check eligibility and merge the tested SHA
+        run: |
+          set -euo pipefail
+          skip() { echo "::notice::not merged: $*"; echo "Not merged: $*" >>"$GITHUB_STEP_SUMMARY"; exit 0; }
+          [[ $SHA =~ ^[0-9a-f]{40}$ ]] || { echo "::error::bad head SHA: $SHA"; exit 1; }
+          pr=$(gh api --paginate "repos/$REPO/pulls?state=open&per_page=100" \
+            --jq ".[] | select(.head.sha == \"$SHA\") | .number")
+          [ -n "$pr" ] || skip "no open PR has head $SHA"
+          [ "$(wc -l <<<"$pr")" -eq 1 ] || skip "several open PRs have head $SHA"
+          gh api "repos/$REPO/pulls/$pr" >"$RUNNER_TEMP/pr.json"
+          jq -e --arg sha "$SHA" --arg repo "$REPO" '
+            .head.sha == $sha and .base.ref == "master" and .draft == false
+            and .user.login == "dependabot[bot]" and .head.repo.full_name == $repo
+            and .base.repo.full_name == $repo
+            and (.head.ref | startswith("dependabot/go_modules/"))' "$RUNNER_TEMP/pr.json" >/dev/null \
+            || skip "PR #$pr is not a current Dependabot Go modules PR at $SHA"
+          base=$(jq -r .base.sha "$RUNNER_TEMP/pr.json")
+          [[ $base =~ ^[0-9a-f]{40}$ ]] || { echo "::error::bad base SHA: $base"; exit 1; }
+          # Commits and files come from one compare pinned to the tested SHA,
+          # never the PR's live lists (after a force-push A -> B -> A, B must
+          # not judge A). The compare lists at most 250 commits, so the listed
+          # count must equal its total.
+          gh api "repos/$REPO/compare/$base...$SHA" >"$RUNNER_TEMP/compare.json"
+          listed=$(jq '.commits | length' "$RUNNER_TEMP/compare.json")
+          total=$(jq -r .total_commits "$RUNNER_TEMP/compare.json")
+          [[ $total =~ ^[0-9]+$ ]] || { echo "::error::bad commit count: $total"; exit 1; }
+          [ "$listed" -eq "$total" ] || skip "PR #$pr: compare lists $listed of $total commits"
+          others=$(jq -r '.commits[] | select(.author.login != "dependabot[bot]" or .commit.verification.verified != true) | .sha' \
+            "$RUNNER_TEMP/compare.json")
+          [ -z "$others" ] || skip "PR #$pr has commits not authored by Dependabot or not verified"
+          # update-type lines of the metadata block in the tested commit.
+          gh api "repos/$REPO/commits/$SHA" --jq .commit.message \
+            | awk '/^updated-dependencies:/ { m = 1; next } /^\.\.\.$/ { m = 0 } m && /update-type:/ { print $NF }' \
+            >"$RUNNER_TEMP/types.txt"
+          [ -s "$RUNNER_TEMP/types.txt" ] || skip "PR #$pr has no Dependabot update metadata"
+          if grep -vxE 'version-update:semver-(patch|minor)' "$RUNNER_TEMP/types.txt" >/dev/null; then
+            skip "PR #$pr includes a non patch/minor update"
+          fi
+          # Version changes only: a go.mod line adding a module path that no
+          # removed line had is a new requirement, left for the owner. A
+          # missing or truncated go.mod patch counts as one. Files from the
+          # pinned compare; a list at the compare API's 300-file cap fails
+          # protected-paths.sh.
+          jq -c '.files[]' "$RUNNER_TEMP/compare.json" >"$RUNNER_TEMP/files.jsonl"
+          jq -c 'select(.filename | test("(^|/)go\\.mod$"; "i"))' "$RUNNER_TEMP/files.jsonl" >"$RUNNER_TEMP/gomods.jsonl"
+          while IFS= read -r f; do
+            patch=$(jq -r 'select(.patch != null)
+              | select(([.patch | split("\n")[] | select(test("^[-+]"))] | length) == (.additions + .deletions))
+              | .patch' <<<"$f")
+            name=$(jq -r .filename <<<"$f")
+            [ -n "$patch" ] || skip "PR #$pr: $name patch unavailable"
+            added=$(awk '/^[-+]/ {
+                l = substr($0, 2); sub(/^[[:space:]]*(require[[:space:]]+)?/, "", l)
+                split(l, a, /[[:space:]]+/)
+                if (a[2] ~ /^v[0-9]/) { if (substr($0, 1, 1) == "+") add[a[1]] = 1; else del[a[1]] = 1 }
+              } END { for (m in add) if (!(m in del)) print m }' <<<"$patch")
+            [ -z "$added" ] || skip "PR #$pr: $name adds module requirements: $(paste -sd, - <<<"$added")"
+          done <"$RUNNER_TEMP/gomods.jsonl"
+          rc=0
+          # Files of the tested SHA itself, from the compare API (base...SHA).
+          scripts/protected-paths.sh --compare "$REPO" "$base" "$SHA" >"$RUNNER_TEMP/hits.txt" || rc=$?
+          case $rc in
+            0) ;;
+            1) skip "PR #$pr touches protected paths: $(paste -sd, "$RUNNER_TEMP/hits.txt")" ;;
+            *) echo "::error::protected-paths.sh failed with exit $rc"; exit 1 ;;
+          esac
+          # Re-check the head right before merging; sha= also makes GitHub
+          # refuse the merge if the head moved after the test.
+          cur=$(gh api "repos/$REPO/pulls/$pr" --jq .head.sha)
+          [ "$cur" = "$SHA" ] || skip "PR #$pr head moved to $cur after the checks"
+          gh api --silent -X PUT "repos/$REPO/pulls/$pr/merge" -f merge_method=squash -f sha="$SHA"
+          echo "Merged PR #$pr at $SHA." >>"$GITHUB_STEP_SUMMARY"

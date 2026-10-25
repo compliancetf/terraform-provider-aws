@@ -1,0 +1,366 @@
+{
+ "format": "content.provider-intents/1",
+ "content_version": "0.0.0-sample",
+ "content_commit": "sample",
+ "catalog_snapshot_id": "snap_20261004_000000_000000",
+ "policies": [
+  {
+   "id": "bobthecorp_sample_bucket_mfa_delete_on",
+   "resource_type": "aws_s3_bucket_versioning",
+   "attributes": [
+    {
+     "schema_path": "versioning_configuration[0].mfa_delete",
+     "condition": "equals_any",
+     "values": [
+      "Enabled"
+     ],
+     "values_from_ref": null
+    }
+   ],
+   "explanation": "Attribute `versioning_configuration[0].mfa_delete` of `aws_s3_bucket_versioning` must be `\"Enabled\"`.",
+   "postcondition": "",
+   "has_strategy_condition": false
+  },
+  {
+   "id": "bobthecorp_sample_bucket_policy_names_account",
+   "resource_type": "aws_s3_bucket_policy",
+   "attributes": [
+    {
+     "schema_path": "policy",
+     "condition": "contains",
+     "values": [
+      "StringNotEquals",
+      "aws:PrincipalAccount"
+     ],
+     "values_from_ref": null
+    }
+   ],
+   "explanation": "Attribute `policy` of `aws_s3_bucket_policy` must contain: `\"StringNotEquals\"`, `\"aws:PrincipalAccount\"`.",
+   "postcondition": "",
+   "has_strategy_condition": false
+  },
+  {
+   "id": "bobthecorp_sample_bucket_public_block_all",
+   "resource_type": "aws_s3_bucket_public_access_block",
+   "attributes": [
+    {
+     "schema_path": "block_public_acls",
+     "condition": "equals_any",
+     "values": [
+      true
+     ],
+     "values_from_ref": null
+    },
+    {
+     "schema_path": "block_public_policy",
+     "condition": "equals_any",
+     "values": [
+      true
+     ],
+     "values_from_ref": null
+    },
+    {
+     "schema_path": "ignore_public_acls",
+     "condition": "equals_any",
+     "values": [
+      true
+     ],
+     "values_from_ref": null
+    },
+    {
+     "schema_path": "restrict_public_buckets",
+     "condition": "equals_any",
+     "values": [
+      true
+     ],
+     "values_from_ref": null
+    }
+   ],
+   "explanation": "Resource `aws_s3_bucket_public_access_block` must exist.",
+   "postcondition": "",
+   "has_strategy_condition": false
+  },
+  {
+   "id": "bobthecorp_sample_bucket_sse_kms_key",
+   "resource_type": "aws_s3_bucket_server_side_encryption_configuration",
+   "attributes": [
+    {
+     "schema_path": "rule[0].apply_server_side_encryption_by_default[0].sse_algorithm",
+     "condition": "equals_any",
+     "values": [
+      "aws:kms",
+      "aws:kms:dsse"
+     ],
+     "values_from_ref": null
+    },
+    {
+     "schema_path": "rule[0].apply_server_side_encryption_by_default[0].kms_master_key_id",
+     "condition": "not_empty",
+     "values": [],
+     "values_from_ref": null
+    }
+   ],
+   "explanation": "Resource `aws_s3_bucket_server_side_encryption_configuration` must exist.",
+   "postcondition": "",
+   "has_strategy_condition": false
+  },
+  {
+   "id": "bobthecorp_sample_bucket_versioning_on",
+   "resource_type": "aws_s3_bucket_versioning",
+   "attributes": [
+    {
+     "schema_path": "versioning_configuration[0].status",
+     "condition": "equals_any",
+     "values": [
+      "Enabled"
+     ],
+     "values_from_ref": null
+    }
+   ],
+   "explanation": "Attribute `versioning_configuration[0].status` of `aws_s3_bucket_versioning` must be `\"Enabled\"`.",
+   "postcondition": "",
+   "has_strategy_condition": false
+  },
+  {
+   "id": "bobthecorp_sample_cache_auth_token_set",
+   "resource_type": "aws_elasticache_replication_group",
+   "attributes": [
+    {
+     "schema_path": "auth_token",
+     "condition": "not_empty",
+     "values": [],
+     "values_from_ref": null
+    }
+   ],
+   "explanation": "Attribute `auth_token` of `aws_elasticache_replication_group` must be non-empty.",
+   "postcondition": "",
+   "has_strategy_condition": false
+  },
+  {
+   "id": "bobthecorp_sample_db_log_exports_set",
+   "resource_type": "aws_db_instance",
+   "attributes": [
+    {
+     "schema_path": "enabled_cloudwatch_logs_exports",
+     "condition": "not_empty",
+     "values": [],
+     "values_from_ref": null
+    }
+   ],
+   "explanation": "Attribute `enabled_cloudwatch_logs_exports` of `aws_db_instance` must be non-empty.",
+   "postcondition": "",
+   "has_strategy_condition": false
+  },
+  {
+   "id": "bobthecorp_sample_db_port_not_listed",
+   "resource_type": "aws_db_instance",
+   "attributes": [
+    {
+     "schema_path": "port",
+     "condition": "not_empty",
+     "values": [],
+     "values_from_ref": null
+    }
+   ],
+   "explanation": "Attribute `port` of `aws_db_instance` must be non-empty.",
+   "postcondition": "",
+   "has_strategy_condition": false
+  },
+  {
+   "id": "bobthecorp_sample_db_username_not_reserved",
+   "resource_type": "aws_db_instance",
+   "attributes": [
+    {
+     "schema_path": "username",
+     "condition": "not_empty",
+     "values": [],
+     "values_from_ref": null
+    }
+   ],
+   "explanation": "Attribute `username` of `aws_db_instance` must be non-empty.",
+   "postcondition": "",
+   "has_strategy_condition": false
+  },
+  {
+   "id": "bobthecorp_sample_ingress_listed_ports_closed",
+   "resource_type": "aws_vpc_security_group_ingress_rule",
+   "attributes": [
+    {
+     "schema_path": "from_port",
+     "condition": "port_range_excludes",
+     "values": [
+      7101,
+      9101,
+      8101
+     ],
+     "values_from_ref": null
+    }
+   ],
+   "explanation": "Attribute `from_port` of `aws_vpc_security_group_ingress_rule` with `to_port` must open none of the ports `7101`, `9101`, `8101` when open to the internet.",
+   "postcondition": "",
+   "has_strategy_condition": false
+  },
+  {
+   "id": "bobthecorp_sample_instance_no_inline_eni",
+   "resource_type": "aws_instance",
+   "attributes": [
+    {
+     "schema_path": "network_interface",
+     "condition": "exists",
+     "values": [],
+     "values_from_ref": null
+    }
+   ],
+   "explanation": "Attribute `network_interface` of `aws_instance` must satisfy condition: exists.",
+   "postcondition": "",
+   "has_strategy_condition": false
+  },
+  {
+   "id": "bobthecorp_sample_instance_no_public_ip",
+   "resource_type": "aws_instance",
+   "attributes": [
+    {
+     "schema_path": "associate_public_ip_address",
+     "condition": "equals_any",
+     "values": [
+      false
+     ],
+     "values_from_ref": null
+    }
+   ],
+   "explanation": "Attribute `associate_public_ip_address` of `aws_instance` must be `false`.",
+   "postcondition": "",
+   "has_strategy_condition": false
+  },
+  {
+   "id": "bobthecorp_sample_instance_profile_set",
+   "resource_type": "aws_instance",
+   "attributes": [
+    {
+     "schema_path": "iam_instance_profile",
+     "condition": "not_empty",
+     "values": [],
+     "values_from_ref": null
+    }
+   ],
+   "explanation": "Attribute `iam_instance_profile` of `aws_instance` must be non-empty.",
+   "postcondition": "",
+   "has_strategy_condition": false
+  },
+  {
+   "id": "bobthecorp_sample_instance_root_volume_deleted",
+   "resource_type": "aws_instance",
+   "attributes": [
+    {
+     "schema_path": "root_block_device[0].delete_on_termination",
+     "condition": "equals_any",
+     "values": [
+      true
+     ],
+     "values_from_ref": null
+    }
+   ],
+   "explanation": "Attribute `root_block_device[0].delete_on_termination` of `aws_instance` must be `true`.",
+   "postcondition": "",
+   "has_strategy_condition": false
+  },
+  {
+   "id": "bobthecorp_sample_instance_tokens_required",
+   "resource_type": "aws_instance",
+   "attributes": [
+    {
+     "schema_path": "metadata_options.http_tokens",
+     "condition": "equals_any",
+     "values": [
+      "required"
+     ],
+     "values_from_ref": null
+    }
+   ],
+   "explanation": "Attribute `metadata_options.http_tokens` of `aws_instance` must be `\"required\"`.",
+   "postcondition": "",
+   "has_strategy_condition": false
+  },
+  {
+   "id": "bobthecorp_sample_key_rotation_on",
+   "resource_type": "aws_kms_key",
+   "attributes": [
+    {
+     "schema_path": "enable_key_rotation",
+     "condition": "equals_any",
+     "values": [
+      true
+     ],
+     "values_from_ref": null
+    }
+   ],
+   "explanation": "Attribute `enable_key_rotation` of `aws_kms_key` must be `true`.",
+   "postcondition": "",
+   "has_strategy_condition": false
+  },
+  {
+   "id": "bobthecorp_sample_trail_key_set",
+   "resource_type": "aws_cloudtrail",
+   "attributes": [
+    {
+     "schema_path": "kms_key_id",
+     "condition": "not_empty",
+     "values": [],
+     "values_from_ref": null
+    }
+   ],
+   "explanation": "Attribute `kms_key_id` of `aws_cloudtrail` must be non-empty.",
+   "postcondition": "",
+   "has_strategy_condition": false
+  },
+  {
+   "id": "bobthecorp_sample_trail_log_group_set",
+   "resource_type": "aws_cloudtrail",
+   "attributes": [
+    {
+     "schema_path": "cloud_watch_logs_group_arn",
+     "condition": "not_empty",
+     "values": [],
+     "values_from_ref": null
+    }
+   ],
+   "explanation": "Attribute `cloud_watch_logs_group_arn` of `aws_cloudtrail` must be non-empty.",
+   "postcondition": "",
+   "has_strategy_condition": false
+  },
+  {
+   "id": "bobthecorp_sample_trail_validation_on",
+   "resource_type": "aws_cloudtrail",
+   "attributes": [
+    {
+     "schema_path": "enable_log_file_validation",
+     "condition": "equals_any",
+     "values": [
+      true
+     ],
+     "values_from_ref": null
+    }
+   ],
+   "explanation": "Attribute `enable_log_file_validation` of `aws_cloudtrail` must be `true`.",
+   "postcondition": "",
+   "has_strategy_condition": false
+  },
+  {
+   "id": "bobthecorp_sample_warehouse_vpc_routing_on",
+   "resource_type": "aws_redshift_cluster",
+   "attributes": [
+    {
+     "schema_path": "enhanced_vpc_routing",
+     "condition": "equals_any",
+     "values": [
+      true
+     ],
+     "values_from_ref": null
+    }
+   ],
+   "explanation": "Attribute `enhanced_vpc_routing` of `aws_redshift_cluster` must be `true`.",
+   "postcondition": "",
+   "has_strategy_condition": false
+  }
+ ]
+}

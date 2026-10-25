@@ -1,0 +1,65 @@
+{
+  "entries": [
+    {
+      "actions": [
+        "create"
+      ],
+      "address": "aws_secretsmanager_secret_version.new",
+      "keys": [
+        {
+          "after": {
+            "region": "s:us-east-1",
+            "secret_id": "s:arn:aws:secretsmanager:us-east-1:111111111111:secret:bobthecorp-api-GhIjKl",
+            "secret_string": "s:{\"password\":\"bobthecorp-fake-password-5\",\"username\":\"bobthecorp\"}"
+          },
+          "after_hashed_jcs": "{\"region\":\"8df8ff45a31e55a282b554a4217667bd534d60853102522fb525315732856f2a\",\"secret_id\":\"4b700d311bb9bea8027a8341ab9222318f733ec6979bb5b831678e2d5d5fd57d\",\"secret_string\":\"a8ef5d7de997e32a332f7e49de180c66dddb19d29ffbda3bd4133105e4ac1079\"}",
+          "field": "instance_key",
+          "form": "create",
+          "prior_identity": null,
+          "prior_identity_hashed_jcs": "null",
+          "prior_identity_kind": "none"
+        }
+      ]
+    },
+    {
+      "action_reason": "replace_because_cannot_update",
+      "actions": [
+        "delete",
+        "create"
+      ],
+      "address": "aws_secretsmanager_secret_version.this",
+      "keys": [
+        {
+          "after": null,
+          "after_hashed_jcs": "null",
+          "field": "delete_key",
+          "form": "delete",
+          "prior_identity": {
+            "account_id": "s:111111111111",
+            "region": "s:us-east-1",
+            "secret_id": "s:arn:aws:secretsmanager:us-east-1:111111111111:secret:bobthecorp-db-AbCdEf",
+            "version_id": "s:bobthecorp-version-0001"
+          },
+          "prior_identity_hashed_jcs": "{\"account_id\":\"47e7ec2525e1a3e184c7844d068e98ee8789c5c565812114c46d959065728ced\",\"region\":\"8df8ff45a31e55a282b554a4217667bd534d60853102522fb525315732856f2a\",\"secret_id\":\"96d5068a644da6ef8aa060d338a1afbb062d20b3ffc9236f43fc652c80df05c8\",\"version_id\":\"3d5fa9be01caf5df51742b3093d6c20b2a58003a2f0e6c532c41a0c3732e98e9\"}",
+          "prior_identity_kind": "identity"
+        },
+        {
+          "after": {
+            "region": "s:us-east-1",
+            "secret_id": "s:arn:aws:secretsmanager:us-east-1:111111111111:secret:bobthecorp-db-AbCdEf",
+            "secret_string": "s:bobthecorp-fake-secret-2"
+          },
+          "after_hashed_jcs": "{\"region\":\"8df8ff45a31e55a282b554a4217667bd534d60853102522fb525315732856f2a\",\"secret_id\":\"96d5068a644da6ef8aa060d338a1afbb062d20b3ffc9236f43fc652c80df05c8\",\"secret_string\":\"a730b0420fa1d8483ed5f91a52fd4585ede409b32dd237ee9a6c6dc492cca5d1\"}",
+          "field": "instance_key",
+          "form": "create",
+          "prior_identity": null,
+          "prior_identity_hashed_jcs": "null",
+          "prior_identity_kind": "none"
+        }
+      ]
+    }
+  ],
+  "format": "compliancetf.instancekey.golden/v1",
+  "provider_version": "hashicorp/aws 6.65.0",
+  "terraform_version": "1.16.3"
+}

@@ -1,0 +1,13 @@
+{
+  "result": "fail",
+  "findings": [
+    {
+      "control_id": "elb_listener_has_forward",
+      "kind": "resource",
+      "resource_type": "aws_lb_listener",
+      "read": "default_action.forward",
+      "check": "computed_only",
+      "result": "fail"
+    }
+  ]
+}

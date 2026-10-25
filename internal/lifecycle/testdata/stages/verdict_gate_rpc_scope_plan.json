@@ -1,0 +1,30 @@
+{
+  "description": "PlanResourceChange is allowlisted: plan never calls Match",
+  "stage": "plan",
+  "method": "/tfplugin5.Provider/PlanResourceChange",
+  "mode": "hard_fail",
+  "verdict_required": true,
+  "op": "create",
+  "gated": false,
+  "type_name": "aws_db_instance",
+  "config": {
+    "storage_encrypted": true,
+    "kms_key_id": "arn:aws:kms:us-east-1:111122223333:key/bobthecorp-rds",
+    "engine": "postgres"
+  },
+  "prior": null,
+  "planned": {
+    "storage_encrypted": true,
+    "kms_key_id": "arn:aws:kms:us-east-1:111122223333:key/bobthecorp-rds",
+    "engine": "postgres",
+    "deletion_protection": true
+  },
+  "verdict": {
+    "entries": [],
+    "want_keys": []
+  },
+  "want": {
+    "diagnostics": [],
+    "stamp": true
+  }
+}

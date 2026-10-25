@@ -1,0 +1,23 @@
+# Trigger for the owner-approval re-check in protected-paths.yml.
+#
+# pull_request_review runs in the PR's context: a fork PR gets a read-only
+# token, so this run cannot set a commit status itself. It does nothing and
+# needs no permissions; its completion fires protected-paths.yml through
+# workflow_run, which runs from the default branch with a write token and
+# re-reads the PR, its head and its reviews from the API. Nothing from this
+# run is trusted, so a PR that edits this file can at most cause a re-check.
+name: Owner review
+
+on:
+  pull_request_review:
+    types: [submitted, dismissed]
+
+permissions: {}
+
+jobs:
+  notify:
+    name: owner-review
+    runs-on: ubuntu-latest
+    timeout-minutes: 1
+    steps:
+      - run: echo "review event recorded; protected-paths.yml re-checks owner approval"

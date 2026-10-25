@@ -1,0 +1,53 @@
+{
+  "description": "prior_identity_kind id with no id in the prior state blocks before Match",
+  "stage": "apply_pre",
+  "type_name": "aws_s3_bucket",
+  "mode": "hard_fail",
+  "verdict_required": true,
+  "op": "update",
+  "envelope": {
+    "op": "update",
+    "digest": "current",
+    "prior_identity_kind": "id"
+  },
+  "config": {
+    "storage_encrypted": true,
+    "kms_key_id": "arn:aws:kms:us-east-1:111122223333:key/bobthecorp-rds",
+    "engine": "postgres"
+  },
+  "prior": {
+    "storage_encrypted": true,
+    "kms_key_id": "arn:aws:kms:us-east-1:111122223333:key/bobthecorp-rds",
+    "engine": "postgres",
+    "deletion_protection": true
+  },
+  "planned": {
+    "storage_encrypted": true,
+    "kms_key_id": "arn:aws:kms:us-east-1:111122223333:key/bobthecorp-rds",
+    "engine": "postgres",
+    "deletion_protection": true
+  },
+  "verdict": {
+    "entries": [],
+    "want_keys": []
+  },
+  "want": {
+    "diagnostics": [
+      {
+        "severity": "error",
+        "summary": "Verdict required",
+        "detail": "The prior state of aws_s3_bucket has no id for the verdict instance key (prior_identity_kind id). Re-run plan."
+      }
+    ],
+    "evidence": {
+      "op": "update",
+      "results": [
+        {
+          "control": "verdict_required",
+          "state": "fail",
+          "decision": "blocked"
+        }
+      ]
+    }
+  }
+}

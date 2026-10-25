@@ -1,0 +1,14 @@
+{
+  "format_version": "1.0",
+  "provider_schemas": {
+    "registry.terraform.io/hashicorp/aws": {
+      "resource_schemas": {
+        "aws_iam_policy": {"version": 0, "block": {"attributes": {"policy": {"type": "string", "required": true}}}},
+        "aws_db_instance": {"version": 2, "block": {"attributes": {"storage_encrypted": {"type": "bool", "optional": true}}}},
+        "aws_s3_bucket_versioning": {"version": 0, "block": {"attributes": {"bucket": {"type": "string", "required": true}}}}
+      },
+      "data_source_schemas": {},
+      "ephemeral_resource_schemas": {}
+    }
+  }
+}

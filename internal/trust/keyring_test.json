@@ -1,0 +1,47 @@
+{
+  "format": "compliancetf.keyring/v1",
+  "keys": [
+    {
+      "alg": "ES256",
+      "kid": "sha256:77b6636d1aac850b6c3ed806541c4f2233233fda1a045e679b7b5dc21dc29f3e",
+      "not_after": "2030-01-01T00:00:00Z",
+      "not_before": "2026-01-01T00:00:00Z",
+      "public_key": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAE7d+l0Rc6YiS9KkR7R/uHMHiVcqgPPmn31KsSHlItEsa0szmHrx4aVjGrkTiDMNaC6tjqAgdpwN5mbHqfCC4EkQ==",
+      "purpose": [
+        "bundle"
+      ]
+    },
+    {
+      "alg": "Ed25519",
+      "kid": "sha256:e05af616405022a6f3700134d2e8d944e7edee1d3472510b95f70ff55507740f",
+      "not_after": "2030-01-01T00:00:00Z",
+      "not_before": "2026-01-01T00:00:00Z",
+      "public_key": "MCowBQYDK2VwAyEA2BbyEe4qKcBHmWlM6hK4odfWTQWcAiMedTWUgLvl+LU=",
+      "purpose": [
+        "profile"
+      ]
+    },
+    {
+      "alg": "ES256",
+      "generation": 1,
+      "kid": "sha256:37fc7449b7185415212ce8107eab63e43df50fc2adbe9d8949c2b85e63898a5b",
+      "not_after": "2030-01-01T00:00:00Z",
+      "not_before": "2026-01-01T00:00:00Z",
+      "public_key": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAE82IfWrxVGmF4N7fQQJm7Ix+z+wnJe5Gssgn7MTYYu+YvWJmB7f/mevF/GB531qbnCG50uJjVdAbMD3PqXHOYvw==",
+      "purpose": [
+        "floor"
+      ]
+    },
+    {
+      "alg": "ES256",
+      "generation": 2,
+      "kid": "sha256:e95512568bfc64d42e6e8cf32878b98d0c3d84003dcf12c95a2a8ad9b6be8f35",
+      "not_after": "2030-01-01T00:00:00Z",
+      "not_before": "2026-01-01T00:00:00Z",
+      "public_key": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEC9TGxuYYDlNn2ip72enIh4C/uY3oxBqEolKaywG3QgcRJTnVw7QI1IUl28nRqSRsn/j+VnNfEusGr3PabcbXMQ==",
+      "purpose": [
+        "floor"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,14 @@
+{
+  "description": "signed by a key the profile does not pin",
+  "policy": {},
+  "sign": "wrong_key",
+  "queries": [
+    {
+      "control": "CTF.S3.1",
+      "key": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "result": "fail",
+      "want": false
+    }
+  ],
+  "warning": "receipt signature invalid: kid unknown"
+}

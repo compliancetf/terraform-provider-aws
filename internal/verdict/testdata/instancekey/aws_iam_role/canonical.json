@@ -1,0 +1,65 @@
+{
+  "entries": [
+    {
+      "actions": [
+        "create"
+      ],
+      "address": "aws_iam_role.new",
+      "keys": [
+        {
+          "after": {
+            "assume_role_policy": "s:{\"Statement\":[{\"Action\":\"sts:AssumeRole\",\"Effect\":\"Allow\",\"Principal\":{\"Service\":\"lambda.amazonaws.com\"}}],\"Version\":\"2012-10-17\"}",
+            "force_detach_policies": "b:false",
+            "max_session_duration": "n:3600",
+            "name": "s:bobthecorp-reports",
+            "path": "s:/"
+          },
+          "after_hashed_jcs": "{\"assume_role_policy\":\"c68d770b63ec04113fac31c55e83356bacdbb03f89daf015ee5e89911452b3e6\",\"force_detach_policies\":\"bd2697924fc3dbc2684e37198d7f4911d738e969f1d3a4db9e113420c2e90f17\",\"max_session_duration\":\"e22feee373178f85a7382aa0c535fbc68914964585d8c88d736673b854f58b5b\",\"name\":\"beb34f177ac779ca6317a1da249e5418e7e84e4d25ba0cdbcbb0f733e1b5b784\",\"path\":\"7005e7eaef445e266f50646cd15b792a5575d8ba598bd6c56b17fe17fc3b72f8\"}",
+          "field": "instance_key",
+          "form": "create",
+          "prior_identity": null,
+          "prior_identity_hashed_jcs": "null",
+          "prior_identity_kind": "none"
+        }
+      ]
+    },
+    {
+      "actions": [
+        "update"
+      ],
+      "address": "aws_iam_role.this",
+      "keys": [
+        {
+          "after": {
+            "arn": "s:arn:aws:iam::111111111111:role/bobthecorp-app",
+            "assume_role_policy": "s:{\"Statement\":[{\"Action\":\"sts:AssumeRole\",\"Effect\":\"Allow\",\"Principal\":{\"Service\":\"ec2.amazonaws.com\"}}],\"Version\":\"2012-10-17\"}",
+            "create_date": "s:bobthecorp-fake-create_date",
+            "description": "s:bobthecorp app role v2",
+            "force_detach_policies": "b:false",
+            "id": "s:bobthecorp-app",
+            "inline_policy": [],
+            "managed_policy_arns": [],
+            "max_session_duration": "n:3600",
+            "name": "s:bobthecorp-app",
+            "name_prefix": "s:bobthecorp-fake-name_prefix",
+            "path": "s:/",
+            "tags_all": {},
+            "unique_id": "s:AROABOBTHECORP0000001"
+          },
+          "after_hashed_jcs": "{\"arn\":\"f0e406b9e510894bc414fa2c0bb55b9c6642134d9d7ba3ddc5064b6a4ad18260\",\"assume_role_policy\":\"6060bde3b8a414c323f2c66606b386dfead669200650db6daa9e8418a71b8d23\",\"create_date\":\"5376bb1992712e9cf4f0692ade0b4878ebbc96fba44f463b5e0482047ec70400\",\"description\":\"dd39640596348a566995a66aa22e1dca9fc9e09ea6b9f0a49917879a285541b1\",\"force_detach_policies\":\"bd2697924fc3dbc2684e37198d7f4911d738e969f1d3a4db9e113420c2e90f17\",\"id\":\"109229a95cf126951bb1625de7ecc3cdefec5e3bfcfa4efa6c6613f73e893a35\",\"inline_policy\":[],\"managed_policy_arns\":[],\"max_session_duration\":\"e22feee373178f85a7382aa0c535fbc68914964585d8c88d736673b854f58b5b\",\"name\":\"109229a95cf126951bb1625de7ecc3cdefec5e3bfcfa4efa6c6613f73e893a35\",\"name_prefix\":\"6cf6f6a01d7560cc2ed6460bf1e973eb4f56c998d464743d8cc468008b422349\",\"path\":\"7005e7eaef445e266f50646cd15b792a5575d8ba598bd6c56b17fe17fc3b72f8\",\"tags_all\":{},\"unique_id\":\"edf4142cc221cdbfa97fc5d10b7bcc30fc04527a2c1583a80d6e6a527314ae71\"}",
+          "field": "instance_key",
+          "form": "update",
+          "prior_identity": {
+            "account_id": "s:111111111111",
+            "name": "s:bobthecorp-app"
+          },
+          "prior_identity_hashed_jcs": "{\"account_id\":\"47e7ec2525e1a3e184c7844d068e98ee8789c5c565812114c46d959065728ced\",\"name\":\"109229a95cf126951bb1625de7ecc3cdefec5e3bfcfa4efa6c6613f73e893a35\"}",
+          "prior_identity_kind": "identity"
+        }
+      ]
+    }
+  ],
+  "format": "compliancetf.instancekey.golden/v1",
+  "provider_version": "hashicorp/aws 6.65.0",
+  "terraform_version": "1.16.3"
+}

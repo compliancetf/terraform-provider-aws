@@ -1,0 +1,25 @@
+{
+  "description": "apply_post create without trusted scope: scope_untrusted takes the fail row, a warning",
+  "stage": "apply_post",
+  "mode": "hard_fail",
+  "op": "create",
+  "trusted_env": {
+    "env_environment": "dev"
+  },
+  "new": {
+    "storage_encrypted": false,
+    "kms_key_id": "arn:aws:kms:us-east-1:111122223333:key/bobthecorp-rds",
+    "engine": "postgres",
+    "deletion_protection": true
+  },
+  "want": {
+    "diagnostics": [
+      {
+        "severity": "warning",
+        "summary": "[rds_db_instance_encryption_at_rest_enabled] not evaluable (scope_untrusted)",
+        "detail": "Treated as a failure of this control.",
+        "attribute": "AttributeName(\"storage_encrypted\")"
+      }
+    ]
+  }
+}

@@ -1,0 +1,7 @@
+{
+  "steps": [
+    {"cmd": ["apply", "-no-color", "-auto-approve"], "exit": 0, "stdout_contains": ["Apply complete! Resources: 1 added, 0 changed, 0 destroyed."]},
+    {"cmd": ["destroy", "-no-color", "-auto-approve"], "exit": 0, "stdout_contains": ["Resources: 1 destroyed."]}
+  ],
+  "expect_applies": 2
+}

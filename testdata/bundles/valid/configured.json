@@ -1,0 +1,32 @@
+[
+  {
+    "id": "db_instance_storage_encrypted",
+    "version": "1.0.0",
+    "kind": "resource",
+    "resource_type": "aws_db_instance",
+    "reads": [
+      "storage_encrypted"
+    ],
+    "presence_mode": "configured",
+    "on": [
+      "create",
+      "update"
+    ],
+    "expr": "config.storage_encrypted == true",
+    "action": "deny",
+    "severity": "high",
+    "message": "RDS storage must be encrypted at rest.",
+    "exemption_coverable": [
+      "baseline",
+      "grant"
+    ],
+    "framework_refs": [
+      "soc_2:CC6.1"
+    ],
+    "tool_refs": {
+      "checkov": [
+        "CKV_AWS_16"
+      ]
+    }
+  }
+]

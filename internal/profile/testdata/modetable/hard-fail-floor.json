@@ -1,0 +1,7 @@
+{"profile": null, "cases": [
+{"name": "deny-controls-hard-fail", "input": {"fallback": "hard_fail_floor", "org_id": "bobthecorp"},
+ "want": {"run_mode": "soft_fail", "deny_floor": "hard_fail", "control_modes": {"UNKNOWN-1": {"deny": "hard_fail", "warn": "soft_fail"}}, "graph_not_enforced": true, "environment": {}, "workspace": {}, "scope_checks": {"unscoped":"","workspace":"exception_scope_untrusted: workspace","environment":"exception_scope_untrusted: environment","both":"exception_scope_untrusted: workspace, environment","sidecar":"exception_scope_untrusted: workspace","sidecar_environment":"exception_scope_untrusted: workspace, environment"}}},
+{"name": "sidecar-ignored-env-raises-warn", "input": {"fallback": "hard_fail_floor", "org_id": "bobthecorp", "sidecar_configured": true, "env_mode": "grandfather"},
+ "want": {"run_mode": "grandfather", "deny_floor": "hard_fail", "control_modes": {"UNKNOWN-1": {"deny": "hard_fail", "warn": "grandfather"}}, "graph_not_enforced": true, "environment": {}, "workspace": {}, "scope_checks": {"unscoped":"","workspace":"exception_scope_untrusted: workspace","environment":"exception_scope_untrusted: environment","both":"exception_scope_untrusted: workspace, environment","sidecar":"exception_scope_untrusted: workspace","sidecar_environment":"exception_scope_untrusted: workspace, environment"},
+  "warnings": ["exceptions file ignored: no org profile enables self-service exceptions"]}}
+]}

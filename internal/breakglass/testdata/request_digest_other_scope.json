@@ -1,0 +1,18 @@
+{
+  "description": "request_digest over other controls than the receipt lists",
+  "policy": {},
+  "receipt_set": {
+    "controls": [
+      "CTF.S3.2"
+    ]
+  },
+  "queries": [
+    {
+      "control": "CTF.S3.1",
+      "key": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "result": "fail",
+      "want": false
+    }
+  ],
+  "warning": "request_digest does not match"
+}

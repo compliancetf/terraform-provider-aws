@@ -1,0 +1,8 @@
+{
+  "description": "signed by a key the profile does not list under that kid",
+  "sign": "other_key",
+  "want": {
+    "summary": "Verdict signature invalid: signature does not verify",
+    "detail": "Re-run terraform plan and ctfkit gate, then apply through ctfkit apply."
+  }
+}

@@ -1,0 +1,31 @@
+# Weekly dependency updates. Workflows pin actions to a commit SHA with the
+# version in a trailing comment; Dependabot updates both the SHA and comment.
+#
+# Go: one grouped PR for patch and minor updates across all three modules,
+# held back 7 days after release; each major update comes as its own PR.
+# GitHub Actions: one grouped PR. dependabot-merge.yml merges Go patch/minor
+# PRs that pass Test (with go mod verify and govulncheck), add no module and
+# touch no protected path; everything else waits for the owner.
+version: 2
+updates:
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+    groups:
+      github-actions:
+        patterns: ["*"]
+  - package-ecosystem: gomod
+    directories:
+      - /
+      - /test/fakeupstream
+      - /test/sdkregion
+      - /internal/tfplugin/tools
+    schedule:
+      interval: weekly
+    # A release must be a week old before Dependabot proposes it.
+    cooldown:
+      default-days: 7
+    groups:
+      go-patch-minor:
+        update-types: [patch, minor]

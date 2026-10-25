@@ -1,0 +1,5 @@
+hashicorp-security.asc belongs here: HashiCorp's armored release signing
+public key, primary fingerprint C874011F0AB405110D02105534365D9472D7468F
+(upstream.HashiCorpFingerprint). The provider binary embeds it and
+tools/pinupstream reads it. Until it is committed, runtime download fails
+closed. tools/pinupstream/main.go describes how to fetch and check it.

@@ -1,0 +1,15 @@
+{
+  "description": "configured controls and deletion guards are skipped after apply",
+  "stage": "apply_post",
+  "mode": "hard_fail",
+  "op": "create",
+  "new": {
+    "storage_encrypted": true,
+    "kms_key_id": null,
+    "engine": "postgres",
+    "deletion_protection": true
+  },
+  "want": {
+    "diagnostics": []
+  }
+}

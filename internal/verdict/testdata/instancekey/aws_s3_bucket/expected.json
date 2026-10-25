@@ -1,0 +1,129 @@
+{
+  "entries": [
+    {
+      "actions": [
+        "create"
+      ],
+      "address": "aws_s3_bucket.new",
+      "keys": [
+        {
+          "field": "instance_key",
+          "form": "create",
+          "key": "sha256:7e96079c018651928f9aacb65241cb66568fcbe8c4f1a7afc79feaa1ab1e5239",
+          "prior_identity_kind": "none",
+          "unknown_paths": [
+            [
+              "acceleration_status"
+            ],
+            [
+              "acl"
+            ],
+            [
+              "arn"
+            ],
+            [
+              "bucket_domain_name"
+            ],
+            [
+              "bucket_namespace"
+            ],
+            [
+              "bucket_prefix"
+            ],
+            [
+              "bucket_region"
+            ],
+            [
+              "bucket_regional_domain_name"
+            ],
+            [
+              "cors_rule"
+            ],
+            [
+              "grant"
+            ],
+            [
+              "hosted_zone_id"
+            ],
+            [
+              "id"
+            ],
+            [
+              "lifecycle_rule"
+            ],
+            [
+              "logging"
+            ],
+            [
+              "object_lock_configuration"
+            ],
+            [
+              "object_lock_enabled"
+            ],
+            [
+              "policy"
+            ],
+            [
+              "replication_configuration"
+            ],
+            [
+              "request_payer"
+            ],
+            [
+              "server_side_encryption_configuration"
+            ],
+            [
+              "versioning"
+            ],
+            [
+              "website"
+            ],
+            [
+              "website_domain"
+            ],
+            [
+              "website_endpoint"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "action_reason": "delete_because_no_resource_config",
+      "actions": [
+        "delete"
+      ],
+      "address": "aws_s3_bucket.old",
+      "keys": [
+        {
+          "field": "delete_key",
+          "form": "delete",
+          "key": "sha256:177db36388490c40b7a581d179e1a91f396a9c83d4718ad22bfefad846dd02f8",
+          "prior_identity_kind": "identity",
+          "unknown_paths": []
+        }
+      ]
+    },
+    {
+      "actions": [
+        "update"
+      ],
+      "address": "aws_s3_bucket.this",
+      "keys": [
+        {
+          "field": "instance_key",
+          "form": "update",
+          "key": "sha256:e1f226a7839f684472c86670f4b70149038b464b9c9f9144d914b245ff044fef",
+          "prior_identity_kind": "identity",
+          "unknown_paths": []
+        }
+      ]
+    }
+  ],
+  "format": "compliancetf.instancekey.golden/v1",
+  "k_leaf_hex": "845cba3b9048a0ea701ceebf35bf8d23f96345d369ee41f24777d11aee0609eb",
+  "key_check": "278a53702bed79d81258d55c57dbfd708733a1e9d04c6fe3e8a7e5d0ca565a63",
+  "provider_version": "hashicorp/aws 6.65.0",
+  "terraform_version": "1.16.3",
+  "test_secret_hex": "494e5345435552452d544553542d5345435245542d696e7374616e63656b6579"
+}

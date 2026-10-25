@@ -1,0 +1,20 @@
+[
+  {
+    "id": "db_instance_arn_partition",
+    "version": "1.0.0",
+    "kind": "resource",
+    "resource_type": "aws_db_instance",
+    "reads": [
+      "arn"
+    ],
+    "presence_mode": "effective",
+    "on": [
+      "create",
+      "update"
+    ],
+    "expr": "resource.arn.startsWith('arn:aws:')",
+    "action": "deny",
+    "severity": "high",
+    "message": "RDS instance ARN must be in the aws partition."
+  }
+]

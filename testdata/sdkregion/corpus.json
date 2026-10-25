@@ -1,0 +1,247 @@
+[
+ {
+  "name": "default",
+  "ini": "[default]\nregion = eu-west-1\n",
+  "profile": "default",
+  "sdk": "eu-west-1",
+  "error": false
+ },
+ {
+  "name": "profile default",
+  "ini": "[profile default]\nregion = cn-north-1\n",
+  "profile": "default",
+  "sdk": "cn-north-1",
+  "error": false
+ },
+ {
+  "name": "named",
+  "ini": "[default]\nregion = eu-west-1\n[profile p]\n# c\n; c\n\nregion=cn-north-1\noutput = json\n",
+  "profile": "p",
+  "sdk": "cn-north-1",
+  "error": false
+ },
+ {
+  "name": "gov",
+  "ini": "[profile g]\nregion = us-gov-west-1\n",
+  "profile": "g",
+  "sdk": "us-gov-west-1",
+  "error": false
+ },
+ {
+  "name": "other profiles",
+  "ini": "[profile q]\nregion = us-east-1\n[profile p]\nregion = eu-west-1\n[default]\nregion = us-east-1\n",
+  "profile": "p",
+  "sdk": "eu-west-1",
+  "error": false
+ },
+ {
+  "name": "many keys",
+  "ini": "[default]\noutput = json\nregion = ap-southeast-2\ncli_pager =\n",
+  "profile": "default",
+  "sdk": "ap-southeast-2",
+  "error": false
+ },
+ {
+  "name": "no region",
+  "ini": "[profile p]\noutput = json\n",
+  "profile": "p",
+  "sdk": "",
+  "error": false
+ },
+ {
+  "name": "missing profile",
+  "ini": "[default]\nregion = eu-west-1\n",
+  "profile": "p",
+  "sdk": "",
+  "error": true
+ },
+ {
+  "name": "crlf",
+  "ini": "[profile p]\r\nregion = eu-west-1\r\n",
+  "profile": "p",
+  "sdk": "eu-west-1",
+  "error": false
+ },
+ {
+  "name": "tabs around equals",
+  "ini": "[default]\nregion\t=\tus-west-2\n",
+  "profile": "default",
+  "sdk": "us-west-2",
+  "error": false
+ },
+ {
+  "name": "region key in another section only",
+  "ini": "[profile q]\nregion = eu-west-1\n[profile p]\noutput = json\n",
+  "profile": "p",
+  "sdk": "",
+  "error": false
+ },
+ {
+  "name": "sso-session",
+  "ini": "[profile p]\nregion = eu-west-1\n[sso-session p]\nsso_region = us-east-1\n",
+  "profile": "p",
+  "sdk": "eu-west-1",
+  "error": false
+ },
+ {
+  "name": "nested",
+  "ini": "[profile p]\nregion = eu-west-1\ns3 =\n  max_concurrent_requests = 10\n",
+  "profile": "p",
+  "sdk": "eu-west-1",
+  "error": false
+ },
+ {
+  "name": "default and profile default",
+  "ini": "[default]\nregion = eu-west-1\n[profile default]\nregion = cn-north-1\n",
+  "profile": "default",
+  "sdk": "cn-north-1",
+  "error": false
+ },
+ {
+  "name": "duplicate region",
+  "ini": "[profile p]\nregion = eu-west-1\nregion = cn-north-1\n",
+  "profile": "p",
+  "sdk": "cn-north-1",
+  "error": false
+ },
+ {
+  "name": "upper key",
+  "ini": "[profile p]\nRegion = cn-north-1\n",
+  "profile": "p",
+  "sdk": "cn-north-1",
+  "error": false
+ },
+ {
+  "name": "upper default",
+  "ini": "[DEFAULT]\nregion = cn-north-1\n",
+  "profile": "default",
+  "sdk": "",
+  "error": true
+ },
+ {
+  "name": "colon separator",
+  "ini": "[default]\nregion = us-east-1\nregion: cn-north-1\n",
+  "profile": "default",
+  "sdk": "cn-north-1",
+  "error": false
+ },
+ {
+  "name": "promoted indented property",
+  "ini": "[default]\noutput = json\n  region: cn-north-1\n",
+  "profile": "default",
+  "sdk": "cn-north-1",
+  "error": false
+ },
+ {
+  "name": "hash in header",
+  "ini": "[default]\nregion = us-east-1\n[other#x]\nregion = cn-north-1\n",
+  "profile": "default",
+  "sdk": "cn-north-1",
+  "error": false
+ },
+ {
+  "name": "semicolon in header",
+  "ini": "[default]\nregion = us-east-1\n[profile o ; c]\nregion = cn-north-1\n",
+  "profile": "default",
+  "sdk": "cn-north-1",
+  "error": false
+ },
+ {
+  "name": "unclosed header",
+  "ini": "[default]\nregion = us-east-1\n[x\nregion = cn-north-1\n",
+  "profile": "default",
+  "sdk": "cn-north-1",
+  "error": false
+ },
+ {
+  "name": "trailing header text",
+  "ini": "[default]\nregion = us-east-1\n[x] y\nregion = cn-north-1\n",
+  "profile": "default",
+  "sdk": "cn-north-1",
+  "error": false
+ },
+ {
+  "name": "continuation after a bare line",
+  "ini": "[default]\nregion = cn-north-1\nignored\n  extra\n",
+  "profile": "default",
+  "sdk": "cn-north-1\nextra",
+  "error": false
+ },
+ {
+  "name": "inline comment",
+  "ini": "[profile p]\nregion = eu-west-1 # c\n",
+  "profile": "p",
+  "sdk": "eu-west-1",
+  "error": false
+ },
+ {
+  "name": "cli keys",
+  "ini": "[profile p]\noutput = text\ncli_pager = less\ncli_auto_prompt = off\ncli_timestamp_format = iso8601\ncli_binary_format = raw-in-base64-out\ncli_history = enabled\nregion = sa-east-1\n",
+  "profile": "p",
+  "sdk": "sa-east-1",
+  "error": false
+ },
+ {
+  "name": "missing sso session",
+  "ini": "[default]\nregion = us-east-1\nsso_session = x\n",
+  "profile": "default",
+  "sdk": "",
+  "error": true
+ },
+ {
+  "name": "missing source profile",
+  "ini": "[profile p]\nregion = us-east-1\nrole_arn = arn:aws:iam::1:role/r\nsource_profile = q\n",
+  "profile": "p",
+  "sdk": "",
+  "error": true
+ },
+ {
+  "name": "bad max_attempts",
+  "ini": "[default]\nregion = us-east-1\nmax_attempts = abc\n",
+  "profile": "default",
+  "sdk": "",
+  "error": true
+ },
+ {
+  "name": "role session name",
+  "ini": "[default]\nregion = us-east-1\nrole_session_name = s\n",
+  "profile": "default",
+  "sdk": "us-east-1",
+  "error": false
+ },
+ {
+  "name": "other sections may hold any key",
+  "ini": "[profile q]\nrole_arn = r\nmax_attempts = abc\n[default]\nregion = us-east-1\n",
+  "profile": "default",
+  "sdk": "us-east-1",
+  "error": false
+ },
+ {
+  "name": "profile default alone",
+  "ini": "[profile default]\nregion = us-east-1\n",
+  "profile": "default",
+  "sdk": "us-east-1",
+  "error": false
+ },
+ {
+  "name": "backslash continuation",
+  "ini": "[default]\ncli_pager = \\\nregion = us-east-1\n",
+  "profile": "default",
+  "sdk": "us-east-1",
+  "error": false
+ },
+ {
+  "name": "unclosed quote in target",
+  "ini": "[default]\ncli_pager = \"less\nregion = us-east-1\n",
+  "profile": "default",
+  "sdk": "us-east-1",
+  "error": false
+ },
+ {
+  "name": "unclosed quote in other section",
+  "ini": "[other]\nfoo = \"bar\n[default]\nregion = us-east-1\n",
+  "profile": "default",
+  "sdk": "us-east-1",
+  "error": false
+ }
+]

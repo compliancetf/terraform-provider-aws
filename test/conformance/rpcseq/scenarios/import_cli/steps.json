@@ -1,0 +1,6 @@
+{
+  "steps": [
+    {"cmd": ["import", "-no-color", "fake_thing.a", "bobthecorp-imported"], "exit": 0, "stdout_contains": ["Import successful!"]},
+    {"cmd": ["plan", "-no-color", "-detailed-exitcode"], "exit": 0, "stdout_contains": ["No changes."], "state_unchanged": true}
+  ]
+}

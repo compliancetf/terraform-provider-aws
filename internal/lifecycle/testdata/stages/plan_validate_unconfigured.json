@@ -1,0 +1,16 @@
+{
+  "description": "validate before Configure: no diagnostics, no error (L4)",
+  "stage": "validate",
+  "mode": "hard_fail",
+  "op": "",
+  "unconfigured": true,
+  "config": {
+    "storage_encrypted": false,
+    "kms_key_id": "arn:aws:kms:us-east-1:111122223333:key/bobthecorp-rds",
+    "engine": "postgres"
+  },
+  "want": {
+    "diagnostics": [],
+    "stamp": false
+  }
+}

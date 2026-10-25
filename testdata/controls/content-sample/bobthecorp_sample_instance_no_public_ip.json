@@ -1,0 +1,8 @@
+{"about": "equals_any [false] on a computed bool, fail-closed: null fails, unlike the AWS default false. In a plan an unset computed value is unknown, not null.",
+ "control": {"id": "bobthecorp_sample_instance_no_public_ip", "version": "1.0.0", "kind": "resource", "resource_type": "aws_instance", "reads": ["associate_public_ip_address"], "presence_mode": "effective", "on": ["create", "update"], "expr": "resource.associate_public_ip_address in [false]", "action": "deny", "severity": "high", "message": "Sample: the instance must not get a public IP address."},
+ "cases": [
+  {"id": "P-01-false", "resource": {"associate_public_ip_address": false}, "expect": {"state": "pass", "err_class": ""}},
+  {"id": "F-01-true", "resource": {"associate_public_ip_address": true}, "expect": {"state": "fail", "err_class": ""}},
+  {"id": "F-02-null", "resource": {}, "expect": {"state": "fail", "err_class": ""}},
+  {"id": "U-01-computed", "resource": {"associate_public_ip_address": {"$unknown": true}}, "expect": {"state": "unknown", "err_class": ""}}
+ ]}

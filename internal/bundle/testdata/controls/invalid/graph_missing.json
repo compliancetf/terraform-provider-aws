@@ -1,0 +1,1 @@
+[{"id": "s3_bucket_public_access_block_present", "version": "1.0.0", "kind": "graph", "resource_type": "aws_s3_bucket", "action": "deny", "severity": "high", "message": "S3 bucket has no public access block.", "fix": "Add aws_s3_bucket_public_access_block."}]

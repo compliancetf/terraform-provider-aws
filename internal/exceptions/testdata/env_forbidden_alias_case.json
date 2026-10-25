@@ -1,0 +1,7 @@
+{
+  "description": "forbid_environment_scoped entries match aliases case-insensitively",
+  "hcl": "applied.hcl",
+  "table": {"forbid_environment_scoped": ["ckv_aws_16"]},
+  "warnings": ["exception legacy-reporting-db: control may not be excepted per environment; rds_db_instance_encryption_at_rest_enabled enforced"],
+  "lookups": [{"resource": {"identifier": "legacy-reporting", "storage_encrypted": false}, "want": {"status": "rejected"}}]
+}

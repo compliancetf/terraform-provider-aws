@@ -1,0 +1,127 @@
+{
+  "format_version": "1.2",
+  "resource_changes": [
+    {
+      "address": "aws_ebs_volume.new",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "after": {
+          "encrypted": true,
+          "final_snapshot": false,
+          "multi_attach_enabled": null,
+          "outpost_arn": null,
+          "region": "us-east-1",
+          "size": 100,
+          "tags": null,
+          "timeouts": null,
+          "type": "gp3",
+          "volume_initialization_rate": null
+        },
+        "after_identity": {
+          "account_id": null,
+          "id": null,
+          "region": null
+        },
+        "after_sensitive": {
+          "tags_all": {}
+        },
+        "after_unknown": {
+          "arn": true,
+          "availability_zone": true,
+          "create_time": true,
+          "id": true,
+          "iops": true,
+          "kms_key_id": true,
+          "snapshot_id": true,
+          "tags_all": true,
+          "throughput": true
+        },
+        "before": null,
+        "before_sensitive": false
+      },
+      "mode": "managed",
+      "name": "new",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "type": "aws_ebs_volume"
+    },
+    {
+      "address": "aws_ebs_volume.this",
+      "change": {
+        "actions": [
+          "update"
+        ],
+        "after": {
+          "arn": "arn:aws:ec2:us-east-1:111111111111:volume/vol-0fffffffffffffff1",
+          "availability_zone": "us-east-1a",
+          "create_time": "bobthecorp-fake-create_time",
+          "encrypted": true,
+          "final_snapshot": false,
+          "id": "vol-0fffffffffffffff1",
+          "iops": 0,
+          "kms_key_id": "bobthecorp-fake-kms_key_id",
+          "multi_attach_enabled": null,
+          "outpost_arn": null,
+          "region": "us-east-1",
+          "size": 20,
+          "snapshot_id": "bobthecorp-fake-snapshot_id",
+          "tags": {
+            "Name": "bobthecorp-vol"
+          },
+          "tags_all": {
+            "Name": "bobthecorp-vol"
+          },
+          "throughput": 0,
+          "timeouts": null,
+          "type": "gp3",
+          "volume_initialization_rate": null
+        },
+        "after_identity": {
+          "account_id": null,
+          "id": null,
+          "region": null
+        },
+        "after_sensitive": {
+          "tags": {},
+          "tags_all": {}
+        },
+        "after_unknown": {},
+        "before": {
+          "arn": "arn:aws:ec2:us-east-1:111111111111:volume/vol-0fffffffffffffff1",
+          "availability_zone": "us-east-1a",
+          "create_time": "bobthecorp-fake-create_time",
+          "encrypted": true,
+          "final_snapshot": false,
+          "id": "vol-0fffffffffffffff1",
+          "iops": 0,
+          "kms_key_id": "bobthecorp-fake-kms_key_id",
+          "multi_attach_enabled": null,
+          "outpost_arn": null,
+          "region": "us-east-1",
+          "size": 10,
+          "snapshot_id": "bobthecorp-fake-snapshot_id",
+          "tags": {
+            "Name": "bobthecorp-vol"
+          },
+          "tags_all": {
+            "Name": "bobthecorp-vol"
+          },
+          "throughput": 0,
+          "timeouts": null,
+          "type": "gp3",
+          "volume_initialization_rate": null
+        },
+        "before_sensitive": {
+          "tags": {},
+          "tags_all": {}
+        }
+      },
+      "mode": "managed",
+      "name": "this",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "type": "aws_ebs_volume"
+    }
+  ],
+  "terraform_version": "1.16.3"
+}

@@ -1,0 +1,37 @@
+{
+  "result": "warn",
+  "findings": [
+    {
+      "control_id": "db_instance_delete_guard_password",
+      "kind": "deletion_guard",
+      "resource_type": "aws_db_instance",
+      "read": "password_length",
+      "check": "deprecated",
+      "result": "warn"
+    },
+    {
+      "control_id": "db_instance_identifier_or_prior_password",
+      "kind": "resource",
+      "resource_type": "aws_db_instance",
+      "read": "password_length",
+      "check": "deprecated",
+      "result": "warn"
+    },
+    {
+      "control_id": "db_instance_password_length_min_14",
+      "kind": "resource",
+      "resource_type": "aws_db_instance",
+      "read": "password_length",
+      "check": "deprecated",
+      "result": "warn"
+    },
+    {
+      "control_id": "vpc_security_group_no_open_ingress",
+      "kind": "resource",
+      "resource_type": "aws_security_group",
+      "read": "ingress.cidr_blocks",
+      "check": "deprecated",
+      "result": "warn"
+    }
+  ]
+}

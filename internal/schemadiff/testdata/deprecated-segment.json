@@ -1,0 +1,150 @@
+{
+  "format_version": "1.0",
+  "provider_schemas": {
+    "registry.terraform.io/hashicorp/aws": {
+      "data_source_schemas": {},
+      "ephemeral_resource_schemas": {},
+      "resource_schemas": {
+        "aws_db_instance": {
+          "block": {
+            "attributes": {
+              "identifier": {
+                "computed": true,
+                "optional": true,
+                "type": "string"
+              },
+              "password_length": {
+                "optional": true,
+                "type": "number"
+              }
+            }
+          },
+          "version": 2
+        },
+        "aws_instance": {
+          "block": {
+            "attributes": {
+              "ebs": {
+                "optional": true,
+                "type": [
+                  "list",
+                  [
+                    "object",
+                    {
+                      "size": "number"
+                    }
+                  ]
+                ]
+              },
+              "tags": {
+                "optional": true,
+                "type": [
+                  "map",
+                  "string"
+                ]
+              }
+            }
+          },
+          "version": 1
+        },
+        "aws_lb_listener": {
+          "block": {
+            "attributes": {
+              "port": {
+                "optional": true,
+                "type": "number"
+              }
+            },
+            "block_types": {
+              "default_action": {
+                "block": {
+                  "attributes": {
+                    "type": {
+                      "deprecated": true,
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "block_types": {
+                    "forward": {
+                      "block": {
+                        "attributes": {
+                          "target_group_arn": {
+                            "optional": true,
+                            "type": "string"
+                          }
+                        },
+                        "block_types": {
+                          "stickiness": {
+                            "block": {
+                              "attributes": {
+                                "enabled": {
+                                  "optional": true,
+                                  "type": "bool"
+                                }
+                              }
+                            },
+                            "max_items": 1,
+                            "nesting_mode": "list"
+                          }
+                        }
+                      },
+                      "max_items": 1,
+                      "nesting_mode": "list"
+                    }
+                  },
+                  "deprecated": true
+                },
+                "min_items": 1,
+                "nesting_mode": "list"
+              }
+            }
+          },
+          "version": 0
+        },
+        "aws_s3_bucket_logging": {
+          "block": {
+            "attributes": {
+              "bucket": {
+                "required": true,
+                "type": "string"
+              },
+              "target_bucket": {
+                "required": true,
+                "type": "string"
+              }
+            }
+          },
+          "version": 0
+        },
+        "aws_security_group": {
+          "block": {
+            "attributes": {
+              "name": {
+                "optional": true,
+                "type": "string"
+              }
+            },
+            "block_types": {
+              "ingress": {
+                "block": {
+                  "attributes": {
+                    "cidr_blocks": {
+                      "optional": true,
+                      "type": [
+                        "set",
+                        "string"
+                      ]
+                    }
+                  }
+                },
+                "nesting_mode": "list"
+              }
+            }
+          },
+          "version": 0
+        }
+      }
+    }
+  }
+}

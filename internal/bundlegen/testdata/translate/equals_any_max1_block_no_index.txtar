@@ -1,0 +1,43 @@
+a path without [0] through a max_items = 1 block renders like [0]
+-- intent.json --
+{
+ "id": "ec2_instance_uses_imdsv2",
+ "resource_type": "aws_instance",
+ "attributes": [
+  {
+   "schema_path": "metadata_options.http_tokens",
+   "condition": "equals_any",
+   "values": [
+    "required"
+   ],
+   "values_from_ref": null
+  }
+ ],
+ "explanation": "Explanation of ec2_instance_uses_imdsv2.",
+ "postcondition": "",
+ "has_strategy_condition": false
+}
+-- want.json --
+{
+  "control": {
+    "id": "ec2_instance_uses_imdsv2",
+    "version": "1.0.0",
+    "kind": "resource",
+    "resource_type": "aws_instance",
+    "reads": [
+      "metadata_options",
+      "metadata_options.http_tokens"
+    ],
+    "presence_mode": "effective",
+    "on": [
+      "create",
+      "update"
+    ],
+    "expr": "resource.metadata_options.exists(e0, e0.http_tokens == \"required\")",
+    "action": "deny",
+    "severity": "",
+    "message": "",
+    "fix": "Explanation of ec2_instance_uses_imdsv2.",
+    "exemption_coverable": []
+  }
+}

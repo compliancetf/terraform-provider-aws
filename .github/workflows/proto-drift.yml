@@ -1,0 +1,83 @@
+name: Proto drift
+
+# Compares the vendored tfplugin5/6 protos with terraform-plugin-go, Terraform
+# and OpenTofu (latest releases) and with the pinned aws provider's plugin-go
+# (scripts/proto-drift.sh). Pull requests run the offline self-test and the
+# SOURCES.json integrity check only, so upstream releases never turn an
+# unrelated PR red; the live comparison runs on the schedule and on demand.
+# A red scheduled run is the alert: the alert job opens one tracking issue (or
+# comments on the open one); classify new methods in classes.json and review
+# intercepted handlers in the pin-bump PR.
+# No pull_request_target, no secrets; read-only token except the alert job's
+# issues: write, which checks out and runs no repository code.
+
+# No push/pull_request triggers: the workflow runs on schedule or on demand;
+# run locally.
+on:
+  schedule:
+    - cron: "17 6 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  self-test:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
+        with:
+          go-version-file: internal/tfplugin/tools/go.mod
+          cache-dependency-path: internal/tfplugin/tools/go.sum
+      - run: ./scripts/proto-drift.sh --self-test
+      - run: ./scripts/proto-drift.sh --integrity
+
+  live:
+    if: github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      GOPROXY: https://proxy.golang.org
+      GOSUMDB: sum.golang.org
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
+        with:
+          go-version-file: internal/tfplugin/tools/go.mod
+          cache-dependency-path: internal/tfplugin/tools/go.sum
+      - run: ./scripts/proto-drift.sh --self-test
+      - run: ./scripts/proto-drift.sh
+
+  alert:
+    needs: live
+    if: failure() && github.event_name == 'schedule'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      issues: write
+    env:
+      GH_TOKEN: ${{ github.token }}
+      REPO: ${{ github.repository }}
+      RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+    steps:
+      - name: Open or update the proto drift issue
+        run: |
+          set -euo pipefail
+          title="Proto drift: scheduled check failed"
+          body="Scheduled proto-drift run failed: $RUN_URL
+          Exit 1 is DRIFT, UNCLASSIFIED or REVIEW: classify new methods in classes.json and review intercepted handlers in the pin-bump PR. Exit 2 is a fetch or tool failure, never drift."
+          n=$(gh api --paginate "repos/$REPO/issues?state=open&per_page=100" \
+            --jq ".[] | select(.pull_request == null and .title == \"$title\") | .number")
+          n=${n%%$'\n'*}
+          if [ -n "$n" ]; then
+            gh api "repos/$REPO/issues/$n/comments" -f body="$body" >/dev/null
+          else
+            gh api "repos/$REPO/issues" -f title="$title" -f body="$body" >/dev/null
+          fi

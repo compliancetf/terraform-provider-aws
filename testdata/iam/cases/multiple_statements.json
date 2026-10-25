@@ -1,0 +1,1 @@
+{"Version":"2012-10-17","Statement":[{"Sid":"A","Effect":"Allow","Principal":{"AWS":"arn:aws:iam::111111111111:root"},"Action":"kms:*","Resource":"*"},{"Sid":"B","Effect":"Deny","Principal":"*","NotAction":["kms:Decrypt","kms:DescribeKey"],"Resource":"*"}]}

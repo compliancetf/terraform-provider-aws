@@ -1,0 +1,99 @@
+{
+  "format": "compliancetf.iampolicy/v1",
+  "version": "2012-10-17",
+  "statements": [
+    {
+      "sid": "",
+      "effect": "Deny",
+      "actions": [
+        "s3:putobject"
+      ],
+      "not_actions": [],
+      "resources": [],
+      "not_resources": [],
+      "principals": {
+        "aws": [
+          "*"
+        ]
+      },
+      "not_principals": {},
+      "conditions": [
+        {
+          "op": "NumericLessThan",
+          "set_op": "",
+          "if_exists": false,
+          "key": "aws:multifactorauthage",
+          "values": [
+            "3600"
+          ]
+        },
+        {
+          "op": "StringEquals",
+          "set_op": "",
+          "if_exists": false,
+          "key": "aws:principalorgid",
+          "values": [
+            "o-bobthecorp"
+          ]
+        },
+        {
+          "op": "Bool",
+          "set_op": "",
+          "if_exists": false,
+          "key": "aws:securetransport",
+          "values": [
+            "false"
+          ]
+        },
+        {
+          "op": "StringEquals",
+          "set_op": "",
+          "if_exists": false,
+          "key": "aws:sourcevpce",
+          "values": [
+            "vpce-1",
+            "vpce-2"
+          ]
+        },
+        {
+          "op": "StringLike",
+          "set_op": "ForAllValues",
+          "if_exists": true,
+          "key": "aws:tagkeys",
+          "values": [
+            "Env",
+            "Team"
+          ]
+        },
+        {
+          "op": "StringNotEquals",
+          "set_op": "",
+          "if_exists": false,
+          "key": "s3:x-amz-server-side-encryption",
+          "values": [
+            "aws:kms"
+          ]
+        }
+      ],
+      "action_all": false,
+      "principal_any": true,
+      "resource_any": false,
+      "action_any": false,
+      "principal_all": true,
+      "resource_all": false,
+      "unconditional": false,
+      "ambiguous": [
+        "conditional",
+        "resource_wildcard"
+      ],
+      "actions_expanded": [],
+      "not_actions_expanded": [],
+      "unresolved_actions": [],
+      "unresolved_principals": {},
+      "unresolved_resources": [
+        "arn:aws:s3:::bobthecorp-data/*"
+      ]
+    }
+  ],
+  "catalog": ""
+}

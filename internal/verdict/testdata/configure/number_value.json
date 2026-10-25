@@ -1,0 +1,15 @@
+{
+  "description": "a number anywhere is refused",
+  "set": {
+    "instances": [
+      {
+        "address": "aws_s3_bucket.logs",
+        "count": 1
+      }
+    ]
+  },
+  "want": {
+    "summary": "Invalid verdict file",
+    "detail": "The file is not a compliancetf.verdict/v1 document."
+  }
+}

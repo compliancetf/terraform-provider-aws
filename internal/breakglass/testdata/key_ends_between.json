@@ -1,0 +1,14 @@
+{
+  "description": "the receipt key is valid at consumed_at but expired when the verdict was issued",
+  "policy": {},
+  "sign": "ends_between",
+  "queries": [
+    {
+      "control": "CTF.S3.1",
+      "key": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "result": "fail",
+      "want": false
+    }
+  ],
+  "warning": "receipt signature invalid: key not valid at this time"
+}

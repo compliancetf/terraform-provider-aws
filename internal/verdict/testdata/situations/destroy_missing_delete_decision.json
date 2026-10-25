@@ -1,0 +1,42 @@
+{
+  "description": "destroy missing delete decision",
+  "verdict": true,
+  "required": true,
+  "delete": true,
+  "type": "aws_s3_bucket",
+  "matches": [
+    {
+      "address": "aws_s3_bucket.logs",
+      "type": "aws_s3_bucket",
+      "action": "replace",
+      "decisions": [
+        {
+          "control": "s3_public_access_block_kept",
+          "version": "1.0.0",
+          "result": "pass",
+          "action": "deny"
+        }
+      ],
+      "not_evaluable": [],
+      "exceptions": [],
+      "delete_decisions": []
+    }
+  ],
+  "graph": [
+    {
+      "id": "s3_public_access_block_kept",
+      "version": "1.0.0",
+      "message": "Public access block deleted while its bucket stays.",
+      "fail_severity": "error"
+    }
+  ],
+  "excepted": [],
+  "want": [
+    {
+      "control": "s3_public_access_block_kept",
+      "version": "1.0.0",
+      "result": "missing_decision",
+      "severity": "error"
+    }
+  ]
+}

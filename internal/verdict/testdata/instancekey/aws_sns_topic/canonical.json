@@ -1,0 +1,49 @@
+{
+  "entries": [
+    {
+      "actions": [
+        "create"
+      ],
+      "address": "aws_sns_topic.new",
+      "keys": [
+        {
+          "after": {
+            "content_based_deduplication": "b:false",
+            "fifo_topic": "b:false",
+            "name": "s:bobthecorp-reports",
+            "region": "s:us-east-1"
+          },
+          "after_hashed_jcs": "{\"content_based_deduplication\":\"bd2697924fc3dbc2684e37198d7f4911d738e969f1d3a4db9e113420c2e90f17\",\"fifo_topic\":\"bd2697924fc3dbc2684e37198d7f4911d738e969f1d3a4db9e113420c2e90f17\",\"name\":\"beb34f177ac779ca6317a1da249e5418e7e84e4d25ba0cdbcbb0f733e1b5b784\",\"region\":\"8df8ff45a31e55a282b554a4217667bd534d60853102522fb525315732856f2a\"}",
+          "field": "instance_key",
+          "form": "create",
+          "prior_identity": null,
+          "prior_identity_hashed_jcs": "null",
+          "prior_identity_kind": "none"
+        }
+      ]
+    },
+    {
+      "actions": [
+        "delete"
+      ],
+      "address": "aws_sns_topic.this",
+      "deposed": "b0b7ec01",
+      "keys": [
+        {
+          "after": null,
+          "after_hashed_jcs": "null",
+          "field": "delete_key",
+          "form": "delete",
+          "prior_identity": {
+            "arn": "s:arn:aws:sns:us-east-1:111111111111:bobthecorp-alerts-old"
+          },
+          "prior_identity_hashed_jcs": "{\"arn\":\"f18ac0cbb8852e8ee0c3c0842738efd0e51853a6e727870ae75e7d94be0638d1\"}",
+          "prior_identity_kind": "identity"
+        }
+      ]
+    }
+  ],
+  "format": "compliancetf.instancekey.golden/v1",
+  "provider_version": "hashicorp/aws 6.65.0",
+  "terraform_version": "1.16.3"
+}

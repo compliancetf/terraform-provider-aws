@@ -1,0 +1,78 @@
+{
+  "entries": [
+    {
+      "actions": [
+        "create"
+      ],
+      "address": "aws_cloudwatch_log_group.new",
+      "keys": [
+        {
+          "field": "instance_key",
+          "form": "create",
+          "key": "sha256:1a6e444cd29e1159d261075eeb3de8fc31f2fb905f4bd9d19312e78064d852a2",
+          "prior_identity_kind": "none",
+          "unknown_paths": [
+            [
+              "arn"
+            ],
+            [
+              "deletion_protection_enabled"
+            ],
+            [
+              "id"
+            ],
+            [
+              "kms_key_id"
+            ],
+            [
+              "log_group_class"
+            ],
+            [
+              "name_prefix"
+            ],
+            [
+              "tags_all"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "action_reason": "delete_because_no_resource_config",
+      "actions": [
+        "delete"
+      ],
+      "address": "aws_cloudwatch_log_group.old",
+      "keys": [
+        {
+          "field": "delete_key",
+          "form": "delete",
+          "key": "sha256:7d0f3f7f98ae0a236cd56f365ddaeb3b45e3245a888ab766983f549328ea2e13",
+          "prior_identity_kind": "identity",
+          "unknown_paths": []
+        }
+      ]
+    },
+    {
+      "actions": [
+        "update"
+      ],
+      "address": "aws_cloudwatch_log_group.this",
+      "keys": [
+        {
+          "field": "instance_key",
+          "form": "update",
+          "key": "sha256:947a17c2e36c4de6d4e71c7ff272f4d43773afc4ba21fc64bcdff158a759050d",
+          "prior_identity_kind": "identity",
+          "unknown_paths": []
+        }
+      ]
+    }
+  ],
+  "format": "compliancetf.instancekey.golden/v1",
+  "k_leaf_hex": "845cba3b9048a0ea701ceebf35bf8d23f96345d369ee41f24777d11aee0609eb",
+  "key_check": "278a53702bed79d81258d55c57dbfd708733a1e9d04c6fe3e8a7e5d0ca565a63",
+  "provider_version": "hashicorp/aws 6.65.0",
+  "terraform_version": "1.16.3",
+  "test_secret_hex": "494e5345435552452d544553542d5345435245542d696e7374616e63656b6579"
+}

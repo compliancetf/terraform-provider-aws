@@ -1,0 +1,1 @@
+{"Version":"2012-10-17","Statement":[{"Effect":"Deny","Action":"*","Resource":"*","Condition":{"NotIpAddress":{"aws:SourceIp":["10.0.0.0/8","192.0.2.0/24"]},"IpAddress":{"aws:SourceIp":"198.51.100.0/24"}}}]}

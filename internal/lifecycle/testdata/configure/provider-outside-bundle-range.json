@@ -1,0 +1,1 @@
+{"provider_version": "3.1.0", "want": {"error": "provider 3.1.0 is outside the provider version range of bundle cis-aws"}}

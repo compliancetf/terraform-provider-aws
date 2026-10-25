@@ -1,0 +1,52 @@
+two attributes of one max_items = 1 block share one exists()
+-- intent.json --
+{
+ "id": "s3_bucket_versioning_mfa",
+ "resource_type": "aws_s3_bucket_versioning",
+ "attributes": [
+  {
+   "schema_path": "versioning_configuration[0].status",
+   "condition": "equals_any",
+   "values": [
+    "Enabled"
+   ],
+   "values_from_ref": null
+  },
+  {
+   "schema_path": "versioning_configuration[0].mfa_delete",
+   "condition": "equals_any",
+   "values": [
+    "Enabled"
+   ],
+   "values_from_ref": null
+  }
+ ],
+ "explanation": "Explanation of s3_bucket_versioning_mfa.",
+ "postcondition": "",
+ "has_strategy_condition": false
+}
+-- want.json --
+{
+  "control": {
+    "id": "s3_bucket_versioning_mfa",
+    "version": "1.0.0",
+    "kind": "resource",
+    "resource_type": "aws_s3_bucket_versioning",
+    "reads": [
+      "versioning_configuration",
+      "versioning_configuration.mfa_delete",
+      "versioning_configuration.status"
+    ],
+    "presence_mode": "effective",
+    "on": [
+      "create",
+      "update"
+    ],
+    "expr": "resource.versioning_configuration.exists(e0, e0.status == \"Enabled\" && e0.mfa_delete == \"Enabled\")",
+    "action": "deny",
+    "severity": "",
+    "message": "",
+    "fix": "Explanation of s3_bucket_versioning_mfa.",
+    "exemption_coverable": []
+  }
+}

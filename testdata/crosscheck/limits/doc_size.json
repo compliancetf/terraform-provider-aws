@@ -1,0 +1,8 @@
+{"format": "compliancetf.lib-limits/v1",
+ "about": "json.path document size limit (256 KiB), checked before decode. The document is generated: doc_bytes long, {\"a\":\"xx...\"} or, when malformed, with a duplicate key {\"a\":1,\"a\":\"xx...\"}; remaining_us is the remaining per-resource budget.",
+ "cases": [
+  {"id": "L-01-at-limit", "doc_bytes": 262144, "remaining_us": 50000, "expect": {"err_class": ""}},
+  {"id": "L-02-over-limit", "doc_bytes": 262145, "remaining_us": 50000, "expect": {"err_class": "limit"}},
+  {"id": "L-03-over-limit-malformed", "doc_bytes": 262145, "malformed": true, "remaining_us": 50000, "expect": {"err_class": "limit"}},
+  {"id": "L-04-at-limit-malformed", "doc_bytes": 262144, "malformed": true, "remaining_us": 50000, "expect": {"err_class": "type_error"}}
+ ]}

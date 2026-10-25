@@ -1,0 +1,7 @@
+{
+  "description": "a profile without max_lifetime_days bounds nothing: every entry is rejected (fail closed)",
+  "hcl": "applied.hcl",
+  "table": {"max_lifetime_days": 0},
+  "warnings": ["exception legacy-reporting-db: the org profile sets no max_lifetime_days; rds_db_instance_encryption_at_rest_enabled enforced"],
+  "lookups": [{"resource": {"identifier": "legacy-reporting", "storage_encrypted": false}, "want": {"status": "rejected"}}]
+}

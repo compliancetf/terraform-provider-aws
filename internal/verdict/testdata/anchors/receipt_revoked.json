@@ -1,0 +1,7 @@
+{
+  "description": "a receipt key in revoked_kids is rejected",
+  "use": "receipt",
+  "source": "profile",
+  "revoked": true,
+  "want_release": "kid revoked"
+}

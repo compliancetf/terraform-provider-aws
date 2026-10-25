@@ -1,0 +1,72 @@
+{
+  "description": "destroy RPC of a replace as Core sends it (op change, the create re-plan's envelope): only the deletion guards run on Prior (the failing create control is not run) and Verdict gets only the recomputed delete key, though the verdict holds both halves",
+  "stage": "apply_pre",
+  "mode": "hard_fail",
+  "verdict_required": true,
+  "op": "change",
+  "envelope": {
+    "op": "create",
+    "digest": "current",
+    "prior_identity_kind": "id"
+  },
+  "config": null,
+  "prior": {
+    "storage_encrypted": false,
+    "kms_key_id": "arn:aws:kms:us-east-1:111122223333:key/bobthecorp-rds",
+    "engine": "postgres",
+    "deletion_protection": true,
+    "id": "db-1"
+  },
+  "planned": null,
+  "verdict": {
+    "entries": [
+      {
+        "form": "create",
+        "planned": {
+          "storage_encrypted": false,
+          "kms_key_id": "arn:aws:kms:us-east-1:111122223333:key/bobthecorp-rds",
+          "engine": "aurora-postgresql",
+          "deletion_protection": true
+        },
+        "prior_identity_kind": "none"
+      },
+      {
+        "form": "delete",
+        "prior_identity_kind": "id",
+        "prior_identity": {
+          "id": "db-1"
+        }
+      }
+    ],
+    "want_keys": [
+      {
+        "form": "delete",
+        "prior_identity_kind": "id",
+        "prior_identity": {
+          "id": "db-1"
+        },
+        "type_name": "aws_db_instance"
+      }
+    ]
+  },
+  "want": {
+    "diagnostics": [
+      {
+        "severity": "error",
+        "summary": "[rds_instance_deletion_guard] Disable deletion_protection before destroying this instance.",
+        "attribute": "AttributeName(\"deletion_protection\")",
+        "detail": "Severity: medium\nMode: hard_fail\nStage: apply_pre\nTo waive: add an exception for rds_instance_deletion_guard in compliance-exceptions.hcl"
+      }
+    ],
+    "evidence": {
+      "op": "change",
+      "results": [
+        {
+          "control": "rds_instance_deletion_guard",
+          "state": "fail",
+          "decision": "blocked"
+        }
+      ]
+    }
+  }
+}

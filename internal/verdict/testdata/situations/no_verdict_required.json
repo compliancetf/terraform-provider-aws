@@ -1,0 +1,19 @@
+{
+  "description": "no verdict required",
+  "verdict": false,
+  "required": true,
+  "delete": false,
+  "type": "aws_s3_bucket",
+  "matches": [],
+  "graph": [],
+  "excepted": [],
+  "want": [
+    {
+      "control": "",
+      "version": "",
+      "result": "no_verdict",
+      "severity": "error",
+      "text": "This change needs a verdict (profile sets verdict_required). Apply through ctfkit apply or the configured runner."
+    }
+  ]
+}

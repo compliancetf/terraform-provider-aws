@@ -1,0 +1,14 @@
+an attribute and a block with the same name: path refusal, so exists cannot bypass the block_exists review (panel round 2)
+-- schema.json --
+{"format_version": "1.0", "provider_schemas": {"registry.terraform.io/hashicorp/aws": {"resource_schemas": {"aws_bobthecorp_thing": {"version": 0, "block": {"attributes": {"network_interface": {"type": "string", "optional": true}}, "block_types": {"network_interface": {"nesting_mode": "set", "block": {"attributes": {"device_index": {"type": "number", "optional": true}}}}}}}}}}}
+-- intent.json --
+{"id": "bobthecorp_thing_check", "resource_type": "aws_bobthecorp_thing", "attributes": [{"schema_path": "network_interface", "condition": "exists", "values": [], "values_from_ref": null}], "explanation": "", "postcondition": "", "has_strategy_condition": false}
+-- want.json --
+{
+  "review": {
+    "id": "bobthecorp_thing_check",
+    "resource_type": "aws_bobthecorp_thing",
+    "reason": "path",
+    "detail": "network_interface exists: network_interface is both an attribute and a block"
+  }
+}

@@ -1,0 +1,1 @@
+{"block": {"org_id": "bobthecorp"}, "floor": {"min_profile_version": 7}, "profiles": {"env": {"floor_mode": "airgap", "governed": true, "profile_version": 6}}, "want": {"error": "v6 is below the floor v7"}}

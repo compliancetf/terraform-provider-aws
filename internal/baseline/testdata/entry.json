@@ -1,0 +1,12 @@
+{
+  "workspace": "prod",
+  "scope": {"account_id": "111111111111", "region": "us-east-1"},
+  "type": "aws_s3_bucket",
+  "identity_kind": "id",
+  "identity": {"id": "bkt-1"},
+  "address": "aws_s3_bucket.logs",
+  "control": "s3_acl_private",
+  "control_major": "2",
+  "approver": "alice@bobthecorp.example",
+  "ticket": "BOB-123"
+}

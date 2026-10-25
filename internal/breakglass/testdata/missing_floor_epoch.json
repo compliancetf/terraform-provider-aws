@@ -1,0 +1,16 @@
+{
+  "description": "the verdict carries no floor_epoch",
+  "policy": {},
+  "verdict_set": {
+    "floor_epoch": ""
+  },
+  "queries": [
+    {
+      "control": "CTF.S3.1",
+      "key": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "result": "fail",
+      "want": false
+    }
+  ],
+  "warning": "lacks the break-glass context"
+}

@@ -1,0 +1,3 @@
+{"id": "U-25-json-path-unknown", "resource_type": "aws_s3_bucket", "schema": "testdata/schemas/aws-subset.json",
+  "control": {"id": "crosscheck_u_25_json_path_unknown", "version": "1.0.0", "kind": "resource", "resource_type": "aws_s3_bucket", "reads": ["policy"], "presence_mode": "configured", "on": ["create", "update"], "expr": "json.path(config.policy, \"/Statement/0/Effect\") != \"Allow\"", "action": "deny", "severity": "high", "message": "Fixture control."},
+  "bindings": {"op": "create", "env": "prod", "provider": {"region": "eu-west-1", "account_id": "111111111111"}, "config": {"bucket": "bobthecorp-logs", "policy": {"$unknown": true}}}, "expect": {"state": "unknown", "err_class": "", "unknown_paths": ["policy"]}}

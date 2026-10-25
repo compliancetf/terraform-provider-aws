@@ -1,0 +1,18 @@
+{
+  "format": "compliancetf.profile/v1",
+  "org_id": "bobthecorp",
+  "profile_version": 1,
+  "issued_at": "2026-10-08T00:00:00Z",
+  "expires_at": "2026-11-06T00:00:00Z",
+  "governed": false,
+  "mode_floor": {"default": "soft_fail"},
+  "scope": {"environment": "dev", "workspace": "bobthecorp-dev"},
+  "verdict_required": false,
+  "exceptions": {
+    "coverable": {"rds_db_instance_encryption_at_rest_enabled": ["self_service"]},
+    "self_service": ["rds_db_instance_encryption_at_rest_enabled"],
+    "max_lifetime_days": 90
+  },
+  "evidence": {"required": false},
+  "budgets": {}
+}

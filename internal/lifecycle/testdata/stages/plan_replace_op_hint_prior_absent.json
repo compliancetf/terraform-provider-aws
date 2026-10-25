@@ -1,0 +1,24 @@
+{
+  "description": "a replace op hint with a null Prior contradicts the state: no delete half to guard, fail closed",
+  "stage": "plan",
+  "mode": "hard_fail",
+  "op": "replace",
+  "requires_replace": [
+    "engine"
+  ],
+  "config": {
+    "storage_encrypted": true,
+    "kms_key_id": "arn:aws:kms:us-east-1:111122223333:key/bobthecorp-rds",
+    "engine": "postgres"
+  },
+  "prior": null,
+  "planned": {
+    "storage_encrypted": true,
+    "kms_key_id": "arn:aws:kms:us-east-1:111122223333:key/bobthecorp-rds",
+    "engine": "postgres",
+    "deletion_protection": true
+  },
+  "want": {
+    "error": "replace plan without prior state"
+  }
+}

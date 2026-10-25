@@ -1,0 +1,165 @@
+{
+  "grants": {
+    "bound-current.dsse.json": "sha256:c392a74245f76802b669eae91175fc6ebbec83b33292d4845ee7259f54c24a8a",
+    "customer-kms.dsse.json": "sha256:0448dc0cdb59080eb65af7daedbefc3ec19e5d8db31c03b76dcc9b6ad0c5f6f1",
+    "good.dsse.json": "sha256:76cdd14657fcbc6abacebc801a83e177964ba92362525d225a275b2bf74295e4"
+  },
+  "self_service": [
+    {
+      "file": "alias.hcl",
+      "entry": {
+        "label": "alias",
+        "workspace": "bobthecorp-reporting-prod",
+        "controls": [
+          "CKV_AWS_16",
+          "CKV_AWS_999"
+        ],
+        "selector": "type == 'aws_db_instance' && resource.storage_encrypted == false",
+        "environments": [],
+        "expires": "2027-01-01"
+      },
+      "canonical": "{\"controls\":[\"CKV_AWS_16\",\"CKV_AWS_999\"],\"environments\":[],\"expires\":\"2027-01-01\",\"label\":\"alias\",\"selector\":\"type == 'aws_db_instance' && resource.storage_encrypted == false\",\"workspace\":\"bobthecorp-reporting-prod\"}",
+      "digest": "sha256:cefad5b3105b79bf102a263c977b6d65cc7ca02d23868c0d806fcd87aaa81d61"
+    },
+    {
+      "file": "applied.hcl",
+      "entry": {
+        "label": "legacy-reporting-db",
+        "workspace": "bobthecorp-reporting-prod",
+        "controls": [
+          "rds_db_instance_encryption_at_rest_enabled"
+        ],
+        "selector": "type == 'aws_db_instance' && resource.identifier.matches('^legacy-')",
+        "environments": [
+          "prod"
+        ],
+        "expires": "2027-03-31"
+      },
+      "canonical": "{\"controls\":[\"rds_db_instance_encryption_at_rest_enabled\"],\"environments\":[\"prod\"],\"expires\":\"2027-03-31\",\"label\":\"legacy-reporting-db\",\"selector\":\"type == 'aws_db_instance' && resource.identifier.matches('^legacy-')\",\"workspace\":\"bobthecorp-reporting-prod\"}",
+      "digest": "sha256:a742249934469d7dedaa1641406bbdb39fc84c052e23aa4bb4cf9586f316fccb"
+    },
+    {
+      "file": "duplicates-a.hcl",
+      "entry": {
+        "label": "duplicates",
+        "workspace": "bobthecorp-reporting-prod",
+        "controls": [
+          "s3_bucket_logging_enabled",
+          "CKV_AWS_18",
+          "s3_bucket_logging_enabled"
+        ],
+        "selector": "type == 'aws_s3_bucket'",
+        "environments": [],
+        "expires": "2027-06-30"
+      },
+      "canonical": "{\"controls\":[\"CKV_AWS_18\",\"s3_bucket_logging_enabled\",\"s3_bucket_logging_enabled\"],\"environments\":[],\"expires\":\"2027-06-30\",\"label\":\"duplicates\",\"selector\":\"type == 'aws_s3_bucket'\",\"workspace\":\"bobthecorp-reporting-prod\"}",
+      "digest": "sha256:ff175f0b40e277b91e4b6f4f993f6d1216129f5bc5616ff216f11364a8c5fc02"
+    },
+    {
+      "file": "duplicates-b.hcl",
+      "entry": {
+        "label": "duplicates",
+        "workspace": "bobthecorp-reporting-prod",
+        "controls": [
+          "s3_bucket_logging_enabled",
+          "s3_bucket_logging_enabled",
+          "CKV_AWS_18"
+        ],
+        "selector": "type == 'aws_s3_bucket'",
+        "environments": [],
+        "expires": "2027-06-30"
+      },
+      "canonical": "{\"controls\":[\"CKV_AWS_18\",\"s3_bucket_logging_enabled\",\"s3_bucket_logging_enabled\"],\"environments\":[],\"expires\":\"2027-06-30\",\"label\":\"duplicates\",\"selector\":\"type == 'aws_s3_bucket'\",\"workspace\":\"bobthecorp-reporting-prod\"}",
+      "digest": "sha256:ff175f0b40e277b91e4b6f4f993f6d1216129f5bc5616ff216f11364a8c5fc02"
+    },
+    {
+      "file": "expired.hcl",
+      "entry": {
+        "label": "expired",
+        "workspace": "bobthecorp-reporting-prod",
+        "controls": [
+          "rds_db_instance_encryption_at_rest_enabled"
+        ],
+        "selector": "type == 'aws_db_instance' && resource.identifier != null",
+        "environments": [],
+        "expires": "2026-10-06"
+      },
+      "canonical": "{\"controls\":[\"rds_db_instance_encryption_at_rest_enabled\"],\"environments\":[],\"expires\":\"2026-10-06\",\"label\":\"expired\",\"selector\":\"type == 'aws_db_instance' && resource.identifier != null\",\"workspace\":\"bobthecorp-reporting-prod\"}",
+      "digest": "sha256:cda1a48ac39b73094411be0e732b8082f06d08666a76713aabf65211ceebdf58"
+    },
+    {
+      "file": "reordered-a.hcl",
+      "entry": {
+        "label": "multi-env",
+        "workspace": "bobthecorp-reporting-prod",
+        "controls": [
+          "s3_bucket_versioning_enabled",
+          "s3_bucket_logging_enabled",
+          "CKV_AWS_18"
+        ],
+        "selector": "type == 'aws_s3_bucket' && resource.bucket.startsWith('bobthecorp-logs-')",
+        "environments": [
+          "staging",
+          "prod",
+          "dev"
+        ],
+        "expires": "2027-06-30"
+      },
+      "canonical": "{\"controls\":[\"CKV_AWS_18\",\"s3_bucket_logging_enabled\",\"s3_bucket_versioning_enabled\"],\"environments\":[\"dev\",\"prod\",\"staging\"],\"expires\":\"2027-06-30\",\"label\":\"multi-env\",\"selector\":\"type == 'aws_s3_bucket' && resource.bucket.startsWith('bobthecorp-logs-')\",\"workspace\":\"bobthecorp-reporting-prod\"}",
+      "digest": "sha256:f4aa0438c940cbe127ab8ce4a349ff325ab6b1c4ec41342ccf48f77c61a26c44"
+    },
+    {
+      "file": "reordered-b.hcl",
+      "entry": {
+        "label": "multi-env",
+        "workspace": "bobthecorp-reporting-prod",
+        "controls": [
+          "CKV_AWS_18",
+          "s3_bucket_logging_enabled",
+          "s3_bucket_versioning_enabled"
+        ],
+        "selector": "type == 'aws_s3_bucket' && resource.bucket.startsWith('bobthecorp-logs-')",
+        "environments": [
+          "dev",
+          "prod",
+          "staging"
+        ],
+        "expires": "2027-06-30"
+      },
+      "canonical": "{\"controls\":[\"CKV_AWS_18\",\"s3_bucket_logging_enabled\",\"s3_bucket_versioning_enabled\"],\"environments\":[\"dev\",\"prod\",\"staging\"],\"expires\":\"2027-06-30\",\"label\":\"multi-env\",\"selector\":\"type == 'aws_s3_bucket' && resource.bucket.startsWith('bobthecorp-logs-')\",\"workspace\":\"bobthecorp-reporting-prod\"}",
+      "digest": "sha256:f4aa0438c940cbe127ab8ce4a349ff325ab6b1c4ec41342ccf48f77c61a26c44"
+    },
+    {
+      "file": "unicode.hcl",
+      "entry": {
+        "label": "unicode-selector",
+        "workspace": "bobthecorp-reporting-prod",
+        "controls": [
+          "s3_bucket_logging_enabled"
+        ],
+        "selector": "type == 'aws_s3_bucket' && resource.tags['owner'] == 'Böb 😀' && resource.bucket != '\"<>&\t'",
+        "environments": [],
+        "expires": "2027-06-30"
+      },
+      "canonical": "{\"controls\":[\"s3_bucket_logging_enabled\"],\"environments\":[],\"expires\":\"2027-06-30\",\"label\":\"unicode-selector\",\"selector\":\"type == 'aws_s3_bucket' && resource.tags['owner'] == 'Böb 😀' && resource.bucket != '\\\"<>&\\t'\",\"workspace\":\"bobthecorp-reporting-prod\"}",
+      "digest": "sha256:d82915b1dc0235ee1537669d91161c8cb9e9869114b44f99a37924420ab99b56"
+    },
+    {
+      "file": "wrong_environment.hcl",
+      "entry": {
+        "label": "wrong_environment",
+        "workspace": "bobthecorp-reporting-prod",
+        "controls": [
+          "rds_db_instance_encryption_at_rest_enabled"
+        ],
+        "selector": "type == 'aws_db_instance' && resource.identifier != null",
+        "environments": [
+          "dev"
+        ],
+        "expires": "2027-01-01"
+      },
+      "canonical": "{\"controls\":[\"rds_db_instance_encryption_at_rest_enabled\"],\"environments\":[\"dev\"],\"expires\":\"2027-01-01\",\"label\":\"wrong_environment\",\"selector\":\"type == 'aws_db_instance' && resource.identifier != null\",\"workspace\":\"bobthecorp-reporting-prod\"}",
+      "digest": "sha256:ef24be9a4ef499de229e54332c6b484243d61cb7eb1cff315533581729516094"
+    }
+  ]
+}

@@ -1,0 +1,38 @@
+{
+  "cis_v600": {
+    "name": "CIS AWS Foundations Benchmark v6.0.0",
+    "clause_titles": {
+      "2 Sample identity section": ["acct_bobthecorp_contact_set"],
+      "3.2 Sample database section": ["rds_bobthecorp_storage_encrypted"],
+      "4.1 Sample logging section": []
+    }
+  },
+  "hipaa_final_omnibus_2013": {
+    "name": "HIPAA Omnibus Rule 2013",
+    "clause_titles": {
+      "S-308: Sample backup clause": []
+    }
+  },
+  "hipaa_security_2003": {
+    "name": "HIPAA Security Rule 2003",
+    "clause_titles": {
+      "S-312: Sample integrity clause": ["rds_bobthecorp_deletion_guard"]
+    }
+  },
+  "pci_dss_v40": {
+    "name": "PCI DSS v4.0",
+    "clause_titles": {
+      "S10.5: Sample log history clause": ["s3_bobthecorp_versioning_on"],
+      "S3.5: Sample stored data clause": ["rds_bobthecorp_deletion_guard"]
+    }
+  },
+  "soc_2": {
+    "name": "SOC 2",
+    "clause_titles": {
+      "SA1: Sample recovery clause": ["s3_bobthecorp_lifecycle_versioned", "s3_bobthecorp_versioning_on"],
+      "SC6.1: Sample access clause": ["rds_bobthecorp_storage_encrypted"],
+      "SC6.3: Sample role clause": ["iam_bobthecorp_no_kms_wildcard"],
+      "SC7.2: Sample monitoring clause": []
+    }
+  }
+}

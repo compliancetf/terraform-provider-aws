@@ -1,0 +1,8 @@
+{
+  "description": "a kid the profile does not list",
+  "sign": "unknown_kid",
+  "want": {
+    "summary": "Verdict signature invalid: kid unknown",
+    "detail": "Re-run terraform plan and ctfkit gate, then apply through ctfkit apply."
+  }
+}

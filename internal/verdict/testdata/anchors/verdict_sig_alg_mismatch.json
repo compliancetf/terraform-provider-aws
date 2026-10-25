@@ -1,0 +1,7 @@
+{
+  "description": "a signature alg that differs from the key alg is rejected",
+  "use": "verdict",
+  "source": "profile",
+  "sig_alg": "Ed25519",
+  "want_release": "algorithm not allowed"
+}

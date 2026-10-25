@@ -1,0 +1,37 @@
+one member needs review: the whole intent is refused
+-- intent.json --
+{
+ "id": "cloudtrail_trail_mixed",
+ "resource_type": "aws_cloudtrail",
+ "attributes": [
+  {
+   "schema_path": "enable_log_file_validation",
+   "condition": "equals_any",
+   "values": [
+    true
+   ],
+   "values_from_ref": null
+  },
+  {
+   "schema_path": "kms_key_id",
+   "condition": "contains",
+   "values": [
+    "arn:aws:kms"
+   ],
+   "values_from_ref": null
+  }
+ ],
+ "explanation": "Explanation of cloudtrail_trail_mixed.",
+ "postcondition": "",
+ "has_strategy_condition": false
+}
+-- want.json --
+{
+  "review": {
+    "id": "cloudtrail_trail_mixed",
+    "resource_type": "aws_cloudtrail",
+    "reason": "condition",
+    "detail": "kms_key_id contains: contains needs review",
+    "proposal": "resource.enable_log_file_validation == true && resource.kms_key_id != null && resource.kms_key_id.contains(\"arn:aws:kms\")"
+  }
+}

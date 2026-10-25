@@ -1,0 +1,13 @@
+{
+  "evaluator": "lifecycle",
+  "env": {
+    "COMPLIANCETF_ORG_ID": "bobthecorp",
+    "COMPLIANCETF_PROFILE_PATH": "{work}/profile.dsse.json",
+    "COMPLIANCETF_BUNDLE_PATH": "{work}/bundle.tar.gz"
+  },
+  "expect_no_applies": true,
+  "steps": [
+    {"cmd": ["plan", "-no-color"], "exit": 1, "stderr_contains": ["Error: [iam_policy_no_star_star] not evaluable (type_error)\n\n  with fake_thing.wildcard_principal", "Error: [iam_policy_no_star_star] not evaluable (unresolved)\n\n  with fake_thing.catalog_miss", "Error: [iam_policy_no_star_star] Only bobthecorp-admin may pass any role.\n\n  with fake_thing.star", "Treated as a failure of this control."], "stdout_excludes": ["pending"], "stderr_excludes": ["pending", "with fake_thing.canonical"], "state_unchanged": true},
+    {"cmd": ["apply", "-no-color", "-auto-approve"], "exit": 1, "stderr_contains": ["Error: [iam_policy_no_star_star] not evaluable (type_error)\n\n  with fake_thing.wildcard_principal", "Error: [iam_policy_no_star_star] not evaluable (unresolved)\n\n  with fake_thing.catalog_miss", "Error: [iam_policy_no_star_star] Only bobthecorp-admin may pass any role.\n\n  with fake_thing.star", "Treated as a failure of this control."], "stdout_excludes": ["pending"], "stderr_excludes": ["pending", "with fake_thing.canonical"], "state_unchanged": true}
+  ]
+}

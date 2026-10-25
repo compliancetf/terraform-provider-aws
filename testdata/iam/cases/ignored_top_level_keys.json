@@ -1,0 +1,1 @@
+{"Version":"2012-10-17","Id":"bobthecorp-policy","Comment":{"x":[1,2]},"Statement":[{"Effect":"Allow","Action":"sqs:*","Resource":"*"}]}

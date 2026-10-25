@@ -1,0 +1,29 @@
+{
+  "description": "effective read unknown in Planned: blocking control is a pending warning at plan, not an error",
+  "stage": "plan",
+  "mode": "hard_fail",
+  "op": "create",
+  "config": {
+    "storage_encrypted": null,
+    "kms_key_id": "arn:aws:kms:us-east-1:111122223333:key/bobthecorp-rds",
+    "engine": "postgres"
+  },
+  "prior": null,
+  "planned": {
+    "storage_encrypted": "<unknown>",
+    "kms_key_id": "arn:aws:kms:us-east-1:111122223333:key/bobthecorp-rds",
+    "engine": "postgres",
+    "deletion_protection": true
+  },
+  "want": {
+    "diagnostics": [
+      {
+        "severity": "warning",
+        "summary": "[rds_db_instance_encryption_at_rest_enabled] pending: re-checked at apply",
+        "detail": "Unknown until apply: storage_encrypted.",
+        "attribute": "AttributeName(\"storage_encrypted\")"
+      }
+    ],
+    "stamp": true
+  }
+}

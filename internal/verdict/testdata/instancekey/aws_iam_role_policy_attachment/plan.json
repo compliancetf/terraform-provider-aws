@@ -1,0 +1,49 @@
+{
+  "format_version": "1.2",
+  "resource_changes": [
+    {
+      "action_reason": "replace_because_cannot_update",
+      "address": "aws_iam_role_policy_attachment.this",
+      "change": {
+        "actions": [
+          "create",
+          "delete"
+        ],
+        "after": {
+          "policy_arn": "arn:aws:iam::aws:policy/AmazonS3ReadOnlyAccess",
+          "role": "bobthecorp-app"
+        },
+        "after_identity": {
+          "account_id": "111111111111",
+          "policy_arn": "arn:aws:iam::aws:policy/ReadOnlyAccess",
+          "role": "bobthecorp-app"
+        },
+        "after_sensitive": {},
+        "after_unknown": {
+          "id": true
+        },
+        "before": {
+          "id": "bobthecorp-app-20261001000000000000000001",
+          "policy_arn": "arn:aws:iam::aws:policy/ReadOnlyAccess",
+          "role": "bobthecorp-app"
+        },
+        "before_identity": {
+          "account_id": "111111111111",
+          "policy_arn": "arn:aws:iam::aws:policy/ReadOnlyAccess",
+          "role": "bobthecorp-app"
+        },
+        "before_sensitive": {},
+        "replace_paths": [
+          [
+            "policy_arn"
+          ]
+        ]
+      },
+      "mode": "managed",
+      "name": "this",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "type": "aws_iam_role_policy_attachment"
+    }
+  ],
+  "terraform_version": "1.16.3"
+}

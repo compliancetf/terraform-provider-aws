@@ -1,0 +1,6 @@
+{
+  "requires": ["import_block"],
+  "steps": [
+    {"cmd": ["apply", "-no-color", "-auto-approve"], "exit": 0, "stdout_contains": ["Apply complete! Resources: 1 imported, 0 added, 0 changed, 0 destroyed."]}
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "description": "consumed_at with an offset",
+  "policy": {},
+  "receipt_set": {
+    "consumed_at": "2026-10-18T11:50:00+02:00"
+  },
+  "queries": [
+    {
+      "control": "CTF.S3.1",
+      "key": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "result": "fail",
+      "want": false
+    }
+  ],
+  "warning": "must be RFC 3339 UTC"
+}

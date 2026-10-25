@@ -1,0 +1,52 @@
+Over testdata/inputs (catalog, schema): rds translates (review sheet); iam
+(contains) and s3 (path not in the schema) are E_REVIEW_PENDING and emit no
+control.
+-- intents.json --
+{
+  "format": "content.provider-intents/1",
+  "content_version": "0.27.1",
+  "content_commit": "1f2a3ad",
+  "catalog_snapshot_id": "snap_20261004_000000_000000",
+  "policies": [
+    {"id": "iam_bobthecorp_no_kms_wildcard", "resource_type": "aws_iam_policy",
+     "attributes": [{"schema_path": "policy", "condition": "contains", "values": ["kms"], "values_from_ref": null}],
+     "explanation": "Attribute `policy` of `aws_iam_policy` must contain `\"kms\"`.", "postcondition": "", "has_strategy_condition": false},
+    {"id": "rds_bobthecorp_storage_encrypted", "resource_type": "aws_db_instance",
+     "attributes": [{"schema_path": "storage_encrypted", "condition": "equals_any", "values": [true], "values_from_ref": null}],
+     "explanation": "Attribute `storage_encrypted` of `aws_db_instance` must be `true`.", "postcondition": "", "has_strategy_condition": false},
+    {"id": "s3_bobthecorp_versioning_on", "resource_type": "aws_s3_bucket_versioning",
+     "attributes": [{"schema_path": "versioning_configuration[0].status", "condition": "equals_any", "values": ["Enabled"], "values_from_ref": null}],
+     "explanation": "", "postcondition": "", "has_strategy_condition": false}
+  ]
+}
+-- want-generated --
+rds_bobthecorp_storage_encrypted
+-- want-pending --
+iam_bobthecorp_no_kms_wildcard
+s3_bobthecorp_versioning_on
+-- want-review-queue.md --
+# Review queue
+
+2 content intents emit no control until an authored override exists in provider/controls/<id>.yaml.
+
+## 1. `iam_bobthecorp_no_kms_wildcard`
+
+- `E_REVIEW_PENDING iam_bobthecorp_no_kms_wildcard aws_iam_policy: condition: policy contains: contains needs review`
+
+Proposal:
+
+```cel
+resource.policy != null && resource.policy.contains("kms")
+```
+
+## 2. `s3_bobthecorp_versioning_on`
+
+- `E_REVIEW_PENDING s3_bobthecorp_versioning_on aws_s3_bucket_versioning: path: versioning_configuration[0].status equals_any: versioning_configuration is not in the schema`
+-- want-review-sheet.md --
+# Review sheet
+
+1 controls translated from content intents.
+
+| Id | Type | catalog name | Expr |
+|---|---|---|---|
+| `rds_bobthecorp_storage_encrypted` | `aws_db_instance` | Sample database storage is encrypted | `resource.storage_encrypted == true` |

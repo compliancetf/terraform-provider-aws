@@ -1,0 +1,12 @@
+{
+  "result": "fail",
+  "findings": [
+    {
+      "control_id": "db_instance_password_length_min_14",
+      "kind": "resource",
+      "resource_type": "aws_db_instance",
+      "check": "computed_only",
+      "result": "fail"
+    }
+  ]
+}

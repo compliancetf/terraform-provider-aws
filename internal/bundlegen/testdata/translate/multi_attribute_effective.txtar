@@ -1,0 +1,69 @@
+four equals_any: one conjunction in intent order, effective
+-- intent.json --
+{
+ "id": "s3_public_access_block_bucket",
+ "resource_type": "aws_s3_bucket_public_access_block",
+ "attributes": [
+  {
+   "schema_path": "block_public_acls",
+   "condition": "equals_any",
+   "values": [
+    true
+   ],
+   "values_from_ref": null
+  },
+  {
+   "schema_path": "block_public_policy",
+   "condition": "equals_any",
+   "values": [
+    true
+   ],
+   "values_from_ref": null
+  },
+  {
+   "schema_path": "ignore_public_acls",
+   "condition": "equals_any",
+   "values": [
+    true
+   ],
+   "values_from_ref": null
+  },
+  {
+   "schema_path": "restrict_public_buckets",
+   "condition": "equals_any",
+   "values": [
+    true
+   ],
+   "values_from_ref": null
+  }
+ ],
+ "explanation": "Explanation of s3_public_access_block_bucket.",
+ "postcondition": "",
+ "has_strategy_condition": false
+}
+-- want.json --
+{
+  "control": {
+    "id": "s3_public_access_block_bucket",
+    "version": "1.0.0",
+    "kind": "resource",
+    "resource_type": "aws_s3_bucket_public_access_block",
+    "reads": [
+      "block_public_acls",
+      "block_public_policy",
+      "ignore_public_acls",
+      "restrict_public_buckets"
+    ],
+    "presence_mode": "effective",
+    "on": [
+      "create",
+      "update"
+    ],
+    "expr": "resource.block_public_acls == true && resource.block_public_policy == true && resource.ignore_public_acls == true && resource.restrict_public_buckets == true",
+    "action": "deny",
+    "severity": "",
+    "message": "",
+    "fix": "Explanation of s3_public_access_block_bucket.",
+    "exemption_coverable": []
+  }
+}

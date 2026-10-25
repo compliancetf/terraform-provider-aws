@@ -1,0 +1,37 @@
+set block without max_items = 1: review, guarded all() proposal, exists() alternative
+-- intent.json --
+{
+ "id": "s3_bucket_default_encryption_enabled_kms",
+ "resource_type": "aws_s3_bucket_server_side_encryption_configuration",
+ "attributes": [
+  {
+   "schema_path": "rule[0].apply_server_side_encryption_by_default[0].sse_algorithm",
+   "condition": "equals_any",
+   "values": [
+    "aws:kms",
+    "aws:kms:dsse"
+   ],
+   "values_from_ref": null
+  },
+  {
+   "schema_path": "rule[0].apply_server_side_encryption_by_default[0].kms_master_key_id",
+   "condition": "not_empty",
+   "values": [],
+   "values_from_ref": null
+  }
+ ],
+ "explanation": "Explanation of s3_bucket_default_encryption_enabled_kms.",
+ "postcondition": "",
+ "has_strategy_condition": false
+}
+-- want.json --
+{
+  "review": {
+    "id": "s3_bucket_default_encryption_enabled_kms",
+    "resource_type": "aws_s3_bucket_server_side_encryption_configuration",
+    "reason": "unbounded_block",
+    "detail": "rule[0].apply_server_side_encryption_by_default[0].sse_algorithm equals_any: rule has no max_items = 1",
+    "proposal": "size(config.rule) > 0 && config.rule.all(e0, e0.apply_server_side_encryption_by_default.exists(e1, e1.sse_algorithm in [\"aws:kms\", \"aws:kms:dsse\"] && e1.kms_master_key_id != null && size(e1.kms_master_key_id) > 0))",
+    "alternative": "config.rule.exists(e0, e0.apply_server_side_encryption_by_default.exists(e1, e1.sse_algorithm in [\"aws:kms\", \"aws:kms:dsse\"] && e1.kms_master_key_id != null && size(e1.kms_master_key_id) > 0))"
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "description": "verdict for another hashicorp/aws version",
+  "set": {
+    "provider_versions": {
+      "compliancetf/aws": "2.0.0",
+      "hashicorp/aws": "6.0.0"
+    }
+  },
+  "want": {
+    "summary": "Verdict issued for hashicorp/aws 6.0.0, running 6.14.1: re-run plan and gate",
+    "detail": "Re-run terraform plan and ctfkit gate, then apply through ctfkit apply."
+  }
+}

@@ -1,0 +1,22 @@
+values_from_ref: review with the literal list as proposal (values may age)
+-- intent.json --
+{
+ "id": "kms_key_spec_allowed",
+ "resource_type": "aws_kms_key",
+ "attributes": [
+  {"schema_path": "customer_master_key_spec", "condition": "equals_any", "values": ["SYMMETRIC_DEFAULT", "RSA_4096"], "values_from_ref": "kms_key_specs"}
+ ],
+ "explanation": "Explanation of kms_key_spec_allowed.",
+ "postcondition": "",
+ "has_strategy_condition": false
+}
+-- want.json --
+{
+  "review": {
+    "id": "kms_key_spec_allowed",
+    "resource_type": "aws_kms_key",
+    "reason": "values_ref",
+    "detail": "customer_master_key_spec equals_any: values from kms_key_specs",
+    "proposal": "resource.customer_master_key_spec in [\"SYMMETRIC_DEFAULT\", \"RSA_4096\"]"
+  }
+}

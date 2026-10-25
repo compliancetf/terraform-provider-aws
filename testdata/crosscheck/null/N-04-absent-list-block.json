@@ -1,0 +1,3 @@
+{"id": "N-04-absent-list-block", "resource_type": "aws_s3_bucket", "schema": "testdata/schemas/aws-subset.json",
+  "control": {"id": "crosscheck_n_04_absent_list_block", "version": "1.0.0", "kind": "resource", "resource_type": "aws_s3_bucket", "reads": ["cors_rule"], "presence_mode": "effective", "on": ["create", "update"], "expr": "size(resource.cors_rule) >= 1", "action": "deny", "severity": "high", "message": "Fixture control."},
+  "bindings": {"op": "create", "env": "prod", "provider": {"region": "eu-west-1", "account_id": "111111111111"}, "resource": {"bucket": "bobthecorp-logs"}}, "expect": {"state": "fail", "err_class": "", "unknown_paths": []}}

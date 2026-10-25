@@ -1,0 +1,8 @@
+{
+  "description": "expires_at more than 5 min ago",
+  "now": "2026-10-18T22:05:01Z",
+  "want": {
+    "summary": "Verdict expired at 2026-10-18T22:00:00Z: re-run plan and gate",
+    "detail": "Re-run terraform plan and ctfkit gate, then apply through ctfkit apply."
+  }
+}

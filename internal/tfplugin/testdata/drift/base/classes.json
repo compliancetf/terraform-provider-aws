@@ -1,0 +1,5 @@
+{
+  "/tfplugin5.Provider/GetMetadata": "passthrough",
+  "/tfplugin5.Provider/PlanResourceChange": "intercept",
+  "/tfplugin6.Provider/ReadStateBytes": "passthrough"
+}

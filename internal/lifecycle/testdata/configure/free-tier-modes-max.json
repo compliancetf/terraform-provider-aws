@@ -1,0 +1,1 @@
+{"block": {"enforcement_mode": "hard_fail"}, "env": {"COMPLIANCETF_ENFORCEMENT_MODE": "advisory"}, "want": {"bundles": ["cis-aws@1"], "fallback": "free_tier", "run_mode": "hard_fail", "warnings": ["advisory is below the default soft_fail"]}}

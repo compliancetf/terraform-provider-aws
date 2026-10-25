@@ -1,0 +1,84 @@
+{
+  "entries": [
+    {
+      "actions": [
+        "create"
+      ],
+      "address": "aws_dynamodb_table.new",
+      "keys": [
+        {
+          "field": "instance_key",
+          "form": "create",
+          "key": "sha256:b3cfb15ccef670d5b43fc825a661da9c42ec63d6db24c6de21d9805533b7ef6e",
+          "prior_identity_kind": "none",
+          "unknown_paths": [
+            [
+              "arn"
+            ],
+            [
+              "global_secondary_index"
+            ],
+            [
+              "global_table_witness"
+            ],
+            [
+              "id"
+            ],
+            [
+              "point_in_time_recovery"
+            ],
+            [
+              "read_capacity"
+            ],
+            [
+              "server_side_encryption"
+            ],
+            [
+              "stream_arn"
+            ],
+            [
+              "stream_label"
+            ],
+            [
+              "stream_view_type"
+            ],
+            [
+              "tags_all"
+            ],
+            [
+              "ttl"
+            ],
+            [
+              "warm_throughput"
+            ],
+            [
+              "write_capacity"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "action_reason": "delete_because_no_resource_config",
+      "actions": [
+        "delete"
+      ],
+      "address": "aws_dynamodb_table.this",
+      "keys": [
+        {
+          "field": "delete_key",
+          "form": "delete",
+          "key": "sha256:9ab8c9d8cd3c54b92386ef101dec5f874b236290733d44866d156932b599b27d",
+          "prior_identity_kind": "identity",
+          "unknown_paths": []
+        }
+      ]
+    }
+  ],
+  "format": "compliancetf.instancekey.golden/v1",
+  "k_leaf_hex": "845cba3b9048a0ea701ceebf35bf8d23f96345d369ee41f24777d11aee0609eb",
+  "key_check": "278a53702bed79d81258d55c57dbfd708733a1e9d04c6fe3e8a7e5d0ca565a63",
+  "provider_version": "hashicorp/aws 6.65.0",
+  "terraform_version": "1.16.3",
+  "test_secret_hex": "494e5345435552452d544553542d5345435245542d696e7374616e63656b6579"
+}

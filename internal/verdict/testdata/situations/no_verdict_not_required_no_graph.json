@@ -1,0 +1,11 @@
+{
+  "description": "no verdict not required no graph",
+  "verdict": false,
+  "required": false,
+  "delete": false,
+  "type": "aws_s3_bucket",
+  "matches": [],
+  "graph": [],
+  "excepted": [],
+  "want": []
+}

@@ -1,0 +1,8 @@
+{"format": "compliancetf.lib-limits/v1",
+ "about": "iam.parse statement count (500) and action expansion (10000) limits. fn names the library call. The policy is generated: statements copies of {\"Effect\":\"Allow\",\"Action\":\"s3:*\",\"Resource\":\"*\"}, under a generated catalog of catalog_actions s3 actions, so the expansion is statements * catalog_actions; remaining_us is the remaining per-resource budget.",
+ "cases": [
+  {"id": "I-01-statements-at-limit", "fn": "iam.parse", "statements": 500, "catalog_actions": 1, "remaining_us": 60000000, "expect": {"err_class": ""}},
+  {"id": "I-02-statements-over-limit", "fn": "iam.parse", "statements": 501, "catalog_actions": 1, "remaining_us": 5000000, "expect": {"err_class": "limit"}},
+  {"id": "I-03-expansion-at-limit", "fn": "iam.parse", "statements": 1, "catalog_actions": 10000, "remaining_us": 60000000, "expect": {"err_class": ""}},
+  {"id": "I-04-expansion-over-limit", "fn": "iam.parse", "statements": 1, "catalog_actions": 10001, "remaining_us": 5000000, "expect": {"err_class": "limit"}}
+ ]}

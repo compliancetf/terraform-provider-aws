@@ -1,0 +1,81 @@
+[
+  {
+    "id": "s3_bucket_versioning_enabled",
+    "version": "1.0.0",
+    "kind": "resource",
+    "resource_type": "aws_s3_bucket",
+    "reads": [
+      "versioning.enabled"
+    ],
+    "presence_mode": "effective",
+    "on": [
+      "create",
+      "update"
+    ],
+    "expr": "resource.versioning.all(v, v.enabled == true)",
+    "action": "deny",
+    "severity": "medium",
+    "message": "S3 bucket versioning must be enabled."
+  },
+  {
+    "id": "s3_bucket_versioning_enabled",
+    "version": "1.0.0",
+    "kind": "resource",
+    "resource_type": "aws_s3_bucket_versioning",
+    "reads": [
+      "versioning_configuration.status"
+    ],
+    "presence_mode": "effective",
+    "on": [
+      "create",
+      "update"
+    ],
+    "expr": "resource.versioning_configuration.all(v, v.status == 'Enabled')",
+    "action": "deny",
+    "severity": "medium",
+    "message": "S3 bucket versioning must be enabled."
+  },
+  {
+    "id": "s3_bucket_versioning_enabled",
+    "version": "1.0.0",
+    "kind": "data_source",
+    "resource_type": "aws_s3_bucket",
+    "reads": [
+      "bucket_regional_domain_name"
+    ],
+    "presence_mode": "effective",
+    "expr": "resource.bucket_regional_domain_name != ''",
+    "action": "warn",
+    "severity": "medium",
+    "message": "S3 bucket versioning must be enabled."
+  },
+  {
+    "id": "s3_bucket_versioning_enabled",
+    "version": "1.0.0",
+    "kind": "deletion_guard",
+    "resource_type": "aws_s3_bucket",
+    "reads": [
+      "bucket"
+    ],
+    "on": [
+      "delete"
+    ],
+    "expr": "env != 'prod'",
+    "action": "deny",
+    "severity": "medium",
+    "message": "Production S3 buckets must not be deleted."
+  },
+  {
+    "id": "s3_bucket_versioning_enabled",
+    "version": "1.0.0",
+    "kind": "ephemeral",
+    "resource_type": "aws_secretsmanager_secret_version",
+    "reads": [
+      "secret_id"
+    ],
+    "expr": "config.secret_id != ''",
+    "action": "deny",
+    "severity": "medium",
+    "message": "S3 bucket versioning must be enabled."
+  }
+]

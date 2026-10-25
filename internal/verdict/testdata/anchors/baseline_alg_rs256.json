@@ -1,0 +1,8 @@
+{
+  "description": "an RS256 alg on a listed key is rejected",
+  "use": "baseline",
+  "source": "profile",
+  "key_alg": "RS256",
+  "sig_alg": "RS256",
+  "want_release": "algorithm not allowed"
+}

@@ -1,0 +1,8 @@
+{
+  "description": "COMPLIANCETF_VERDICT unset: no error, verdict none",
+  "verdict": "unset",
+  "want": {
+    "summary": "",
+    "detail": ""
+  }
+}

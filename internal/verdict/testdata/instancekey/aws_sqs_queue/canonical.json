@@ -1,0 +1,75 @@
+{
+  "entries": [
+    {
+      "actions": [
+        "create"
+      ],
+      "address": "aws_sqs_queue.new",
+      "keys": [
+        {
+          "after": {
+            "content_based_deduplication": "b:false",
+            "delay_seconds": "n:0",
+            "fifo_queue": "b:false",
+            "max_message_size": "n:262144",
+            "message_retention_seconds": "n:345600",
+            "name": "s:bobthecorp-reports",
+            "receive_wait_time_seconds": "n:0",
+            "region": "s:us-east-1",
+            "visibility_timeout_seconds": "n:30"
+          },
+          "after_hashed_jcs": "{\"content_based_deduplication\":\"bd2697924fc3dbc2684e37198d7f4911d738e969f1d3a4db9e113420c2e90f17\",\"delay_seconds\":\"dbc1ba5eae39dfb316df813dce9a556086f045ebdb47b91c1cadfbe46b6c0741\",\"fifo_queue\":\"bd2697924fc3dbc2684e37198d7f4911d738e969f1d3a4db9e113420c2e90f17\",\"max_message_size\":\"c8011bd33f26b383faea06543decd6918b84dc47904831b0a3f195a943fc28a3\",\"message_retention_seconds\":\"b9b83b765f56e65265582b05ec128734ae9a6b2104548ac5f47fa4304d76d3ad\",\"name\":\"beb34f177ac779ca6317a1da249e5418e7e84e4d25ba0cdbcbb0f733e1b5b784\",\"receive_wait_time_seconds\":\"dbc1ba5eae39dfb316df813dce9a556086f045ebdb47b91c1cadfbe46b6c0741\",\"region\":\"8df8ff45a31e55a282b554a4217667bd534d60853102522fb525315732856f2a\",\"visibility_timeout_seconds\":\"339bedb23495f51c63a4cd8e5503900041c74f9b3c421f2479bbe167b4509cff\"}",
+          "field": "instance_key",
+          "form": "create",
+          "prior_identity": null,
+          "prior_identity_hashed_jcs": "null",
+          "prior_identity_kind": "none"
+        }
+      ]
+    },
+    {
+      "actions": [
+        "update"
+      ],
+      "address": "aws_sqs_queue.this",
+      "keys": [
+        {
+          "after": {
+            "arn": "s:arn:aws:sqs:us-east-1:111111111111:bobthecorp-jobs",
+            "content_based_deduplication": "b:false",
+            "deduplication_scope": "s:bobthecorp-fake-deduplication_scope",
+            "delay_seconds": "n:0",
+            "fifo_queue": "b:false",
+            "fifo_throughput_limit": "s:bobthecorp-fake-fifo_throughput_limit",
+            "id": "s:https://sqs.us-east-1.amazonaws.com/111111111111/bobthecorp-jobs",
+            "kms_data_key_reuse_period_seconds": "n:0",
+            "max_message_size": "n:262144",
+            "message_retention_seconds": "n:345600",
+            "name": "s:bobthecorp-jobs",
+            "name_prefix": "s:bobthecorp-fake-name_prefix",
+            "policy": "s:bobthecorp-fake-policy",
+            "receive_wait_time_seconds": "n:0",
+            "redrive_allow_policy": "s:bobthecorp-fake-redrive_allow_policy",
+            "redrive_policy": "s:bobthecorp-fake-redrive_policy",
+            "region": "s:us-east-1",
+            "sqs_managed_sse_enabled": "b:false",
+            "tags_all": {},
+            "url": "s:https://sqs.us-east-1.amazonaws.com/111111111111/bobthecorp-jobs",
+            "visibility_timeout_seconds": "n:60"
+          },
+          "after_hashed_jcs": "{\"arn\":\"e65cbbca1de88a88879341b45c2b278e85aa9a055b0b6f73997ea3e28a4e1bc8\",\"content_based_deduplication\":\"bd2697924fc3dbc2684e37198d7f4911d738e969f1d3a4db9e113420c2e90f17\",\"deduplication_scope\":\"226fe53361a0bf745707d943fca44dcd45b616dbf06e9dec1c3a5fb10a9827f8\",\"delay_seconds\":\"dbc1ba5eae39dfb316df813dce9a556086f045ebdb47b91c1cadfbe46b6c0741\",\"fifo_queue\":\"bd2697924fc3dbc2684e37198d7f4911d738e969f1d3a4db9e113420c2e90f17\",\"fifo_throughput_limit\":\"d95cd880a38628eb0b65348fbf3ee8a48881f2567a8300582ccf7f54c1b41224\",\"id\":\"f2296502b83c8c5eb6b53e34fca81cf585c3055cb09e2c9b6c4f464b8524710d\",\"kms_data_key_reuse_period_seconds\":\"dbc1ba5eae39dfb316df813dce9a556086f045ebdb47b91c1cadfbe46b6c0741\",\"max_message_size\":\"c8011bd33f26b383faea06543decd6918b84dc47904831b0a3f195a943fc28a3\",\"message_retention_seconds\":\"b9b83b765f56e65265582b05ec128734ae9a6b2104548ac5f47fa4304d76d3ad\",\"name\":\"83ca131c0d866400de0d0270567c0bcf687f0aad815019a9e55329222e09f279\",\"name_prefix\":\"6cf6f6a01d7560cc2ed6460bf1e973eb4f56c998d464743d8cc468008b422349\",\"policy\":\"88d3f721a44450cb3ae8621982839a8cfc5ae300a233b97b67b0913855e572cf\",\"receive_wait_time_seconds\":\"dbc1ba5eae39dfb316df813dce9a556086f045ebdb47b91c1cadfbe46b6c0741\",\"redrive_allow_policy\":\"54a3da5f5d266866c7c7bb85e469e268f13191d9f8458535384729f4814d7ec9\",\"redrive_policy\":\"8f904ab794d3e7a2148cd4b7e31b4e14895ace856cb162c0ec29fd70033f1555\",\"region\":\"8df8ff45a31e55a282b554a4217667bd534d60853102522fb525315732856f2a\",\"sqs_managed_sse_enabled\":\"bd2697924fc3dbc2684e37198d7f4911d738e969f1d3a4db9e113420c2e90f17\",\"tags_all\":{},\"url\":\"f2296502b83c8c5eb6b53e34fca81cf585c3055cb09e2c9b6c4f464b8524710d\",\"visibility_timeout_seconds\":\"7f3b5e27aecdeee9c12cdbc1c435cbcc807bbcd57c5edb50a9d12907faf1b304\"}",
+          "field": "instance_key",
+          "form": "update",
+          "prior_identity": {
+            "url": "s:https://sqs.us-east-1.amazonaws.com/111111111111/bobthecorp-jobs"
+          },
+          "prior_identity_hashed_jcs": "{\"url\":\"f2296502b83c8c5eb6b53e34fca81cf585c3055cb09e2c9b6c4f464b8524710d\"}",
+          "prior_identity_kind": "identity"
+        }
+      ]
+    }
+  ],
+  "format": "compliancetf.instancekey.golden/v1",
+  "provider_version": "hashicorp/aws 6.65.0",
+  "terraform_version": "1.16.3"
+}

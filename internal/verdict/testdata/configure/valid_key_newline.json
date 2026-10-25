@@ -1,0 +1,8 @@
+{
+  "description": "a run key with one trailing newline loads",
+  "key_text": "newline",
+  "want": {
+    "summary": "",
+    "detail": ""
+  }
+}

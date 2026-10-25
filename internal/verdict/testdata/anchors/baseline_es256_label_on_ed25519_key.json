@@ -1,0 +1,9 @@
+{
+  "description": "an ES256 label on an Ed25519 key is rejected",
+  "use": "baseline",
+  "source": "profile",
+  "key": "ed25519",
+  "key_alg": "ES256",
+  "sig_alg": "ES256",
+  "want_release": "algorithm not allowed"
+}

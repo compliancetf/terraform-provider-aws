@@ -1,0 +1,49 @@
+equals_any and not_empty: configured wins, every member on config
+-- intent.json --
+{
+ "id": "cloudtrail_trail_validated_and_encrypted",
+ "resource_type": "aws_cloudtrail",
+ "attributes": [
+  {
+   "schema_path": "enable_log_file_validation",
+   "condition": "equals_any",
+   "values": [
+    true
+   ],
+   "values_from_ref": null
+  },
+  {
+   "schema_path": "kms_key_id",
+   "condition": "not_empty",
+   "values": [],
+   "values_from_ref": null
+  }
+ ],
+ "explanation": "Explanation of cloudtrail_trail_validated_and_encrypted.",
+ "postcondition": "",
+ "has_strategy_condition": false
+}
+-- want.json --
+{
+  "control": {
+    "id": "cloudtrail_trail_validated_and_encrypted",
+    "version": "1.0.0",
+    "kind": "resource",
+    "resource_type": "aws_cloudtrail",
+    "reads": [
+      "enable_log_file_validation",
+      "kms_key_id"
+    ],
+    "presence_mode": "configured",
+    "on": [
+      "create",
+      "update"
+    ],
+    "expr": "config.enable_log_file_validation == true && config.kms_key_id != null && size(config.kms_key_id) > 0",
+    "action": "deny",
+    "severity": "",
+    "message": "",
+    "fix": "Explanation of cloudtrail_trail_validated_and_encrypted.",
+    "exemption_coverable": []
+  }
+}

@@ -1,0 +1,8 @@
+{
+  "description": "an Ed25519 receipt key in the profile is rejected in the release build, verifies under ctftest",
+  "use": "receipt",
+  "source": "profile",
+  "key": "ed25519",
+  "want_release": "algorithm not allowed",
+  "want_ctftest": ""
+}

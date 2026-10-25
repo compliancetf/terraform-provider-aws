@@ -1,0 +1,52 @@
+{
+  "description": "bobthecorp-permissive: blocking not_evaluable on refreshed state: warning like fail, unlike unknown (none)",
+  "stage": "read",
+  "mode": "soft_fail",
+  "not_evaluable": {
+    "profile": "bobthecorp-permissive",
+    "control": "rds_db_instance_encryption_at_rest_enabled",
+    "blocking": true
+  },
+  "prior": {
+    "storage_encrypted": true,
+    "kms_key_id": "arn:aws:kms:us-east-1:111122223333:key/bobthecorp-rds",
+    "engine": "postgres",
+    "deletion_protection": true
+  },
+  "new": {
+    "storage_encrypted": true,
+    "kms_key_id": "arn:aws:kms:us-east-1:111122223333:key/bobthecorp-rds",
+    "engine": "postgres",
+    "deletion_protection": true
+  },
+  "want": {
+    "diagnostics": [
+      {
+        "severity": "warning",
+        "summary": "[rds_db_instance_encryption_at_rest_enabled] not evaluable (<err_class>)",
+        "detail": "Treated as a failure of this control.",
+        "attribute": "AttributeName(\"storage_encrypted\")"
+      }
+    ],
+    "evidence": {
+      "op": "refresh",
+      "results": [
+        {
+          "control": "rds_db_instance_encryption_at_rest_enabled",
+          "state": "not_evaluable",
+          "decision": "drift_violation"
+        },
+        {
+          "control": "rds_instance_engine_not_mysql",
+          "state": "pass",
+          "decision": "logged"
+        },
+        {
+          "control": "rds_instance_deletion_protection_enabled",
+          "state": "pass",
+          "decision": "logged"
+        }
+      ]
+    }
+  }
+}

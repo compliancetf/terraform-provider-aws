@@ -1,0 +1,29 @@
+{
+  "description": "configured binds Config: value only in Planned does not satisfy a configured control",
+  "stage": "plan",
+  "mode": "hard_fail",
+  "op": "create",
+  "config": {
+    "storage_encrypted": true,
+    "kms_key_id": null,
+    "engine": "postgres"
+  },
+  "prior": null,
+  "planned": {
+    "storage_encrypted": true,
+    "kms_key_id": "arn:aws:kms:us-east-1:111122223333:key/bobthecorp-rds",
+    "engine": "postgres",
+    "deletion_protection": true
+  },
+  "want": {
+    "diagnostics": [
+      {
+        "severity": "error",
+        "summary": "[rds_instance_kms_key_configured] RDS instances must name a customer managed KMS key.",
+        "detail": "Fix: Set kms_key_id.\nSeverity: medium\nMode: hard_fail\nStage: plan\nTo waive: add an exception for rds_instance_kms_key_configured in compliance-exceptions.hcl",
+        "attribute": "AttributeName(\"kms_key_id\")"
+      }
+    ],
+    "stamp": true
+  }
+}

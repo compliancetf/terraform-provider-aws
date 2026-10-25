@@ -1,0 +1,108 @@
+{
+  "format_version": "1.2",
+  "resource_changes": [
+    {
+      "address": "aws_s3_bucket_versioning.new",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "after": {
+          "expected_bucket_owner": null,
+          "mfa": null,
+          "region": "us-east-1",
+          "versioning_configuration": [
+            {
+              "status": "Enabled"
+            }
+          ]
+        },
+        "after_identity": {
+          "account_id": null,
+          "bucket": null,
+          "region": null
+        },
+        "after_sensitive": {
+          "versioning_configuration": [
+            {}
+          ]
+        },
+        "after_unknown": {
+          "bucket": true,
+          "id": true,
+          "versioning_configuration": [
+            {
+              "mfa_delete": true
+            }
+          ]
+        },
+        "before": null,
+        "before_sensitive": false
+      },
+      "mode": "managed",
+      "name": "new",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "type": "aws_s3_bucket_versioning"
+    },
+    {
+      "address": "aws_s3_bucket_versioning.old",
+      "change": {
+        "actions": [
+          "update"
+        ],
+        "after": {
+          "bucket": "bobthecorp-logs",
+          "expected_bucket_owner": null,
+          "id": "bobthecorp-logs",
+          "mfa": null,
+          "region": "us-east-1",
+          "versioning_configuration": [
+            {
+              "mfa_delete": "bobthecorp-fake-mfa_delete",
+              "status": "Suspended"
+            }
+          ]
+        },
+        "after_identity": {
+          "account_id": "111111111111",
+          "bucket": "bobthecorp-logs",
+          "region": "us-east-1"
+        },
+        "after_sensitive": {
+          "versioning_configuration": [
+            {}
+          ]
+        },
+        "after_unknown": {},
+        "before": {
+          "bucket": "bobthecorp-logs",
+          "expected_bucket_owner": null,
+          "id": "bobthecorp-logs",
+          "mfa": null,
+          "region": "us-east-1",
+          "versioning_configuration": [
+            {
+              "mfa_delete": "bobthecorp-fake-mfa_delete",
+              "status": "Enabled"
+            }
+          ]
+        },
+        "before_identity": {
+          "account_id": "111111111111",
+          "bucket": "bobthecorp-logs",
+          "region": "us-east-1"
+        },
+        "before_sensitive": {
+          "versioning_configuration": [
+            {}
+          ]
+        }
+      },
+      "mode": "managed",
+      "name": "old",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "type": "aws_s3_bucket_versioning"
+    }
+  ],
+  "terraform_version": "1.16.3"
+}

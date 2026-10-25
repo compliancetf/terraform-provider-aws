@@ -1,0 +1,26 @@
+strategy condition: review, disposition graph
+-- intent.json --
+{
+ "id": "cloudtrail_trail_strategy",
+ "resource_type": "aws_cloudtrail",
+ "attributes": [
+  {
+   "schema_path": "kms_key_id",
+   "condition": "not_empty",
+   "values": [],
+   "values_from_ref": null
+  }
+ ],
+ "explanation": "Explanation of cloudtrail_trail_strategy.",
+ "postcondition": "",
+ "has_strategy_condition": true
+}
+-- want.json --
+{
+  "review": {
+    "id": "cloudtrail_trail_strategy",
+    "resource_type": "aws_cloudtrail",
+    "reason": "strategy_condition",
+    "detail": "strategy condition"
+  }
+}

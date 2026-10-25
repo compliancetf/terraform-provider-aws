@@ -1,0 +1,58 @@
+{
+  "format": "compliancetf.iampolicy/v1",
+  "version": "2012-10-17",
+  "statements": [
+    {
+      "sid": "",
+      "effect": "Deny",
+      "actions": [
+        "*"
+      ],
+      "not_actions": [],
+      "resources": [
+        "*"
+      ],
+      "not_resources": [],
+      "principals": {},
+      "not_principals": {},
+      "conditions": [
+        {
+          "op": "IpAddress",
+          "set_op": "",
+          "if_exists": false,
+          "key": "aws:sourceip",
+          "values": [
+            "198.51.100.0/24"
+          ]
+        },
+        {
+          "op": "NotIpAddress",
+          "set_op": "",
+          "if_exists": false,
+          "key": "aws:sourceip",
+          "values": [
+            "10.0.0.0/8",
+            "192.0.2.0/24"
+          ]
+        }
+      ],
+      "action_all": true,
+      "principal_any": false,
+      "resource_any": true,
+      "action_any": true,
+      "principal_all": false,
+      "resource_all": true,
+      "unconditional": false,
+      "ambiguous": [
+        "conditional",
+        "principal_absent"
+      ],
+      "actions_expanded": [],
+      "not_actions_expanded": [],
+      "unresolved_actions": [],
+      "unresolved_principals": {},
+      "unresolved_resources": []
+    }
+  ],
+  "catalog": ""
+}

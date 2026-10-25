@@ -1,0 +1,16 @@
+{
+  "steps": [
+    {"cmd": ["apply", "-no-color", "-auto-approve"], "exit": 0, "stdout_contains": ["Apply complete! Resources: 1 added, 0 changed, 0 destroyed."]},
+    {"cmd": ["apply", "-no-color", "-auto-approve", "-replace=fake_thing.a"], "exit": 0, "stdout_contains": ["will be replaced, as requested", "Apply complete! Resources: 1 added, 0 changed, 1 destroyed."]}
+  ],
+  "expect_applies": 3,
+  "no_destroy_identity": {
+    "steps": [
+      {"cmd": ["apply", "-no-color", "-auto-approve"], "exit": 0, "stdout_contains": ["Apply complete! Resources: 1 added, 0 changed, 0 destroyed."]},
+      {"cmd": ["apply", "-no-color", "-auto-approve", "-replace=fake_thing.a"], "exit": 1, "stdout_contains": ["will be replaced, as requested"],
+        "stderr_contains": ["Envelope disagrees with prior state", "Terraform 1.12 to 1.16.5 and OpenTofu (checked with 1.13) omit it on the destroy half of a replace: use Terraform 1.16.6 or later, or taint the object (terraform taint or tofu taint with its address) and apply again, since a tainted replace destroys it by resource id."],
+        "stdout_excludes": ["Apply complete!"], "stderr_excludes": ["bobthecorp"], "state_unchanged": true}
+    ],
+    "expect_applies": 1
+  }
+}

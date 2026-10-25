@@ -1,0 +1,25 @@
+{
+  "description": "Under verdict_required, terraform plan of a create runs with no verdict and succeeds (A60: the verdict loads only at apply); applying that planfile without a verdict blocks before upstream.",
+  "plan": {
+    "warnings": []
+  },
+  "apply": {
+    "errors": [
+      {
+        "summary": "Verdict required",
+        "detail": "This change needs a verdict (profile sets verdict_required). Apply through ctfkit apply or the configured runner."
+      }
+    ],
+    "evidence": {
+      "op": "create",
+      "results": [
+        {"control": "verdict_required", "version": "1", "state": "fail", "decision": "blocked", "situation": "no_verdict"}
+      ]
+    }
+  },
+  "situation": {
+    "verdict": false,
+    "required": true,
+    "type": "fake_thing"
+  }
+}

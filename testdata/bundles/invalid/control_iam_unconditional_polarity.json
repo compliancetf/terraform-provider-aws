@@ -1,0 +1,20 @@
+[
+  {
+    "id": "s3_bucket_policy_restrict_public_access",
+    "version": "1.0.0",
+    "kind": "resource",
+    "resource_type": "aws_s3_bucket_policy",
+    "reads": [
+      "policy"
+    ],
+    "presence_mode": "effective",
+    "on": [
+      "create",
+      "update"
+    ],
+    "expr": "iam.parse(resource.policy).statements.all(s, !(s.effect == \"Allow\" && s.principal_all && s.unconditional))",
+    "action": "deny",
+    "severity": "high",
+    "message": "Prohibition that would excuse any conditional statement: rejected, a Condition is not proof of narrowing."
+  }
+]

@@ -1,0 +1,39 @@
+{
+  "description": "no match not required excepted",
+  "verdict": true,
+  "required": false,
+  "delete": false,
+  "type": "aws_s3_bucket",
+  "matches": [],
+  "graph": [
+    {
+      "id": "s3_bucket_public_access_block_present",
+      "version": "1.0.0",
+      "message": "S3 bucket has no public access block.",
+      "fail_severity": "error"
+    },
+    {
+      "id": "s3_bucket_logging_present",
+      "version": "1.0.0",
+      "message": "S3 bucket has no logging.",
+      "fail_severity": "warning"
+    }
+  ],
+  "excepted": [
+    "s3_bucket_public_access_block_present"
+  ],
+  "want": [
+    {
+      "control": "s3_bucket_public_access_block_present",
+      "version": "1.0.0",
+      "result": "excepted",
+      "severity": "none"
+    },
+    {
+      "control": "s3_bucket_logging_present",
+      "version": "1.0.0",
+      "result": "no_match",
+      "severity": "warning"
+    }
+  ]
+}

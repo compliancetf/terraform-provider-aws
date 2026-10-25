@@ -1,0 +1,18 @@
+[
+  {
+    "id": "s3_bucket_versioning_enabled",
+    "version": "1.0.0",
+    "kind": "ephemeral",
+    "resource_type": "aws_secretsmanager_secret_version",
+    "reads": [
+      "secret_id"
+    ],
+    "on": [
+      "create"
+    ],
+    "expr": "config.secret_id != ''",
+    "action": "deny",
+    "severity": "medium",
+    "message": "S3 bucket versioning must be enabled."
+  }
+]

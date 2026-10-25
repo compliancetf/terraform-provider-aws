@@ -1,0 +1,11 @@
+{
+  "evaluator": "lifecycle",
+  "env": {
+    "COMPLIANCETF_ORG_ID": "bobthecorp",
+    "COMPLIANCETF_PROFILE_PATH": "{work}/profile.dsse.json",
+    "COMPLIANCETF_BUNDLE_PATH": "{work}/bundle.tar.gz"
+  },
+  "steps": [
+    {"cmd": ["plan", "-no-color", "-refresh-only"], "exit": 0, "stdout_contains": ["Warning: [fake_thing_size_max]"], "state_unchanged": true}
+  ]
+}

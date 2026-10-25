@@ -1,0 +1,42 @@
+{
+  "description": "run mode advisory: no diagnostics, evidence only",
+  "stage": "data_source",
+  "type_name": "aws_db_lookup",
+  "mode": "advisory",
+  "data_sources_deny": true,
+  "config": {
+    "storage_encrypted": true,
+    "kms_key_id": "arn:aws:kms:us-east-1:111122223333:key/bobthecorp-rds",
+    "engine": "postgres",
+    "deletion_protection": true
+  },
+  "new": {
+    "storage_encrypted": false,
+    "kms_key_id": "arn:aws:kms:us-east-1:111122223333:key/bobthecorp-rds",
+    "engine": "postgres",
+    "deletion_protection": false
+  },
+  "want": {
+    "diagnostics": [],
+    "evidence": {
+      "op": "read",
+      "results": [
+        {
+          "control": "ds_lookup_engine_postgres",
+          "state": "pass",
+          "decision": "logged"
+        },
+        {
+          "control": "ds_lookup_encrypted",
+          "state": "fail",
+          "decision": "logged"
+        },
+        {
+          "control": "ds_lookup_deletion_protection",
+          "state": "fail",
+          "decision": "logged"
+        }
+      ]
+    }
+  }
+}

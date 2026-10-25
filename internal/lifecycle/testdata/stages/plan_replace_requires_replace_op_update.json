@@ -1,0 +1,37 @@
+{
+  "description": "RequiresReplace with op update takes the replace path",
+  "stage": "plan",
+  "mode": "hard_fail",
+  "op": "update",
+  "requires_replace": [
+    "engine"
+  ],
+  "config": {
+    "storage_encrypted": true,
+    "kms_key_id": "arn:aws:kms:us-east-1:111122223333:key/bobthecorp-rds",
+    "engine": "aurora-postgresql"
+  },
+  "prior": {
+    "storage_encrypted": true,
+    "kms_key_id": "arn:aws:kms:us-east-1:111122223333:key/bobthecorp-rds",
+    "engine": "postgres",
+    "deletion_protection": true
+  },
+  "planned": {
+    "storage_encrypted": true,
+    "kms_key_id": "arn:aws:kms:us-east-1:111122223333:key/bobthecorp-rds",
+    "engine": "aurora-postgresql",
+    "deletion_protection": true
+  },
+  "want": {
+    "diagnostics": [
+      {
+        "severity": "error",
+        "summary": "[rds_instance_deletion_guard] Disable deletion_protection before destroying this instance.",
+        "detail": "Severity: medium\nMode: hard_fail\nStage: plan\nTo waive: add an exception for rds_instance_deletion_guard in compliance-exceptions.hcl",
+        "attribute": "AttributeName(\"deletion_protection\")"
+      }
+    ],
+    "stamp": true
+  }
+}

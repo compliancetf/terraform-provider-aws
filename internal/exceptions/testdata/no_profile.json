@@ -1,0 +1,7 @@
+{
+  "description": "without a profile that enables self-service the sidecar is ignored",
+  "hcl": "applied.hcl",
+  "table": {"no_self_service": true},
+  "nil_sidecar": true,
+  "lookups": [{"resource": {"identifier": "legacy-reporting", "storage_encrypted": false}}]
+}

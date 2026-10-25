@@ -1,0 +1,1 @@
+{"block": {"org_id": "bobthecorp"}, "cache_bundles": ["bobthecorp-soc2-sim/good"], "profiles": {"env": {}}, "want": {"bundles": ["cis-aws@1"], "events": ["bundle_loaded", "rollback_rejected", "profile_missing"], "fallback": "hard_fail_floor", "run_mode": "soft_fail", "warnings": ["v5 is below the floor v6"]}}

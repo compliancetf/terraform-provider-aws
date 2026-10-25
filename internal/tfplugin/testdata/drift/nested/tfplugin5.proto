@@ -1,0 +1,40 @@
+syntax = "proto3";
+package tfplugin5;
+
+// Schema is renamed to ResourceSchema (compatible on its own keys), but its
+// description_kind now points at an enum without MARKDOWN: DRIFT, exit 1.
+enum StringKind {
+    PLAIN = 0;
+    MARKDOWN = 1;
+}
+
+enum OtherKind {
+    PLAIN_ONLY = 0;
+}
+
+message ResourceSchema {
+    int64 version = 1;
+    OtherKind description_kind = 2;
+}
+
+message GetMetadata {
+    message Request {}
+    message Response {
+        repeated string resource_types = 1;
+    }
+}
+
+message PlanResourceChange {
+    message Request {
+        string type_name = 1;
+        ResourceSchema schema = 2;
+    }
+    message Response {
+        bytes planned_state = 1;
+    }
+}
+
+service Provider {
+    rpc GetMetadata(GetMetadata.Request) returns (GetMetadata.Response);
+    rpc PlanResourceChange(PlanResourceChange.Request) returns (PlanResourceChange.Response);
+}

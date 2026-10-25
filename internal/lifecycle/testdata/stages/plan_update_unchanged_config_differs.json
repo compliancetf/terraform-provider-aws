@@ -1,0 +1,34 @@
+{
+  "description": "owner rule covers configured controls too: config drops kms_key_id but Planned still equals Prior, so nothing changes and the configured failure warns",
+  "stage": "plan",
+  "mode": "hard_fail",
+  "op": "update",
+  "config": {
+    "storage_encrypted": true,
+    "kms_key_id": null,
+    "engine": "postgres"
+  },
+  "prior": {
+    "storage_encrypted": true,
+    "kms_key_id": "arn:aws:kms:us-east-1:111122223333:key/bobthecorp-rds",
+    "engine": "postgres",
+    "deletion_protection": true
+  },
+  "planned": {
+    "storage_encrypted": true,
+    "kms_key_id": "arn:aws:kms:us-east-1:111122223333:key/bobthecorp-rds",
+    "engine": "postgres",
+    "deletion_protection": true
+  },
+  "want": {
+    "diagnostics": [
+      {
+        "severity": "warning",
+        "summary": "[rds_instance_kms_key_configured] RDS instances must name a customer managed KMS key.",
+        "detail": "No change planned: this violation warns until the resource changes; any change to it is blocked.\nFix: Set kms_key_id.\nSeverity: medium\nMode: hard_fail\nStage: plan\nTo waive: add an exception for rds_instance_kms_key_configured in compliance-exceptions.hcl",
+        "attribute": "AttributeName(\"kms_key_id\")"
+      }
+    ],
+    "stamp": true
+  }
+}

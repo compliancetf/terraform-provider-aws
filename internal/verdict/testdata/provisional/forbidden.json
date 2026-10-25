@@ -1,0 +1,1 @@
+{"note":"forbid_controls empties the list","bundle":["grant","self_service"],"profile":{"forbid_controls":["s3_bucket_versioning_enabled"]},"want":[]}

@@ -1,0 +1,247 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://compliance.tf/schema/evidence-record-1.schema.json",
+  "title": "compliance.tf provider evidence record, version 1",
+  "description": "One line of a provider evidence chain file <evidence_dir>/<run_id>/<chain_id>.jsonl (or a later segment <chain_id>.<n>.jsonl). Each line is a JSON object in RFC 8785 canonical form with no escape sequences, terminated by LF. prev is sha256 over the previous line's bytes, LF excluded. Records never carry attribute values, expected values, messages or raw error text. Later versions add optional properties only.",
+  "type": "object",
+  "properties": {
+    "v": {"const": 1},
+    "kind": {"enum": ["chain_start", "configure", "eval", "chain_break", "chain_end"]},
+    "chain": {"type": "string", "pattern": "^c_[0-9]{13}_[0-9a-f]{16}$"},
+    "seq": {"$ref": "#/$defs/seq"},
+    "prev": {"oneOf": [{"$ref": "#/$defs/digest"}, {"type": "null"}]},
+    "ts": {"$ref": "#/$defs/time"},
+    "run": {"$ref": "#/$defs/run"}
+  },
+  "required": ["v", "kind", "chain", "seq", "prev", "ts", "run"],
+  "oneOf": [
+    {
+      "properties": {
+        "kind": {"const": "chain_start"},
+        "seq": {"const": 0},
+        "prev": {"type": "null"},
+        "provider": {"$ref": "#/$defs/provider"}
+      },
+      "required": ["provider"]
+    },
+    {
+      "properties": {
+        "kind": {"const": "configure"},
+        "provider": {"$ref": "#/$defs/provider"},
+        "terraform": {"$ref": "#/$defs/terraform"},
+        "digests": {"$ref": "#/$defs/digests"},
+        "mode": {"$ref": "#/$defs/mode"},
+        "scope": {"$ref": "#/$defs/scope"},
+        "event": {"enum": ["bundle_loaded", "bundle_expired_grace", "rollback_rejected", "profile_missing", "exception_unresolved_id", "exception_scope_untrusted", "exception_not_coverable", "exception_stale_binding", "floor_reset", "exception_self_service_scope", "break_glass_dropped"]},
+        "bundle_sources": {
+          "description": "bundle_loaded only: where each loaded bundle came from, one entry per digests.bundles digest. embedded is compiled in, local is the air-gap control_bundle_path archive, fetched is the bundle service, cache is a cached archive.",
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {"digest": {"$ref": "#/$defs/digest"}, "source": {"enum": ["embedded", "local", "fetched", "cache"]}},
+            "required": ["digest", "source"],
+            "additionalProperties": false
+          }
+        },
+        "cache_skipped": {
+          "description": "bundle_loaded only: bundle cache archives (files named like a cached archive) that were not used, as a count and the distinct reasons, sorted (the writer enforces the order). Never a file name or path.",
+          "type": "object",
+          "properties": {
+            "count": {"type": "integer", "minimum": 0, "maximum": 999999999999999},
+            "reasons": {"type": "array", "uniqueItems": true, "items": {"enum": ["not_regular", "unreadable", "unverified", "digest_mismatch", "over_limit"]}}
+          },
+          "required": ["count", "reasons"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["provider", "terraform", "digests", "mode", "scope", "event"]
+    },
+    {
+      "properties": {
+        "kind": {"const": "eval"},
+        "digests": {"$ref": "#/$defs/digests"},
+        "mode": {"$ref": "#/$defs/mode"},
+        "scope": {"$ref": "#/$defs/scope"},
+        "stage": {"description": "A record with stage import is never an inventory source: ctfkit never builds a baseline inventory entry from it. Stage rpc is a passthrough RPC the verdict gate decided; its resource.type is the rpc_ method token. Older writers recorded it as apply_pre.", "enum": ["plan", "apply_pre", "apply_post", "refresh", "import", "ephemeral_open", "data_source", "rpc"]},
+        "envelope": {"description": "apply_pre only: the plan carried no compliance envelope.", "const": "absent"},
+        "matched": {
+          "description": "apply_pre under a loaded verdict (digests.verdict set) only: the verdict entries the RPC's own half matched, ascending by entry (the writer enforces the order). entry is the index in the verdict's instances[], instance_key the entry's key for that half (delete_key on a destroy RPC). An empty list is a lookup that matched nothing; absent means no lookup ran. The entry's address is never written: ctfkit reads it from the verdict.",
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {"entry": {"$ref": "#/$defs/seq"}, "instance_key": {"$ref": "#/$defs/digest"}},
+            "required": ["entry", "instance_key"],
+            "additionalProperties": false
+          }
+        },
+        "resource": {"$ref": "#/$defs/resource"},
+        "results": {"type": "array", "items": {"$ref": "#/$defs/result"}}
+      },
+      "required": ["digests", "mode", "scope", "stage", "resource", "results"],
+      "allOf": [
+        {
+          "if": {"required": ["matched"]},
+          "then": {"properties": {"stage": {"const": "apply_pre"}, "digests": {"properties": {"verdict": {"$ref": "#/$defs/digest"}}}}}
+        },
+        {
+          "if": {"properties": {"stage": {"const": "rpc"}}},
+          "then": {"properties": {"resource": {"properties": {"type": {"pattern": "^rpc_"}}}}}
+        }
+      ]
+    },
+    {
+      "properties": {
+        "kind": {"const": "chain_break"},
+        "last_good": {
+          "type": "object",
+          "properties": {"seq": {"$ref": "#/$defs/seq"}, "hash": {"$ref": "#/$defs/digest"}},
+          "required": ["seq", "hash"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["last_good"]
+    },
+    {
+      "properties": {
+        "kind": {"const": "chain_end"},
+        "last_seq": {"$ref": "#/$defs/seq"}
+      },
+      "required": ["last_seq"]
+    }
+  ],
+  "unevaluatedProperties": false,
+  "$defs": {
+    "seq": {"type": "integer", "minimum": 0, "maximum": 999999999999999},
+    "digest": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+    "nullDigest": {"oneOf": [{"$ref": "#/$defs/digest"}, {"type": "null"}]},
+    "time": {"type": "string", "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(\\.[0-9]{1,9})?Z$"},
+    "token": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$"},
+    "text": {"type": "string", "pattern": "^[^\"\\\\\u0000-\u001f\u007f\u2028\u2029\ufffd]*$"},
+    "mode": {"enum": ["advisory", "soft_fail", "grandfather", "hard_fail"]},
+    "run": {
+      "type": "object",
+      "properties": {
+        "id": {"$ref": "#/$defs/token"},
+        "id_source": {"enum": ["compliancetf", "github", "tfc", "spacelift", "gitlab", "random"]},
+        "class_claimed": {"oneOf": [{"$ref": "#/$defs/token"}, {"type": "null"}]}
+      },
+      "required": ["id", "id_source", "class_claimed"],
+      "additionalProperties": false
+    },
+    "provider": {
+      "type": "object",
+      "properties": {
+        "address": {"$ref": "#/$defs/text"},
+        "version": {"$ref": "#/$defs/text"},
+        "upstream_version": {"$ref": "#/$defs/text"}
+      },
+      "required": ["address", "version", "upstream_version"],
+      "additionalProperties": false
+    },
+    "terraform": {
+      "type": "object",
+      "properties": {"version": {"$ref": "#/$defs/text"}},
+      "required": ["version"],
+      "additionalProperties": false
+    },
+    "digests": {
+      "type": "object",
+      "properties": {
+        "bundle": {"$ref": "#/$defs/nullDigest"},
+        "bundles": {"type": "array", "items": {"$ref": "#/$defs/digest"}},
+        "profile": {"$ref": "#/$defs/nullDigest"},
+        "exceptions": {"type": "array", "items": {"$ref": "#/$defs/digest"}},
+        "schema_compat": {"$ref": "#/$defs/nullDigest"},
+        "control_versions": {"$ref": "#/$defs/nullDigest"},
+        "content": {"$ref": "#/$defs/nullDigest"},
+        "verdict": {"$ref": "#/$defs/nullDigest"}
+      },
+      "required": ["bundle", "bundles", "profile", "exceptions", "schema_compat", "control_versions", "content", "verdict"],
+      "additionalProperties": false
+    },
+    "sourced": {
+      "oneOf": [
+        {"type": "null"},
+        {
+          "type": "object",
+          "properties": {
+            "value": {"type": "string", "pattern": "^[A-Za-z0-9._:/-]{1,256}$"},
+            "source": {"enum": ["verdict", "profile", "provider_config", "local"]}
+          },
+          "required": ["value", "source"],
+          "additionalProperties": false
+        }
+      ]
+    },
+    "scope": {
+      "type": "object",
+      "description": "Only sources verdict and profile are trusted.",
+      "properties": {
+        "workspace": {"$ref": "#/$defs/sourced"},
+        "environment": {"$ref": "#/$defs/sourced"},
+        "account_id": {"$ref": "#/$defs/sourced"},
+        "region": {"$ref": "#/$defs/sourced"}
+      },
+      "required": ["workspace", "environment", "account_id", "region"],
+      "additionalProperties": false
+    },
+    "resource": {
+      "type": "object",
+      "description": "Inventory join fields: ctfkit joins eval records with the gate-owned plan on (type, native identity, trusted scope, digests.control_versions). identity_kind is identity when identity is set, else id when id is set, else none.",
+      "properties": {
+        "type": {"type": "string", "pattern": "^[a-z][a-z0-9_]{0,127}$"},
+        "op": {"description": "A record with op import is never an inventory source: ctfkit never builds a baseline inventory entry from it.", "enum": ["create", "update", "replace", "delete", "no-op", "import", "refresh", "change", "open", "read"]},
+        "id": {"oneOf": [{"allOf": [{"$ref": "#/$defs/text"}, {"minLength": 1, "maxLength": 2048}]}, {"type": "null"}]},
+        "identity_kind": {"enum": ["identity", "id", "none"]},
+        "identity": {
+          "description": "Identifier attributes of the resource identity only.",
+          "oneOf": [
+            {"type": "null"},
+            {
+              "type": "object",
+              "maxProperties": 16,
+              "propertyNames": {"pattern": "^[a-z0-9_]{1,64}$"},
+              "additionalProperties": {"allOf": [{"$ref": "#/$defs/text"}, {"maxLength": 2048}]}
+            }
+          ]
+        }
+      },
+      "required": ["type", "op", "id", "identity_kind", "identity"],
+      "additionalProperties": false
+    },
+    "result": {
+      "type": "object",
+      "properties": {
+        "control": {"description": "A bundle control id, or a synthetic id the provider writes with version 1: verdict_required (the verdict gate), or envelope_invalid or envelope_disagrees (state fail, decision blocked, stage apply_pre: the proxy refused the apply before the hook because planned_private carried an unreadable compliance envelope, or one that disagrees with the prior state; such a record carries no resource id or identity).", "$ref": "#/$defs/token"},
+        "version": {"$ref": "#/$defs/token"},
+        "half": {"enum": ["create", "delete"]},
+        "break_glass_id": {"description": "override_id of the honored break-glass receipt that downgraded this result.", "$ref": "#/$defs/token"},
+        "state": {"enum": ["pass", "fail", "unknown", "not_evaluable"]},
+        "decision": {"enum": ["blocked", "error", "warning", "logged", "excepted", "pending", "carried", "unverifiable", "post_apply_violation", "drift_violation"]},
+        "paths": {
+          "description": "Schema attribute paths; never map keys or values.",
+          "type": "array",
+          "maxItems": 32,
+          "items": {"type": "string", "pattern": "^[a-z0-9_]+(\\.[a-z0-9_]+|\\[\\*\\]|\\[[0-9]+\\])*$"}
+        },
+        "situation": {"description": "Verdict gate results only: the apply situation table row. Several matched entries with identical decisions carry the decision's row.", "enum": ["pass", "fail", "not_evaluable", "pending", "excepted", "exemption_unproven", "missing_decision", "no_match", "collision", "no_verdict"]},
+        "err": {"enum": ["type_error", "limit", "timeout", "no_such_attribute", "unresolved", "scope_untrusted"]},
+        "exception": {
+          "type": "object",
+          "properties": {
+            "source": {"enum": ["grant", "self_service"]},
+            "id": {"$ref": "#/$defs/token"},
+            "digest": {"$ref": "#/$defs/digest"},
+            "status": {"enum": ["applied", "expired", "rejected", "wrong_workspace", "wrong_environment", "stale_binding", "not_coverable"]},
+            "expires": {"$ref": "#/$defs/time"},
+            "workspace": {"oneOf": [{"type": "string", "pattern": "^[A-Za-z0-9._:/-]{1,256}$"}, {"type": "null"}]}
+          },
+          "required": ["source", "id", "digest", "status", "expires", "workspace"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["control", "version", "state", "decision", "paths"],
+      "additionalProperties": false
+    }
+  }
+}

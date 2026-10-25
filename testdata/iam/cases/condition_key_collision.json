@@ -1,0 +1,1 @@
+{"Version":"2012-10-17","Statement":[{"Effect":"Deny","Action":"*","Resource":"*","Condition":{"StringEquals":{"aws:SourceVpce":"vpce-1","AWS:SourceVPCE":"vpce-2"}}}]}

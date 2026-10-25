@@ -1,0 +1,32 @@
+{
+  "description": "Under verdict_required and hard_fail, the apply of a create whose matched verdict entry has no decision for a graph control of its half blocks before upstream (missing_decision takes the fail row).",
+  "plan": {
+    "warnings": []
+  },
+  "apply": {
+    "errors": [
+      {
+        "summary": "Verdict entry for fake_thing.a has no decision for fake_thing_companion@1.0.0; re-run plan and ctfkit gate.",
+        "detail": ""
+      }
+    ],
+    "evidence": {
+      "op": "create",
+      "results": [
+        {"control": "fake_thing_companion", "version": "1.0.0", "state": "not_evaluable", "decision": "blocked", "situation": "missing_decision"}
+      ]
+    }
+  },
+  "situation": {
+    "verdict": true,
+    "required": true,
+    "type": "fake_thing",
+    "matches": [
+      {"address": "fake_thing.a", "type": "fake_thing", "action": "create", "prior_identity_kind": "none", "refreshed": "true",
+       "unknown_paths": [], "decisions": [], "not_evaluable": [], "exceptions": [], "baselines": [], "break_glass": []}
+    ],
+    "graph": [
+      {"id": "fake_thing_companion", "version": "1.0.0", "message": "fake_thing has no fake_replace companion.", "fail_severity": "error"}
+    ]
+  }
+}

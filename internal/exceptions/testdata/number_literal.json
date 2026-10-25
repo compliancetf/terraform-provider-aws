@@ -1,0 +1,1 @@
+{"description": "a number literal (unbounded string conversion on decode) fails the load", "load_error": "only literal strings and lists"}

@@ -1,0 +1,8 @@
+{
+  "steps": [
+    {"cmd": ["apply", "-no-color", "-auto-approve"], "exit": 0, "stdout_contains": ["Apply complete! Resources: 1 added, 0 changed, 0 destroyed."]},
+    {"cmd": ["taint", "-no-color", "fake_thing.a"], "exit": 0},
+    {"cmd": ["apply", "-no-color", "-auto-approve"], "exit": 0, "stdout_contains": ["is tainted, so", "Apply complete! Resources: 1 added, 0 changed, 1 destroyed."]}
+  ],
+  "expect_applies": 3
+}

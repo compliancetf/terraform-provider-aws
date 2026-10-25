@@ -1,0 +1,1 @@
+{"block": {"org_id": "bobthecorp"}, "profiles": {"env": {"floor_mode": "airgap", "governed": true}}, "want": {"error": "Org floor for bobthecorp unavailable: governed runs need a signed floor statement (floor_mode airgap). Reason: floor file not set."}}

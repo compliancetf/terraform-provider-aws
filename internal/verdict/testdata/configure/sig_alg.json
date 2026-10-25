@@ -1,0 +1,8 @@
+{
+  "description": "an algorithm other than ES256",
+  "sign": "alg",
+  "want": {
+    "summary": "Verdict signature invalid: algorithm not allowed",
+    "detail": "Re-run terraform plan and ctfkit gate, then apply through ctfkit apply."
+  }
+}

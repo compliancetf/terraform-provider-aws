@@ -1,0 +1,31 @@
+{
+  "bundle_id": "all",
+  "label": "20261004.0.27.1",
+  "catalog": {
+    "snapshot_id": "snap_20261004_000000_000000",
+    "schema_version": "1",
+    "controls_sha256": "sha256:31e7a859cb7dfec9dacb3f249877fef1bae80fee74fabf8bf82a915446c22ee9",
+    "dispositions_sha256": "sha256:a07f8bd5a38152a92fb26c2e9d52ea8e3d012d7c5295ae3ecd7e16e6c47b29a0"
+  },
+  "provider": {
+    "address": "registry.compliance.tf/compliancetf/aws",
+    "version_range": ">= 6.67.0, < 7.0.0"
+  },
+  "upstream": {
+    "source": "hashicorp/aws",
+    "version_range": ">= 6.67.0, < 7.0.0"
+  },
+  "schema_compat_digest": "sha256:1cb80a25786342060ffd1e40f91b35dbd76441fa266a427dfa9b7b249b84a0c7",
+  "content_digest": "sha256:f5113875cc4e0dda42203b7bf205b5d50b2781e7cc0336757f568d7f0d39ae80",
+  "files": [
+    "iam-actions.json"
+  ],
+  "generator": {
+    "version": "0.0.0-test",
+    "commit": "0000000"
+  },
+  "content": {
+    "version": "0.27.1",
+    "commit": "1f2a3ad"
+  }
+}

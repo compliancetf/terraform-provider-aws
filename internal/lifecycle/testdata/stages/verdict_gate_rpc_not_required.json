@@ -1,0 +1,18 @@
+{
+  "description": "verdict_required false: a gated RPC passes without Match and without a record",
+  "stage": "rpc",
+  "method": "/tfplugin5.Provider/InvokeAction",
+  "mode": "hard_fail",
+  "verdict_required": false,
+  "op": "",
+  "gated": true,
+  "type_name": "rpc_invoke_action",
+  "verdict": {
+    "entries": [],
+    "want_keys": []
+  },
+  "want": {
+    "diagnostics": [],
+    "no_record": true
+  }
+}

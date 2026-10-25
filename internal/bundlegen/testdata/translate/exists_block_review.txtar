@@ -1,0 +1,28 @@
+exists on a block: review, presence proposal and prohibition alternative
+-- intent.json --
+{
+ "id": "ec2_instance_not_use_multiple_enis",
+ "resource_type": "aws_instance",
+ "attributes": [
+  {
+   "schema_path": "network_interface",
+   "condition": "exists",
+   "values": [],
+   "values_from_ref": null
+  }
+ ],
+ "explanation": "Explanation of ec2_instance_not_use_multiple_enis.",
+ "postcondition": "",
+ "has_strategy_condition": false
+}
+-- want.json --
+{
+  "review": {
+    "id": "ec2_instance_not_use_multiple_enis",
+    "resource_type": "aws_instance",
+    "reason": "block_exists",
+    "detail": "network_interface exists: exists on a block: presence or prohibition",
+    "proposal": "size(config.network_interface) >= 1",
+    "alternative": "size(config.network_interface) == 0"
+  }
+}

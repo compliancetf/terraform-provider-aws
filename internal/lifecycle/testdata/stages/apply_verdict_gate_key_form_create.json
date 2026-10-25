@@ -1,0 +1,48 @@
+{
+  "description": "a create RPC passes the create-form key (no prior identity) and matches its entry",
+  "stage": "apply_pre",
+  "type_name": "aws_s3_bucket",
+  "mode": "hard_fail",
+  "verdict_required": true,
+  "op": "create",
+  "config": {
+    "storage_encrypted": true,
+    "kms_key_id": "arn:aws:kms:us-east-1:111122223333:key/bobthecorp-rds",
+    "engine": "postgres"
+  },
+  "prior": null,
+  "planned": {
+    "storage_encrypted": true,
+    "kms_key_id": "arn:aws:kms:us-east-1:111122223333:key/bobthecorp-rds",
+    "engine": "postgres",
+    "deletion_protection": true
+  },
+  "verdict": {
+    "entries": [
+      {
+        "form": "create",
+        "planned": {
+          "storage_encrypted": true,
+          "kms_key_id": "arn:aws:kms:us-east-1:111122223333:key/bobthecorp-rds",
+          "engine": "postgres",
+          "deletion_protection": true
+        },
+        "prior_identity_kind": "none"
+      }
+    ],
+    "want_keys": [
+      {
+        "form": "create",
+        "type_name": "aws_s3_bucket",
+        "prior_identity_kind": "none"
+      }
+    ]
+  },
+  "want": {
+    "diagnostics": [],
+    "evidence": {
+      "op": "create",
+      "results": []
+    }
+  }
+}

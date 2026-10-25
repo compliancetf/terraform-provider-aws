@@ -1,0 +1,6 @@
+{
+  "description": "a key the profile lists only for another use does not verify a receipt signature",
+  "use": "receipt",
+  "source": "other_use",
+  "want_release": "kid unknown"
+}

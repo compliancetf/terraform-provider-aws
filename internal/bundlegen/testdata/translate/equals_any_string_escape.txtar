@@ -1,0 +1,43 @@
+string literals are JSON-escaped, which is CEL-escaped
+-- intent.json --
+{
+ "id": "s3_bobthecorp_versioning_on",
+ "resource_type": "aws_s3_bucket_versioning",
+ "attributes": [
+  {
+   "schema_path": "versioning_configuration.status",
+   "condition": "equals_any",
+   "values": [
+    "En\"abled\\\\"
+   ],
+   "values_from_ref": null
+  }
+ ],
+ "explanation": "Explanation of s3_bobthecorp_versioning_on.",
+ "postcondition": "",
+ "has_strategy_condition": false
+}
+-- want.json --
+{
+  "control": {
+    "id": "s3_bobthecorp_versioning_on",
+    "version": "1.0.0",
+    "kind": "resource",
+    "resource_type": "aws_s3_bucket_versioning",
+    "reads": [
+      "versioning_configuration",
+      "versioning_configuration.status"
+    ],
+    "presence_mode": "effective",
+    "on": [
+      "create",
+      "update"
+    ],
+    "expr": "resource.versioning_configuration.exists(e0, e0.status == \"En\\\"abled\\\\\\\\\")",
+    "action": "deny",
+    "severity": "",
+    "message": "",
+    "fix": "Explanation of s3_bobthecorp_versioning_on.",
+    "exemption_coverable": []
+  }
+}

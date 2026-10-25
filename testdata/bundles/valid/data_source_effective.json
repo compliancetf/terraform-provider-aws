@@ -1,0 +1,16 @@
+[
+  {
+    "id": "ami_ena_support_enabled",
+    "version": "1.0.0",
+    "kind": "data_source",
+    "resource_type": "aws_ami",
+    "reads": [
+      "ena_support"
+    ],
+    "presence_mode": "effective",
+    "expr": "resource.ena_support == true",
+    "action": "warn",
+    "severity": "low",
+    "message": "Looked-up AMIs must support ENA."
+  }
+]

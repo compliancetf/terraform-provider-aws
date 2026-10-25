@@ -1,0 +1,85 @@
+{
+  "entries": [
+    {
+      "actions": [
+        "create"
+      ],
+      "address": "aws_security_group.new",
+      "keys": [
+        {
+          "after": {
+            "description": "s:Managed by Terraform",
+            "name": "s:bobthecorp-batch",
+            "region": "s:us-east-1",
+            "revoke_rules_on_delete": "b:false",
+            "vpc_id": "s:vpc-0bbbbbbbbbbbbbbb1"
+          },
+          "after_hashed_jcs": "{\"description\":\"a2c6443b3cbd6fb2121f0a0400f380491ee757b53aecb62baf5eb577e805ea30\",\"name\":\"d5fe28176228bf96c0c5e177f286e026c6ca9e463c013b2cf8b61dbec051bbd4\",\"region\":\"8df8ff45a31e55a282b554a4217667bd534d60853102522fb525315732856f2a\",\"revoke_rules_on_delete\":\"bd2697924fc3dbc2684e37198d7f4911d738e969f1d3a4db9e113420c2e90f17\",\"vpc_id\":\"a9bcd0573fd457cc2b59c06ff666a13879d9405725862f589d0eaaced1024845\"}",
+          "field": "instance_key",
+          "form": "create",
+          "prior_identity": null,
+          "prior_identity_hashed_jcs": "null",
+          "prior_identity_kind": "none"
+        }
+      ]
+    },
+    {
+      "actions": [
+        "update"
+      ],
+      "address": "aws_security_group.this",
+      "keys": [
+        {
+          "after": {
+            "arn": "s:arn:aws:ec2:us-east-1:111111111111:security-group/sg-0ddddddddddddddd1",
+            "description": "s:Managed by Terraform",
+            "egress": [],
+            "id": "s:sg-0ddddddddddddddd1",
+            "ingress": [
+              {
+                "cidr_blocks": [
+                  "s:10.0.0.0/16"
+                ],
+                "description": "s:",
+                "from_port": "n:443",
+                "ipv6_cidr_blocks": [],
+                "prefix_list_ids": [],
+                "protocol": "s:tcp",
+                "security_groups": [],
+                "self": "b:false",
+                "to_port": "n:443"
+              }
+            ],
+            "name": "s:bobthecorp-web",
+            "name_prefix": "s:bobthecorp-fake-name_prefix",
+            "owner_id": "s:111111111111",
+            "region": "s:us-east-1",
+            "revoke_rules_on_delete": "b:false",
+            "tags": {
+              "Name": "s:bobthecorp-web",
+              "Tier": "s:edge"
+            },
+            "tags_all": {
+              "Name": "s:bobthecorp-web",
+              "Tier": "s:edge"
+            },
+            "vpc_id": "s:vpc-0bbbbbbbbbbbbbbb1"
+          },
+          "after_hashed_jcs": "{\"arn\":\"65c33c9a1d90a1b107194d4f17b3b73d89c03601f7b5377f5733c4b90f4715a1\",\"description\":\"a2c6443b3cbd6fb2121f0a0400f380491ee757b53aecb62baf5eb577e805ea30\",\"egress\":[],\"id\":\"32c4686805eb107a39ae2ee468c2e0a1671cdb0f3127e50014ad7b78be1eceb3\",\"ingress\":[{\"cidr_blocks\":[\"a1f362d6adc5373c8d3fc54b3d198968adf313fc88af12db0120f1ecd5381069\"],\"description\":\"9f823f905f8594b4ddc7e13e365a2ddb84cac0f5a9b931c86ce9c50668534891\",\"from_port\":\"89310af6b9017dc881cb04acaab786f15431d3a542f11aee8acbf76b05bd462e\",\"ipv6_cidr_blocks\":[],\"prefix_list_ids\":[],\"protocol\":\"338d8d79efbc443fdcb5fe4ac37837874fa6821e805ff6d874ac497f3855e5b6\",\"security_groups\":[],\"self\":\"bd2697924fc3dbc2684e37198d7f4911d738e969f1d3a4db9e113420c2e90f17\",\"to_port\":\"89310af6b9017dc881cb04acaab786f15431d3a542f11aee8acbf76b05bd462e\"}],\"name\":\"43c3bc610153b707751a130e0bde15661e6b7f8b9f628de26381e977907d98b0\",\"name_prefix\":\"6cf6f6a01d7560cc2ed6460bf1e973eb4f56c998d464743d8cc468008b422349\",\"owner_id\":\"47e7ec2525e1a3e184c7844d068e98ee8789c5c565812114c46d959065728ced\",\"region\":\"8df8ff45a31e55a282b554a4217667bd534d60853102522fb525315732856f2a\",\"revoke_rules_on_delete\":\"bd2697924fc3dbc2684e37198d7f4911d738e969f1d3a4db9e113420c2e90f17\",\"tags\":{\"Name\":\"43c3bc610153b707751a130e0bde15661e6b7f8b9f628de26381e977907d98b0\",\"Tier\":\"1232e9483eb9f0eba9f642d46398c06523dd133044eacce122daf92a4b68b3a0\"},\"tags_all\":{\"Name\":\"43c3bc610153b707751a130e0bde15661e6b7f8b9f628de26381e977907d98b0\",\"Tier\":\"1232e9483eb9f0eba9f642d46398c06523dd133044eacce122daf92a4b68b3a0\"},\"vpc_id\":\"a9bcd0573fd457cc2b59c06ff666a13879d9405725862f589d0eaaced1024845\"}",
+          "field": "instance_key",
+          "form": "update",
+          "prior_identity": {
+            "account_id": "s:111111111111",
+            "id": "s:sg-0ddddddddddddddd1",
+            "region": "s:us-east-1"
+          },
+          "prior_identity_hashed_jcs": "{\"account_id\":\"47e7ec2525e1a3e184c7844d068e98ee8789c5c565812114c46d959065728ced\",\"id\":\"32c4686805eb107a39ae2ee468c2e0a1671cdb0f3127e50014ad7b78be1eceb3\",\"region\":\"8df8ff45a31e55a282b554a4217667bd534d60853102522fb525315732856f2a\"}",
+          "prior_identity_kind": "identity"
+        }
+      ]
+    }
+  ],
+  "format": "compliancetf.instancekey.golden/v1",
+  "provider_version": "hashicorp/aws 6.65.0",
+  "terraform_version": "1.16.3"
+}

@@ -1,0 +1,8 @@
+{
+  "description": "the verdict document itself in COMPLIANCETF_VERDICT is refused without parsing it",
+  "verdict": "payload",
+  "want": {
+    "summary": "Invalid verdict file",
+    "detail": "COMPLIANCETF_VERDICT must hold the path of the verdict file, never the verdict itself."
+  }
+}

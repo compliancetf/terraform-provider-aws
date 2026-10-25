@@ -1,0 +1,7 @@
+# The intent of rds_db_instance_no_default_admin_name checks a non-empty
+# username; content enforcement also rejects "admin".
+- id: rds_db_instance_no_default_admin_name
+  case: policy.non_compliant_admin
+  cel: pass
+  postcondition: fail
+  reason: intent narrower than enforcement; authored override pending

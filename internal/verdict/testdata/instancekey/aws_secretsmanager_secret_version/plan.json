@@ -1,0 +1,121 @@
+{
+  "format_version": "1.2",
+  "resource_changes": [
+    {
+      "address": "aws_secretsmanager_secret_version.new",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "after": {
+          "region": "us-east-1",
+          "secret_binary": null,
+          "secret_id": "arn:aws:secretsmanager:us-east-1:111111111111:secret:bobthecorp-api-GhIjKl",
+          "secret_string": "{\"password\":\"bobthecorp-fake-password-5\",\"username\":\"bobthecorp\"}",
+          "secret_string_wo": null,
+          "secret_string_wo_version": null
+        },
+        "after_identity": {
+          "account_id": null,
+          "region": null,
+          "secret_id": null,
+          "version_id": null
+        },
+        "after_sensitive": {
+          "secret_binary": true,
+          "secret_string": true,
+          "secret_string_wo": true,
+          "version_stages": []
+        },
+        "after_unknown": {
+          "arn": true,
+          "has_secret_string_wo": true,
+          "id": true,
+          "secret_arn": true,
+          "version_id": true,
+          "version_stages": true
+        },
+        "before": null,
+        "before_sensitive": false
+      },
+      "mode": "managed",
+      "name": "new",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "type": "aws_secretsmanager_secret_version"
+    },
+    {
+      "action_reason": "replace_because_cannot_update",
+      "address": "aws_secretsmanager_secret_version.this",
+      "change": {
+        "actions": [
+          "delete",
+          "create"
+        ],
+        "after": {
+          "region": "us-east-1",
+          "secret_binary": null,
+          "secret_id": "arn:aws:secretsmanager:us-east-1:111111111111:secret:bobthecorp-db-AbCdEf",
+          "secret_string": "bobthecorp-fake-secret-2",
+          "secret_string_wo": null,
+          "secret_string_wo_version": null
+        },
+        "after_identity": {
+          "account_id": "111111111111",
+          "region": "us-east-1",
+          "secret_id": "arn:aws:secretsmanager:us-east-1:111111111111:secret:bobthecorp-db-AbCdEf",
+          "version_id": "bobthecorp-version-0001"
+        },
+        "after_sensitive": {
+          "secret_binary": true,
+          "secret_string": true,
+          "secret_string_wo": true,
+          "version_stages": []
+        },
+        "after_unknown": {
+          "arn": true,
+          "has_secret_string_wo": true,
+          "id": true,
+          "secret_arn": true,
+          "version_id": true,
+          "version_stages": true
+        },
+        "before": {
+          "arn": "arn:aws:secretsmanager:us-east-1:111111111111:secret:bobthecorp-db-AbCdEf",
+          "has_secret_string_wo": false,
+          "id": "arn:aws:secretsmanager:us-east-1:111111111111:secret:bobthecorp-db-AbCdEf|bobthecorp-version-0001",
+          "region": "us-east-1",
+          "secret_arn": "bobthecorp-fake-secret_arn",
+          "secret_binary": null,
+          "secret_id": "arn:aws:secretsmanager:us-east-1:111111111111:secret:bobthecorp-db-AbCdEf",
+          "secret_string": "bobthecorp-fake-secret-1",
+          "secret_string_wo": null,
+          "secret_string_wo_version": null,
+          "version_id": "bobthecorp-version-0001",
+          "version_stages": []
+        },
+        "before_identity": {
+          "account_id": "111111111111",
+          "region": "us-east-1",
+          "secret_id": "arn:aws:secretsmanager:us-east-1:111111111111:secret:bobthecorp-db-AbCdEf",
+          "version_id": "bobthecorp-version-0001"
+        },
+        "before_sensitive": {
+          "secret_binary": true,
+          "secret_string": true,
+          "secret_string_wo": true,
+          "version_stages": []
+        },
+        "replace_paths": [
+          [
+            "secret_string"
+          ]
+        ]
+      },
+      "mode": "managed",
+      "name": "this",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "type": "aws_secretsmanager_secret_version"
+    }
+  ],
+  "terraform_version": "1.16.3"
+}

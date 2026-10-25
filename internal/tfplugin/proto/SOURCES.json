@@ -1,0 +1,4 @@
+{
+    "tfplugin5.proto": {"module": "github.com/hashicorp/terraform-plugin-go", "version": "v0.31.0", "path": "tfprotov5/internal/tfplugin5/tfplugin5.proto", "sha256": "3d9975526164cce8479755469220d54e7400e461b24a21997ccccef79e3f1e90"},
+    "tfplugin6.proto": {"module": "github.com/hashicorp/terraform-plugin-go", "version": "v0.31.0", "path": "tfprotov6/internal/tfplugin6/tfplugin6.proto", "sha256": "412d678e0cc8c90e46e1c5eb87508008cdd677e0daec647ada5e8e08abd52a39"}
+}

@@ -1,0 +1,16 @@
+[
+  {
+    "id": "rds_kms_key_policy_denies",
+    "version": "1.0.0",
+    "kind": "resource",
+    "resource_type": "aws_db_instance",
+    "reads": ["kms_key_id"],
+    "presence_mode": "effective",
+    "on": ["create", "update"],
+    "expr": "iam.parse(resource.kms_key_id).statements.all(s, s.effect == \"Deny\")",
+    "action": "deny",
+    "severity": "high",
+    "message": "Swap fixture: every statement denies.",
+    "exemption_coverable": ["grant"]
+  }
+]

@@ -1,0 +1,1 @@
+{"Version":"2012-10-17","Statement":[{"Effect":"Allow","Principal":{"aws":"arn:aws:iam::111111111111:role/bobthecorp-ci","SERVICE":["lambda.amazonaws.com","events.amazonaws.com","lambda.amazonaws.com"]},"Action":"sts:AssumeRole"}]}

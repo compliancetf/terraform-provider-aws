@@ -1,0 +1,45 @@
+{
+  "description": "InvokeAction passes with an entry for the same method and request",
+  "stage": "rpc",
+  "method": "/tfplugin5.Provider/InvokeAction",
+  "mode": "hard_fail",
+  "verdict_required": true,
+  "op": "",
+  "gated": true,
+  "type_name": "rpc_invoke_action",
+  "rpc_request": "req-1",
+  "verdict": {
+    "entries": [
+      {
+        "form": "rpc",
+        "method": "/tfplugin5.Provider/InvokeAction",
+        "request": "req-2"
+      },
+      {
+        "form": "rpc",
+        "method": "/tfplugin5.Provider/InvokeAction",
+        "request": "req-1"
+      }
+    ],
+    "want_keys": [
+      {
+        "form": "rpc",
+        "method": "/tfplugin5.Provider/InvokeAction",
+        "request": "req-1"
+      }
+    ]
+  },
+  "want": {
+    "diagnostics": [],
+    "evidence": {
+      "op": "change",
+      "results": [
+        {
+          "control": "verdict_required",
+          "state": "pass",
+          "decision": "logged"
+        }
+      ]
+    }
+  }
+}

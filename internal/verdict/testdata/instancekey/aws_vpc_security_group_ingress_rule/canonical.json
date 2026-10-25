@@ -1,0 +1,55 @@
+{
+  "entries": [
+    {
+      "actions": [
+        "create"
+      ],
+      "address": "aws_vpc_security_group_ingress_rule.new",
+      "keys": [
+        {
+          "after": {
+            "cidr_ipv4": "s:10.2.0.0/16",
+            "from_port": "n:8443",
+            "ip_protocol": "s:tcp",
+            "region": "s:us-east-1",
+            "tags": {
+              "Name": "s:bobthecorp-batch-8443"
+            },
+            "to_port": "n:8443"
+          },
+          "after_hashed_jcs": "{\"cidr_ipv4\":\"a3f2ca2381369d3ac674d7d5e5578cb2486cdbdc6790f65ff17153f3d985f895\",\"from_port\":\"30513492d3dc8322e746c3e46179400f8bd4cc4f53a8b760dbf18e57721b6ded\",\"ip_protocol\":\"338d8d79efbc443fdcb5fe4ac37837874fa6821e805ff6d874ac497f3855e5b6\",\"region\":\"8df8ff45a31e55a282b554a4217667bd534d60853102522fb525315732856f2a\",\"tags\":{\"Name\":\"cce224ac37aa71f86ee204e9222e7ac687830326e66561f0ad9fa2fc978e79be\"},\"to_port\":\"30513492d3dc8322e746c3e46179400f8bd4cc4f53a8b760dbf18e57721b6ded\"}",
+          "field": "instance_key",
+          "form": "create",
+          "prior_identity": null,
+          "prior_identity_hashed_jcs": "null",
+          "prior_identity_kind": "none"
+        }
+      ]
+    },
+    {
+      "action_reason": "delete_because_no_resource_config",
+      "actions": [
+        "delete"
+      ],
+      "address": "aws_vpc_security_group_ingress_rule.old",
+      "keys": [
+        {
+          "after": null,
+          "after_hashed_jcs": "null",
+          "field": "delete_key",
+          "form": "delete",
+          "prior_identity": {
+            "account_id": "s:111111111111",
+            "id": "s:sgr-0eeeeeeeeeeeeeee1",
+            "region": "s:us-east-1"
+          },
+          "prior_identity_hashed_jcs": "{\"account_id\":\"47e7ec2525e1a3e184c7844d068e98ee8789c5c565812114c46d959065728ced\",\"id\":\"ec78616da72eb2612d735708aa5be93fa618bc60ee59e3f6a7eee6b54fdff1e7\",\"region\":\"8df8ff45a31e55a282b554a4217667bd534d60853102522fb525315732856f2a\"}",
+          "prior_identity_kind": "identity"
+        }
+      ]
+    }
+  ],
+  "format": "compliancetf.instancekey.golden/v1",
+  "provider_version": "hashicorp/aws 6.65.0",
+  "terraform_version": "1.16.3"
+}

@@ -1,0 +1,23 @@
+{
+  "format": "content.policy-fixtures/1",
+  "content_version": "0.27.1",
+  "content_commit": "1f2a3ad",
+  "policies": [
+    {
+      "id": "rds_db_instance_no_default_admin_name",
+      "resource_type": "aws_db_instance",
+      "cases": [
+        {"name": "compliant_dbadmin", "resource": {"username": "dbadmin"}},
+        {"name": "non_compliant_admin", "resource": {"username": "admin"}}
+      ]
+    },
+    {
+      "id": "s3_bobthecorp_versioning_on",
+      "resource_type": "aws_s3_bucket_versioning",
+      "cases": [
+        {"name": "compliant_enabled", "resource": {"bucket": "bobthecorp-logs", "versioning_configuration": [{"status": "Enabled"}]}},
+        {"name": "non_compliant_suspended", "resource": {"bucket": "bobthecorp-logs", "versioning_configuration": [{"status": "Suspended"}]}}
+      ]
+    }
+  ]
+}

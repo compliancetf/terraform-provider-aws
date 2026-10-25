@@ -1,0 +1,150 @@
+{
+  "format_version": "1.2",
+  "resource_changes": [
+    {
+      "address": "aws_s3_bucket_server_side_encryption_configuration.new",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "after": {
+          "expected_bucket_owner": null,
+          "region": "us-east-1",
+          "rule": [
+            {
+              "apply_server_side_encryption_by_default": [
+                {
+                  "sse_algorithm": "aws:kms"
+                }
+              ]
+            }
+          ]
+        },
+        "after_identity": {
+          "account_id": null,
+          "bucket": null,
+          "region": null
+        },
+        "after_sensitive": {
+          "rule": [
+            {
+              "apply_server_side_encryption_by_default": [
+                {}
+              ],
+              "blocked_encryption_types": []
+            }
+          ]
+        },
+        "after_unknown": {
+          "bucket": true,
+          "id": true,
+          "rule": [
+            {
+              "apply_server_side_encryption_by_default": [
+                {
+                  "kms_master_key_id": true
+                }
+              ],
+              "blocked_encryption_types": true,
+              "bucket_key_enabled": true
+            }
+          ]
+        },
+        "before": null,
+        "before_sensitive": false
+      },
+      "mode": "managed",
+      "name": "new",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "type": "aws_s3_bucket_server_side_encryption_configuration"
+    },
+    {
+      "address": "aws_s3_bucket_server_side_encryption_configuration.this",
+      "change": {
+        "actions": [
+          "update"
+        ],
+        "after": {
+          "bucket": "bobthecorp-data",
+          "expected_bucket_owner": null,
+          "id": "bobthecorp-data",
+          "region": "us-east-1",
+          "rule": [
+            {
+              "apply_server_side_encryption_by_default": [
+                {
+                  "kms_master_key_id": "arn:aws:kms:us-east-1:111111111111:key/1111aaaa-2222-3333-4444-555566667777",
+                  "sse_algorithm": "aws:kms"
+                }
+              ],
+              "bucket_key_enabled": true
+            }
+          ]
+        },
+        "after_identity": {
+          "account_id": "111111111111",
+          "bucket": "bobthecorp-data",
+          "region": "us-east-1"
+        },
+        "after_sensitive": {
+          "rule": [
+            {
+              "apply_server_side_encryption_by_default": [
+                {}
+              ],
+              "blocked_encryption_types": []
+            }
+          ]
+        },
+        "after_unknown": {
+          "rule": [
+            {
+              "apply_server_side_encryption_by_default": [
+                {}
+              ],
+              "blocked_encryption_types": true
+            }
+          ]
+        },
+        "before": {
+          "bucket": "bobthecorp-data",
+          "expected_bucket_owner": null,
+          "id": "bobthecorp-data",
+          "region": "us-east-1",
+          "rule": [
+            {
+              "apply_server_side_encryption_by_default": [
+                {
+                  "kms_master_key_id": "bobthecorp-fake-kms_master_key_id",
+                  "sse_algorithm": "AES256"
+                }
+              ],
+              "blocked_encryption_types": [],
+              "bucket_key_enabled": false
+            }
+          ]
+        },
+        "before_identity": {
+          "account_id": "111111111111",
+          "bucket": "bobthecorp-data",
+          "region": "us-east-1"
+        },
+        "before_sensitive": {
+          "rule": [
+            {
+              "apply_server_side_encryption_by_default": [
+                {}
+              ],
+              "blocked_encryption_types": []
+            }
+          ]
+        }
+      },
+      "mode": "managed",
+      "name": "this",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "type": "aws_s3_bucket_server_side_encryption_configuration"
+    }
+  ],
+  "terraform_version": "1.16.3"
+}

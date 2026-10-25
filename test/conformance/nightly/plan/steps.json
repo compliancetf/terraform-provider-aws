@@ -1,0 +1,5 @@
+{
+  "steps": [
+    {"cmd": ["plan", "-no-color", "-detailed-exitcode"], "exit": 2, "stdout_contains": ["aws_ssm_parameter.a will be created", "Plan: 1 to add, 0 to change, 0 to destroy."], "state_unchanged": true}
+  ]
+}

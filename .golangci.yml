@@ -1,0 +1,70 @@
+version: "2"
+
+run:
+  timeout: 5m
+  tests: true
+  modules-download-mode: readonly
+
+output:
+  formats:
+    text:
+      path: stdout
+
+linters:
+  enable:
+    - errcheck
+    - govet
+    - staticcheck
+    - misspell
+    - revive
+    - unconvert
+    - gosec
+    - gocritic
+  settings:
+    errcheck:
+      check-blank: true
+      check-type-assertions: true
+    govet:
+      enable-all: true
+      disable:
+        - fieldalignment
+        - shadow
+    gosec:
+      excludes:
+        - G301  # Directory permissions 0750+ are acceptable for audit log dirs
+        - G104  # Unhandled errors on Close/Remove — best-effort cleanup
+        - G110  # Decompression bomb — zip files are from hashicorp releases (SHA256 verified)
+        - G302  # File permissions 0600+ are acceptable for audit logs (need group read)
+        - G304  # File path variables are intentional for bundle/audit log loading
+        - G306  # WriteFile permissions 0600+ are acceptable for test fixtures
+        - G703  # Path traversal — file paths from Terraform cache discovery are intentional
+        - G706  # Log injection — log messages from env vars/paths are intentional
+    misspell:
+      locale: US
+    revive:
+      confidence: 0.8
+      rules:
+        - name: package-comments
+          disabled: true
+        - name: exported
+          disabled: true
+  exclusions:
+    rules:
+      # Exclude some linters from running on test files
+      - path: _test\.go
+        linters:
+          - errcheck
+          - gosec
+      # download.go has many best-effort Close/Remove calls
+      - path: internal/upstream/download\.go
+        linters:
+          - errcheck
+
+formatters:
+  enable:
+    - gofmt
+    - goimports
+  settings:
+    goimports:
+      local-prefixes:
+        - github.com/compliancetf/terraform-provider-aws

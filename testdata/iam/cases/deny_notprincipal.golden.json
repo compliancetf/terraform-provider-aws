@@ -1,0 +1,43 @@
+{
+  "format": "compliancetf.iampolicy/v1",
+  "version": "2012-10-17",
+  "statements": [
+    {
+      "sid": "",
+      "effect": "Deny",
+      "actions": [
+        "s3:*"
+      ],
+      "not_actions": [],
+      "resources": [],
+      "not_resources": [],
+      "principals": {},
+      "not_principals": {
+        "aws": [
+          "arn:aws:iam::111111111111:role/bobthecorp-admin",
+          "arn:aws:iam::111111111111:root"
+        ]
+      },
+      "conditions": [],
+      "action_all": false,
+      "principal_any": true,
+      "resource_any": false,
+      "action_any": false,
+      "principal_all": false,
+      "resource_all": false,
+      "unconditional": true,
+      "ambiguous": [
+        "not_principal",
+        "resource_wildcard"
+      ],
+      "actions_expanded": [],
+      "not_actions_expanded": [],
+      "unresolved_actions": [],
+      "unresolved_principals": {},
+      "unresolved_resources": [
+        "arn:aws:s3:::bobthecorp-data/*"
+      ]
+    }
+  ],
+  "catalog": ""
+}

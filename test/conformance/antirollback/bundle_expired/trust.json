@@ -1,0 +1,1 @@
+{"profile": {"governed": true, "floor_mode": "airgap", "bundles": [{"bundle_id": "bobthecorp-fake", "min_version": 3}], "mode_floor": {"default": "soft_fail"}}, "floor": {"min_profile_version": 5, "bundles": {"bobthecorp-fake": 3}}, "bundle": {"issued_at": "-2160h", "expires_at": "-192h"}}

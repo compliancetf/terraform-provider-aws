@@ -1,0 +1,3 @@
+[
+  {"id": "lookup_name_bobthecorp", "version": "1.0.0", "kind": "data_source", "resource_type": "fake_lookup", "reads": ["name"], "presence_mode": "configured", "expr": "config.name == \"bobthecorp-db\"", "action": "deny", "severity": "high", "message": "Look up bobthecorp-db only.", "fix": "Set name = \"bobthecorp-db\".", "exemption_coverable": []}
+]

@@ -1,0 +1,10 @@
+{
+  "description": "a destroy has no NewState to check",
+  "stage": "apply_post",
+  "mode": "hard_fail",
+  "op": "delete",
+  "new": null,
+  "want": {
+    "diagnostics": []
+  }
+}

@@ -1,0 +1,8 @@
+{
+  "description": "no trusted workspace: every sidecar entry is rejected (exception_scope_untrusted)",
+  "hcl": "applied.hcl",
+  "table": {"workspace": ""},
+  "warnings": ["exception legacy-reporting-db: exception_scope_untrusted: workspace; rds_db_instance_encryption_at_rest_enabled enforced"],
+  "events": ["exception_scope_untrusted"],
+  "lookups": [{"resource": {"identifier": "legacy-reporting", "storage_encrypted": false}, "want": {"status": "rejected"}}]
+}

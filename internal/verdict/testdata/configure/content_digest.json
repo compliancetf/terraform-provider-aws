@@ -1,0 +1,10 @@
+{
+  "description": "a verdict whose content_digest differs from the loaded content is refused",
+  "set": {
+    "content_digest": "sha256:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+  },
+  "want": {
+    "summary": "verdict issued for control content sha256:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee, provider loaded sha256:3333333333333333333333333333333333333333333333333333333333333333: re-run plan and gate",
+    "detail": "Re-run terraform plan and ctfkit gate, then apply through ctfkit apply."
+  }
+}

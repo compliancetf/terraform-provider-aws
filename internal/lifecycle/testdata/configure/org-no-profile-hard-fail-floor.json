@@ -1,0 +1,1 @@
+{"block": {"exceptions_file": "exceptions.hcl", "org_id": "bobthecorp"}, "want": {"bundles": ["cis-aws@1"], "fallback": "hard_fail_floor", "run_mode": "soft_fail", "warnings": ["Org profile for bobthecorp unavailable: hard_fail floor applied (no profile found).", "exceptions file ignored: no org profile enables self-service exceptions"]}}

@@ -1,0 +1,13 @@
+{
+  "evaluator": "lifecycle",
+  "env": {
+    "COMPLIANCETF_ORG_ID": "bobthecorp",
+    "COMPLIANCETF_PROFILE_PATH": "{work}/profile.dsse.json",
+    "COMPLIANCETF_BUNDLE_PATH": "{work}/bundle.tar.gz"
+  },
+  "expect_applies": 1,
+  "steps": [
+    {"cmd": ["plan", "-no-color"], "exit": 0, "stdout_contains": ["[fake_thing_name_not_bad] pending: re-checked at apply"]},
+    {"cmd": ["apply", "-no-color", "-auto-approve"], "exit": 1, "stderr_contains": ["[fake_thing_name_not_bad] fake_thing name must not end in -bad."]}
+  ]
+}

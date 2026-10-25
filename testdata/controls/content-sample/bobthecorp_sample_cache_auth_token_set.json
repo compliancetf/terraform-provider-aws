@@ -1,0 +1,8 @@
+{"about": "not_empty on a sensitive string: the value is read, never reported.",
+ "control": {"id": "bobthecorp_sample_cache_auth_token_set", "version": "1.0.0", "kind": "resource", "resource_type": "aws_elasticache_replication_group", "reads": ["auth_token"], "presence_mode": "effective", "on": ["create", "update"], "expr": "resource.auth_token != null && resource.auth_token != \"\"", "action": "deny", "severity": "high", "message": "Sample: the replication group auth token must be set."},
+ "cases": [
+  {"id": "P-01-token", "resource": {"replication_group_id": "bobthecorp", "auth_token": "ctf-marker-sample-auth-0001"}, "expect": {"state": "pass", "err_class": ""}},
+  {"id": "F-01-null", "resource": {"replication_group_id": "bobthecorp"}, "expect": {"state": "fail", "err_class": ""}},
+  {"id": "F-02-empty", "resource": {"replication_group_id": "bobthecorp", "auth_token": ""}, "expect": {"state": "fail", "err_class": ""}},
+  {"id": "U-01-unknown", "resource": {"replication_group_id": "bobthecorp", "auth_token": {"$unknown": true}}, "expect": {"state": "unknown", "err_class": ""}}
+ ]}

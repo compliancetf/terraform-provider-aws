@@ -1,0 +1,20 @@
+[
+  {
+    "id": "s3_bucket_policy_deny_all_principals_unconditionally",
+    "version": "1.0.0",
+    "kind": "resource",
+    "resource_type": "aws_s3_bucket_policy",
+    "reads": [
+      "policy"
+    ],
+    "presence_mode": "effective",
+    "on": [
+      "create",
+      "update"
+    ],
+    "expr": "iam.parse(resource.policy).statements.exists(s, s.effect == \"Deny\" && s.principal_all && s.action_all && s.unconditional)",
+    "action": "deny",
+    "severity": "high",
+    "message": "Requirement polarity: unconditional is a positive conjunct with *_all of the same statement."
+  }
+]

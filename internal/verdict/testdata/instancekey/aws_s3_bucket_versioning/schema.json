@@ -1,0 +1,89 @@
+{
+  "format_version": "1.0",
+  "provider_schemas": {
+    "registry.terraform.io/hashicorp/aws": {
+      "resource_identity_schemas": {
+        "aws_s3_bucket_versioning": {
+          "attributes": {
+            "account_id": {
+              "optional_for_import": true,
+              "type": "string"
+            },
+            "bucket": {
+              "required_for_import": true,
+              "type": "string"
+            },
+            "region": {
+              "optional_for_import": true,
+              "type": "string"
+            }
+          },
+          "version": 1
+        }
+      },
+      "resource_schemas": {
+        "aws_s3_bucket_versioning": {
+          "block": {
+            "attributes": {
+              "bucket": {
+                "description_kind": "plain",
+                "required": true,
+                "type": "string"
+              },
+              "expected_bucket_owner": {
+                "deprecated": true,
+                "deprecation_message": "expected_bucket_owner is deprecated. It will be removed in a future verion of the provider.",
+                "description_kind": "plain",
+                "optional": true,
+                "type": "string"
+              },
+              "id": {
+                "computed": true,
+                "description_kind": "plain",
+                "optional": true,
+                "type": "string"
+              },
+              "mfa": {
+                "description_kind": "plain",
+                "optional": true,
+                "type": "string"
+              },
+              "region": {
+                "computed": true,
+                "description": "Region where this resource will be [managed](https://docs.aws.amazon.com/general/latest/gr/rande.html#regional-endpoints). Defaults to the Region set in the [provider configuration](https://registry.terraform.io/providers/hashicorp/aws/latest/docs#aws-configuration-reference).",
+                "description_kind": "plain",
+                "optional": true,
+                "type": "string"
+              }
+            },
+            "block_types": {
+              "versioning_configuration": {
+                "block": {
+                  "attributes": {
+                    "mfa_delete": {
+                      "computed": true,
+                      "description_kind": "plain",
+                      "optional": true,
+                      "type": "string"
+                    },
+                    "status": {
+                      "description_kind": "plain",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "description_kind": "plain"
+                },
+                "max_items": 1,
+                "min_items": 1,
+                "nesting_mode": "list"
+              }
+            },
+            "description_kind": "plain"
+          },
+          "version": 0
+        }
+      }
+    }
+  }
+}

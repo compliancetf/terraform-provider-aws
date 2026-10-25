@@ -1,0 +1,8 @@
+{
+  "description": "a padded (non base64url-raw) signature value",
+  "sign": "bad_value",
+  "want": {
+    "summary": "Verdict signature invalid: malformed signature value",
+    "detail": "Re-run terraform plan and ctfkit gate, then apply through ctfkit apply."
+  }
+}

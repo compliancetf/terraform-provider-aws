@@ -1,0 +1,9 @@
+{"id": "M-01-targets", "schema": "testdata/schemas/aws-subset.json",
+ "about": "One control id and version on two resource_type targets with equal projected inputs: the memo key carries the target, so the second evaluation is not a hit of the first.",
+ "controls": [
+  {"id": "crosscheck_m_01_owner", "version": "1.0.0", "kind": "resource", "resource_type": "aws_db_instance", "reads": ["tags.owner"], "presence_mode": "effective", "on": ["create", "update"], "expr": "resource.tags.owner == \"bobthecorp\"", "action": "deny", "severity": "high", "message": "Fixture control."},
+  {"id": "crosscheck_m_01_owner", "version": "1.0.0", "kind": "resource", "resource_type": "aws_instance", "reads": ["tags.owner"], "presence_mode": "effective", "on": ["create", "update"], "expr": "resource.tags.owner != \"bobthecorp\"", "action": "deny", "severity": "high", "message": "Fixture control."}],
+ "steps": [
+  {"resource_type": "aws_db_instance", "bindings": {"op": "create", "env": "prod", "provider": {"region": "eu-west-1", "account_id": "111111111111"}, "resource": {"tags": {"owner": "bobthecorp"}}}, "expect": {"state": "pass", "err_class": "", "unknown_paths": []}},
+  {"resource_type": "aws_instance", "bindings": {"op": "create", "env": "prod", "provider": {"region": "eu-west-1", "account_id": "111111111111"}, "resource": {"tags": {"owner": "bobthecorp"}}}, "expect": {"state": "fail", "err_class": "", "unknown_paths": []}},
+  {"resource_type": "aws_db_instance", "bindings": {"op": "create", "env": "prod", "provider": {"region": "eu-west-1", "account_id": "111111111111"}, "resource": {"tags": {"owner": "bobthecorp"}}}, "expect": {"state": "pass", "err_class": "", "unknown_paths": [], "memoized": true}}]}

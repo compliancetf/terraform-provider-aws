@@ -1,0 +1,42 @@
+Optional+Computed bool, fail-closed: null fails, unknown stays unknown
+-- intent.json --
+{
+ "id": "ec2_instance_not_publicly_accessible",
+ "resource_type": "aws_instance",
+ "attributes": [
+  {
+   "schema_path": "associate_public_ip_address",
+   "condition": "equals_any",
+   "values": [
+    false
+   ],
+   "values_from_ref": null
+  }
+ ],
+ "explanation": "Explanation of ec2_instance_not_publicly_accessible.",
+ "postcondition": "",
+ "has_strategy_condition": false
+}
+-- want.json --
+{
+  "control": {
+    "id": "ec2_instance_not_publicly_accessible",
+    "version": "1.0.0",
+    "kind": "resource",
+    "resource_type": "aws_instance",
+    "reads": [
+      "associate_public_ip_address"
+    ],
+    "presence_mode": "effective",
+    "on": [
+      "create",
+      "update"
+    ],
+    "expr": "resource.associate_public_ip_address == false",
+    "action": "deny",
+    "severity": "",
+    "message": "",
+    "fix": "Explanation of ec2_instance_not_publicly_accessible.",
+    "exemption_coverable": []
+  }
+}

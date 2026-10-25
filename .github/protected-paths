@@ -1,0 +1,73 @@
+# Protected paths. A PR touching any path below needs the owner's
+# approval of its head and loses auto-merge, unless the owner below authored
+# it; the owner-approval commit status stays pending until then
+# (.github/workflows/protected-paths.yml).
+# Grammar, enforced by scripts/protected-paths.sh: one rule per line,
+# "/path @antonbabenko"; no wildcards. A rule covers the path itself and
+# everything below it (no trailing slash, so a symlink or submodule at a
+# directory path is covered too). The script matches case-insensitively.
+
+# CI, release, this gate
+/.github @antonbabenko
+/CODEOWNERS @antonbabenko
+/docs/CODEOWNERS @antonbabenko
+/scripts/protected-paths.sh @antonbabenko
+
+# Build inputs
+/Makefile @antonbabenko
+/.goreleaser.yml @antonbabenko
+/.goreleaser.yaml @antonbabenko
+/go.work @antonbabenko
+/go.work.sum @antonbabenko
+/.golangci.yml @antonbabenko
+/.golangci.yaml @antonbabenko
+/.golangci.toml @antonbabenko
+/.golangci.json @antonbabenko
+/vendor @antonbabenko
+/main.go @antonbabenko
+/release_guard_test.go @antonbabenko
+/evaluator.go @antonbabenko
+/evaluator_conformance.go @antonbabenko
+/workflow_pins_test.go @antonbabenko
+
+# Hook routing, protocol, classification
+/internal/tfplugin @antonbabenko
+/scripts/proto.sh @antonbabenko
+/internal/hook @antonbabenko
+/internal/proxy @antonbabenko
+
+# Upstream pins and verification
+/pins.json @antonbabenko
+/keys @antonbabenko
+/internal/upstream @antonbabenko
+/tools/pinupstream @antonbabenko
+/tools/releasegate @antonbabenko
+/tools/releasemeta @antonbabenko
+/tools/gomodcheck @antonbabenko
+
+# Trust, policy, evidence, embedded bundles
+/internal/trust @antonbabenko
+/internal/profile @antonbabenko
+/internal/exceptions @antonbabenko
+/internal/lifecycle @antonbabenko
+/internal/engine @antonbabenko
+/pkg/engine @antonbabenko
+/internal/evidence @antonbabenko
+/internal/fetch @antonbabenko
+/internal/bundle @antonbabenko
+/internal/embedded @antonbabenko
+/internal/verdict @antonbabenko
+/internal/baseline @antonbabenko
+/internal/breakglass @antonbabenko
+/internal/wrapper @antonbabenko
+/wrapper.json @antonbabenko
+/internal/bundlegen @antonbabenko
+/cmd/ctfbundle @antonbabenko
+/cmd/ctf-bundlegen @antonbabenko
+/cmd/benchgate @antonbabenko
+/test/bench/baseline @antonbabenko
+
+# Golden fixtures of the paths above that live outside them
+/testdata @antonbabenko
+/test/conformance/rpcseq/goldens @antonbabenko
+/test/conformance/testdata/capabilities.json @antonbabenko

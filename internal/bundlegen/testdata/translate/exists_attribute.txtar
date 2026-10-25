@@ -1,0 +1,40 @@
+exists on an attribute: x != null, mode as not_empty
+-- intent.json --
+{
+ "id": "cloudtrail_trail_kms_key_set",
+ "resource_type": "aws_cloudtrail",
+ "attributes": [
+  {
+   "schema_path": "kms_key_id",
+   "condition": "exists",
+   "values": [],
+   "values_from_ref": null
+  }
+ ],
+ "explanation": "Explanation of cloudtrail_trail_kms_key_set.",
+ "postcondition": "",
+ "has_strategy_condition": false
+}
+-- want.json --
+{
+  "control": {
+    "id": "cloudtrail_trail_kms_key_set",
+    "version": "1.0.0",
+    "kind": "resource",
+    "resource_type": "aws_cloudtrail",
+    "reads": [
+      "kms_key_id"
+    ],
+    "presence_mode": "configured",
+    "on": [
+      "create",
+      "update"
+    ],
+    "expr": "config.kms_key_id != null",
+    "action": "deny",
+    "severity": "",
+    "message": "",
+    "fix": "Explanation of cloudtrail_trail_kms_key_set.",
+    "exemption_coverable": []
+  }
+}

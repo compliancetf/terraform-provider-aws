@@ -1,0 +1,8 @@
+{
+  "requires": ["import_block"],
+  "steps": [
+    {"cmd": ["plan", "-no-color"], "exit": 0, "stdout_contains": ["fake_thing.a: Preparing import... [id=bobthecorp-imported]", "Plan: 1 to import, 0 to add, 0 to change, 0 to destroy."], "state_unchanged": true},
+    {"cmd": ["apply", "-no-color", "-auto-approve"], "exit": 0, "stdout_contains": ["Apply complete! Resources: 1 imported, 0 added, 0 changed, 0 destroyed."]},
+    {"cmd": ["plan", "-no-color", "-detailed-exitcode"], "exit": 0, "stdout_contains": ["No changes."], "state_unchanged": true}
+  ]
+}

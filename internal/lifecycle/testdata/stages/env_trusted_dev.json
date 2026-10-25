@@ -1,0 +1,27 @@
+{
+  "description": "profile scope dev: the env-dependent control is decided and passes",
+  "stage": "plan",
+  "mode": "hard_fail",
+  "op": "create",
+  "trusted_env": {
+    "scope_environment": "dev",
+    "want_env": "dev",
+    "want_env_known": true
+  },
+  "config": {
+    "storage_encrypted": false,
+    "kms_key_id": "arn:aws:kms:us-east-1:111122223333:key/bobthecorp-rds",
+    "engine": "postgres"
+  },
+  "prior": null,
+  "planned": {
+    "storage_encrypted": false,
+    "kms_key_id": "arn:aws:kms:us-east-1:111122223333:key/bobthecorp-rds",
+    "engine": "postgres",
+    "deletion_protection": true
+  },
+  "want": {
+    "diagnostics": [],
+    "stamp": true
+  }
+}

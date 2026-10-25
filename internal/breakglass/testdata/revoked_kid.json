@@ -1,0 +1,14 @@
+{
+  "description": "the receipt kid is in revoked_kids",
+  "policy": {},
+  "sign": "revoked",
+  "queries": [
+    {
+      "control": "CTF.S3.1",
+      "key": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "result": "fail",
+      "want": false
+    }
+  ],
+  "warning": "receipt signature invalid: kid revoked"
+}

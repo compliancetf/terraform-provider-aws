@@ -1,0 +1,10 @@
+{
+  "description": "self-service entry applies to a matching resource; no match and unknown selector value do not",
+  "lookups": [
+    {"resource": {"identifier": "legacy-reporting", "storage_encrypted": false},
+     "want": {"applied": true, "status": "applied", "id": "legacy-reporting-db", "expires": "2027-03-31T00:00:00Z", "workspace": "bobthecorp-reporting-prod"}},
+    {"resource": {"identifier": "new-reporting", "storage_encrypted": false}},
+    {"resource": {"identifier": "<unknown>", "storage_encrypted": false}, "want": {"unresolved": true}},
+    {"control": "rds_instance_kms_key_configured", "resource": {"identifier": "legacy-reporting", "storage_encrypted": false}}
+  ]
+}

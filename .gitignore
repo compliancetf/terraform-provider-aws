@@ -1,0 +1,63 @@
+.terraformrc
+
+# Go
+bin/
+dist/
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.test
+*.out
+vendor/
+
+# Terraform
+.terraform/
+*.tfstate
+*.tfstate.*
+# Seeded prior state of a conformance scenario (fake upstream, no real resources)
+!test/conformance/scenarios/*/terraform.tfstate
+*.tfplan
+.terraform.lock.hcl
+terraform.tfvars
+*.auto.tfvars
+
+# Build
+goreleaser/dist/
+terraform-provider-aws
+coverage.out
+coverage.html
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Secrets
+*.pem
+*.key
+.env
+.env.*
+
+# Local agent and issue-tracker state (never committed)
+.beads/
+.claude/
+.agents/
+.codex/
+.cursor/
+.dolt/
+*.db
+.beads-credential-key
+*.gate.lock*
+
+
+# Local agent instructions (never committed)
+CLAUDE.local.md
+AGENTS.local.md
+.private/

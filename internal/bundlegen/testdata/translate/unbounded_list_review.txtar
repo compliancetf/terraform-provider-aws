@@ -1,0 +1,16 @@
+[0] on a list block without max_items: review, an intent [0] checks the first element only
+-- schema.json --
+{"format_version": "1.0", "provider_schemas": {"registry.terraform.io/hashicorp/aws": {"resource_schemas": {"aws_bobthecorp_thing": {"version": 0, "block": {"attributes": {"name": {"type": "string", "optional": true}}, "block_types": {"settings": {"nesting_mode": "single", "block": {"attributes": {"mode": {"type": "string", "optional": true}}}}, "listener": {"nesting_mode": "list", "block": {"attributes": {"protocol": {"type": "string", "optional": true}}}}}}}}}}}
+-- intent.json --
+{"id": "bobthecorp_thing_check", "resource_type": "aws_bobthecorp_thing", "attributes": [{"schema_path": "listener[0].protocol", "condition": "equals_any", "values": ["HTTPS"], "values_from_ref": null}], "explanation": "", "postcondition": "", "has_strategy_condition": false}
+-- want.json --
+{
+  "review": {
+    "id": "bobthecorp_thing_check",
+    "resource_type": "aws_bobthecorp_thing",
+    "reason": "unbounded_block",
+    "detail": "listener[0].protocol equals_any: listener has no max_items = 1",
+    "proposal": "size(resource.listener) > 0 && resource.listener.all(e0, e0.protocol == \"HTTPS\")",
+    "alternative": "resource.listener.exists(e0, e0.protocol == \"HTTPS\")"
+  }
+}

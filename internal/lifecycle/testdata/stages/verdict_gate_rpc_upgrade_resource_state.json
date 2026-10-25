@@ -1,0 +1,19 @@
+{
+  "description": "UpgradeResourceState is allowlisted under verdict_required: it passes without Match and without a record",
+  "stage": "rpc",
+  "method": "/tfplugin5.Provider/UpgradeResourceState",
+  "mode": "hard_fail",
+  "verdict_required": true,
+  "op": "",
+  "gated": true,
+  "type_name": "rpc_upgrade_resource_state",
+  "rpc_request": "req-1",
+  "verdict": {
+    "entries": [],
+    "want_keys": []
+  },
+  "want": {
+    "diagnostics": [],
+    "no_record": true
+  }
+}

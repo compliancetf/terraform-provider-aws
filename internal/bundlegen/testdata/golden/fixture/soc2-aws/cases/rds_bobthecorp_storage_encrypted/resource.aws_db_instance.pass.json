@@ -1,0 +1,49 @@
+{
+  "id": "rds_bobthecorp_storage_encrypted.resource.aws_db_instance.pass",
+  "resource_type": "aws_db_instance",
+  "schema": "schema.json",
+  "control": {
+    "id": "rds_bobthecorp_storage_encrypted",
+    "version": "1.0.0",
+    "kind": "resource",
+    "resource_type": "aws_db_instance",
+    "reads": [
+      "storage_encrypted"
+    ],
+    "presence_mode": "effective",
+    "on": [
+      "create",
+      "update"
+    ],
+    "expr": "resource.storage_encrypted == true",
+    "action": "deny",
+    "severity": "high",
+    "message": "Sample database storage is encrypted",
+    "fix": "Set storage_encrypted = true.",
+    "framework_refs": [
+      "cis_v600:3.2",
+      "soc_2:SC6.1"
+    ],
+    "tool_refs": {
+      "checkov": [
+        "CKV_AWS_9016"
+      ]
+    },
+    "exemption_coverable": [
+      "baseline",
+      "grant"
+    ]
+  },
+  "bindings": {
+    "op": "create",
+    "provider": {},
+    "resource": {
+      "storage_encrypted": true
+    }
+  },
+  "expect": {
+    "state": "pass",
+    "err_class": "",
+    "unknown_paths": []
+  }
+}

@@ -1,0 +1,6 @@
+{
+  "description": "an ES256 receipt key listed in the floor-validated profile verifies",
+  "use": "receipt",
+  "source": "profile",
+  "want_release": ""
+}

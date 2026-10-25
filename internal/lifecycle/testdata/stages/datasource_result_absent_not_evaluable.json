@@ -1,0 +1,49 @@
+{
+  "description": "no result to bind: effective controls are not_evaluable and take the fail row (a Go error would only warn); the configured control still runs on Config",
+  "stage": "data_source",
+  "type_name": "aws_db_lookup",
+  "mode": "hard_fail",
+  "data_sources_deny": true,
+  "config": {
+    "storage_encrypted": true,
+    "kms_key_id": "arn:aws:kms:us-east-1:111122223333:key/bobthecorp-rds",
+    "engine": "postgres",
+    "deletion_protection": true
+  },
+  "want": {
+    "diagnostics": [
+      {
+        "severity": "error",
+        "summary": "[ds_lookup_encrypted] not evaluable (unresolved)",
+        "detail": "Treated as a failure of this control.",
+        "attribute": "AttributeName(\"storage_encrypted\")"
+      },
+      {
+        "severity": "warning",
+        "summary": "[ds_lookup_deletion_protection] not evaluable (unresolved)",
+        "detail": "Treated as a failure of this control.",
+        "attribute": "AttributeName(\"deletion_protection\")"
+      }
+    ],
+    "evidence": {
+      "op": "read",
+      "results": [
+        {
+          "control": "ds_lookup_engine_postgres",
+          "state": "pass",
+          "decision": "logged"
+        },
+        {
+          "control": "ds_lookup_encrypted",
+          "state": "not_evaluable",
+          "decision": "blocked"
+        },
+        {
+          "control": "ds_lookup_deletion_protection",
+          "state": "not_evaluable",
+          "decision": "warning"
+        }
+      ]
+    }
+  }
+}

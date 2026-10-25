@@ -1,0 +1,7 @@
+{"about": "equals_any [true] on a computed bool.",
+ "control": {"id": "bobthecorp_sample_warehouse_vpc_routing_on", "version": "1.0.0", "kind": "resource", "resource_type": "aws_redshift_cluster", "reads": ["enhanced_vpc_routing"], "presence_mode": "effective", "on": ["create", "update"], "expr": "resource.enhanced_vpc_routing in [true]", "action": "deny", "severity": "medium", "message": "Sample: warehouse VPC routing must be on."},
+ "cases": [
+  {"id": "P-01-true", "resource": {"cluster_identifier": "bobthecorp", "enhanced_vpc_routing": true}, "expect": {"state": "pass", "err_class": ""}},
+  {"id": "F-01-false", "resource": {"cluster_identifier": "bobthecorp", "enhanced_vpc_routing": false}, "expect": {"state": "fail", "err_class": ""}},
+  {"id": "U-01-computed", "resource": {"cluster_identifier": "bobthecorp", "enhanced_vpc_routing": {"$unknown": true}}, "expect": {"state": "unknown", "err_class": ""}}
+ ]}

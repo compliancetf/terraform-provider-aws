@@ -1,0 +1,10 @@
+{
+  "evaluator": "warn:fake_thing",
+  "steps": [
+    {"cmd": ["apply", "-no-color", "-auto-approve"], "exit": 0, "stdout_contains": ["Warning: Conformance test evaluator: warn", "Apply complete! Resources: 2 added, 0 changed, 0 destroyed."]},
+    {"cmd": ["apply", "-no-color", "-auto-approve", "-var", "size=2", "-var", "replace_name=bobthecorp-r2"], "exit": 0, "stdout_contains": ["fake_thing.a will be updated in-place", "fake_replace.r must be replaced", "Apply complete! Resources: 1 added, 1 changed, 1 destroyed."]},
+    {"cmd": ["plan", "-no-color", "-detailed-exitcode", "-var", "size=2", "-var", "replace_name=bobthecorp-r2"], "exit": 0, "stdout_contains": ["No changes."], "state_unchanged": true},
+    {"cmd": ["destroy", "-no-color", "-auto-approve", "-var", "size=2", "-var", "replace_name=bobthecorp-r2"], "exit": 0, "stdout_contains": ["Destroy complete! Resources: 2 destroyed."]}
+  ],
+  "expect_applies": 7
+}

@@ -1,0 +1,25 @@
+{
+  "description": "Under verdict_required, the apply of a create whose signed verdict holds no entry for the instance blocks before upstream (no_match, never waived by an exception).",
+  "plan": {
+    "warnings": []
+  },
+  "apply": {
+    "errors": [
+      {
+        "summary": "Verdict required",
+        "detail": "No verdict entry matches this fake_thing instance; the profile requires a verdict for every change. Re-run plan and ctfkit gate."
+      }
+    ],
+    "evidence": {
+      "op": "create",
+      "results": [
+        {"control": "verdict_required", "version": "1", "state": "fail", "decision": "blocked", "situation": "no_match"}
+      ]
+    }
+  },
+  "situation": {
+    "verdict": true,
+    "required": true,
+    "type": "fake_thing"
+  }
+}

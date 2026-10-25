@@ -1,0 +1,13 @@
+{
+  "result": "fail",
+  "findings": [
+    {
+      "control_id": "vpc_security_group_no_open_ingress",
+      "kind": "resource",
+      "resource_type": "aws_security_group",
+      "read": "ingress.cidr_blocks",
+      "check": "shape_changed",
+      "result": "fail"
+    }
+  ]
+}

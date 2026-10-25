@@ -1,0 +1,51 @@
+{
+  "description": "evidence.required with a working chain: the record is fsynced and the apply proceeds",
+  "stage": "apply_pre",
+  "mode": "hard_fail",
+  "op": "create",
+  "envelope": {
+    "op": "create",
+    "digest": "current"
+  },
+  "config": {
+    "storage_encrypted": true,
+    "kms_key_id": "arn:aws:kms:us-east-1:111122223333:key/bobthecorp-rds",
+    "engine": "postgres"
+  },
+  "prior": null,
+  "planned": {
+    "storage_encrypted": true,
+    "kms_key_id": "arn:aws:kms:us-east-1:111122223333:key/bobthecorp-rds",
+    "engine": "postgres",
+    "deletion_protection": true
+  },
+  "evidence_required": true,
+  "want": {
+    "diagnostics": [],
+    "evidence": {
+      "op": "create",
+      "results": [
+        {
+          "control": "rds_db_instance_encryption_at_rest_enabled",
+          "state": "pass",
+          "decision": "logged"
+        },
+        {
+          "control": "rds_instance_kms_key_configured",
+          "state": "pass",
+          "decision": "logged"
+        },
+        {
+          "control": "rds_instance_engine_not_mysql",
+          "state": "pass",
+          "decision": "logged"
+        },
+        {
+          "control": "rds_instance_deletion_protection_enabled",
+          "state": "pass",
+          "decision": "logged"
+        }
+      ]
+    }
+  }
+}

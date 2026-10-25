@@ -1,0 +1,13 @@
+{
+  "description": "verdict for another compliancetf/aws version",
+  "set": {
+    "provider_versions": {
+      "compliancetf/aws": "1.9.0",
+      "hashicorp/aws": "6.14.1"
+    }
+  },
+  "want": {
+    "summary": "Verdict issued for compliancetf/aws 1.9.0, running 2.0.0: re-run plan and gate",
+    "detail": "Re-run terraform plan and ctfkit gate, then apply through ctfkit apply."
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "description": "another format string",
+  "set": {
+    "format": "compliancetf.verdict/v2"
+  },
+  "want": {
+    "summary": "Invalid verdict file",
+    "detail": "The file is not a compliancetf.verdict/v1 document."
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "description": "the floor was obtained under airgap: receipts are ignored",
+  "policy": {
+    "floor_mode": "airgap"
+  },
+  "queries": [
+    {
+      "control": "CTF.S3.1",
+      "key": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "result": "fail",
+      "want": false
+    }
+  ],
+  "warning": "the floor was not obtained online"
+}

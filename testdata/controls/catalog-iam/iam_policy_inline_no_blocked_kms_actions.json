@@ -1,0 +1,12 @@
+{"control": {"id": "iam_policy_inline_no_blocked_kms_actions", "version": "1.0.0", "kind": "resource", "resource_type": "aws_iam_role_policy", "reads": ["policy"], "presence_mode": "effective", "on": ["create", "update"], "expr": "iam.parse(resource.policy).statements.all(s, !(s.effect == \"Allow\" && s.resource_any && [\"kms:decrypt\", \"kms:reencryptfrom\"].exists(a, iam.grants(s, a))))", "action": "deny", "severity": "high", "message": "Inline policies must not allow kms:Decrypt or kms:ReEncryptFrom on all keys."},
+ "cases": [
+  {"id": "P-01-decrypt-one-key", "resource": {"policy": {"Version": "2012-10-17", "Statement": [{"Effect": "Allow", "Action": "kms:Decrypt", "Resource": "arn:aws:kms:eu-west-1:111111111111:key/bobthecorp"}]}}, "expect": {"state": "pass", "err_class": ""}},
+  {"id": "P-02-encrypt-all-keys", "resource": {"policy": {"Version": "2012-10-17", "Statement": [{"Effect": "Allow", "Action": "kms:Encrypt", "Resource": "*"}]}}, "expect": {"state": "pass", "err_class": ""}},
+  {"id": "P-03-deny-decrypt", "resource": {"policy": {"Version": "2012-10-17", "Statement": [{"Effect": "Deny", "Action": "kms:Decrypt", "Resource": "*"}]}}, "expect": {"state": "pass", "err_class": ""}},
+  {"id": "F-01-decrypt-all-keys", "resource": {"policy": {"Version": "2012-10-17", "Statement": [{"Effect": "Allow", "Action": "kms:Decrypt", "Resource": "*"}]}}, "expect": {"state": "fail", "err_class": ""}},
+  {"id": "F-02-reencrypt-wildcard", "resource": {"policy": {"Version": "2012-10-17", "Statement": [{"Effect": "Allow", "Action": "kms:ReEncrypt*", "Resource": "*"}]}}, "expect": {"state": "fail", "err_class": ""}},
+  {"id": "F-03-kms-star", "resource": {"policy": {"Version": "2012-10-17", "Statement": [{"Effect": "Allow", "Action": "kms:*", "Resource": "*"}]}}, "expect": {"state": "fail", "err_class": ""}},
+  {"id": "F-04-not-resource", "resource": {"policy": {"Version": "2012-10-17", "Statement": [{"Effect": "Allow", "Action": "kms:Decrypt", "NotResource": "arn:aws:kms:eu-west-1:111111111111:key/bobthecorp"}]}}, "expect": {"state": "fail", "err_class": ""}},
+  {"id": "F-05-not-action", "resource": {"policy": {"Version": "2012-10-17", "Statement": [{"Effect": "Allow", "NotAction": "kms:Encrypt", "Resource": "*"}]}}, "expect": {"state": "fail", "err_class": ""}},
+  {"id": "N-01-catalog-miss", "resource": {"policy": {"Version": "2012-10-17", "Statement": [{"Effect": "Allow", "Action": ["kms:Decrypt", "kms:BobthecorpNoSuchAction"], "Resource": "*"}]}}, "expect": {"state": "not_evaluable", "err_class": "unresolved"}}
+ ]}

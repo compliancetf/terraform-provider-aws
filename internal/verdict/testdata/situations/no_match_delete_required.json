@@ -1,0 +1,26 @@
+{
+  "description": "no match delete required",
+  "verdict": true,
+  "required": true,
+  "delete": true,
+  "type": "aws_s3_bucket",
+  "matches": [],
+  "graph": [
+    {
+      "id": "s3_public_access_block_kept",
+      "version": "1.0.0",
+      "message": "Public access block deleted while its bucket stays.",
+      "fail_severity": "error"
+    }
+  ],
+  "excepted": [],
+  "want": [
+    {
+      "control": "",
+      "version": "",
+      "result": "no_match",
+      "severity": "error",
+      "text": "No verdict entry matches this aws_s3_bucket instance; the profile requires a verdict for every change. Re-run plan and ctfkit gate."
+    }
+  ]
+}

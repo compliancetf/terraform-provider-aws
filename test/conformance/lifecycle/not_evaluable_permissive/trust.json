@@ -1,0 +1,1 @@
+{"profile": {"mode_floor": {"default": "soft_fail"}, "control_floors": {"iam_policy_no_star_star": "hard_fail"}}, "bundle": {}}

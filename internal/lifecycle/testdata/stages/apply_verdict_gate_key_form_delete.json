@@ -1,0 +1,50 @@
+{
+  "description": "a destroy RPC passes the delete-form key from the prior identity",
+  "stage": "apply_pre",
+  "type_name": "aws_s3_bucket",
+  "mode": "hard_fail",
+  "verdict_required": true,
+  "op": "delete",
+  "envelope": {
+    "op": "delete",
+    "digest": "current",
+    "prior_identity_kind": "id"
+  },
+  "config": null,
+  "prior": {
+    "storage_encrypted": true,
+    "kms_key_id": "arn:aws:kms:us-east-1:111122223333:key/bobthecorp-rds",
+    "engine": "postgres",
+    "deletion_protection": true,
+    "id": "db-1"
+  },
+  "planned": null,
+  "verdict": {
+    "entries": [
+      {
+        "form": "delete",
+        "prior_identity_kind": "id",
+        "prior_identity": {
+          "id": "db-1"
+        }
+      }
+    ],
+    "want_keys": [
+      {
+        "form": "delete",
+        "type_name": "aws_s3_bucket",
+        "prior_identity_kind": "id",
+        "prior_identity": {
+          "id": "db-1"
+        }
+      }
+    ]
+  },
+  "want": {
+    "diagnostics": [],
+    "evidence": {
+      "op": "delete",
+      "results": []
+    }
+  }
+}

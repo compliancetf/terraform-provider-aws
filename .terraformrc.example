@@ -1,0 +1,15 @@
+# compliance.tf Terraform Provider — Development Configuration
+#
+# Copy this file to ~/.terraformrc (or set the TF_CLI_CONFIG_FILE
+# environment variable) to use the locally-built provider binary
+# during development.
+#
+# Replace the path below with the absolute path to your repo root
+# (the directory containing the terraform-provider-aws binary).
+
+provider_installation {
+  dev_overrides {
+    "compliancetf/aws" = "/absolute/path/to/terraform-provider-aws"
+  }
+  direct {}
+}

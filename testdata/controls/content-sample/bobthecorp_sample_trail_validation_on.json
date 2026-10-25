@@ -1,0 +1,7 @@
+{"about": "equals_any [true].",
+ "control": {"id": "bobthecorp_sample_trail_validation_on", "version": "1.0.0", "kind": "resource", "resource_type": "aws_cloudtrail", "reads": ["enable_log_file_validation"], "presence_mode": "effective", "on": ["create", "update"], "expr": "resource.enable_log_file_validation in [true]", "action": "deny", "severity": "medium", "message": "Sample: trail validation must be on."},
+ "cases": [
+  {"id": "P-01-true", "resource": {"name": "bobthecorp-trail", "enable_log_file_validation": true}, "expect": {"state": "pass", "err_class": ""}},
+  {"id": "F-01-false", "resource": {"name": "bobthecorp-trail", "enable_log_file_validation": false}, "expect": {"state": "fail", "err_class": ""}},
+  {"id": "F-02-null", "resource": {"name": "bobthecorp-trail"}, "expect": {"state": "fail", "err_class": ""}}
+ ]}

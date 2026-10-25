@@ -1,0 +1,16 @@
+[
+  {
+    "id": "rds_db_instance_encryption_at_rest_enabled",
+    "version": "2.1.0",
+    "kind": "resource",
+    "resource_type": "aws_db_instance",
+    "reads": ["storage_encrypted"],
+    "presence_mode": "effective",
+    "on": ["create", "update"],
+    "expr": "resource.storage_encrypted == true",
+    "action": "deny",
+    "severity": "high",
+    "message": "Coverable source fixture: only grant may cover this control.",
+    "exemption_coverable": ["grant"]
+  }
+]

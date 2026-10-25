@@ -1,0 +1,25 @@
+[
+  {
+    "id": "s3_bobthecorp_versioning_on",
+    "version": "1.0.0",
+    "kind": "resource",
+    "resource_type": "aws_s3_bucket_versioning",
+    "reads": [
+      "bucket"
+    ],
+    "presence_mode": "configured",
+    "on": [
+      "create",
+      "update"
+    ],
+    "expr": "config.bucket != null",
+    "action": "warn",
+    "severity": "medium",
+    "message": "Sample bucket versioning is on",
+    "framework_refs": [
+      "pci_dss_v40:S10.5",
+      "soc_2:SA1"
+    ],
+    "exemption_coverable": []
+  }
+]

@@ -1,0 +1,95 @@
+{
+  "entries": [
+    {
+      "actions": [
+        "create"
+      ],
+      "address": "aws_lambda_function.new",
+      "keys": [
+        {
+          "field": "instance_key",
+          "form": "create",
+          "key": "sha256:5d8371676b0a2570c94d500dbb0534b04b97af92088738d1a42eaae740ec833b",
+          "prior_identity_kind": "none",
+          "unknown_paths": [
+            [
+              "architectures"
+            ],
+            [
+              "arn"
+            ],
+            [
+              "code_sha256"
+            ],
+            [
+              "ephemeral_storage"
+            ],
+            [
+              "id"
+            ],
+            [
+              "invoke_arn"
+            ],
+            [
+              "last_modified"
+            ],
+            [
+              "logging_config"
+            ],
+            [
+              "qualified_arn"
+            ],
+            [
+              "qualified_invoke_arn"
+            ],
+            [
+              "response_streaming_invoke_arn"
+            ],
+            [
+              "role"
+            ],
+            [
+              "signing_job_arn"
+            ],
+            [
+              "signing_profile_version_arn"
+            ],
+            [
+              "source_code_size"
+            ],
+            [
+              "tags_all"
+            ],
+            [
+              "tracing_config"
+            ],
+            [
+              "version"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "actions": [
+        "update"
+      ],
+      "address": "aws_lambda_function.this",
+      "keys": [
+        {
+          "field": "instance_key",
+          "form": "update",
+          "key": "sha256:5081e640a79e7be867f71c897e03f561a1388f068df6f82f620b68f28448c51a",
+          "prior_identity_kind": "identity",
+          "unknown_paths": []
+        }
+      ]
+    }
+  ],
+  "format": "compliancetf.instancekey.golden/v1",
+  "k_leaf_hex": "845cba3b9048a0ea701ceebf35bf8d23f96345d369ee41f24777d11aee0609eb",
+  "key_check": "278a53702bed79d81258d55c57dbfd708733a1e9d04c6fe3e8a7e5d0ca565a63",
+  "provider_version": "hashicorp/aws 6.65.0",
+  "terraform_version": "1.16.3",
+  "test_secret_hex": "494e5345435552452d544553542d5345435245542d696e7374616e63656b6579"
+}

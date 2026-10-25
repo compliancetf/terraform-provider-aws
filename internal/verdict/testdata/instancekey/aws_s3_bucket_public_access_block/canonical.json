@@ -1,0 +1,46 @@
+{
+  "entries": [
+    {
+      "action_reason": "replace_because_cannot_update",
+      "actions": [
+        "delete",
+        "create"
+      ],
+      "address": "aws_s3_bucket_public_access_block.this",
+      "keys": [
+        {
+          "after": null,
+          "after_hashed_jcs": "null",
+          "field": "delete_key",
+          "form": "delete",
+          "prior_identity": {
+            "account_id": "s:111111111111",
+            "bucket": "s:bobthecorp-data",
+            "region": "s:us-east-1"
+          },
+          "prior_identity_hashed_jcs": "{\"account_id\":\"47e7ec2525e1a3e184c7844d068e98ee8789c5c565812114c46d959065728ced\",\"bucket\":\"9d45117d8725945e7ed7e793f42d03c8b5eef70c9fdf80ca92fd1f443a980edd\",\"region\":\"8df8ff45a31e55a282b554a4217667bd534d60853102522fb525315732856f2a\"}",
+          "prior_identity_kind": "identity"
+        },
+        {
+          "after": {
+            "block_public_acls": "b:true",
+            "block_public_policy": "b:true",
+            "bucket": "s:bobthecorp-data-v2",
+            "ignore_public_acls": "b:true",
+            "region": "s:us-east-1",
+            "restrict_public_buckets": "b:true"
+          },
+          "after_hashed_jcs": "{\"block_public_acls\":\"b68daeb52706f9e937299d1a17344104761b9d0971847be00331406c41f0e9a4\",\"block_public_policy\":\"b68daeb52706f9e937299d1a17344104761b9d0971847be00331406c41f0e9a4\",\"bucket\":\"e64aca9f635064d7476145d901ffdee3bcdb4b0327114c014d1d9fd813338acb\",\"ignore_public_acls\":\"b68daeb52706f9e937299d1a17344104761b9d0971847be00331406c41f0e9a4\",\"region\":\"8df8ff45a31e55a282b554a4217667bd534d60853102522fb525315732856f2a\",\"restrict_public_buckets\":\"b68daeb52706f9e937299d1a17344104761b9d0971847be00331406c41f0e9a4\"}",
+          "field": "instance_key",
+          "form": "create",
+          "prior_identity": null,
+          "prior_identity_hashed_jcs": "null",
+          "prior_identity_kind": "none"
+        }
+      ]
+    }
+  ],
+  "format": "compliancetf.instancekey.golden/v1",
+  "provider_version": "hashicorp/aws 6.65.0",
+  "terraform_version": "1.16.3"
+}

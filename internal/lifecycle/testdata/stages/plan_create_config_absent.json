@@ -1,0 +1,16 @@
+{
+  "description": "absent Config fails closed: a null default would pass negated configured predicates",
+  "stage": "plan",
+  "mode": "hard_fail",
+  "op": "create",
+  "prior": null,
+  "planned": {
+    "storage_encrypted": true,
+    "kms_key_id": "arn:aws:kms:us-east-1:111122223333:key/bobthecorp-rds",
+    "engine": "postgres",
+    "deletion_protection": true
+  },
+  "want": {
+    "error": "without config or planned"
+  }
+}

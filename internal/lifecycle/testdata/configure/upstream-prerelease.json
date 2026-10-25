@@ -1,0 +1,1 @@
+{"upstream_version": "6.41.0-beta1", "want": {"bundles": ["cis-aws@1"], "fallback": "free_tier", "run_mode": "soft_fail", "warnings": ["upstream hashicorp/aws 6.41.0-beta1 is outside the upstream version range of bundle cis-aws v1"]}}
