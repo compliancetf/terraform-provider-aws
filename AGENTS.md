@@ -9,4 +9,5 @@ The short version:
 - Everything committed here is public. No private repository names, tracker ids, local paths, customer names or internal planning notes; `scripts/check-no-private-content.sh` must pass. Machine-local notes go in an ignored local file (`CLAUDE.local.md`, `AGENTS.local.md`), never in the tree.
 - Run `make hooks` once per clone; never bypass the hooks. Before opening a pull request, `make test` and `GOTOOLCHAIN=go1.26.2 make lint` must pass (the pre-push hook runs both).
 - Changes land by pull request from maintainers only; users open issues.
+- Task tracking, research notes and other private context live in a private companion repository of the maintainers, not here. If it is available in your session, follow its `AGENTS.md`. Never copy its content, names or ids into this repository, and keep no issue-tracker state here.
 - The provider denies or warns; it never changes a value the user wrote. `hashicorp/aws` is never modified.
