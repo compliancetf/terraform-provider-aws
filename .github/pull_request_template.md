@@ -1,7 +1,6 @@
 <!--
-Pull requests are accepted from collaborators only. If you are not a
-collaborator, please close this and open an issue instead (see
-CONTRIBUTING.md).
+This repository does not accept pull requests from outside the maintainer
+team. Please close this and open an issue instead (see CONTRIBUTING.md).
 -->
 
 ## Summary
