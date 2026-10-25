@@ -95,6 +95,7 @@ internal/upstream/launch.go   hashicorp/aws as a go-plugin subprocess
 main.go, main_test.go       entry point (embeds wrapper.json, pins.json, the HashiCorp key, the CIS archive) and the release guard
 wrapper.json                wrapper identity: address, upstream, resource prefix, CIS bundle, sink
 pins.json, keys/            pinned hashicorp/aws (tools/pinupstream) and the HashiCorp release key
+CHANGELOG.md                release notes, newest first (tools/changelog)
 releases.json               release floor and supported releases of premium bundles (ctf-bundlegen)
 capabilities.json           release capabilities shipped with each release (tools/releasemeta)
 terraform-registry-manifest.json, .goreleaser.yml   release packaging
@@ -108,7 +109,7 @@ internal/
   bundle/ bundlegen/ engine/ lifecycle/ trust/ profile/ fetch/ evidence/ exceptions/ embedded/
 pkg/engine/                 public selector engine facade over internal/engine; enginetest/ and testdata/ cross-check vectors
 cmd/                        ctfbundle (build, sign, verify bundles), ctf-bundlegen, iamcatalog (IAM action catalog), benchgate
-tools/                      pinupstream, cispin, releasemeta, releasegate, gomodcheck, upstreamwatch
+tools/                      pinupstream, cispin, releasemeta, releasegate, gomodcheck, upstreamwatch, changelog
 test/
   fakeupstream/             separate module: fake v5 and v6 upstream binaries
   sdkregion/                separate module: AWS SDK region checks
@@ -244,4 +245,4 @@ gh release view vX.Y.Z
 
 The embedded CIS manifest keeps provider and upstream `version_range` `">= 6.0.0, < 7.0.0"`. Premium bundles support every release from the floor: `releases.json` holds the owner-set `floor` (oldest supported release) and the supported `releases`, floor first, pin last; `make pin` appends the new pin and keeps the previous pin's schema subset as `testdata/schemas/aws/<version>.json`. `ctf-bundlegen generate` writes provider and upstream `version_range` `">= <floor>, < <floor major + 1>.0.0"` and fails `E_SUPPORTED_SCHEMA` unless every control holds on the schema of each supported release. To raise the floor: set `floor`, drop the releases below it from `releases` and delete their schema files. A new major starts a new floor: commit `floor` and `releases` set to the new pin, then `make pin`.
 
-GoReleaser builds the release artifacts (zip archives, SHA256SUMS and its GPG signature). The registry at `registry.compliance.tf` ingests each published GitHub release through a webhook and serves the download metadata.
+GoReleaser builds the release artifacts (zip archives with the binary and `LICENSE.txt`, SHA256SUMS and its GPG signature). The release notes are the CHANGELOG.md section of the tag: `tools/changelog` renders it from the conventional commit subjects since the previous tag (feat, perf and refactor, fix, a `!` breaking change, chore(pin); docs, test, ci and other chores are left out), in the layout of the hashicorp/aws CHANGELOG. After the release, `release.yml` opens a `docs(changelog): vX.Y.Z` PR that adds the section to the top of CHANGELOG.md; merge it by hand. Write PR titles as the change a user reads in that list. The registry at `registry.compliance.tf` ingests each published GitHub release through a webhook and serves the download metadata.
