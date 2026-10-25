@@ -124,10 +124,18 @@ func LoadKey(data []byte, expectFingerprint string) (*openpgp.Entity, error) {
 // VerifySumsSignature checks a binary detached signature over sums made by e.
 // The library requires a signing-capable key or cross-signed subkey and
 // rejects revoked or expired keys and signatures at the verification time:
-// now when atSigning is false (pin generation), or the signature's own
-// creation time when atSigning is true (runtime download, where the pinned
-// SHA256SUMS hash is the binding and a later key expiry must not brick a
-// released wrapper). A signature dated after now+5m always fails.
+// now when atSigning is false (pin generation). When atSigning is true
+// (runtime download, where the pinned SHA256SUMS hash is the binding and a
+// later key expiry must not brick a released wrapper) the signature passes
+// when it verifies at now, at its own creation time, or at the creation time
+// of one of e's binding self-signatures. HashiCorp re-binds its signing
+// subkey, and the published key keeps only the latest binding, so a release
+// signed before it (6.0.0 to 6.33.0) fails at its creation time. A binding's
+// creation time is fixed in the embedded key, so that check still passes once
+// the binding has expired. Only times at or after the signature's creation
+// are tried. A KeyCompromised revocation in the key rejects at every time;
+// another revocation rejects signatures made after it. A signature dated after
+// now+5m always fails.
 func VerifySumsSignature(e *openpgp.Entity, sums, sig []byte, now time.Time, atSigning bool) error {
 	r := bytes.NewReader(sig)
 	p, err := packet.Read(r)
@@ -147,12 +155,22 @@ func VerifySumsSignature(e *openpgp.Entity, sums, sig []byte, now time.Time, atS
 	case s.CreationTime.After(now.Add(clockSkew)):
 		return errors.New("signature created in the future")
 	}
-	at := now
-	if atSigning {
-		at = s.CreationTime
+	check := func(at time.Time) (*openpgp.Entity, error) {
+		cfg := &packet.Config{Time: func() time.Time { return at }}
+		return openpgp.CheckDetachedSignatureAndHash(openpgp.EntityList{e}, bytes.NewReader(sums), bytes.NewReader(sig), allowedHashes, cfg)
 	}
-	cfg := &packet.Config{Time: func() time.Time { return at }}
-	signer, err := openpgp.CheckDetachedSignatureAndHash(openpgp.EntityList{e}, bytes.NewReader(sums), bytes.NewReader(sig), allowedHashes, cfg)
+	signer, err := check(now)
+	if atSigning {
+		for _, at := range append([]time.Time{s.CreationTime}, bindingTimes(e)...) {
+			if err == nil {
+				break
+			}
+			if at.Before(s.CreationTime) { // a binding older than the signature cannot vouch for it
+				continue
+			}
+			signer, err = check(at)
+		}
+	}
 	if err != nil {
 		return fmt.Errorf("SHA256SUMS signature: %w", err)
 	}
@@ -160,6 +178,23 @@ func VerifySumsSignature(e *openpgp.Entity, sums, sig []byte, now time.Time, atS
 		return errors.New("SHA256SUMS signed by an unexpected key")
 	}
 	return nil
+}
+
+// bindingTimes are the creation times of e's subkey bindings and user ID
+// self-signatures, the instants at which each binding made e's keys valid.
+func bindingTimes(e *openpgp.Entity) []time.Time {
+	var ts []time.Time
+	for _, sk := range e.Subkeys {
+		if sk.Sig != nil {
+			ts = append(ts, sk.Sig.CreationTime)
+		}
+	}
+	for _, id := range e.Identities {
+		if id.SelfSignature != nil {
+			ts = append(ts, id.SelfSignature.CreationTime)
+		}
+	}
+	return ts
 }
 
 // FindBinary returns the entry named want. Every entry must be a regular file
