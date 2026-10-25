@@ -75,7 +75,7 @@ Bundles for other frameworks, organization rules and exceptions come from [compl
 ## What it does not do
 
 - It does not make you compliant with CIS or any other framework. It checks the controls it has, on the resources Terraform manages through it.
-- It is not a monitor. It sees a resource only when Terraform plans, applies, refreshes or imports it, and never sees resources created outside Terraform. Keep AWS Config, Security Hub or your scanner for continuous detection.
+- It is not a monitor. It sees a resource only when Terraform plans, applies, refreshes or imports it, and does not discover resources Terraform does not manage. Keep AWS Config, Security Hub or your scanner for continuous detection.
 - It does not check resources inside modules that declare `hashicorp/aws` in their own `required_providers`, which includes terraform-aws-modules. Terraform installs `hashicorp/aws` separately for those modules. For terraform-aws-modules, compliance.tf serves versions with the controls built into the modules.
 - It checks settings on single resources, not how resources fit together.
 - It denies or warns. It never changes a value you wrote.
