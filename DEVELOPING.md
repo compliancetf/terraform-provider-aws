@@ -6,7 +6,7 @@ Coding agents write and change all code in this repository; no person works on i
 
 - **Public repository.** Everything committed is public: code, comments, commit messages, branch names, pull request and issue text. Never add references to private repositories, internal tracker ids, local paths, customer names or internal planning notes. `scripts/check-no-private-content.sh` enforces part of this (`make hygiene`, the pre-commit hook and `make test`). Use the fake org `bobthecorp` in examples and tests.
 - **Pull requests** come from maintainers only; users open issues (`CONTRIBUTING.md`). Every change lands through a pull request to `master`.
-- **Git hooks.** Run `make hooks` once per clone. Commits then run the fast checks; pushes run the history guard (`scripts/check-push.sh`: every root commit reachable from the local branches, tags and the pushed commit is this repository's root commit, and no `refs/dolt/*`), then `make test` and `make lint` (`.pre-commit-config.yaml`). Never bypass them with `--no-verify`.
+- **Git hooks.** Run `make hooks` once per clone. Commits then run the fast checks; pushes run the history guard (`scripts/check-push.sh`: every root commit reachable from any local ref and the pushed commit is this repository's root commit, and no `refs/dolt/*`), then `make test` and `make lint` (`.pre-commit-config.yaml`). Never bypass them with `--no-verify`.
 - **Private context** (task tracking, research, plans) lives in the maintainers' private companion repository; never copy it here.
 - **Commits** follow conventional commits (`feat:`, `fix:`, `test:`, `docs:`, `chore:`, `ci:`).
 - **Never overwrite explicit user values.** Terraform consistency rules forbid it: the provider denies or warns only, and does not default null or unset values.
@@ -128,7 +128,7 @@ scripts/                    see Scripts
 | Script | Used by |
 |---|---|
 | `check-no-private-content.sh` | `make hygiene`, pre-commit hook; `--self-test` checks its own rules |
-| `check-push.sh` | pre-push hook: refuses unrelated history in any local branch or tag, and `refs/dolt/*` |
+| `check-push.sh` | pre-push hook: refuses unrelated history in any local ref, and `refs/dolt/*` |
 | `fixtures.sh validate\|plan` | `make test-terraform`, `make dogfood` |
 | `pin.sh` | `make pin`, the upstream-watch workflow |
 | `capture-aws-schema.sh` | `make schema-subset`, `pin.sh`, `tools/cispin` |
