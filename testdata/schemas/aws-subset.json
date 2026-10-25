@@ -2061,6 +2061,12 @@
                     "optional": true,
                     "type": "string"
                   },
+                  "pricingplanmanager": {
+                    "description": "Use this to override the default service endpoint URL",
+                    "description_kind": "plain",
+                    "optional": true,
+                    "type": "string"
+                  },
                   "prometheus": {
                     "description": "Use this to override the default service endpoint URL",
                     "description_kind": "plain",
@@ -7967,6 +7973,12 @@
                 "description_kind": "plain",
                 "optional": true,
                 "type": "string"
+              },
+              "publicly_accessible": {
+                "computed": true,
+                "description_kind": "plain",
+                "optional": true,
+                "type": "bool"
               },
               "reader_endpoint": {
                 "computed": true,
