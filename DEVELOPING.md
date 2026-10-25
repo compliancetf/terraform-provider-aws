@@ -188,3 +188,16 @@ Control `expr` runs on the CEL engine in `internal/engine/celeng`, registered as
 - **Protected paths**: changes to route classes, the hook, all of `internal/proxy` and `internal/upstream`, `.golangci.yml`, workflows, crypto modules in `go.mod`/`go.sum` and any `go.mod` change beyond a plain `require` add, remove or bump (parsed by `tools/gomodcheck`, a malformed `go.mod` counts as protected) need owner review. The full list is `.github/protected-paths`. On a PR from anyone but the owner, the `owner-approval` commit status stays pending, auto-merge is off and the PR is labelled `needs-owner` until the owner approves the current head. master is protected by a ruleset requiring the `owner-approval` check. Dependabot PRs run the Test workflow; `dependabot-merge.yml` squash-merges the tested SHA of a verified Go patch/minor PR that adds no module and touches no protected path. Majors, new modules, GitHub Actions bumps and protected changes wait for the owner. Owner PRs pass only when the author, the head repository and every commit belong to the owner's GitHub id (`OWNER_ID` in `protected-paths.yml`).
 - **Commits**: conventional commits (`feat:`, `fix:`, `test:`, `docs:`, `chore:`)
 - **Upstream provider**: a separate binary, treated as a black box; never modified
+
+## Pull Requests
+
+Only maintainers open pull requests. Before opening one, run:
+
+```bash
+make test                          # hygiene, doc-drift and all Go tests
+go vet ./...
+GOTOOLCHAIN=go1.26.2 make lint
+make conformance                   # Terraform on PATH; TF=/path/to/tofu for OpenTofu
+```
+
+Use conventional commit messages (`feat:`, `fix:`, `test:`, `docs:`, `chore:`). Pull requests that touch a path in `.github/protected-paths` need the code owner's approval.
