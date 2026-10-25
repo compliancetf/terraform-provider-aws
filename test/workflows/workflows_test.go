@@ -1,4 +1,6 @@
-package main
+// Package workflows checks the GitHub workflows and release config: pinned
+// actions, triggers and the release gates. Paths are relative to the repo root.
+package workflows
 
 import (
 	"bytes"
@@ -10,6 +12,14 @@ import (
 
 	"go.yaml.in/yaml/v3"
 )
+
+// TestMain runs the tests from the repo root, where the paths below start.
+func TestMain(m *testing.M) {
+	if err := os.Chdir("../.."); err != nil {
+		panic(err)
+	}
+	os.Exit(m.Run())
+}
 
 var (
 	usesRe     = regexp.MustCompile(`(?m)^\s*-?\s*uses:\s*(\S+)`)

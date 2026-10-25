@@ -1,0 +1,55 @@
+# Git hooks, run by prek (https://github.com/j178/prek; `pre-commit` reads the
+# same file). Install once per clone: `make hooks`.
+#   pre-commit: fast checks on the staged files
+#   pre-push:   the full gate, `make test` and `make lint`
+# Run everything by hand: `prek run --all-files` and
+# `prek run --all-files --hook-stage pre-push`.
+default_install_hook_types: [pre-commit, pre-push]
+default_stages: [pre-commit]
+
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v5.0.0
+    hooks:
+      - id: check-merge-conflict
+      - id: check-added-large-files
+        args: [--maxkb=1024]
+      - id: check-yaml
+        exclude: ^(testdata|internal/.*/testdata|test/.*/testdata)/
+
+  - repo: local
+    hooks:
+      - id: gofmt
+        name: gofmt
+        language: system
+        entry: bash -c 'out="$(gofmt -l "$@")" || exit 1; [ -z "$out" ] || { echo "gofmt needed:"; echo "$out"; exit 1; }' --
+        types: [go]
+
+      - id: shellcheck
+        name: shellcheck
+        language: system
+        entry: shellcheck --severity=warning
+        types: [shell]
+
+      - id: private-content
+        name: public-repo hygiene
+        language: system
+        entry: scripts/check-no-private-content.sh
+        pass_filenames: false
+        always_run: true
+
+      - id: make-test
+        name: make test
+        language: system
+        entry: make test
+        pass_filenames: false
+        always_run: true
+        stages: [pre-push]
+
+      - id: make-lint
+        name: make lint
+        language: system
+        entry: env GOTOOLCHAIN=go1.26.2 make lint
+        pass_filenames: false
+        always_run: true
+        stages: [pre-push]
