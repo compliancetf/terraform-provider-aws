@@ -36,7 +36,9 @@ branch="backfill/$version"
 git fetch -q origin master
 git merge-base --is-ancestor HEAD origin/master || { echo "backfill: HEAD is not a master commit" >&2; exit 1; }
 ! git rev-parse -q --verify "refs/heads/$branch" >/dev/null || { echo "backfill: branch $branch exists; delete it first" >&2; exit 1; }
-if [[ -n "$(git ls-remote --tags origin "refs/tags/v$version")" && "${REPUBLISH:-}" != 1 ]]; then
+# A failed lookup stops here (set -e); inside the if it would read as no tag.
+released="$(git ls-remote --tags origin "refs/tags/v$version")"
+if [[ -n "$released" && "${REPUBLISH:-}" != 1 ]]; then
   echo "backfill: v$version is already released; REPUBLISH=1 replaces its archives (lock files with the old hashes break)" >&2
   exit 1
 fi
