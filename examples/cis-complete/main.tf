@@ -32,7 +32,7 @@ locals {
   azs  = slice(data.aws_availability_zones.available.names, 0, 2)
 
   # Controls read these values at plan, so they are literals: a value that
-  # is known only after apply (for example aws_vpc.this.cidr_block) makes
+  # is known only after apply (for example aws_vpc.this.ipv6_cidr_block) makes
   # the control "pending" at plan and re-checks it before apply.
   admin_cidr_ipv4 = "10.0.0.0/16"
   admin_cidr_ipv6 = "2001:db8:1234::/48"

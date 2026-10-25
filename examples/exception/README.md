@@ -115,7 +115,7 @@ Behaviour of `match`:
 | 2 | `reporting-replica-restore` | Several controls in one entry, selected on a configured argument |
 | 3 | `scratch-volumes` | Selection by tag, guarding an optional map |
 | 4 | `public-docs-site` | Selection by name prefix and `provider.region` |
-| 5 | `migration-target-backups` | Selection by operation: create and replace, but not update |
+| 5 | `migration-target-backups` | Selection by operation: create and replace (with the delete half of a replace), but not update |
 | 6 | `staging-only` | Not applied: another environment, silently |
 | 7 | `old-load-test` | Not applied: expired, with a warning |
 

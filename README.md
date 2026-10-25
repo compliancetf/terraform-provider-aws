@@ -82,7 +82,7 @@ Each directory in [examples/](examples/) has a `README.md` with how to run it an
 | [cis-complete](examples/cis-complete) | Every resource type the CIS bundle checks, configured to pass every control, with the control id next to each setting | Succeeds, 23 resources, no compliance diagnostics |
 | [hard-fail](examples/hard-fail) | Violations in `hard_fail` mode | Fails with 4 errors and 1 warning |
 | [soft-fail](examples/soft-fail) | The same violations in the default `soft_fail` mode | Succeeds with 5 warnings |
-| [exception](examples/exception) | Self-service exceptions, with every entry attribute and `match` variable explained | Succeeds; needs a signed org profile (a development build signs one with the test key) |
+| [exception](examples/exception) | Self-service exceptions, with every entry attribute and `match` variable explained | Succeeds; needs a signed org profile (signed with the test key for a development build) |
 | [custom-bundle](examples/custom-bundle) | A signed team bundle next to the embedded CIS bundle | Fails with 1 error and 1 warning; needs a development build |
 
 ## What it does not do

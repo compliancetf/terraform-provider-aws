@@ -39,6 +39,6 @@ Break a setting to see a control fail. For example:
 
 ## Notes
 
-- **Values known at plan.** Controls read these values at plan, so the CIDR blocks are literals. The EFS key is given by its alias ARN, built from data sources. A value known only after apply, such as `aws_vpc.this.cidr_block` or `aws_kms_key.efs.arn`, gives a `pending` warning at plan, and the control is checked again before apply.
+- **Values known at plan.** Controls read these values at plan, so the CIDR blocks are literals. The EFS key is given by its alias ARN, built from data sources. A value known only after apply, such as `aws_vpc.this.ipv6_cidr_block` or `aws_kms_key.efs.arn`, gives a `pending` warning at plan, and the control is checked again before apply.
 - **Strings in hashicorp/aws 6.x.** `encrypted` on `aws_redshift_cluster` and `at_rest_encryption_enabled` on `aws_elasticache_replication_group` are strings, so they are written as `"true"`.
 - **What is not covered.** HTTPS from `0.0.0.0/0` on port 443 passes: the security group controls cover SSH (22), RDP (3389) and all-protocol rules only. Settings outside the bundle, such as S3 public access blocks or VPC flow logs, are not checked by this provider. See [docs/reference.md](../../docs/reference.md#cis-controls).
