@@ -47,6 +47,7 @@ make test    # the full test gate
 | `make bench-gate` | p99 latency gate (see Benchmarks) |
 | `make proto` | Re-vendor the pinned `tfplugin5`/`tfplugin6` protos, regenerate Go types and the route table |
 | `make pin VERSION=X.Y.Z` | Per-pin artifacts for hashicorp/aws X.Y.Z (see Releasing); needs terraform, jq and network |
+| `make backfill VERSION=X.Y.Z` | The release commit for an older hashicorp/aws X.Y.Z of the same major (see Releasing): `pins.json` alone on branch `backfill/X.Y.Z` |
 | `make schema-subset` | Recapture `testdata/schemas/aws-subset.json` from the registry |
 | `make release-dry-run` | GoReleaser `check` and a snapshot build; no publish, no signing |
 | `make build-bundlegen`, `make build-all` | `bin/ctf-bundlegen` (records version and commit in build.json); cross-compiled binaries in `dist/` |
@@ -133,6 +134,7 @@ scripts/                    see Scripts
 | `check-push.sh` | pre-push hook: refuses unrelated history in any local ref, and `refs/dolt/*` |
 | `fixtures.sh validate\|plan` | `make test-terraform`, `make dogfood` |
 | `pin.sh` | `make pin`, the upstream-watch workflow |
+| `backfill.sh` | `make backfill` |
 | `capture-aws-schema.sh` | `make schema-subset`, `pin.sh`, `tools/cispin` |
 | `owner-sign-cis.sh` | the owner, to re-sign `cis.tar.gz` with the production key |
 | `proto.sh` | `make proto` |
@@ -220,7 +222,7 @@ go test -tags ctftest ./internal/embedded/ ./internal/lifecycle/
 
 ## Releasing
 
-Version parity: compliancetf/aws X.Y.Z proxies hashicorp/aws X.Y.Z exactly. Users migrate by changing only `source` in `required_providers`; their `version` constraint and lock file workflow stay. The release tag `vX.Y.Z` must equal the `pins.json` version: `tools/releasemeta` (run by `release.yml` on every `v*` tag) accepts only the pinned X.Y.Z, X.Y.Z-beta.N or X.Y.Z-compliancetf.N and fails the release otherwise. One release per hashicorp/aws release, forward only; the first release from this repository is 6.69.0 (6.67.0 and 6.68.0 were published before it and are served as they are). Never republish a version: lock files hold its hashes, and a new GitHub release makes the registry ingest it again.
+Version parity: compliancetf/aws X.Y.Z proxies hashicorp/aws X.Y.Z exactly. Users migrate by changing only `source` in `required_providers`; their `version` constraint and lock file workflow stay. The release tag `vX.Y.Z` must equal the `pins.json` version: `tools/releasemeta` (run by `release.yml` on every `v*` tag) accepts only the pinned X.Y.Z, X.Y.Z-beta.N or X.Y.Z-compliancetf.N and fails the release otherwise. One release per hashicorp/aws release. New releases move forward through `make pin`; an older release of the current major can be added later as a backfill (below). The first release from this repository is 6.69.0. Never republish a version: lock files hold its hashes, and a new GitHub release makes the registry ingest it again.
 
 | Kind | Version | Use |
 |---|---|---|
@@ -244,5 +246,7 @@ gh release view vX.Y.Z
 ```
 
 The embedded CIS manifest keeps provider and upstream `version_range` `">= 6.0.0, < 7.0.0"`. Premium bundles support every release from the floor: `releases.json` holds the owner-set `floor` (oldest supported release) and the supported `releases`, floor first, pin last; `make pin` appends the new pin and keeps the previous pin's schema subset as `testdata/schemas/aws/<version>.json`. `ctf-bundlegen generate` writes provider and upstream `version_range` `">= <floor>, < <floor major + 1>.0.0"` and fails `E_SUPPORTED_SCHEMA` unless every control holds on the schema of each supported release. To raise the floor: set `floor`, drop the releases below it from `releases` and delete their schema files. A new major starts a new floor: commit `floor` and `releases` set to the new pin, then `make pin`.
+
+Backfill: `make backfill VERSION=X.Y.Z` on a clean checkout of a master commit builds the release of an older hashicorp/aws X.Y.Z of the pinned major. It runs `tools/pinupstream`, captures that release's schema and runs `tools/cispin`, and stops when cispin stops or when the CIS type table or manifest would change, because the embedded bundle is signed for the current types. It then restores everything but `pins.json` and commits `pins.json` alone on branch `backfill/X.Y.Z`. Push the branch, tag that commit `vX.Y.Z` and approve the `release` environment. `release.yml` releases a tag that is not on master only when it is one commit on a master commit, changing `pins.json` alone, to an older version of the same major. A backfill release is never marked latest (`make_latest`), its notes name the master commit, and it opens no CHANGELOG.md PR. Releases run one at a time (`concurrency: release`, one waiting run), so tag one backfill after the previous release finished. `releases.json` is not touched: premium bundles support releases from the floor only. Republishing a version replaces its archives in the registry, so lock files that recorded the old hashes fail `terraform init` until their provider block is removed.
 
 GoReleaser builds the release artifacts (zip archives with the binary and `LICENSE.txt`, SHA256SUMS and its GPG signature). The release notes are the CHANGELOG.md section of the tag: `tools/changelog` renders it from the conventional commit subjects since the previous tag (feat, perf and refactor, fix, a `!` breaking change, chore(pin); docs, test, ci and other chores are left out), in the layout of the hashicorp/aws CHANGELOG. After the release, `release.yml` opens a `docs(changelog): vX.Y.Z` PR that adds the section to the top of CHANGELOG.md; merge it by hand. Write PR titles as the change a user reads in that list. The registry at `registry.compliance.tf` ingests each published GitHub release through a webhook and serves the download metadata.

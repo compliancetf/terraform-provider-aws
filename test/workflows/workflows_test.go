@@ -364,3 +364,39 @@ func TestReleaseVerifiesAndGates(t *testing.T) {
 		t.Errorf(".goreleaser.yml: want exactly one build, carrying the tools/releasegate post hook (builds: %d)", builds)
 	}
 }
+
+// TestReleaseBackfillGate: release.yml releases a tag that is not on master
+// only as a backfill (scripts/backfill.sh): one parent on master, pins.json
+// the only change, an older version of the same major. A backfill never
+// becomes the latest release and opens no CHANGELOG PR.
+func TestReleaseBackfillGate(t *testing.T) {
+	wf, err := os.ReadFile(".github/workflows/release.yml")
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, re := range []string{
+		`(?m)^\s*if git merge-base --is-ancestor "\$GITHUB_SHA" origin/master; then$`,
+		`(?m)^\s*\[ "\$\(git rev-list --parents -n1 "\$GITHUB_SHA" \| wc -w\)" = 2 \]`,
+		`(?m)^\s*git merge-base --is-ancestor "\$GITHUB_SHA\^" origin/master \|\|`,
+		`(?m)^\s*\[ "\$\(git diff --name-only "\$GITHUB_SHA\^" "\$GITHUB_SHA"\)" = pins\.json \] \|\|`,
+		`(?m)^\s*\[ "\$\{new%%\.\*\}" = "\$\{cur%%\.\*\}" \] && \[ "\$new" != "\$cur" \]`,
+		`(?m)^\s*echo "backfill=true" >> "\$GITHUB_OUTPUT"$`,
+	} {
+		if !regexp.MustCompile(re).Match(wf) {
+			t.Errorf("release.yml: backfill gate is missing %s", re)
+		}
+	}
+	if !regexp.MustCompile(`(?m)^\s*if: needs\.release\.outputs\.backfill != 'true'$`).Match(wf) {
+		t.Error("release.yml: the changelog job must skip backfills")
+	}
+	if !regexp.MustCompile(`(?m)^\s*CTF_BACKFILL: \$\{\{ steps\.origin\.outputs\.backfill \}\}$`).Match(wf) {
+		t.Error("release.yml: goreleaser must get CTF_BACKFILL")
+	}
+	gr, err := os.ReadFile(".goreleaser.yml")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !bytes.Contains(gr, []byte(`make_latest: '{{ if eq (index .Env "CTF_BACKFILL") "true" }}false{{ else }}true{{ end }}'`)) {
+		t.Error(".goreleaser.yml: a backfill must not become the latest release")
+	}
+}
