@@ -111,3 +111,18 @@ func stickyRootDir(path string) bool {
 	sys, ok := st.Sys().(*syscall.Stat_t)
 	return ok && sys.Uid == 0 && unixACL(path, false, true) == nil
 }
+
+// fileID is the device and inode of st, for the shared entry's stamp.
+func fileID(st os.FileInfo) (dev, ino uint64) {
+	sys, ok := st.Sys().(*syscall.Stat_t)
+	if !ok {
+		return 0, 0
+	}
+	return uint64(sys.Dev), uint64(sys.Ino) //nolint:gosec,unconvert // Dev is int32 on darwin; Ino width varies by platform
+}
+
+// sealed: one link and no write bit, as publish leaves a shared binary.
+func sealed(st os.FileInfo) bool {
+	sys, ok := st.Sys().(*syscall.Stat_t)
+	return ok && sys.Nlink == 1 && st.Mode().Perm()&0o222 == 0
+}

@@ -45,7 +45,16 @@ func (b *syncBuffer) String() string {
 }
 
 func TestMain(m *testing.M) {
+	root, err := os.MkdirTemp("", "shared-root")
+	if err != nil {
+		panic(err)
+	}
+	if root, err = filepath.EvalSymlinks(root); err != nil { // macOS /var -> /private/var
+		panic(err)
+	}
+	sharedRoot = func() (string, error) { return root, nil } // never the real user cache
 	code := m.Run()
+	_ = os.RemoveAll(root)
 	if fakeDir != "" {
 		_ = os.RemoveAll(fakeDir)
 	}

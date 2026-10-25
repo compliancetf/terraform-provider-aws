@@ -157,12 +157,17 @@ func (s *server5) fetchSchema(ctx context.Context, req *tfplugin5.GetProviderSch
 	if c := s.cachedSchema(); c != nil { // a flight that ended after our miss
 		return c, nil
 	}
-	resp, err := s.up.GetSchema(ctx, req)
-	if err != nil {
-		return nil, s.upErr("GetSchema", err)
-	}
-	if hasErrorDiag(resp.Diagnostics) {
-		return resp, nil
+	resp := readSchemaFile(s.b.SchemaCacheDir)
+	if resp == nil {
+		r, err := s.up.GetSchema(ctx, req)
+		if err != nil {
+			return nil, s.upErr("GetSchema", err)
+		}
+		if hasErrorDiag(r.Diagnostics) {
+			return r, nil
+		}
+		writeSchemaFile(s.b.SchemaCacheDir, r)
+		resp = r
 	}
 	if resp.Provider == nil {
 		resp.Provider = &tfplugin5.Schema{}

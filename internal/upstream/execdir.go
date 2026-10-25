@@ -290,29 +290,14 @@ func (d *execDir) copyOnce(ctx context.Context, src string, p *Pins, osArch stri
 	if !ok {
 		return VerifiedBinary{}, fmt.Errorf("%s %s has no pin for %s", p.src.Name(), p.Version, osArch)
 	}
-	if pin.Binary == "" || pin.Binary != filepath.Base(pin.Binary) || pin.Binary == "." || pin.Binary == ".." {
+	if !plainName(pin.Binary) {
 		return VerifiedBinary{}, fmt.Errorf("pinned binary name %q is not a plain file name", pin.Binary)
 	}
-	// Links (.terraform/providers into a plugin cache) are resolved first; the
-	// O_NOFOLLOW open then fails closed if the target is swapped for a link.
-	real, err := filepath.EvalSymlinks(src)
-	if err != nil {
-		return VerifiedBinary{}, err
-	}
-	in, err := os.OpenFile(real, os.O_RDONLY|openNoFollow|openNonBlock, 0)
+	in, err := openSource(src)
 	if err != nil {
 		return VerifiedBinary{}, err
 	}
 	defer closeFile(in)
-	st, err := in.Stat()
-	switch {
-	case err != nil:
-		return VerifiedBinary{}, err
-	case !st.Mode().IsRegular():
-		return VerifiedBinary{}, fmt.Errorf("%q is not a regular file", src)
-	case st.Size() > MaxBinaryBytes:
-		return VerifiedBinary{}, fmt.Errorf("%q is larger than %d bytes", src, MaxBinaryBytes)
-	}
 
 	dst := filepath.Join(d.dir, pin.Binary)
 	out, err := os.OpenFile(dst, os.O_WRONLY|os.O_CREATE|os.O_EXCL|openNoFollow, 0o700)
@@ -337,6 +322,36 @@ func (d *execDir) copyOnce(ctx context.Context, src string, p *Pins, osArch stri
 	done = true
 	vb.execDir = d.dir
 	return vb, nil
+}
+
+func plainName(n string) bool { return n != "" && n == filepath.Base(n) && n != "." && n != ".." }
+
+// openSource opens the regular file at src for reading, at most
+// MaxBinaryBytes. Links (.terraform/providers into a plugin cache) are
+// resolved first; the O_NOFOLLOW open then fails closed if the target is
+// swapped for a link.
+func openSource(src string) (*os.File, error) {
+	real, err := filepath.EvalSymlinks(src)
+	if err != nil {
+		return nil, err
+	}
+	in, err := os.OpenFile(real, os.O_RDONLY|openNoFollow|openNonBlock, 0)
+	if err != nil {
+		return nil, err
+	}
+	st, err := in.Stat()
+	switch {
+	case err != nil:
+	case !st.Mode().IsRegular():
+		err = fmt.Errorf("%q is not a regular file", src)
+	case st.Size() > MaxBinaryBytes:
+		err = fmt.Errorf("%q is larger than %d bytes", src, MaxBinaryBytes)
+	}
+	if err != nil {
+		closeFile(in)
+		return nil, err
+	}
+	return in, nil
 }
 
 func writeCopy(ctx context.Context, out, in *os.File, dst, src string, p *Pins, osArch string) (VerifiedBinary, error) {

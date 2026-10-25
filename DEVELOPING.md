@@ -74,7 +74,7 @@ internal/proxy/serve.go       go-plugin server, protocol 5, raw codec
     |
     v
 internal/upstream/launch.go   hashicorp/aws as a go-plugin subprocess
-                              (pinned, verified, run from a private hashed copy)
+                              (pinned, verified, run from a hashed copy shared per sha256)
 ```
 
 - Intercepted methods decode into the generated types, change only the fields they own and re-encode, so unknown fields survive. Every other method of the pinned proto is forwarded as undecoded bytes. The provider does not use `terraform-plugin-mux` or `tf5server`.
@@ -84,6 +84,7 @@ internal/upstream/launch.go   hashicorp/aws as a go-plugin subprocess
 - `internal/proxy/private.go` carries plan-time compliance data in `planned_private` and checks it at apply. It never writes into state.
 - Apply returns the upstream `new_state` bytes unchanged. `internal/proxy/apply_invariant_test.go` and the conformance tap check this.
 - The binary links terraform-plugin-go only for its value types, never `tf5server`/`tf6server`, which would link its own proto copy and panic on duplicate registration. `TestNoPluginGoServerLinked` (`internal/proxy/deps_test.go`) guards this, so the generated `tfplugin5` package is the only registrant of `tfplugin5.proto`.
+- The verified upstream copy is shared across provider processes: `internal/upstream/shared.go` keeps one owner-only entry per pinned sha256 under the user cache directory, and `internal/proxy/schemafile.go` keeps the upstream schema there. Terraform starts the provider three times per plan; see `docs/performance.md` before changing either.
 - `main` finds the upstream with `upstream.Discover`: the `hashicorp/aws` version pinned in `pins.json` (written by `tools/pinupstream`), from `COMPLIANCETF_UPSTREAM_PATH`, Terraform's plugin directories or a download, verified against the pin before launch. Go tests and conformance use the fake upstream in `test/fakeupstream` instead.
 - `internal/bundle`, `bundlegen`, `engine`, `lifecycle`, `trust`, `profile`, `fetch` and `evidence` are the bundle, engine, trust and evidence packages; `cmd/ctfbundle` and `cmd/ctf-bundlegen` are their CLIs. The CIS baseline is embedded in the binary; organization bundles come from the bundle service.
 - `internal/embedded` holds the signed CIS bundle archives built from `cis/` (`cis.tar.gz`, production-signed, in release builds; `cis_ctftest.tar.gz`, test-signed, in `ctftest` builds); `internal/exceptions` reads signed grants and the self-service sidecar. Control `expr` runs on the CEL engine in `internal/engine/celeng`.
@@ -101,9 +102,9 @@ internal/
   wrapper/                  Config, Load, Serve; evaluator.go (lifecycle.Hook), evaluator_conformance.go
   tfplugin/                 vendored protos (proto/, SOURCES.json), generated tfplugin5/ and tfplugin6/, routes_gen.go, classes.json, tools/
   rawgrpc/                  raw frame codec, generic stream forwarder
-  proxy/                    serve.go, server5.go, route5*.go, schema.go, private.go, classify.go, tap_conformance.go
+  proxy/                    serve.go, server5.go, route5*.go, schema.go, schemafile.go, private.go, classify.go, tap_conformance.go
   hook/                     Evaluator interface; hooktest/ recorder
-  upstream/                 launch.go, discover.go, download.go, verify.go, pins.go, execdir.go
+  upstream/                 launch.go, discover.go, download.go, verify.go, pins.go, execdir.go, shared.go
   bundle/ bundlegen/ engine/ lifecycle/ trust/ profile/ fetch/ evidence/ exceptions/ embedded/
 pkg/engine/                 public selector engine facade over internal/engine; enginetest/ and testdata/ cross-check vectors
 cmd/                        ctfbundle (build, sign, verify bundles), ctf-bundlegen, iamcatalog (IAM action catalog), benchgate

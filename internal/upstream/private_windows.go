@@ -144,3 +144,10 @@ func pidAlive(pid int) bool {
 	}
 	return code == stillActive
 }
+
+// fileID: Lstat on Windows does not expose the file index.
+// shortcut: Windows stamps hold size and mtime only; read the index with GetFileInformationByHandle if stamps need it.
+func fileID(os.FileInfo) (dev, ino uint64) { return 0, 0 }
+
+// sealed: Windows has no link count or mode bits here; winACL covers access.
+func sealed(os.FileInfo) bool { return true }
