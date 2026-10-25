@@ -350,13 +350,14 @@ func TestCheckRedirect(t *testing.T) {
 }
 
 // TestSignatureRebound: hashicorp/aws 6.0.0 to 6.33.0 were signed before
-// HashiCorp's current binding of its signing subkey, so they verify now but
-// not at their own creation time. The runtime check accepts either; the pin
-// check (now) accepts them too.
+// HashiCorp's current binding of its signing subkey, and the published key
+// keeps only that binding. 6.0.0 fails at its own creation time; the runtime
+// check passes it at the binding's creation time, also long after the binding
+// expired, while the pin check (now only) does not.
 func TestSignatureRebound(t *testing.T) {
 	keyFile, err := os.ReadFile("../../keys/hashicorp-security.asc")
 	if err != nil {
-		t.Skip("HashiCorp key not committed")
+		t.Fatal(err)
 	}
 	key, err := LoadKey(keyFile, HashiCorpFingerprint)
 	if err != nil {
@@ -370,12 +371,22 @@ func TestSignatureRebound(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	for _, atSigning := range []bool{false, true} {
-		if err := VerifySumsSignature(key, sums, sig, time.Now(), atSigning); err != nil {
-			t.Errorf("atSigning=%v: %v", atSigning, err)
-		}
+	p, err := packet.Read(bytes.NewReader(sig))
+	if err != nil {
+		t.Fatal(err)
 	}
-	if err := VerifySumsSignature(key, append([]byte("x"), sums...), sig, time.Now(), true); err == nil {
-		t.Error("altered sums must fail")
+	signed := p.(*packet.Signature).CreationTime
+	if err := VerifySumsSignature(key, sums, sig, signed, false); err == nil {
+		t.Fatal("6.0.0 must not verify at its creation time: the fixture no longer shows the rebound binding")
+	}
+	farFuture := time.Date(2100, 1, 1, 0, 0, 0, 0, time.UTC) // every binding has expired
+	if err := VerifySumsSignature(key, sums, sig, farFuture, false); err == nil {
+		t.Fatal("pin generation must reject an expired key")
+	}
+	if err := VerifySumsSignature(key, sums, sig, farFuture, true); err != nil {
+		t.Fatalf("runtime check must pass at the binding time after it expired: %v", err)
+	}
+	if err := VerifySumsSignature(key, append([]byte("x"), sums...), sig, farFuture, true); err == nil {
+		t.Error("altered sums must fail at every time")
 	}
 }

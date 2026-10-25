@@ -127,10 +127,12 @@ func LoadKey(data []byte, expectFingerprint string) (*openpgp.Entity, error) {
 // now when atSigning is false (pin generation). When atSigning is true
 // (runtime download, where the pinned SHA256SUMS hash is the binding and a
 // later key expiry must not brick a released wrapper) the signature passes
-// when it verifies at its own creation time or now: HashiCorp re-binds its
-// signing subkey, so a release signed before the current binding (6.0.0 to
-// 6.33.0) fails at its creation time and passes now. A signature dated after
-// now+5m always fails.
+// when it verifies at now, at its own creation time, or at the creation time
+// of one of e's binding self-signatures. HashiCorp re-binds its signing
+// subkey, and the published key keeps only the latest binding, so a release
+// signed before it (6.0.0 to 6.33.0) fails at its creation time. A binding's
+// creation time is fixed in the embedded key, so that check still passes once
+// the binding has expired. A signature dated after now+5m always fails.
 func VerifySumsSignature(e *openpgp.Entity, sums, sig []byte, now time.Time, atSigning bool) error {
 	r := bytes.NewReader(sig)
 	p, err := packet.Read(r)
@@ -155,8 +157,13 @@ func VerifySumsSignature(e *openpgp.Entity, sums, sig []byte, now time.Time, atS
 		return openpgp.CheckDetachedSignatureAndHash(openpgp.EntityList{e}, bytes.NewReader(sums), bytes.NewReader(sig), allowedHashes, cfg)
 	}
 	signer, err := check(now)
-	if err != nil && atSigning {
-		signer, err = check(s.CreationTime)
+	if atSigning {
+		for _, at := range append([]time.Time{s.CreationTime}, bindingTimes(e)...) {
+			if err == nil {
+				break
+			}
+			signer, err = check(at)
+		}
 	}
 	if err != nil {
 		return fmt.Errorf("SHA256SUMS signature: %w", err)
@@ -165,6 +172,23 @@ func VerifySumsSignature(e *openpgp.Entity, sums, sig []byte, now time.Time, atS
 		return errors.New("SHA256SUMS signed by an unexpected key")
 	}
 	return nil
+}
+
+// bindingTimes are the creation times of e's subkey bindings and user ID
+// self-signatures, the instants at which each binding made e's keys valid.
+func bindingTimes(e *openpgp.Entity) []time.Time {
+	var ts []time.Time
+	for _, sk := range e.Subkeys {
+		if sk.Sig != nil {
+			ts = append(ts, sk.Sig.CreationTime)
+		}
+	}
+	for _, id := range e.Identities {
+		if id.SelfSignature != nil {
+			ts = append(ts, id.SelfSignature.CreationTime)
+		}
+	}
+	return ts
 }
 
 // FindBinary returns the entry named want. Every entry must be a regular file
