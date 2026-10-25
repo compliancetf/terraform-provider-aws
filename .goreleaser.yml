@@ -89,6 +89,9 @@ release:
     name: terraform-provider-aws
   draft: false
   prerelease: auto
+  # release.yml sets CTF_BACKFILL: a backfill of an older release never
+  # becomes the latest release.
+  make_latest: '{{ if eq (index .Env "CTF_BACKFILL") "true" }}false{{ else }}true{{ end }}'
   mode: replace
   name_template: "{{.ProjectName}} v{{.Version}}"
   extra_files:

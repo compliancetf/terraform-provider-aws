@@ -134,6 +134,15 @@ pin:
 	@[ "$(origin VERSION)" = "command line" ] || { echo "usage: make pin VERSION=X.Y.Z" >&2; exit 2; }
 	./scripts/pin.sh "$$PIN_VERSION_RAW"
 
+# The release commit for an older hashicorp/aws VERSION (scripts/backfill.sh):
+# pins.json alone, on branch backfill/VERSION, after the CIS controls are
+# checked against that release's schema.
+.PHONY: backfill
+backfill: export PIN_VERSION_RAW := $(value VERSION)
+backfill:
+	@[ "$(origin VERSION)" = "command line" ] || { echo "usage: make backfill VERSION=X.Y.Z" >&2; exit 2; }
+	./scripts/backfill.sh "$$PIN_VERSION_RAW"
+
 # Public-repo hygiene: no paid bundle content, real content inputs or private references.
 .PHONY: hygiene
 hygiene:

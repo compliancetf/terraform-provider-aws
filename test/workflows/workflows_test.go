@@ -364,3 +364,31 @@ func TestReleaseVerifiesAndGates(t *testing.T) {
 		t.Errorf(".goreleaser.yml: want exactly one build, carrying the tools/releasegate post hook (builds: %d)", builds)
 	}
 }
+
+// TestReleaseBackfillGate: a backfill (scripts/backfill.sh; the gate itself
+// runs in TestReleaseBackfillGateRuns) re-derives its pins.json with
+// tools/pinupstream, never becomes the latest release and opens no CHANGELOG
+// PR.
+func TestReleaseBackfillGate(t *testing.T) {
+	wf, err := os.ReadFile(".github/workflows/release.yml")
+	if err != nil {
+		t.Fatal(err)
+	}
+	for re, why := range map[string]string{
+		`(?m)^\s*if: needs\.release\.outputs\.backfill != 'true'$`:                                  "the changelog job must skip backfills",
+		`(?m)^\s*CTF_BACKFILL: \$\{\{ steps\.origin\.outputs\.backfill \}\}$`:                       "goreleaser must get CTF_BACKFILL",
+		`(?m)^\s*go run \./tools/pinupstream -version "\$VERSION" -out "\$RUNNER_TEMP/pins\.json"$`: "a backfill must re-derive pins.json",
+		`(?m)^\s*cmp pins\.json "\$RUNNER_TEMP/pins\.json" \|\|`:                                    "a backfill must match the re-derived pins.json",
+	} {
+		if !regexp.MustCompile(re).Match(wf) {
+			t.Errorf("release.yml: %s", why)
+		}
+	}
+	gr, err := os.ReadFile(".goreleaser.yml")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !bytes.Contains(gr, []byte(`make_latest: '{{ if eq (index .Env "CTF_BACKFILL") "true" }}false{{ else }}true{{ end }}'`)) {
+		t.Error(".goreleaser.yml: a backfill must not become the latest release")
+	}
+}

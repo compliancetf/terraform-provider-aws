@@ -21,19 +21,55 @@ jobs:
     # Gate: the "release" environment has a required reviewer, and v* tags
     # are restricted by a tag ruleset.
     environment: release
+    outputs:
+      backfill: ${{ steps.origin.outputs.backfill }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           fetch-depth: 0
           persist-credentials: false
       # Only release commits that reached master through the protected-path
-      # gate. A tag commit can edit this file, so a tag ruleset (owner
-      # settings) must also restrict who may push v* tags.
-      - name: Require the tagged commit on master
-        run: git merge-base --is-ancestor "$GITHUB_SHA" origin/master
+      # gate, or a backfill (scripts/backfill.sh): one commit on a master
+      # commit that changes pins.json alone, as a regular file, to an older
+      # X.Y.Z of the same major. A tag commit can edit this file, so a tag
+      # ruleset (owner settings) must also restrict who may push v* tags; a
+      # backfill commit cannot, because it changes nothing but pins.json.
+      - name: Require the tagged commit on master, or a pins-only backfill on it
+        id: origin
+        run: |
+          set -euo pipefail
+          commit=$(git rev-parse "$GITHUB_SHA^{commit}")
+          if git merge-base --is-ancestor "$commit" origin/master; then
+            echo "backfill=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          [ "$(git rev-list --parents -n1 "$commit" | wc -w)" -eq 2 ] || { echo "::error::a backfill commit has exactly one parent"; exit 1; }
+          git merge-base --is-ancestor "$commit^" origin/master || { echo "::error::the tagged commit is not on master, nor one commit on a master commit"; exit 1; }
+          changes=$(git diff-tree -r --no-renames --no-commit-id "$commit^" "$commit")
+          printf '%s\n' "$changes" | grep -Eqx $':100644 100644 [0-9a-f]{40} [0-9a-f]{40} M\tpins\\.json' && [ "$(printf '%s\n' "$changes" | wc -l)" -eq 1 ] \
+            || { echo "::error::a backfill commit modifies the regular file pins.json and nothing else"; exit 1; }
+          new=$(git show "$commit:pins.json" | jq -r .version)
+          cur=$(git show origin/master:pins.json | jq -r .version)
+          semver='^(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)$'
+          [[ "$new" =~ $semver && "$cur" =~ $semver ]] || { echo "::error::pins.json versions must be X.Y.Z (got $new, master $cur)"; exit 1; }
+          [ "${new%%.*}" = "${cur%%.*}" ] && [ "$new" != "$cur" ] \
+            && [ "$(printf '%s\n%s\n' "$cur" "$new" | sort -t. -k1,1n -k2,2n -k3,3n | head -n1)" = "$new" ] \
+            || { echo "::error::backfill $new is not older than the master pin $cur in the same major"; exit 1; }
+          echo "backfill=true" >> "$GITHUB_OUTPUT"
+          echo "version=$new" >> "$GITHUB_OUTPUT"
       - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
         with:
           go-version-file: go.mod
+      # A backfill's pins.json must be what tools/pinupstream derives for its
+      # version from HashiCorp's signed SHA256SUMS, byte for byte.
+      - name: Re-derive the pins of a backfill
+        if: steps.origin.outputs.backfill == 'true'
+        env:
+          VERSION: ${{ steps.origin.outputs.version }}
+        run: |
+          set -euo pipefail
+          go run ./tools/pinupstream -version "$VERSION" -out "$RUNNER_TEMP/pins.json"
+          cmp pins.json "$RUNNER_TEMP/pins.json" || { echo "::error::pins.json is not the pinupstream output for $VERSION"; exit 1; }
       # refuse to publish a build that enforces no
       # control. Fails unless main.go wires the Phase 0B lifecycle.
       # A skipped, renamed or tag-excluded test exits 0, so require its PASS line.
@@ -102,14 +138,26 @@ jobs:
       # .goreleaser.yml runs tools/releasegate on every built binary (tags,
       # HashiCorp key, org pin, evaluator); --skip=before cannot bypass it.
       # The release notes are the CHANGELOG.md section of this tag: the
-      # conventional commits since the previous tag (tools/changelog).
+      # conventional commits since the previous tag (tools/changelog). A
+      # backfill names the master commit it was built from instead.
       - name: Render the release notes
-        run: go run ./tools/changelog -version "$GITHUB_REF_NAME" -notes > "$RUNNER_TEMP/notes.md"
+        env:
+          BACKFILL: ${{ steps.origin.outputs.backfill }}
+        run: |
+          set -euo pipefail
+          if [ "$BACKFILL" = true ]; then
+            printf 'NOTES:\n\n* backfill: compliancetf/aws %s for hashicorp/aws %s, built from master %s\n' \
+              "${GITHUB_REF_NAME#v}" "${GITHUB_REF_NAME#v}" "$(git rev-parse --short "$GITHUB_SHA^{commit}^")" > "$RUNNER_TEMP/notes.md"
+          else
+            go run ./tools/changelog -version "$GITHUB_REF_NAME" -notes > "$RUNNER_TEMP/notes.md"
+          fi
       - name: Release
         run: goreleaser release --clean --release-notes "$RUNNER_TEMP/notes.md"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GPG_FINGERPRINT: ${{ steps.import_gpg.outputs.fingerprint }}
+          # .goreleaser.yml: a backfill is never marked the latest release.
+          CTF_BACKFILL: ${{ steps.origin.outputs.backfill }}
 
   # After a published release, a PR puts the same section at the top of
   # CHANGELOG.md on master. PRs opened with GITHUB_TOKEN start no workflows:
@@ -117,6 +165,8 @@ jobs:
   changelog:
     name: Open the CHANGELOG PR
     needs: release
+    # A backfill adds no CHANGELOG.md section: it changes only the pin.
+    if: needs.release.outputs.backfill != 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 10
     permissions:
