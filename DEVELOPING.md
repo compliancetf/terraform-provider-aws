@@ -48,6 +48,11 @@ make test    # the full test gate
 | `make pin VERSION=X.Y.Z` | Per-pin artifacts for hashicorp/aws X.Y.Z (see Releasing); needs terraform, jq and network |
 | `make schema-subset` | Recapture `testdata/schemas/aws-subset.json` from the registry |
 | `make release-dry-run` | GoReleaser `check` and a snapshot build; no publish, no signing |
+| `make build-bundlegen`, `make build-all` | `bin/ctf-bundlegen` (records version and commit in build.json); cross-compiled binaries in `dist/` |
+| `make fmt` | `gofmt -w .`, and `goimports` when installed |
+| `make test-coverage` | `coverage.out` and `coverage.html` |
+| `make clean` | Remove the binary, `dist/` and coverage files |
+| `make install` | Build and move the binary to `$GOPATH/bin` |
 
 ## Architecture
 

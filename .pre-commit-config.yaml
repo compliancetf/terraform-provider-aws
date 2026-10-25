@@ -22,7 +22,7 @@ repos:
       - id: gofmt
         name: gofmt
         language: system
-        entry: bash -c 'out="$(gofmt -l "$@")"; [ -z "$out" ] || { echo "gofmt needed:"; echo "$out"; exit 1; }' --
+        entry: bash -c 'out="$(gofmt -l "$@")" || exit 1; [ -z "$out" ] || { echo "gofmt needed:"; echo "$out"; exit 1; }' --
         types: [go]
 
       - id: shellcheck
