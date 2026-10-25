@@ -88,10 +88,27 @@ The embedded CIS bundle (`cis-aws`) holds these controls. Control ids follow the
 - **Exception grants** are DSSE-signed files, one per grant, in `exception_grants_dir`. They apply only to controls whose signed coverage allows grants, and only within their org, workspace scope and expiry. A grant naming any control that is unknown or not coverable for grants applies to none of its controls, with a warning per control. Under `floor_mode: airgap` grant expiry and key windows are checked against the latest accepted floor statement, never the local clock.
 - **Self-service exceptions** in `exceptions_file` are HCL. Without a signed org profile that lists the control under self-service, the file is ignored with a warning. Each entry selects resources with a CEL `match` expression over `type`, `resource`, `config`, `prior`, `op`, `env` and `provider` (see `examples/exception/exceptions.hcl`); an unknown result waives nothing at plan and is retried at apply, an error waives nothing. A match that reads `op` must hold under every op a control is checked under: apply checks each half of a replace under `replace` and under its own `create` or `delete`, and a `change` under the actual `create` or `update` too. Name the half ops (`op in ['replace', 'create', 'delete']`) or read no `op`; a match that says only `op == 'replace'` waives at plan, where it warns, and blocks at apply. The same holds for grant selectors. The file holds `exception` blocks only: a block or attribute naming a baseline, quarantine, floor or run key fails the load with `self_service_scope`. Under `floor_mode: airgap` break-glass coverability is dropped with a warning per control.
 
+## Diagnostics
+
+A failing control is reported as `[<control id>] <message>`, then the source snippet, then these lines:
+
+| Field | Line | Default |
+|-------|------|---------|
+| `fix` | `Fix: <how to fix it>`, when the control has one | yes |
+| `docs` | `Docs: https://compliance.tf/docs/controls/aws/<control id>/` | yes |
+| `waive` | `To waive: add an exception for <control id> in <exceptions_file>`, only when an entry in `exceptions_file` can waive this control: the signed org profile lists it under self-service with `max_lifetime_days`, a trusted workspace is set, and the exceptions clock is known | yes |
+| `severity` | `Severity: <severity>` | no |
+| `mode` | `Mode: <enforcement mode>` | no |
+| `stage` | `Stage: <stage>` (and `Type: <data source type>` for data sources) | no |
+| `frameworks` | `Frameworks: <framework references>` | no |
+
+`COMPLIANCETF_DIAGNOSTICS` chooses them: `default` (unset or empty), `minimal` (`fix` only), `full` (all), or a comma list of field names such as `fix,docs,frameworks`. Lines always print in the order above. Unknown names are ignored with one warning. Lines that explain the situation (values unknown until apply, not evaluable, applied but violating, pending exemption) always print. The setting changes only what diagnostics show: verdicts, evidence and exit codes are the same.
+
 ## Environment variables
 
 | Name | Meaning |
 |------|---------|
+| `COMPLIANCETF_DIAGNOSTICS` | Lines of control diagnostics: `default`, `minimal`, `full` or a comma list of fields (see [Diagnostics](#diagnostics)). |
 | `COMPLIANCETF_UPSTREAM_PATH` | Explicit path to the `hashicorp/aws` binary, for air-gapped installs. The binary must match the pinned checksum. |
 
 `COMPLIANCETF_*` variables are not passed to the upstream provider. Variables used only by test builds are listed in [DEVELOPING.md](../DEVELOPING.md#environment-variables).

@@ -296,6 +296,9 @@ func (l *Lifecycle) configure(ctx context.Context, compliance tftypes.Value) (*C
 		return nil, nil, err
 	}
 	warns = append(warns, table.Warnings...)
+	if b.FieldsWarning != "" {
+		warns = append(warns, b.FieldsWarning)
+	}
 
 	floors.Governed = res.Governed
 	var profVersion int64

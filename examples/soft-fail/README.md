@@ -14,7 +14,7 @@ terraform plan
 
 ## What to expect
 
-`terraform plan` exits 0 with these warnings, each marked `Mode: soft_fail`:
+`terraform plan` exits 0 with these warnings, each with its fix and a link to the control docs:
 
 | Resource | Control | Action |
 |---|---|---|

@@ -102,6 +102,9 @@ type Sidecar struct {
 	clock   Clock             // the plan-time re-check resolves through it
 	digests []string          // entry digests, sorted
 	rules   map[string][]rule // control id -> entries naming it
+	// waivable are the control ids a new entry could waive in this run:
+	// add's entry-independent checks pass for them.
+	waivable []string
 }
 
 type rule struct {
@@ -178,6 +181,7 @@ func parseSidecar(src []byte, filename string, in SidecarInput) (*Sidecar, Notic
 	var n Notices
 	seen := map[string]bool{}
 	forbid := newForbidSet(in.Table, in.ResolveFold)
+	s.waivable = waivable(in, unknown)
 	for _, e := range file.Exceptions {
 		if seen[e.Label] {
 			return nil, Notices{}, fmt.Errorf("exceptions_file: duplicate exception %q", e.Label)
@@ -358,6 +362,29 @@ func (s *Sidecar) add(e Entry, digest string, exp time.Time, sel *celeng.Selecto
 		s.rules[id] = append(s.rules[id], rule{label: e.Label, workspace: e.Workspace, source: "self_service", digest: digest,
 			sel: sel, expires: exp, status: status})
 	}
+}
+
+// waivable are the self-service ids add could apply an entry to: a known
+// clock, a trusted workspace, a profile max_lifetime_days and a
+// self_service-coverable id. Keep in step with add.
+func waivable(in SidecarInput, unknown string) []string {
+	t := in.Table
+	if unknown != "" || t.CheckScope(nil, nil, true) != nil || t.Exceptions == nil || t.Exceptions.MaxLifetimeDays <= 0 {
+		return nil
+	}
+	var ids []string
+	for _, id := range t.SidecarControls {
+		if in.Coverable.Coverable(id, string(bundle.CoverSelfService)) {
+			ids = append(ids, id)
+		}
+	}
+	return ids
+}
+
+// Waivable reports whether an entry in this sidecar can waive control id
+// (false for a nil Sidecar). Diagnostics offer the waive hint only then.
+func (s *Sidecar) Waivable(id string) bool {
+	return s != nil && slices.Contains(s.waivable, id)
 }
 
 // Digests are the entry digests of every exception in the file, sorted

@@ -184,7 +184,7 @@ func TestNotEvaluableNeverPending(t *testing.T) {
 					}
 					for _, class := range notEvaluableClasses {
 						out := engine.Outcome{State: engine.NotEvaluable, Err: class}
-						s, d := diagText(ctl, out, m, v.Severity, stage, "")
+						s, d := diagText(ctl, out, m, v.Severity, stage, shown{})
 						if stage == StageEphemeralOpen && v.Severity == SeverityError {
 							// A block names the control message; the class is a detail line.
 							if s != "[c] m" || !strings.Contains(d, "\nNot evaluable ("+string(class)+"): treated as a failure of this control.\n") {

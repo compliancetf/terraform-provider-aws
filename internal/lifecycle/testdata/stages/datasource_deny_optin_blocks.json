@@ -22,13 +22,13 @@
       {
         "severity": "error",
         "summary": "[ds_lookup_encrypted] The looked-up instance must be encrypted at rest.",
-        "detail": "Fix: Look up an encrypted instance.\nSeverity: high\nMode: hard_fail\nStage: data_source\nType: aws_db_lookup\nTo waive: add an exception for ds_lookup_encrypted in compliance-exceptions.hcl",
+        "detail": "Fix: Look up an encrypted instance.\nDocs: https://compliance.tf/docs/controls/aws/ds_lookup_encrypted/",
         "attribute": "AttributeName(\"storage_encrypted\")"
       },
       {
         "severity": "warning",
         "summary": "[ds_lookup_deletion_protection] The looked-up instance should keep deletion protection on.",
-        "detail": "Severity: low\nMode: hard_fail\nStage: data_source\nType: aws_db_lookup\nTo waive: add an exception for ds_lookup_deletion_protection in compliance-exceptions.hcl",
+        "detail": "Docs: https://compliance.tf/docs/controls/aws/ds_lookup_deletion_protection/",
         "attribute": "AttributeName(\"deletion_protection\")"
       }
     ],

@@ -41,6 +41,8 @@ type Block struct {
 	Workspace                      string // COMPLIANCETF_WORKSPACE, untrusted
 	EvidenceDir                    string // env wins
 	HCLDataSources, EnvDataSources string // data_sources, COMPLIANCETF_DATA_SOURCES: raise only
+	Fields                         Field  // COMPLIANCETF_DIAGNOSTICS: detail lines of control diagnostics
+	FieldsWarning                  string // unknown COMPLIANCETF_DIAGNOSTICS tokens; "" when none
 }
 
 // parseBlock reads the stripped compliance object (null = no block) and the
@@ -85,6 +87,7 @@ func parseBlock(v tftypes.Value) (Block, error) {
 		EvidenceDir:    envWins("evidence_dir", "COMPLIANCETF_EVIDENCE_DIR"),
 		HCLDataSources: hcl["data_sources"], EnvDataSources: os.Getenv("COMPLIANCETF_DATA_SOURCES"),
 	}
+	b.Fields, b.FieldsWarning = parseFields(os.Getenv("COMPLIANCETF_DIAGNOSTICS"))
 	if b.EvidenceDir == "" {
 		b.EvidenceDir = defaultEvidenceDir
 	}

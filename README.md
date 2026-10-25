@@ -58,17 +58,16 @@ Error: [ebs_volume_encryption_at_rest_enabled] EBS volumes must be encrypted.
   18:   encrypted         = false
 
 Fix: Set encrypted = true.
-Severity: critical
-Mode: hard_fail
-Stage: plan
-Frameworks: cis_aws:2.2.1, cis_v600:6
+Docs: https://compliance.tf/docs/controls/aws/ebs_volume_encryption_at_rest_enabled/
 ```
+
+`COMPLIANCETF_DIAGNOSTICS` chooses the lines after the source snippet; `full` adds severity, mode, stage and framework references (see [docs/reference.md](docs/reference.md#diagnostics)).
 
 The provider is tested with Terraform 1.5 and later and with OpenTofu; replacing a resource that has an identity needs Terraform 1.16.6 or later (see [Limitations](docs/reference.md#limitations)). The [examples](#examples) are complete configurations to start from.
 
 ## What is included
 
-The provider ships with a CIS baseline for AWS: 18 controls on 11 resource types, with checks for encryption, public access, backup retention, deletion protection, and SSH and RDP ingress on those types. It is free, built into the binary, and needs no account or token. Resource types without a control are not checked. The controls are listed in [docs/reference.md](docs/reference.md#cis-controls), and each error names its CIS references.
+The provider ships with a CIS baseline for AWS: 18 controls on 11 resource types, with checks for encryption, public access, backup retention, deletion protection, and SSH and RDP ingress on those types. It is free, built into the binary, and needs no account or token. Resource types without a control are not checked. The controls are listed in [docs/reference.md](docs/reference.md#cis-controls), and each error links the control's docs page, which names its CIS references.
 
 Bundles for other frameworks, organization rules and exceptions come from [compliance.tf](https://compliance.tf). Without them there are no exceptions: use the default warning mode for resources you cannot fix yet.
 

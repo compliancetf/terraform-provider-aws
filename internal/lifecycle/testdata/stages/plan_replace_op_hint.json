@@ -25,7 +25,7 @@
       {
         "severity": "error",
         "summary": "[rds_instance_deletion_guard] Disable deletion_protection before destroying this instance.",
-        "detail": "Severity: medium\nMode: hard_fail\nStage: plan\nTo waive: add an exception for rds_instance_deletion_guard in compliance-exceptions.hcl",
+        "detail": "Docs: https://compliance.tf/docs/controls/aws/rds_instance_deletion_guard/",
         "attribute": "AttributeName(\"deletion_protection\")"
       }
     ],

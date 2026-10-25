@@ -7,6 +7,6 @@
   },
   "expect_no_applies": true,
   "steps": [
-    {"cmd": ["plan", "-no-color"], "exit": 0, "stdout_contains": ["Warning: [lookup_name_bobthecorp] Look up bobthecorp-db only.", "Stage: data_source", "Type: fake_lookup"], "stderr_excludes": ["Error:"], "state_unchanged": true}
+    {"cmd": ["plan", "-no-color"], "exit": 0, "stdout_contains": ["Warning: [lookup_name_bobthecorp] Look up bobthecorp-db only.", "Docs: https://compliance.tf/docs/controls/aws/lookup_name_bobthecorp/"], "stderr_excludes": ["Error:"], "state_unchanged": true}
   ]
 }

@@ -173,7 +173,7 @@ func TestEphemeralOpen(t *testing.T) {
 				got = append(got, sev+":"+d.Summary)
 				scrubtest.NoMarker(t, "diagnostic", d.Summary+d.Detail)
 				blocked := strings.HasPrefix(d.Detail, ephBlocked+"\n")
-				if blocked != (d.Severity == hook.SeverityError) || blocked && !strings.Contains(d.Detail, "\nStage: ephemeral_open\n") {
+				if blocked != (d.Severity == hook.SeverityError) || blocked && !strings.Contains(d.Detail, "\nDocs: "+docsBase+"eph_min_length/") {
 					t.Errorf("detail of %q:\n%s", d.Summary, d.Detail)
 				}
 			}

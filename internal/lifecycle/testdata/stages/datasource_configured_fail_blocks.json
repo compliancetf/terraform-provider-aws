@@ -21,7 +21,7 @@
       {
         "severity": "error",
         "summary": "[ds_lookup_engine_postgres] Lookups must query a postgres instance.",
-        "detail": "Fix: Set engine = \"postgres\".\nSeverity: medium\nMode: hard_fail\nStage: data_source\nType: aws_db_lookup\nTo waive: add an exception for ds_lookup_engine_postgres in compliance-exceptions.hcl",
+        "detail": "Fix: Set engine = \"postgres\".\nDocs: https://compliance.tf/docs/controls/aws/ds_lookup_engine_postgres/",
         "attribute": "AttributeName(\"engine\")"
       }
     ],

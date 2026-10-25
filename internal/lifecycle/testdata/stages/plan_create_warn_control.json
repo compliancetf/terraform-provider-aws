@@ -20,7 +20,7 @@
       {
         "severity": "warning",
         "summary": "[rds_instance_engine_not_mysql] Prefer an engine other than mysql.",
-        "detail": "Severity: low\nMode: hard_fail\nStage: plan\nTo waive: add an exception for rds_instance_engine_not_mysql in compliance-exceptions.hcl",
+        "detail": "Docs: https://compliance.tf/docs/controls/aws/rds_instance_engine_not_mysql/",
         "attribute": "AttributeName(\"engine\")"
       }
     ],
