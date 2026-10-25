@@ -34,6 +34,11 @@
 #      A missing default file skips this rule; a missing named file is an error.
 set -euo pipefail
 
+# A git hook runs with GIT_DIR and friends set; they would point every
+# `git -C <dir>` below (the self-test's scratch repos included) at the
+# hook's repository.
+unset GIT_DIR GIT_WORK_TREE GIT_INDEX_FILE GIT_COMMON_DIR GIT_OBJECT_DIRECTORY GIT_ALTERNATE_OBJECT_DIRECTORIES GIT_PREFIX
+
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 SYNTHETIC='internal/bundlegen/testdata/'
 MAX_CATALOG_BYTES=65536
