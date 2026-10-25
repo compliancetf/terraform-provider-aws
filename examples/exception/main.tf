@@ -1,35 +1,13 @@
-# compliance.tf Terraform Provider - self-service exception example
+# compliance.tf provider for AWS - self-service exception example
 #
-# The RDS instance violates rds_db_instance_encryption_at_rest_enabled. The
-# signed org profile for org bobthecorp allows self-service exceptions for
-# that control, and exceptions.hcl waives it for dev-* instances in the
-# bobthecorp-dev workspace, so `terraform plan` succeeds in hard_fail.
-# Without a signed profile that enables self-service exceptions, the
-# exceptions file is ignored with a warning and the plan fails with the
-# encryption error.
-#
-# Prerequisites: see examples/basic/main.tf. In practice compliance.tf
-# issues the signed org profile. To try this with a development build
-# (make build-dev, which trusts the test key), set issued_at in profile.json
-# to today and expires_at at most 30 days later, then sign it from the repo
-# root:
-#   go run -tags ctftest ./cmd/ctfbundle sign -type profile \
-#     -in examples/exception/profile.json -key test:profile \
-#     -out examples/exception/profile.dsse.json
-# The expires date in exceptions.hcl must be in the future and within
-# max_lifetime_days (profile.json) of the run date: update it together with
-# the profile dates.
-#
-# Usage (skip terraform init under dev_overrides):
-#   terraform plan
-#
-# Expected output: `terraform plan` succeeds (exit 0) with no compliance
-# error. The waiver is recorded in the evidence chain under evidence_dir.
+# Each resource below breaks a CIS deny control that exceptions.hcl waives,
+# so `terraform plan` succeeds in hard_fail mode. See README.md for the
+# signed profile this needs, how to run it and what to expect.
 
 terraform {
   required_providers {
     aws = {
-      source = "compliancetf/aws"
+      source = "registry.compliance.tf/compliancetf/aws"
     }
   }
 }
@@ -41,17 +19,60 @@ provider "aws" {
     enforcement_mode = "hard_fail"
     org_id           = "bobthecorp"
     environment      = "dev"
-    profile_path     = "${path.module}/profile.dsse.json"
+    profile_path     = "${path.module}/profile.dsse.json" # signed profile.json
     exceptions_file  = "${path.module}/exceptions.hcl"
   }
 }
 
+# Waived by "dev-db-unencrypted": the identifier starts with dev-.
 resource "aws_db_instance" "dev_db" {
   identifier              = "dev-reporting"
   engine                  = "postgres"
-  instance_class          = "db.t3.micro"
-  storage_encrypted       = false # violation, waived by exceptions.hcl
+  instance_class          = "db.t4g.micro"
+  storage_encrypted       = false # rds_db_instance_encryption_at_rest_enabled, waived
   publicly_accessible     = false
   backup_retention_period = 14
   deletion_protection     = true
+}
+
+# Two controls waived by one entry, "reporting-replica-restore". The
+# identifier also starts with dev-, so "dev-db-unencrypted" matches its
+# encryption control too; either entry is enough.
+resource "aws_db_instance" "restore" {
+  identifier              = "dev-reporting-restore"
+  engine                  = "postgres"
+  instance_class          = "db.t4g.micro"
+  storage_encrypted       = false # rds_db_instance_encryption_at_rest_enabled, waived
+  backup_retention_period = 1     # rds_db_instance_backup_retention_period_less_than_7, waived
+  publicly_accessible     = false
+  deletion_protection     = true
+}
+
+# Waived by "migration-target-backups" while it is created. Once it exists,
+# an update that keeps backup_retention_period below 7 fails the plan.
+resource "aws_db_instance" "migration_target" {
+  identifier              = "dev-migration-target"
+  engine                  = "postgres"
+  instance_class          = "db.t4g.micro"
+  storage_encrypted       = true
+  backup_retention_period = 0 # rds_db_instance_backup_retention_period_less_than_7, waived on create
+  publicly_accessible     = false
+  deletion_protection     = true
+}
+
+# Waived by "scratch-volumes" through its purpose tag. "staging-only" and
+# "old-load-test" also select it, but neither applies (wrong environment,
+# expired).
+resource "aws_ebs_volume" "scratch" {
+  availability_zone = "us-east-1a"
+  size              = 100
+  encrypted         = false # ebs_volume_encryption_at_rest_enabled, waived
+
+  tags = { purpose = "scratch" }
+}
+
+# Waived by "public-docs-site": bucket name prefix and provider region.
+resource "aws_s3_bucket" "docs" {
+  bucket = "bobthecorp-docs-site"
+  acl    = "public-read" # s3_bucket_restrict_public_read_access, waived
 }

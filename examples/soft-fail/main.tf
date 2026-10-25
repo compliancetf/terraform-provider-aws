@@ -1,24 +1,12 @@
-# compliance.tf Terraform Provider - soft_fail example
+# compliance.tf provider for AWS - soft_fail example
 #
-# soft_fail is the default mode: every violation, deny or warn, is a
-# warning and `terraform plan` succeeds. Use it while onboarding existing
-# configurations, then raise the mode to hard_fail.
-#
-# Prerequisites and usage: see examples/basic/main.tf.
-#
-# Expected output: `terraform plan` succeeds (exit 0) and warns for
-#   rds_db_instance_encryption_at_rest_enabled
-#   rds_db_instance_prohibit_public_access
-#   rds_db_instance_backup_retention_period_less_than_7
-#   rds_db_instance_deletion_protection_enabled
-#   s3_bucket_restrict_public_read_access
-# plus the hashicorp/aws deprecation warning for acl. Each warning carries
-# "Mode: soft_fail".
+# The resources of the hard-fail example in soft_fail mode: every violation
+# is a warning and `terraform plan` succeeds. See README.md.
 
 terraform {
   required_providers {
     aws = {
-      source = "compliancetf/aws"
+      source = "registry.compliance.tf/compliancetf/aws"
     }
   }
 }
