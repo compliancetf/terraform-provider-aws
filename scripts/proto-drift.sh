@@ -200,7 +200,10 @@ self_test() {
 	return "${fail}"
 }
 
-gomod() { (cd "${WORK}" && GOWORK=off GOFLAGS='' go "$@"); }
+# GOTOOLCHAIN=auto: a source may need a newer Go than ours just to be
+# downloaded (Terraform v1.17.0 needs 1.26.10); go fetches that toolchain
+# through GOPROXY and checks it against GOSUMDB.
+gomod() { (cd "${WORK}" && GOWORK=off GOFLAGS='' GOTOOLCHAIN=auto go "$@"); }
 
 latest() {
 	local ver
@@ -210,8 +213,9 @@ latest() {
 }
 
 moddir() {
-	local dir
-	dir="$(gomod mod download -json "$1@$2" | jq -r .Dir)" || die2 "cannot download $1@$2"
+	local out dir
+	out="$(gomod mod download -json "$1@$2")" || die2 "cannot download $1@$2: $(jq -r '.Error // empty' <<<"${out}")"
+	dir="$(jq -r .Dir <<<"${out}")" || die2 "cannot parse the download of $1@$2"
 	[[ -d "${dir}" ]] || die2 "no module dir for $1@$2"
 	echo "${dir}"
 }
