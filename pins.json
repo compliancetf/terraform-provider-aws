@@ -1,100 +1,94 @@
 {
   "format": "compliancetf.upstream-pins/v1",
   "upstream": "registry.terraform.io/hashicorp/aws",
-  "version": "6.70.0",
+  "version": "6.42.0",
   "protocol": 5,
   "signing_key_fingerprint": "C874011F0AB405110D02105534365D9472D7468F",
-  "sha256sums_sha256": "0bc913f0a9eb84c8dd6e95ebb48519f92ffa9c60aa8a6bd5646f5bd330072cc3",
+  "sha256sums_sha256": "ea915dcab9238aef205c658e63a3ad5a37fb3025024a937a37560993721994b7",
   "platforms": {
     "darwin_amd64": {
-      "zip": "terraform-provider-aws_6.70.0_darwin_amd64.zip",
-      "zip_sha256": "068ca7ed4fc77e3d63d7fac54515a426a32f3dc143b55a6ad00963fe68289955",
-      "binary": "terraform-provider-aws_v6.70.0_x5",
-      "binary_sha256": "bb7c0aa5ed9ead26c020acc4acc25c3ac4365b021c7b959898906179bdce59c3"
+      "zip": "terraform-provider-aws_6.42.0_darwin_amd64.zip",
+      "zip_sha256": "61d0632d4cc7973b779b90c1d3bb2d05a1cd4d7030bb4645831e67cf735ecaa0",
+      "binary": "terraform-provider-aws_v6.42.0_x5",
+      "binary_sha256": "3e512aca5e3b975fa79bb4b7ecc4b281f423cc8b67c4ac4a6937061b67f3102a"
     },
     "darwin_arm64": {
-      "zip": "terraform-provider-aws_6.70.0_darwin_arm64.zip",
-      "zip_sha256": "7e899a44a1da95fefb1b04b231cf7cdb5871f482f60a710ede78bf25ac265724",
-      "binary": "terraform-provider-aws_v6.70.0_x5",
-      "binary_sha256": "2805c77e559df07ddf049b47fa14dd55380449553c322fdaf16aadf8150c5ee5"
+      "zip": "terraform-provider-aws_6.42.0_darwin_arm64.zip",
+      "zip_sha256": "4194addb5b34bb803fab031a80d84e9d16cac2308df9a498d51e2214c7893900",
+      "binary": "terraform-provider-aws_v6.42.0_x5",
+      "binary_sha256": "ae649746c5a95f72857770fcc904dd3111916fb4b6aef66c40982eb09ed79df9"
     },
     "freebsd_386": {
-      "zip": "terraform-provider-aws_6.70.0_freebsd_386.zip",
-      "zip_sha256": "c7b1fb41e7f086b670f78932ede2b539903a8d71bac06f55f14a1a33d09a1ccf",
-      "binary": "terraform-provider-aws_v6.70.0_x5",
-      "binary_sha256": "44fa8ebe52380a1fff213eb0ff59befce4b2071f05b96c605705b87739534e51"
+      "zip": "terraform-provider-aws_6.42.0_freebsd_386.zip",
+      "zip_sha256": "237d652d8ec028f7bedce1ce056ffe42e2e120d2a4a47fe45b97263cc5948e7e",
+      "binary": "terraform-provider-aws_v6.42.0_x5",
+      "binary_sha256": "240eb7c75c8eb7ae8316a2600d43d61aaad8f6856b9e58009b7f726665c1c8c9"
     },
     "freebsd_amd64": {
-      "zip": "terraform-provider-aws_6.70.0_freebsd_amd64.zip",
-      "zip_sha256": "b88a3f22127bfb17604adc53e9bdb8ed0eddf4b9b77bf19871cba2e7fcd5b4a3",
-      "binary": "terraform-provider-aws_v6.70.0_x5",
-      "binary_sha256": "58a50847d930a7eee2189378b73db2e95a3b206db7a857c58ada64c759de7127"
+      "zip": "terraform-provider-aws_6.42.0_freebsd_amd64.zip",
+      "zip_sha256": "a87592d6ff3d46ee83756f4f84503b2fe4ffc9c1d5dc9f8d4afccb5e126ae538",
+      "binary": "terraform-provider-aws_v6.42.0_x5",
+      "binary_sha256": "0cb8392765a4b3aa1df24b29f989e6316261222c0a0c8ac1484096d082b21fb1"
     },
     "freebsd_arm": {
-      "zip": "terraform-provider-aws_6.70.0_freebsd_arm.zip",
-      "zip_sha256": "50447833cce21288ffc331342f9d83854e80515e2d86e8f5776a07ce18866b20",
-      "binary": "terraform-provider-aws_v6.70.0_x5",
-      "binary_sha256": "34c1f2056a79324428ab8bdc2e8860df5a9ccc05e7a5e282be67c3264abfcdd2"
+      "zip": "terraform-provider-aws_6.42.0_freebsd_arm.zip",
+      "zip_sha256": "7d7f8ffe00d4a90184efa454a107bcc46d81f21245baea9678dcfa2fa77ac1be",
+      "binary": "terraform-provider-aws_v6.42.0_x5",
+      "binary_sha256": "a9f07f47508e0c9035b20e1c0f8d120c64f6d9e744c1a876d29c24c1bc84cc10"
     },
     "linux_386": {
-      "zip": "terraform-provider-aws_6.70.0_linux_386.zip",
-      "zip_sha256": "9ba0990a876d2641a185ca88263719afc4d5ac43533bdb147437f0073d2cd74d",
-      "binary": "terraform-provider-aws_v6.70.0_x5",
-      "binary_sha256": "4ca6a77236d4ef0b9bf99fa603c8576a7d6e24c4115567e3391a02ef88d25c82"
+      "zip": "terraform-provider-aws_6.42.0_linux_386.zip",
+      "zip_sha256": "daa56fb74c5c9d26b327c40b486beac71cdb9a932c7c4e4561f4401cd0d16a4a",
+      "binary": "terraform-provider-aws_v6.42.0_x5",
+      "binary_sha256": "8da42e80190862bf09f27ddd1612257d7222fb359b8cf18c20e3f23941a0ae58"
     },
     "linux_amd64": {
-      "zip": "terraform-provider-aws_6.70.0_linux_amd64.zip",
-      "zip_sha256": "58acc041b080778ded75320e241ebcf6cf2ed145bede644b86a4784ce46086c6",
-      "binary": "terraform-provider-aws_v6.70.0_x5",
-      "binary_sha256": "75d70f99d54bbef98e8f200ff0df71d2147e309cf46269a21eabf9c3842f7183"
+      "zip": "terraform-provider-aws_6.42.0_linux_amd64.zip",
+      "zip_sha256": "5bcc36226fa5d8a3c37e41ac8cfd2b1eb73e7ae96f8418f6776dcaa16a987198",
+      "binary": "terraform-provider-aws_v6.42.0_x5",
+      "binary_sha256": "7eed3e56531f7e6ad837e27ca916b036ee1e5d42717936257985c93a4fa78090"
     },
     "linux_arm": {
-      "zip": "terraform-provider-aws_6.70.0_linux_arm.zip",
-      "zip_sha256": "a8773c7a02e1b3290df89351ee493fd8b74f807f92a7f69534e05901d4515761",
-      "binary": "terraform-provider-aws_v6.70.0_x5",
-      "binary_sha256": "6a188fc5ab951d547999cc00d5eef81847f55c556ae61800cc75ab51ed1f7331"
+      "zip": "terraform-provider-aws_6.42.0_linux_arm.zip",
+      "zip_sha256": "f35ab043d7121f3a194f42f5b0e0d59fe62d94488acea07e3783405fa5838785",
+      "binary": "terraform-provider-aws_v6.42.0_x5",
+      "binary_sha256": "18f57f7ebd7a9b69ee8e436e117f446247333981d3da60e1384390473b9a865a"
     },
     "linux_arm64": {
-      "zip": "terraform-provider-aws_6.70.0_linux_arm64.zip",
-      "zip_sha256": "8b141d13f4b84d7a47bc5a4855d0fc985191317b3249603532d4de03db5741c5",
-      "binary": "terraform-provider-aws_v6.70.0_x5",
-      "binary_sha256": "fb9d97486a00ab23e608bd5022142ad9c98f19b68873b1188b4e11ffdc9641f1"
-    },
-    "linux_s390x": {
-      "zip": "terraform-provider-aws_6.70.0_linux_s390x.zip",
-      "zip_sha256": "9035357f7d065ce8d35a9b05337977910683219c0f13fa09155d28f9b32e23a7",
-      "binary": "terraform-provider-aws_v6.70.0_x5",
-      "binary_sha256": "f31c926024e23652e224004564389b36c06fcb4fcd2649214c0c41d4b634eb9d"
+      "zip": "terraform-provider-aws_6.42.0_linux_arm64.zip",
+      "zip_sha256": "99564c99a0672b2a8b666ab2040f36a7c6f372fa79ac43a6657a54734e46fff8",
+      "binary": "terraform-provider-aws_v6.42.0_x5",
+      "binary_sha256": "72eafeb3a3826d3c18d08a5ea6227714f207ddd9e4970bd6dfb76f80a0be56d9"
     },
     "openbsd_386": {
-      "zip": "terraform-provider-aws_6.70.0_openbsd_386.zip",
-      "zip_sha256": "df482bd93f51125f78feab7742aae1d7f22c7108ee2dc47787c4a1d611e6ccfd",
-      "binary": "terraform-provider-aws_v6.70.0_x5",
-      "binary_sha256": "d3bf643f9374d6f02ad13af1322b1b2305368ede896e78f9169fe1e81e447257"
+      "zip": "terraform-provider-aws_6.42.0_openbsd_386.zip",
+      "zip_sha256": "7c7efaf9e4bb662ba3e8a714abafe7107bdcd1bf2cd0867510ea32762debc11d",
+      "binary": "terraform-provider-aws_v6.42.0_x5",
+      "binary_sha256": "a6abe76ac3655b355c4797eb8b55dd1a220df8273563903fd087f9946d2700fc"
     },
     "openbsd_amd64": {
-      "zip": "terraform-provider-aws_6.70.0_openbsd_amd64.zip",
-      "zip_sha256": "ab0ebb298578eeeffe0fbf0a8b27ce99acd4419b7049272f1ab87e8c47229407",
-      "binary": "terraform-provider-aws_v6.70.0_x5",
-      "binary_sha256": "5399b1df65382e71ec92b182fde2569b4afcd28772f257de5441bf92c9d569f8"
+      "zip": "terraform-provider-aws_6.42.0_openbsd_amd64.zip",
+      "zip_sha256": "367d9e4b816e5f857956887b8f0770aaa5bec47c4b1e2c7bf924e39192d580d6",
+      "binary": "terraform-provider-aws_v6.42.0_x5",
+      "binary_sha256": "f9d3d9d052231e04a62ce76120929f567eaeaba2721f5748a25c544cb6f8b86d"
     },
     "openbsd_arm": {
-      "zip": "terraform-provider-aws_6.70.0_openbsd_arm.zip",
-      "zip_sha256": "fca401ffaa42d5f350d667123569de51a23de8c30b87ce0bd9d86fc80835fd4d",
-      "binary": "terraform-provider-aws_v6.70.0_x5",
-      "binary_sha256": "148dce116b5668d7ba4fd290730f394d85f15f110234766550b58beb743424bc"
+      "zip": "terraform-provider-aws_6.42.0_openbsd_arm.zip",
+      "zip_sha256": "a6b1bb6178798882508f5512222a9433fc21e63cdae83a755650c938e6141d32",
+      "binary": "terraform-provider-aws_v6.42.0_x5",
+      "binary_sha256": "40acd29c70630dc31b527dfb07ce4f3aa87c4c61f5b2b862966aef635a00f5d1"
     },
     "windows_386": {
-      "zip": "terraform-provider-aws_6.70.0_windows_386.zip",
-      "zip_sha256": "450d960b60ea81268bd355600340787254f750d76e0075208a6fb903d7336b09",
-      "binary": "terraform-provider-aws_v6.70.0_x5.exe",
-      "binary_sha256": "ed9b1919723aebf4011b730903526cee53ab58f4322f24f4c0efe883d5a22ba3"
+      "zip": "terraform-provider-aws_6.42.0_windows_386.zip",
+      "zip_sha256": "0dd774a97eaa4371a60e13b5dc56800d4fb1c48d50e79049f75fc4fe26705ff5",
+      "binary": "terraform-provider-aws_v6.42.0_x5.exe",
+      "binary_sha256": "28acdd6ede9e2268eb497a6e7f4da61f751b756683e15a0dd44ee99749e5c372"
     },
     "windows_amd64": {
-      "zip": "terraform-provider-aws_6.70.0_windows_amd64.zip",
-      "zip_sha256": "2d8c016b3809ab32f536b01bf2c98fcbdeb066b7b7e50f756ff6ff1e0b0539c7",
-      "binary": "terraform-provider-aws_v6.70.0_x5.exe",
-      "binary_sha256": "d7bb885f388891d3abf311459924c4d2d11b3622e9bad1cf6c6f0275d43739fd"
+      "zip": "terraform-provider-aws_6.42.0_windows_amd64.zip",
+      "zip_sha256": "7e534c454cdeafe9cc225bea53397883bb96c54da6ea3421fd53dbc9dfc1bb90",
+      "binary": "terraform-provider-aws_v6.42.0_x5.exe",
+      "binary_sha256": "c90d0e8da55bc6619179a7cd49bebc0950f43f1fddc1d2fd46004d0cb93c9e4a"
     }
   }
 }
