@@ -28,8 +28,8 @@ const (
 	varOp       = "op"
 	varEnv      = "env"
 	varProvider = "provider"
-	// varCompanion is the one variable of a graph control's companion_expr,
-	// a data variable like resource; no control expr can reference it.
+	// varCompanion is the one variable of a graph control's companion_expr
+	// (companionVars); a control expr does not bind it.
 	varCompanion = "companion"
 )
 

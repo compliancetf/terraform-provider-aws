@@ -36,7 +36,7 @@ func CompanionReads(expr string, sc *tfprotov5.Schema) ([]string, error) {
 	if t := a.OutputType(); !t.IsExactType(cel.BoolType) && !t.IsExactType(cel.DynType) {
 		return nil, &LoadDiag{Code: "control_expr", Detail: "companion_expr output type is not bool or dyn"}
 	}
-	ch, err := analyze(a)
+	ch, err := analyzeIn(a, companionVars)
 	if err != nil {
 		return nil, err
 	}

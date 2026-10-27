@@ -130,6 +130,26 @@ func TestGraphSchemaCompat(t *testing.T) {
 	}
 }
 
+// TestGraphReadGone: a read missing from a supported release has signature
+// "" there, unlike any type in the pin, so sameReadTypes fails E_SCHEMA_TYPE
+// even without the CheckSchema that runs before it.
+func TestGraphReadGone(t *testing.T) {
+	pin := graphSchemas(t, baseGraphTypes)
+	s, err := LoadSchemas(writeSchema(t, `{"aws_s3_bucket": {"block": {"attributes": {
+		"id": {"type": "string", "computed": true}, "bucket": {"type": "string", "optional": true}}}},
+		"aws_s3_bucket_versioning": {"block": {"attributes": {"region": {"type": "string", "optional": true}}}}}`))
+	if err != nil {
+		t.Fatal(err)
+	}
+	cs := []bundle.Control{graphControl(bundle.GraphCompanionPresent, "")}
+	if err := sameReadTypes(cs, s, pin); errCode(err) != "E_SCHEMA_TYPE" || !strings.Contains(err.Error(), "aws_s3_bucket_versioning.bucket") {
+		t.Errorf("link_attr gone: err = %v, want E_SCHEMA_TYPE naming aws_s3_bucket_versioning.bucket", err)
+	}
+	if err := checkSupported(cs, pin, map[string]Schemas{"6.66.0": s}, []string{"6.66.0"}); errCode(err) != "E_SUPPORTED_SCHEMA" {
+		t.Errorf("link_attr gone in a supported release: err = %v, want E_SUPPORTED_SCHEMA", err)
+	}
+}
+
 // TestGraphSchemaCompatFailsClosed: a companion_expr whose reads cannot be
 // bounded, or a graph control without graph, fails E_SCHEMA_TYPE.
 func TestGraphSchemaCompatFailsClosed(t *testing.T) {
@@ -145,5 +165,15 @@ func TestGraphSchemaCompatFailsClosed(t *testing.T) {
 	c.Graph = nil
 	if _, err := SchemaCompatLines([]bundle.Control{c}, s); errCode(err) != "E_SCHEMA_TYPE" {
 		t.Errorf("no graph: err = %v, want E_SCHEMA_TYPE", err)
+	}
+	// DecodeControls rejects reads on a graph control; one built in memory
+	// must not have them dropped unpinned either.
+	c = graphControl(bundle.GraphCompanionPresent, "")
+	c.Reads = []string{"region"}
+	if _, err := SchemaCompatLines([]bundle.Control{c}, s); errCode(err) != "E_SCHEMA_TYPE" || !strings.Contains(err.Error(), "reads") {
+		t.Errorf("graph control with reads: err = %v, want E_SCHEMA_TYPE", err)
+	}
+	if err := checkSupported([]bundle.Control{c}, s, map[string]Schemas{"6.66.0": s}, []string{"6.66.0"}); errCode(err) != "E_SUPPORTED_SCHEMA" {
+		t.Errorf("graph control with reads in the release check: err = %v, want E_SUPPORTED_SCHEMA", err)
 	}
 }

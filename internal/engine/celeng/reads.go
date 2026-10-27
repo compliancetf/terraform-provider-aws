@@ -51,6 +51,7 @@ type use struct {
 
 type analyzer struct {
 	ast   *ast.AST
+	vs    varSet // the variables of the expression's environment
 	reads map[Read]bool
 	uses  map[use]bool
 	vars  map[string]bool
@@ -77,8 +78,8 @@ type fromResult struct {
 	rej error // the sub-analyzer's erasedErr
 }
 
-func newAnalyzer(a *ast.AST) *analyzer {
-	return &analyzer{ast: a, reads: map[Read]bool{}, uses: map[use]bool{}, vars: map[string]bool{}, used: map[*dataPath]bool{},
+func newAnalyzer(a *ast.AST, vs varSet) *analyzer {
+	return &analyzer{ast: a, vs: vs, reads: map[Read]bool{}, uses: map[use]bool{}, vars: map[string]bool{}, used: map[*dataPath]bool{},
 		keys: map[Read][]string{}, from: map[int64]fromResult{}}
 }
 
@@ -117,9 +118,12 @@ func fixedShape(e ast.Expr, sc scope) bool {
 
 type scope map[string]*dataPath
 
-// analyze walks the checked AST once.
-func analyze(a *cel.Ast) (*Checked, error) {
-	z := newAnalyzer(a.NativeRep())
+// analyze walks the checked AST of a control expr once.
+func analyze(a *cel.Ast) (*Checked, error) { return analyzeIn(a, resourceVars) }
+
+// analyzeIn walks the checked AST once, compiled in an environment binding vs.
+func analyzeIn(a *cel.Ast, vs varSet) (*Checked, error) {
+	z := newAnalyzer(a.NativeRep(), vs)
 	if err := z.visit(a.NativeRep().Expr(), scope{}); err != nil {
 		return nil, err
 	}
@@ -158,11 +162,17 @@ func dynamic(format string, a ...any) error {
 
 var attrRe = regexp.MustCompile(`^[a-z0-9_]+$`)
 
-var envVars = []string{varResource, varConfig, varPrior, varOp, varEnv, varProvider, varCompanion}
+// varSet is the variables an environment binds and, among them, the data
+// variables whose paths are reads.
+type varSet struct{ bound, data []string }
 
-func isData(v string) bool {
-	return v == varResource || v == varConfig || v == varPrior || v == varCompanion
-}
+var (
+	resourceVars  = varSet{[]string{varResource, varConfig, varPrior, varOp, varEnv, varProvider}, []string{varResource, varConfig, varPrior}}
+	companionVars = varSet{[]string{varCompanion}, []string{varCompanion}}
+)
+
+// isData reports whether v is a data variable of a control expr.
+func isData(v string) bool { return slices.Contains(resourceVars.data, v) }
 
 // path resolves e to a data path when it is a select/constant-index chain
 // rooted at a data variable or a comprehension variable bound to one.
@@ -181,11 +191,11 @@ func (z *analyzer) path(e ast.Expr, sc scope) (*dataPath, error) {
 			z.used[r] = true
 			return r, nil
 		}
-		if !slices.Contains(envVars, name) {
+		if !slices.Contains(z.vs.bound, name) {
 			return nil, nil // a type or other declared name, not a variable
 		}
 		z.vars[name] = true
-		if isData(name) {
+		if slices.Contains(z.vs.data, name) {
 			return &dataPath{v: name}, nil
 		}
 	case ast.SelectKind:
@@ -288,7 +298,7 @@ func (z *analyzer) fixedIndex(args []ast.Expr, sc scope) error {
 func (z *analyzer) fromData(e ast.Expr, sc scope) (bool, error) {
 	r, ok := z.from[e.ID()]
 	if !ok {
-		sub := newAnalyzer(z.ast)
+		sub := newAnalyzer(z.ast, z.vs)
 		sub.from = z.from
 		if r.err = sub.visit(e, sc); r.err == nil {
 			r.d = len(sub.reads) > 0 || sub.tainted
@@ -558,7 +568,7 @@ func (z *analyzer) comprehension(c ast.ComprehensionExpr, sc scope) error {
 	}
 	var shadow []string
 	for _, v := range []string{c.IterVar(), c.IterVar2()} {
-		if slices.Contains(envVars, v) {
+		if slices.Contains(z.vs.bound, v) {
 			z.reject(dynamic("iteration variable %s shadows a bound variable", v))
 			shadow = append(shadow, v)
 		}

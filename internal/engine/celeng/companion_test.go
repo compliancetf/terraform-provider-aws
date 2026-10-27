@@ -13,6 +13,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-go/tfprotov5"
 	"github.com/hashicorp/terraform-plugin-go/tftypes"
 
+	"github.com/compliancetf/terraform-provider-aws/internal/bundle"
 	"github.com/compliancetf/terraform-provider-aws/internal/engine/lib"
 )
 
@@ -63,6 +64,30 @@ func TestCompanionReads(t *testing.T) {
 				t.Errorf("reads %q, want %q", got, tc.want)
 			}
 		})
+	}
+}
+
+// TestCompanionNotBoundInResourceExprs: companion is bound only where a
+// companion_expr compiles. A resource expr may still name an iteration
+// variable companion and reads as before; companion_expr cannot reference
+// resource variables and must not shadow companion.
+func TestCompanionNotBoundInResourceExprs(t *testing.T) {
+	expr := `resource.ingress.all(companion, !("0.0.0.0/0" in companion.cidr_blocks))`
+	c := bundle.Control{ID: "sg_open", Kind: bundle.KindResource, ResourceType: "aws_security_group",
+		PresenceMode: bundle.PresenceEffective, Reads: []string{"ingress.cidr_blocks"}, Expr: &expr, Action: bundle.ActionDeny}
+	ch, diags, err := Compile(&c)
+	if err != nil || len(diags) > 0 {
+		t.Fatalf("Compile: %v, diagnostics %v", err, diags)
+	}
+	if want := []Read{{Var: varResource, Path: "ingress.cidr_blocks"}}; !slices.Equal(ch.Reads, want) || !slices.Equal(ch.Vars, []string{varResource}) {
+		t.Errorf("reads %v vars %v, want %v [resource]", ch.Reads, ch.Vars, want)
+	}
+	if !isData(varResource) || isData(varCompanion) {
+		t.Error("isData is the resource environment's data variable set")
+	}
+	_, err = CompanionReads(`companion.versioning_configuration.exists(companion, companion.status == "Enabled")`, companionSchema())
+	if d := (*LoadDiag)(nil); !errors.As(err, &d) || d.Code != "control_dynamic_access" {
+		t.Errorf("companion_expr shadowing companion: err = %v, want control_dynamic_access", err)
 	}
 }
 
