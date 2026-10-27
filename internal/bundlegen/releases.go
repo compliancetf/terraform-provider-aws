@@ -6,6 +6,7 @@ import (
 	"math"
 	"os"
 	"path/filepath"
+	"slices"
 	"strconv"
 	"strings"
 
@@ -140,7 +141,9 @@ func checkSupported(cs []bundle.Control, pin Schemas, supported map[string]Schem
 		if err := sameReadTypes(cs, s, pin); err != nil {
 			return errf("E_SUPPORTED_SCHEMA", "hashicorp/aws %s: %v", v, err)
 		}
-		_, diags, err := celeng.Load(cs, s.ProviderSchema())
+		// graph controls carry no expr; GraphReads covers their reads above.
+		exprs := slices.DeleteFunc(slices.Clone(cs), func(c bundle.Control) bool { return c.Kind == bundle.KindGraph })
+		_, diags, err := celeng.Load(exprs, s.ProviderSchema())
 		if err == nil && len(diags) > 0 {
 			err = &diags[0]
 		}
@@ -219,20 +222,26 @@ func anyComputed(b *tfprotov5.SchemaBlock) bool {
 	return false
 }
 
-// sameReadTypes fails E_SCHEMA_TYPE when a read of cs has another type in s
-// than in pin: its terminal type, or a list, set, map or object step on the
-// way to it (readSignature).
+// sameReadTypes fails E_SCHEMA_TYPE when a read of cs (ControlReads on the
+// pin) is on a type s lacks or has another type in s than in pin: its
+// terminal type, or a list, set, map or object step on the way to it
+// (readSignature).
 func sameReadTypes(cs []bundle.Control, s, pin Schemas) error {
-	for _, c := range cs {
-		sc, _ := s.Lookup(c.Kind, c.ResourceType)
-		pc, _ := pin.Lookup(c.Kind, c.ResourceType)
-		if sc == nil || pc == nil {
-			return errf("E_SCHEMA_TYPE", "%s: %s type %s is not in the upstream schema", c.ID, c.Kind, c.ResourceType)
+	for i := range cs {
+		c := &cs[i]
+		reads, err := ControlReads(c, pin)
+		if err != nil {
+			return err
 		}
-		for _, r := range c.Reads {
-			got, want := readSignature(sc.ValueType(), r), readSignature(pc.ValueType(), r)
+		for _, r := range reads {
+			sc, _ := s.Lookup(r.Kind, r.Type)
+			pc, _ := pin.Lookup(r.Kind, r.Type)
+			if sc == nil || pc == nil {
+				return errf("E_SCHEMA_TYPE", "%s: %s type %s is not in the upstream schema", c.ID, r.Kind, r.Type)
+			}
+			got, want := readSignature(sc.ValueType(), r.Path), readSignature(pc.ValueType(), r.Path)
 			if got != want {
-				return errf("E_SCHEMA_TYPE", "%s: read %s.%s has type %s, %s in the pin", c.ID, c.ResourceType, r, got, want)
+				return errf("E_SCHEMA_TYPE", "%s: read %s.%s has type %s, %s in the pin", c.ID, r.Type, r.Path, got, want)
 			}
 		}
 	}
