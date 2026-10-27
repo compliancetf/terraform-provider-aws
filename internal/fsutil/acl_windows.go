@@ -3,6 +3,7 @@ package fsutil
 import (
 	"errors"
 	"fmt"
+	"maps"
 	"os"
 	"sync"
 	"unsafe"
@@ -18,6 +19,16 @@ var winTrusted = map[string]bool{
 	"S-1-5-80-956008885-3418522649-1831038044-1853292631-2271478464": true,
 	"S-1-3-4": true,
 }
+
+// winTrustedParent adds CREATOR OWNER to winTrusted for the entries a
+// directory passes on: inherited, it becomes an entry for the new child's
+// owner, its creator, who needs write here and so is self or trusted.
+// (CREATOR GROUP is not trusted: it becomes the creator's group.)
+var winTrustedParent = func() map[string]bool {
+	m := maps.Clone(winTrusted)
+	m["S-1-3-0"] = true
+	return m
+}()
 
 // winSelf is the current user's SID ("" if unknown, which trusts nobody extra).
 var winSelf = sync.OnceValue(func() string {
@@ -45,20 +56,25 @@ func WinACL(path string, ownOnly, sticky bool) error {
 	if err != nil {
 		return fmt.Errorf("reading ACL: %w", err)
 	}
-	return winCheckSD(sd, ownOnly, sticky)
+	return winCheckSD(sd, winTrusted, ownOnly, sticky, false)
 }
 
-// WinACLFile is WinACL on the open file f, with no lookup by path, so a
-// directory swapped after it was opened is never the one checked.
+// WinACLFile is WinACL on the directory open as f, with no lookup by path, so
+// a directory swapped after it was opened is never the one checked. The
+// entries f passes on to new files and directories (object or container
+// inherit, inherit-only included) are judged by the same rules as its own,
+// since everything later created in f gets them.
 func WinACLFile(f *os.File, ownOnly bool) error {
 	sd, err := windows.GetSecurityInfo(windows.Handle(f.Fd()), windows.SE_FILE_OBJECT, winSecurityInfo)
 	if err != nil {
 		return fmt.Errorf("reading ACL: %w", err)
 	}
-	return winCheckSD(sd, ownOnly, false)
+	return winCheckSD(sd, winTrustedParent, ownOnly, false, true)
 }
 
-func winCheckSD(sd *windows.SECURITY_DESCRIPTOR, ownOnly, sticky bool) error {
+// winCheckSD applies CheckACL to sd's DACL. With parent, an inheritable
+// entry counts even when it is inherit-only.
+func winCheckSD(sd *windows.SECURITY_DESCRIPTOR, trusted map[string]bool, ownOnly, sticky, parent bool) error {
 	owner, _, err := sd.Owner()
 	if err != nil || owner == nil {
 		return errors.New("no owner information")
@@ -76,9 +92,10 @@ func winCheckSD(sd *windows.SECURITY_DESCRIPTOR, ownOnly, sticky bool) error {
 		if err := windows.GetAce(dacl, i, &ace); err != nil {
 			return fmt.Errorf("reading ACE %d: %w", i, err)
 		}
+		flags := ace.Header.AceFlags
 		e := ACLEntry{
 			Allow:       !winDenyACE[ace.Header.AceType],
-			InheritOnly: ace.Header.AceFlags&windows.INHERIT_ONLY_ACE != 0,
+			InheritOnly: flags&windows.INHERIT_ONLY_ACE != 0 && (!parent || flags&(windows.OBJECT_INHERIT_ACE|windows.CONTAINER_INHERIT_ACE) == 0),
 			Rights:      Coarsen(uint32(ace.Mask), winAdd, winModify),
 		}
 		if ace.Header.AceType == windows.ACCESS_ALLOWED_ACE_TYPE {
@@ -86,7 +103,7 @@ func winCheckSD(sd *windows.SECURITY_DESCRIPTOR, ownOnly, sticky bool) error {
 		} // other allow types (object, callback) put the SID elsewhere: unknown, refused
 		entries = append(entries, e)
 	}
-	return CheckACL(entries, winSelf(), winTrusted, ownOnly, sticky)
+	return CheckACL(entries, winSelf(), trusted, ownOnly, sticky)
 }
 
 // MkdirPrivate creates dir with a protected DACL (nothing inherited) that

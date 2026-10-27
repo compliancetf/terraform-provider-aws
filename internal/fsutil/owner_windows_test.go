@@ -52,6 +52,36 @@ func TestOpenTreeWindowsACL(t *testing.T) {
 	}
 }
 
+// TestOpenTreeWindowsInheritable: an inherit-only entry is judged like the
+// dir's own entries, since every file and dir created in it gets it: one
+// passing write to Everyone is refused, one passing read is accepted, and
+// CREATOR OWNER (it becomes the creator, who must be us) is accepted.
+func TestOpenTreeWindowsInheritable(t *testing.T) {
+	for _, c := range []struct {
+		ace string
+		ok  bool
+	}{
+		{"*S-1-1-0:(OI)(CI)(IO)(M)", false},
+		{"*S-1-1-0:(OI)(IO)(W)", false},
+		{"*S-1-1-0:(OI)(CI)(IO)(RX)", true},
+		{"*S-1-3-0:(OI)(CI)(IO)(F)", true},
+	} {
+		root := t.TempDir()
+		dir := filepath.Join(root, "bundles")
+		if err := os.Mkdir(dir, 0o700); err != nil {
+			t.Fatal(err)
+		}
+		grant(t, dir, c.ace)
+		r, err := OpenTree(root, dir, false)
+		if err == nil {
+			r.Close() //nolint:errcheck // test
+		}
+		if c.ok != (err == nil) || (!c.ok && !strings.Contains(err.Error(), "ACL grants write")) {
+			t.Fatalf("%s: ok %v, got %v", c.ace, c.ok, err)
+		}
+	}
+}
+
 // TestOpenTreeWindowsCreatesPrivate: a cache root the provider creates
 // under a parent that Everyone may write gets a private DACL (and the dirs
 // below inherit it), as mode 0700 on unix.

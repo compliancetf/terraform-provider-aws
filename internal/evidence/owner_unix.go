@@ -23,3 +23,6 @@ func checkOwner(_ *os.File, fi os.FileInfo, deny os.FileMode) error {
 
 // syncDir fsyncs a directory so a new entry in it survives a crash.
 func syncDir(d *os.File) error { return d.Sync() }
+
+// mkdirRun creates the run dir name in the evidence dir root with mode 0700.
+func mkdirRun(root *os.Root, _, name string) error { return root.Mkdir(name, 0o700) }

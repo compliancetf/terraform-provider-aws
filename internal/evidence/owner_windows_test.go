@@ -6,6 +6,8 @@ import (
 	"path/filepath"
 	"strings"
 	"testing"
+
+	"github.com/compliancetf/terraform-provider-aws/internal/fsutil"
 )
 
 func grant(t *testing.T, dir, ace string) {
@@ -23,29 +25,55 @@ func openRun(dir string) error {
 	return err
 }
 
-// TestOpenWindowsACL: the default per-user temp ACL is accepted; an evidence
-// dir Everyone may write is refused, and so is a run dir Everyone may read
-// (it inherits the evidence dir's ACL), as a 0o077 mode is on unix.
+// evidenceDir makes an evidence dir with the inherited temp ACL plus ace.
+func evidenceDir(t *testing.T, ace string) string {
+	t.Helper()
+	dir := filepath.Join(t.TempDir(), "evidence")
+	if err := os.Mkdir(dir, 0o700); err != nil {
+		t.Fatal(err)
+	}
+	grant(t, dir, ace)
+	return dir
+}
+
+// TestOpenWindowsACL: the default per-user temp ACL is accepted. An evidence
+// dir that Everyone may write, or that passes write to what is created in it
+// (an inherit-only entry), is refused. One that Everyone may read is
+// accepted, as 0o755 is on unix, and the run dir is still created private.
 func TestOpenWindowsACL(t *testing.T) {
 	if err := openRun(filepath.Join(t.TempDir(), "evidence")); err != nil {
 		t.Fatal(err)
 	}
-
-	writable := filepath.Join(t.TempDir(), "evidence")
-	if err := os.Mkdir(writable, 0o700); err != nil {
-		t.Fatal(err)
-	}
-	grant(t, writable, "*S-1-1-0:(M)")
-	if err := openRun(writable); err == nil || !strings.Contains(err.Error(), "ACL grants write") {
-		t.Fatalf("want evidence dir ACL refusal, got %v", err)
+	for _, ace := range []string{"*S-1-1-0:(M)", "*S-1-1-0:(OI)(CI)(IO)(M)"} {
+		if err := openRun(evidenceDir(t, ace)); err == nil || !strings.Contains(err.Error(), "evidence dir") || !strings.Contains(err.Error(), "ACL grants write") {
+			t.Fatalf("%s: want evidence dir ACL refusal, got %v", ace, err)
+		}
 	}
 
-	readable := filepath.Join(t.TempDir(), "evidence")
-	if err := os.Mkdir(readable, 0o700); err != nil {
+	readable := evidenceDir(t, "*S-1-1-0:(OI)(CI)(RX)")
+	if err := openRun(readable); err != nil {
+		t.Fatalf("evidence dir Everyone may read: %v", err)
+	}
+	d, err := os.Open(filepath.Join(readable, "bobthecorp-run-1"))
+	if err != nil {
 		t.Fatal(err)
 	}
-	grant(t, readable, "*S-1-1-0:(OI)(CI)(RX)")
-	if err := openRun(readable); err == nil || !strings.Contains(err.Error(), "run dir") || !strings.Contains(err.Error(), "ACL grants access") {
+	defer d.Close()
+	if err := fsutil.WinACLFile(d, true); err != nil {
+		t.Fatalf("run dir is not private: %v", err)
+	}
+}
+
+// TestOpenWindowsRefusesOpenRunDir: an existing run dir (a sibling process
+// made it) that Everyone may read is refused, as a 0o077 mode is on unix.
+func TestOpenWindowsRefusesOpenRunDir(t *testing.T) {
+	dir := filepath.Join(t.TempDir(), "evidence")
+	run := filepath.Join(dir, "bobthecorp-run-1")
+	if err := os.MkdirAll(run, 0o700); err != nil {
+		t.Fatal(err)
+	}
+	grant(t, run, "*S-1-1-0:(RX)")
+	if err := openRun(dir); err == nil || !strings.Contains(err.Error(), "run dir") || !strings.Contains(err.Error(), "ACL grants access") {
 		t.Fatalf("want run dir ACL refusal, got %v", err)
 	}
 }

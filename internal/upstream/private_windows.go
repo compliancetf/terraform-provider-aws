@@ -18,7 +18,8 @@ const (
 
 // privateDir creates dir and requires it to be a real directory (no link or
 // junction) owned by the current user or a trusted admin SID, with a DACL
-// that lets nobody else write.
+// that lets nobody else write it or what is created in it. The DACL is read
+// through the handle of the directory Lstat saw.
 func privateDir(dir string) error {
 	if err := os.MkdirAll(dir, 0o700); err != nil {
 		return err
@@ -30,7 +31,15 @@ func privateDir(dir string) error {
 	if !st.IsDir() || st.Mode()&(os.ModeSymlink|os.ModeIrregular) != 0 {
 		return fmt.Errorf("cache %q is not a directory", dir)
 	}
-	if err := fsutil.WinACL(dir, false, false); err != nil {
+	d, err := os.Open(dir) //nolint:gosec // the user cache dir
+	if err != nil {
+		return err
+	}
+	defer d.Close() //nolint:errcheck // read-only
+	if got, err := d.Stat(); err != nil || !os.SameFile(st, got) {
+		return fmt.Errorf("cache %q changed while it was checked", dir)
+	}
+	if err := fsutil.WinACLFile(d, false); err != nil {
 		return fmt.Errorf("cache %q: %w", dir, err)
 	}
 	return nil

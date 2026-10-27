@@ -206,7 +206,7 @@ func (w *Writer) openDirs(dir string) error {
 	}
 	// The run dir may have been created by a sibling process that has not
 	// fsynced it yet, so the evidence dir is fsynced either way.
-	err = root.Mkdir(w.run.ID, 0o700)
+	err = mkdirRun(root, dir, w.run.ID)
 	if err == nil || errors.Is(err, os.ErrExist) {
 		err = w.dirSync(top)
 	}

@@ -10,3 +10,5 @@ import "os"
 func checkOwner(*os.File, os.FileInfo, os.FileMode) error { return nil }
 
 func syncDir(*os.File) error { return nil }
+
+func mkdirRun(root *os.Root, _, name string) error { return root.Mkdir(name, 0o700) }

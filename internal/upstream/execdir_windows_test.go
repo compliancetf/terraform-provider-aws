@@ -4,6 +4,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"strconv"
 	"strings"
 	"syscall"
 	"testing"
@@ -53,20 +54,23 @@ func TestExecDirRefusesWindowsACL(t *testing.T) {
 }
 
 // TestPrivateDirWindowsACL: the download cache is accepted with the default
-// per-user ACL and refused when Everyone may write it.
+// per-user ACL and refused when Everyone may write it or what is created in
+// it (an inherit-only entry).
 func TestPrivateDirWindowsACL(t *testing.T) {
 	base := realTempDir(t)
 	if err := privateDir(filepath.Join(base, "cache")); err != nil {
 		t.Fatal(err)
 	}
-	open := filepath.Join(base, "open")
-	if err := os.Mkdir(open, 0o700); err != nil {
-		t.Fatal(err)
-	}
-	if out, err := exec.Command("icacls", open, "/grant", "*S-1-1-0:(M)").CombinedOutput(); err != nil {
-		t.Fatalf("icacls: %v %s", err, out)
-	}
-	if err := privateDir(open); err == nil || !strings.Contains(err.Error(), "ACL grants write") {
-		t.Fatalf("want ACL refusal, got %v", err)
+	for i, ace := range []string{"*S-1-1-0:(M)", "*S-1-1-0:(OI)(CI)(IO)(M)"} {
+		open := filepath.Join(base, "open"+strconv.Itoa(i))
+		if err := os.Mkdir(open, 0o700); err != nil {
+			t.Fatal(err)
+		}
+		if out, err := exec.Command("icacls", open, "/grant", ace).CombinedOutput(); err != nil {
+			t.Fatalf("icacls: %v %s", err, out)
+		}
+		if err := privateDir(open); err == nil || !strings.Contains(err.Error(), "ACL grants write") {
+			t.Fatalf("%s: want ACL refusal, got %v", ace, err)
+		}
 	}
 }
