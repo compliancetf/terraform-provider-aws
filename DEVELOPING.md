@@ -94,7 +94,7 @@ internal/upstream/launch.go   hashicorp/aws as a go-plugin subprocess
 
 ```
 main.go, main_test.go       entry point (embeds wrapper.json, pins.json, the HashiCorp key, the CIS archive) and the release guard
-wrapper.json                wrapper identity: address, upstream, resource prefix, CIS bundle, sink
+wrapper.json                wrapper identity: address, upstream, resource prefix, CIS bundle, verdict KMS
 pins.json, keys/            pinned hashicorp/aws (tools/pinupstream) and the HashiCorp release key
 CHANGELOG.md                release notes, newest first (tools/changelog)
 releases.json               release floor and supported releases of premium bundles (ctf-bundlegen)

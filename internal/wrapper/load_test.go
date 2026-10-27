@@ -69,8 +69,8 @@ func TestLoadAWS(t *testing.T) {
 	if cfg.Address.String() != "registry.compliance.tf/compliancetf/aws" || cfg.Upstream.String() != "registry.terraform.io/hashicorp/aws" {
 		t.Errorf("address %s, upstream %s", cfg.Address, cfg.Upstream)
 	}
-	if cfg.Protocol != 5 || cfg.ResourcePrefix != "aws_" || cfg.EvidenceSink != SinkS3ObjectLock {
-		t.Errorf("protocol %d, prefix %q, sink %q", cfg.Protocol, cfg.ResourcePrefix, cfg.EvidenceSink)
+	if cfg.Protocol != 5 || cfg.ResourcePrefix != "aws_" {
+		t.Errorf("protocol %d, prefix %q", cfg.Protocol, cfg.ResourcePrefix)
 	}
 	if !bytes.Equal(cfg.UpstreamPins, in.pins) || !bytes.Equal(cfg.CISBundle, in.cis) || len(cfg.TrustAnchors) != 1 || !bytes.Equal(cfg.TrustAnchors[0], in.anchors[0]) {
 		t.Fatal("Config does not carry the inputs")
@@ -142,7 +142,7 @@ func TestLoadErrors(t *testing.T) {
 			"wrapper: wrapper.json is not in canonical form"},
 		{"missing field", func(_ *testing.T, in *inputs) {
 			in.wrapper = bytes.Replace(base, []byte(`  "verdict_kms": "aws_kms"`+"\n"), nil, 1)
-			in.wrapper = bytes.Replace(in.wrapper, []byte(`"evidence_sink": "s3_object_lock",`), []byte(`"evidence_sink": "s3_object_lock"`), 1)
+			in.wrapper = bytes.Replace(in.wrapper, []byte(`"catalog_provider": "aws",`), []byte(`"catalog_provider": "aws"`), 1)
 		}, "wrapper: wrapper.json is not in canonical form"},
 		{"protocol float", func(_ *testing.T, in *inputs) {
 			in.wrapper = bytes.Replace(base, []byte(`"protocol": 5,`), []byte(`"protocol": 5.0,`), 1)
@@ -184,8 +184,6 @@ func TestLoadErrors(t *testing.T) {
 			"wrapper: cis_bundle_id \"soc2\" does not match ^cis-[a-z0-9]+$"},
 		{"cis_framework", func(t *testing.T, in *inputs) { in.wrapper = edited(t, func(f *file) { f.CISFramework = "" }) },
 			"wrapper: cis_framework \"\" does not match ^cis_[a-z0-9_]+$"},
-		{"evidence_sink", func(t *testing.T, in *inputs) { in.wrapper = edited(t, func(f *file) { f.EvidenceSink = "s3" }) },
-			`wrapper: evidence_sink "s3" is not a known sink type`},
 		{"verdict_kms", func(t *testing.T, in *inputs) { in.wrapper = edited(t, func(f *file) { f.VerdictKMS = "vault" }) },
 			`wrapper: verdict_kms "vault" is not a known KMS type`},
 
