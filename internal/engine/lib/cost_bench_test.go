@@ -1,6 +1,7 @@
 package lib
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
 	"os"
@@ -38,8 +39,10 @@ var costDocs = []struct{ name, doc string }{
 	{"max", costPolicy(iampolicy.MaxStatements)},
 }
 
+const releaseCatalogFile = "../../../testdata/bundles/release-iam/iam-actions.json"
+
 func releaseCatalog(b *testing.B) *iampolicy.Catalog {
-	raw, err := os.ReadFile("../../../testdata/bundles/release-iam/iam-actions.json")
+	raw, err := os.ReadFile(releaseCatalogFile)
 	if err != nil {
 		b.Fatal(err)
 	}
@@ -83,7 +86,16 @@ func BenchmarkIAMParseCost(b *testing.B) {
 	stmt := func(action string) string {
 		return `{"Version":"2012-10-17","Statement":{"Effect":"Allow","Action":` + action + `,"Resource":"*"}}`
 	}
+	var f struct{ Services map[string][]string }
+	if raw, err := os.ReadFile(releaseCatalogFile); err != nil || json.Unmarshal(raw, &f) != nil {
+		b.Fatal("release catalog unreadable")
+	}
+	ec2 := make([]string, 50) // the first 50 actions of the largest service
+	for i := range ec2 {
+		ec2[i] = `"ec2:` + f.Services["ec2"][i] + `"`
+	}
 	docs := slices.Concat(costDocs, []struct{ name, doc string }{
+		{"literals-ec2", stmt("[" + strings.Join(ec2, ",") + "]")},
 		{"service-wildcard", stmt(`"s3:*"`)},
 		{"service-wildcard-ec2", stmt(`"ec2:*"`)},
 		{"partial-wildcard", stmt(`"s3:Get*"`)},

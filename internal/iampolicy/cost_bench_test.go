@@ -64,17 +64,25 @@ func BenchmarkDecodeCost(b *testing.B) {
 	}
 }
 
-func BenchmarkMatchCost(b *testing.B) {
+func loadRelease(tb testing.TB) *Catalog {
+	tb.Helper()
 	raw, err := os.ReadFile(releaseCatalog)
 	if err != nil {
-		b.Fatal(err)
+		tb.Fatal(err)
 	}
 	c, err := LoadCatalog(raw)
 	if err != nil {
-		b.Fatal(err)
+		tb.Fatal(err)
 	}
+	return c
+}
+
+func BenchmarkMatchCost(b *testing.B) {
+	c := loadRelease(b)
 	for _, tc := range []struct{ name, pat string }{
 		{"exact", "s3:getobject"},
+		{"exact-ec2", "ec2:describeinstances"},
+		{"exact-miss", "ec2:nosuchaction"},
 		{"service-wildcard", "s3:*"},
 		{"service-wildcard-ec2", "ec2:*"}, // the largest service
 		{"partial-wildcard", "s3:get*"},
@@ -88,14 +96,18 @@ func BenchmarkMatchCost(b *testing.B) {
 		{"backtrack-64", "*:*" + strings.Repeat("?", 64) + "!"},
 	} {
 		b.Run(tc.name, func(b *testing.B) {
-			units := scanCost(c, tc.pat) / matchCost
 			for b.Loop() {
 				left := MaxExpandedActions
 				if _, _, err := expandList(c, []string{tc.pat}, &left); err != nil {
 					b.Fatal(err)
 				}
 			}
-			b.ReportMetric(float64(b.Elapsed().Nanoseconds())/float64(b.N)/float64(units), "ns/unit")
+			ns := float64(b.Elapsed().Nanoseconds()) / float64(b.N)
+			if literal(tc.pat) { // charged literalCost, not per unit
+				b.ReportMetric(ns, "ns/literal")
+				return
+			}
+			b.ReportMetric(ns/float64(scanCost(c, tc.pat)/matchCost), "ns/unit")
 		})
 	}
 }
