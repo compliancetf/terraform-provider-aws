@@ -47,7 +47,8 @@ resource "fake_thing" "a" {
 const failClosedName = "bobthecorp-failclosed-a"
 
 // coverableControls is defaultControls with the size control coverable by a
-// grant, so its blocking failure is a pending exemption at plan.
+// grant, so its blocking failure is a pending exemption at plan on a run
+// with a grants directory (withGrantsDir).
 var coverableControls = strings.Replace(defaultControls, `"exemption_coverable": []`, `"exemption_coverable": ["grant"]`, 1)
 
 // failClosedGolden is the part of a golden this runner checks (the
@@ -77,17 +78,19 @@ type failClosedEval struct {
 }
 
 // failClosedCases set up each golden: the signed controls, the plan
-// arguments and the gate's edit before signing (nil: apply with no verdict).
+// arguments, whether the run has a grants directory and the gate's edit
+// before signing (nil: apply with no verdict).
 var failClosedCases = map[string]struct {
 	controls string
 	planArgs []string
+	grants   bool
 	edit     func(*gate)
 }{
-	"plan-no-verdict":     {defaultControls, nil, nil},
-	"apply-missing-entry": {defaultControls, nil, func(g *gate) { g.Instances = []verdict.Instance{} }},
+	"plan-no-verdict":     {defaultControls, nil, false, nil},
+	"apply-missing-entry": {defaultControls, nil, false, func(g *gate) { g.Instances = []verdict.Instance{} }},
 	// gatePlan entries start with no decisions: the companion is missing.
-	"missing-decision": {graphControls, nil, func(*gate) {}},
-	"exemption-no-proof": {coverableControls, []string{"-var", "size=20"}, func(g *gate) {
+	"missing-decision": {graphControls, nil, false, func(*gate) {}},
+	"exemption-no-proof": {coverableControls, []string{"-var", "size=20"}, true, func(g *gate) {
 		entry(g.Instances, "fake_thing.a", "").Decisions = []verdict.Decision{
 			{Control: "fake_thing_size_max", Version: "1.0.0", Result: verdict.ResultProvisional, Action: "deny"}}
 	}},
@@ -113,6 +116,9 @@ func TestFailClosed(t *testing.T) {
 			}
 			k := newKey(t)
 			r := newRun(t, failClosedTF, runOpt{Keys: []verdicttest.Key{k}, Required: true, Controls: c.controls})
+			if c.grants {
+				r.withGrantsDir()
+			}
 			g := r.gatePlan(c.planArgs...)
 			got := slices.DeleteFunc(summaries(g.Out.Stdout+g.Out.Stderr, "Warning: "), func(s string) bool { return ambientWarnings[s] })
 			if !slices.Equal(got, want.Plan.Warnings) {
@@ -145,6 +151,38 @@ func TestFailClosed(t *testing.T) {
 			r.checkFailClosed(want.Apply.Evidence.Op, want.Apply.Evidence.Results)
 		})
 	}
+}
+
+// TestFailClosedNoGrantsDir: the exemption-no-proof failure without a
+// grants directory has no eligible kind, so plan errors with the control's
+// own diagnostic and nothing it saved can be applied.
+func TestFailClosedNoGrantsDir(t *testing.T) {
+	r := newRun(t, failClosedTF, runOpt{Keys: []verdicttest.Key{newKey(t)}, Required: true, Controls: coverableControls})
+	res := r.TF("plan", "-no-color", "-input=false", "-out=gate.tfplan", "-var", "size=20")
+	out := res.Stdout + res.Stderr
+	if res.Exit == 0 || !slices.Contains(summaries(out, "Error: "), "[fake_thing_size_max] fake_thing size must be at most 10.") ||
+		slices.Contains(summaries(out, "Warning: "), verdict.PendingSummary("grant", "fake_thing_size_max")) {
+		t.Fatalf("exit %d; want the size control error and no pending exemption\n%s", res.Exit, out)
+	}
+	// Terraform may save an errored plan; it refuses to apply one.
+	if _, err := os.Stat(filepath.Join(r.Work, "gate.tfplan")); err == nil {
+		before := r.State()
+		if res := r.TF("apply", "-no-color", "-input=false", "gate.tfplan"); res.Exit == 0 || !reflect.DeepEqual(r.State(), before) {
+			t.Fatalf("the errored plan applied (exit %d)\n%s%s", res.Exit, res.Stdout, res.Stderr)
+		}
+	}
+}
+
+// withGrantsDir gives r an empty grants directory
+// (COMPLIANCETF_EXCEPTION_GRANTS), the run signal that makes a grant
+// eligible at plan.
+func (r *run) withGrantsDir() {
+	r.T.Helper()
+	dir := filepath.Join(r.Work, "grants")
+	if err := os.Mkdir(dir, 0o700); err != nil {
+		r.T.Fatal(err)
+	}
+	r.Env = append(r.Env, "COMPLIANCETF_EXCEPTION_GRANTS="+dir)
 }
 
 // ambientWarnings are the plan warnings of every conformance run (dev
