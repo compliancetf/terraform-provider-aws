@@ -156,6 +156,13 @@ func TestExpandAdmission(t *testing.T) {
 	if scanCost(c, "svc:a*"+strings.Repeat("?", 64)) <= scanCost(c, "svc:a*") {
 		t.Fatal("pattern length not charged")
 	}
+	// expandCost is charged per action a pattern can add: one for a literal
+	// (found or not), every scanned action for a wildcard, none for "*".
+	for pat, want := range map[string]int{"svc:a00001": 1, "svc:a1*": MaxExpandedActions, "*:a?": MaxExpandedActions, "nope:x": 1, "*": 0} {
+		if got := addBound(c, pat); got != want {
+			t.Errorf("addBound(%q) = %d, want %d", pat, got, want)
+		}
+	}
 	// Literal-service patterns are charged that service only, so a Resource
 	// wildcard or a large catalog elsewhere does not false-limit.
 	if _, err := Normalize(doc, Options{Catalog: c, Budget: 50 * time.Millisecond}); err != nil {

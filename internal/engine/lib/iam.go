@@ -274,8 +274,8 @@ type stmtVal struct {
 }
 
 // policyValue converts a normalized policy to its CEL map through the golden
-// JSON shape. n is the cache charge beyond the document: twice the JSON size.
-// shortcut: a guess like nodeBytes, measure with the p99 benchmark.
+// JSON shape. n is the cache charge beyond the document: five times the JSON
+// size, as the value keeps up to 4.5x (BenchmarkIAMValueCost, go1.27.2 arm64).
 func policyValue(p *iampolicy.Policy, cat *iampolicy.Catalog) (ref.Val, int, error) {
 	stmts := make([]ref.Val, len(p.Statements))
 	n := 0
@@ -288,7 +288,7 @@ func policyValue(p *iampolicy.Policy, cat *iampolicy.Catalog) (ref.Val, int, err
 		if err := json.Unmarshal(b, &m); err != nil {
 			return nil, 0, ErrInvalid
 		}
-		n += 2 * len(b)
+		n += 5 * len(b)
 		mv, ok := types.DefaultTypeAdapter.NativeToValue(m).(traits.Mapper)
 		if !ok {
 			return nil, 0, ErrInvalid
