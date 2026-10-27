@@ -7,6 +7,7 @@ import (
 	"os"
 	"path/filepath"
 	"regexp"
+	"slices"
 	"strings"
 	"testing"
 
@@ -362,6 +363,37 @@ func TestReleaseVerifiesAndGates(t *testing.T) {
 	builds := strings.Count(string(gr[:strings.Index(string(gr), "\narchives:")]), "\n  - id: ")
 	if builds != 1 || !hook.Match(gr) {
 		t.Errorf(".goreleaser.yml: want exactly one build, carrying the tools/releasegate post hook (builds: %d)", builds)
+	}
+}
+
+// TestReleaseShipsCISBundle: every release carries the embedded CIS bundle
+// as an asset covered by the signed SHA256SUMS; the verdict tool refuses a
+// --bundle-dir without it (docs/reference.md).
+func TestReleaseShipsCISBundle(t *testing.T) {
+	gr, err := os.ReadFile(".goreleaser.yml")
+	if err != nil {
+		t.Fatal(err)
+	}
+	type extra struct {
+		Glob         string `yaml:"glob"`
+		NameTemplate string `yaml:"name_template"`
+	}
+	var cfg struct {
+		Checksum struct {
+			ExtraFiles []extra `yaml:"extra_files"`
+		} `yaml:"checksum"`
+		Release struct {
+			ExtraFiles []extra `yaml:"extra_files"`
+		} `yaml:"release"`
+	}
+	if err := yaml.Unmarshal(gr, &cfg); err != nil {
+		t.Fatal(err)
+	}
+	want := extra{"internal/embedded/cis.tar.gz", "{{ .ProjectName }}_{{ .Version }}_cis-aws.tar.gz"}
+	for section, files := range map[string][]extra{"checksum": cfg.Checksum.ExtraFiles, "release": cfg.Release.ExtraFiles} {
+		if !slices.Contains(files, want) {
+			t.Errorf(".goreleaser.yml: %s.extra_files must ship %s as %s", section, want.Glob, want.NameTemplate)
+		}
 	}
 }
 

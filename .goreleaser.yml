@@ -64,6 +64,9 @@ checksum:
       name_template: "{{ .ProjectName }}_{{ .Version }}_pins.json"
     - glob: capabilities.json
       name_template: "{{ .ProjectName }}_{{ .Version }}_capabilities.json"
+    # The embedded CIS bundle, for the verdict tool's --bundle-dir (docs/reference.md).
+    - glob: internal/embedded/cis.tar.gz
+      name_template: "{{ .ProjectName }}_{{ .Version }}_cis-aws.tar.gz"
 
 signs:
   - artifacts: checksum
@@ -101,6 +104,9 @@ release:
       name_template: "{{ .ProjectName }}_{{ .Version }}_pins.json"
     - glob: capabilities.json
       name_template: "{{ .ProjectName }}_{{ .Version }}_capabilities.json"
+    # The embedded CIS bundle, for the verdict tool's --bundle-dir (docs/reference.md).
+    - glob: internal/embedded/cis.tar.gz
+      name_template: "{{ .ProjectName }}_{{ .Version }}_cis-aws.tar.gz"
   header: |
     ## compliance.tf Terraform Provider v{{.Version}}
 
