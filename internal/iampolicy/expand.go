@@ -12,7 +12,7 @@ const (
 	MaxExpandedActions = 10_000
 	// decodeCost is the admission estimate per document byte, the same rate
 	// as json.path. matchCost is the estimate per catalog action a pattern
-	// is matched against. shortcut: fixed rates, calibrate with the P1
+	// is matched against. shortcut: fixed rates, calibrate with the p99
 	// benchmark.
 	decodeCost = 20 * time.Nanosecond
 	matchCost  = 20 * time.Nanosecond

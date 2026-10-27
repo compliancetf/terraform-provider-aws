@@ -45,7 +45,7 @@ type buildDigests struct {
 }
 
 // TestDigests: every build.json digest is the internal/bundle
-// per-artifact digest (DigestJSON of the catalog files, the P1 content digest of
+// per-artifact digest (DigestJSON of the catalog files, the bundle content digest of
 // the emitted bundle); reordered and re-spaced disposition JSON keeps its
 // digest and the output bytes; a symlinked input or a symlink in the output
 // fails E_SPECIAL_FILE (FIFOs: digests_unix_test.go); inputs without the

@@ -117,7 +117,7 @@ func TestSchemaSourceErrors(t *testing.T) {
 
 // TestSchemaCompatDigest: the digest of the embedded CIS controls against a
 // schema built from internal/embedded/testdata/schema_compat.tsv equals the
-// schema_compat_digest of the embedded CIS manifest (P0B definition).
+// schema_compat_digest of the embedded CIS manifest.
 func TestSchemaCompatDigest(t *testing.T) {
 	raw, err := os.ReadFile("../embedded/testdata/schema_compat.tsv")
 	if err != nil {

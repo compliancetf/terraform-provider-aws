@@ -24,7 +24,7 @@ import (
 type Options struct {
 	GeneratorVersion string
 	GeneratorCommit  string
-	// UpstreamPin is the exact hashicorp/aws version of the P0A pins
+	// UpstreamPin is the exact hashicorp/aws version of pins.json
 	// (upstream.Pins.Version), the last of Releases.
 	UpstreamPin string
 	// Releases is releases.json: build.json provider and upstream
