@@ -16,14 +16,17 @@ import (
 const provisionalControl = "s3_bucket_versioning_enabled"
 
 // provisionalCase is one plan eligibility fixture: the compliance.tf-signed
-// inputs only (bundle list, profile exceptions, floor mode, mode, break-glass
-// enablement). No exemption artifact is an input.
+// inputs (bundle list, profile exceptions, floor mode, mode, break-glass
+// enablement, the profile self_service listing) and whether
+// exception_grants_dir is set. No exemption artifact is an input.
 type provisionalCase struct {
 	Bundle      []bundle.ExemptionKind `json:"bundle"`
 	Profile     *profile.Exceptions    `json:"profile"`
 	FloorMode   string                 `json:"floor_mode"`
 	Grandfather bool                   `json:"grandfather"`
 	BreakGlass  bool                   `json:"break_glass"`
+	Grants      bool                   `json:"grants"`
+	SelfService bool                   `json:"self_service"`
 	Want        []string               `json:"want"`
 	Warnings    int                    `json:"warnings"`
 }
@@ -33,7 +36,7 @@ type provisionalCase struct {
 // effective signed coverable map built as Configure builds it.
 func TestProvisionalEligibility(t *testing.T) {
 	files, _ := filepath.Glob("testdata/provisional/*.json")
-	if len(files) < 13 {
+	if len(files) < 16 {
 		t.Fatalf("%d provisional fixtures", len(files))
 	}
 	for _, f := range files {
@@ -55,7 +58,7 @@ func TestProvisionalEligibility(t *testing.T) {
 				t.Fatalf("coverability warnings %q, want %d", warns, c.Warnings)
 			}
 			got := PendingKinds(Eligibility{Coverable: func(k string) bool { return cov.Coverable(provisionalControl, k) },
-				Grandfather: c.Grandfather, BreakGlass: c.BreakGlass})
+				Grandfather: c.Grandfather, BreakGlass: c.BreakGlass, Grants: c.Grants, SelfService: c.SelfService})
 			if !slices.Equal(got, c.Want) && len(got)+len(c.Want) > 0 {
 				t.Fatalf("pending kinds %q, want %q", got, c.Want)
 			}

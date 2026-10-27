@@ -1,1 +1,1 @@
-{"note":"a self_service-only control under grandfather never gets baseline eligibility","bundle":["self_service"],"grandfather":true,"want":["self_service"]}
+{"note":"a self_service-only control under grandfather never gets baseline eligibility","bundle":["self_service"],"grandfather":true,"self_service":true,"want":["self_service"]}

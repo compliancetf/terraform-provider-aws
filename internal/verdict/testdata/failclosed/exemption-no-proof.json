@@ -6,7 +6,8 @@
     ]
   },
   "eligibility": {
-    "coverable": ["grant"]
+    "coverable": ["grant"],
+    "grants": true
   },
   "address": "fake_thing.a",
   "apply": {

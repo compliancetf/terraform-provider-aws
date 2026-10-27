@@ -1,1 +1,1 @@
-{"note":"under floor_mode airgap break_glass is ignored in every list, with a warning","bundle":["break_glass","grant"],"floor_mode":"airgap","break_glass":true,"want":["grant"],"warnings":1}
+{"note":"under floor_mode airgap break_glass is ignored in every list, with a warning","bundle":["break_glass","grant"],"floor_mode":"airgap","break_glass":true,"grants":true,"want":["grant"],"warnings":1}
