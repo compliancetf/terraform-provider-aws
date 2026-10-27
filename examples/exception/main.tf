@@ -66,7 +66,7 @@ resource "aws_db_instance" "migration_target" {
 resource "aws_ebs_volume" "scratch" {
   availability_zone = "us-east-1a"
   size              = 100
-  encrypted         = false # ebs_volume_encryption_at_rest_enabled, waived
+  encrypted         = false # ebs_attached_volume_encryption_enabled, waived
 
   tags = { purpose = "scratch" }
 }

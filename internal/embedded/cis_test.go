@@ -214,7 +214,7 @@ func TestEmbeddedExpiry(t *testing.T) {
 		}
 	}
 	revs, err := trust.ParseRevocations([]byte(`{"format":"compliancetf.revocations/v1","epoch":1,"revoked_keys":[],` +
-		`"revoked_bundles":[{"bundle_id":"cis-aws","below_version":2}],"revoked_controls":[]}`))
+		`"revoked_bundles":[{"bundle_id":"cis-aws","below_version":3}],"revoked_controls":[]}`))
 	if err != nil {
 		t.Fatal(err)
 	}

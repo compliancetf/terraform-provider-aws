@@ -1,1 +1,1 @@
-{"upstream_version": "7.1.0", "want": {"bundles": ["cis-aws@1"], "fallback": "free_tier", "run_mode": "soft_fail", "warnings": ["upstream hashicorp/aws 7.1.0 is outside the upstream version range of bundle cis-aws v1"]}}
+{"upstream_version": "7.1.0", "want": {"bundles": ["cis-aws@2"], "fallback": "free_tier", "run_mode": "soft_fail", "warnings": ["upstream hashicorp/aws 7.1.0 is outside the upstream version range of bundle cis-aws v2"]}}

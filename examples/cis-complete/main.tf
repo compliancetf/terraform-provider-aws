@@ -207,7 +207,7 @@ resource "aws_ebs_volume" "data" {
   size              = 20
   type              = "gp3"
 
-  encrypted = true # ebs_volume_encryption_at_rest_enabled (CIS AWS 2.2.1)
+  encrypted = true # ebs_attached_volume_encryption_enabled (CIS AWS 2.2.1)
 
   tags = { Name = "${local.name}-data" }
 }

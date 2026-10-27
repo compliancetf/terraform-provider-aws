@@ -103,7 +103,7 @@ func TestLifecycleThroughProxy(t *testing.T) {
 	}
 	diags := plan(false)
 	if !slices.ContainsFunc(diags, func(d *tfplugin5.Diagnostic) bool {
-		return d.Severity == tfplugin5.Diagnostic_ERROR && strings.Contains(d.Summary, "[ebs_volume_encryption_at_rest_enabled]")
+		return d.Severity == tfplugin5.Diagnostic_ERROR && strings.Contains(d.Summary, "[ebs_attached_volume_encryption_enabled]")
 	}) {
 		t.Errorf("non-compliant plan under hard_fail: %v, want the encryption control error", diags)
 	}

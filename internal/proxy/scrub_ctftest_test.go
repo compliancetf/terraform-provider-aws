@@ -173,7 +173,7 @@ func TestScrubProxy(t *testing.T) {
 			t.Errorf("%s: no %q diagnostic in %q", rpc, want, scrubtest.Mask(strings.Join(got, "; ")))
 		}
 	}
-	const ctl = "[ebs_volume_encryption_at_rest_enabled]"
+	const ctl = "[ebs_attached_volume_encryption_enabled]"
 
 	cr, err := client.Configure(ctx, &tfplugin5.Configure_Request{TerraformVersion: "1.14.0", Config: markedConfig(t)})
 	scrubtest.Must(t, "Configure error", err)

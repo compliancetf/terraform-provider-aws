@@ -28,8 +28,8 @@ func TestConfigureConcurrentRaise(t *testing.T) {
 		{name: "none"},
 		{name: "fetched bundle", raise: trust.State{Bundles: map[string]int64{"bobthecorp-swap-graph": 2}},
 			want: "bundle bobthecorp-swap-graph v1 is below the minimum v2 accepted by a concurrent run"},
-		{name: "embedded bundle", raise: trust.State{Bundles: map[string]int64{"cis-aws": 2}},
-			want: "bundle cis-aws v1 is below the minimum v2 accepted by a concurrent run"},
+		{name: "embedded bundle", raise: trust.State{Bundles: map[string]int64{"cis-aws": 3}},
+			want: "bundle cis-aws v2 is below the minimum v3 accepted by a concurrent run"},
 		{name: "profile", raise: trust.State{Profiles: map[string]int64{"bobthecorp": 8}},
 			want: "org profile v7 is below the minimum v8 accepted by a concurrent run"},
 	} {

@@ -24,7 +24,7 @@ Plan only. `terraform apply` would create a VPC, databases, a Redshift cluster, 
 | `aws_rds_cluster` | `rds_db_cluster_encryption_at_rest_enabled`, `rds_db_instance_backup_retention_period_less_than_7`, `rds_db_cluster_deletion_protection_enabled` |
 | `aws_redshift_cluster` | `redshift_cluster_kms_enabled`, `redshift_cluster_prohibit_public_access` |
 | `aws_elasticache_replication_group` | `elasticache_replication_group_encryption_at_rest_enabled`, `elasticache_replication_group_encryption_in_transit_enabled` |
-| `aws_ebs_volume` | `ebs_volume_encryption_at_rest_enabled` |
+| `aws_ebs_volume` | `ebs_attached_volume_encryption_enabled` |
 | `aws_efs_file_system` | `efs_file_system_encrypt_data_at_rest`, `efs_file_system_encrypted_with_cmk` |
 | `aws_s3_bucket` | `s3_bucket_restrict_public_read_access`, `s3_bucket_restrict_public_write_access` |
 | `aws_lb_listener` | `elb_application_network_listener_uses_secure_protocol` |

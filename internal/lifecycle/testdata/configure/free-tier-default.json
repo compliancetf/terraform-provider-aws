@@ -1,1 +1,1 @@
-{"want": {"bundles": ["cis-aws@1"], "fallback": "free_tier", "run_mode": "soft_fail", "sources": ["embedded"]}}
+{"want": {"bundles": ["cis-aws@2"], "fallback": "free_tier", "run_mode": "soft_fail", "sources": ["embedded"]}}

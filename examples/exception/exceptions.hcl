@@ -39,7 +39,7 @@ exception "reporting-replica-restore" {
 # 3. Select by tag. Guard optional maps with != null: a missing value is
 #    an error, and an error waives nothing.
 exception "scratch-volumes" {
-  controls  = ["ebs_volume_encryption_at_rest_enabled"]
+  controls  = ["ebs_attached_volume_encryption_enabled"]
   match     = "type == 'aws_ebs_volume' && config.tags != null && 'purpose' in config.tags && config.tags['purpose'] == 'scratch'"
   workspace = "bobthecorp-dev"
   reason    = "Scratch volumes for load tests hold generated data only"
@@ -78,7 +78,7 @@ exception "migration-target-backups" {
 #    (dev, from the profile scope). The entry waives nothing here, without a
 #    warning; the same file can serve several environments.
 exception "staging-only" {
-  controls     = ["ebs_volume_encryption_at_rest_enabled"]
+  controls     = ["ebs_attached_volume_encryption_enabled"]
   match        = "type == 'aws_ebs_volume'"
   workspace    = "bobthecorp-dev"
   environments = ["staging"]
@@ -89,7 +89,7 @@ exception "staging-only" {
 # 7. Not applied: expired. An expired entry waives nothing and the plan shows
 #    a warning that names it. Remove expired entries or renew them.
 exception "old-load-test" {
-  controls  = ["ebs_volume_encryption_at_rest_enabled"]
+  controls  = ["ebs_attached_volume_encryption_enabled"]
   match     = "type == 'aws_ebs_volume'"
   workspace = "bobthecorp-dev"
   reason    = "Load test in September"

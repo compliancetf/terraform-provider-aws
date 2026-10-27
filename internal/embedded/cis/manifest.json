@@ -1,8 +1,8 @@
 {
   "format": "compliancetf.bundle-manifest/v2",
   "bundle_id": "cis-aws",
-  "bundle_version": 1,
-  "label": "2026.10.0",
+  "bundle_version": 2,
+  "label": "2026.10.1",
   "org_id": "",
   "profile": "cis-baseline",
   "catalog": {"snapshot_id": "snap_20261004_000000_000000", "schema_version": "1"},
