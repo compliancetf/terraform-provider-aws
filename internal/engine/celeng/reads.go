@@ -158,9 +158,11 @@ func dynamic(format string, a ...any) error {
 
 var attrRe = regexp.MustCompile(`^[a-z0-9_]+$`)
 
-var envVars = []string{varResource, varConfig, varPrior, varOp, varEnv, varProvider}
+var envVars = []string{varResource, varConfig, varPrior, varOp, varEnv, varProvider, varCompanion}
 
-func isData(v string) bool { return v == varResource || v == varConfig || v == varPrior }
+func isData(v string) bool {
+	return v == varResource || v == varConfig || v == varPrior || v == varCompanion
+}
 
 // path resolves e to a data path when it is a select/constant-index chain
 // rooted at a data variable or a comprehension variable bound to one.

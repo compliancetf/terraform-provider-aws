@@ -28,6 +28,9 @@ const (
 	varOp       = "op"
 	varEnv      = "env"
 	varProvider = "provider"
+	// varCompanion is the one variable of a graph control's companion_expr,
+	// a data variable like resource; no control expr can reference it.
+	varCompanion = "companion"
 )
 
 // LoadDiag is a bundle load error or warning for one control. Detail names
@@ -109,26 +112,27 @@ type Checked struct {
 // default macros, optional types and
 // ext.Bindings off (no cel.bind fork A1).
 var newEnv = sync.OnceValues(func() (*cel.Env, error) {
-	dataMap := cel.MapType(cel.StringType, cel.DynType)
-	caps, err := stringCaps()
-	if err != nil {
-		return nil, err
-	}
-	return cel.NewEnv(
+	return envWith(
 		cel.Variable(varResource, dataMap),
 		cel.Variable(varConfig, dataMap),
 		cel.Variable(varPrior, dataMap),
 		cel.Variable(varOp, cel.StringType),
 		cel.Variable(varEnv, cel.StringType),
 		cel.Variable(varProvider, cel.MapType(cel.StringType, cel.StringType)),
-		ext.Strings(),
-		caps,
-		lib.Helpers(),
-		lib.JSON(),
-		lib.IAM(),
-		cel.ParserRecursionLimit(64),
 	)
 })
+
+var dataMap = cel.MapType(cel.StringType, cel.DynType)
+
+// envWith is an environment with the given variables and the libraries
+// every expression compiles with.
+func envWith(vars ...cel.EnvOption) (*cel.Env, error) {
+	caps, err := stringCaps()
+	if err != nil {
+		return nil, err
+	}
+	return cel.NewEnv(append(vars, ext.Strings(), caps, lib.Helpers(), lib.JSON(), lib.IAM(), cel.ParserRecursionLimit(64))...)
+}
 
 // astCache maps sha256(expr) to *Checked for the process lifetime: one entry
 // per distinct expression of every bundle loaded.
