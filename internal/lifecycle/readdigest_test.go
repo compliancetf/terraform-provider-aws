@@ -7,7 +7,6 @@ import (
 	"os"
 	"path/filepath"
 	"slices"
-	"strings"
 	"testing"
 	"time"
 
@@ -116,37 +115,17 @@ func TestPlanReadDigest(t *testing.T) {
 	}
 }
 
-// TestBaselineReadKey: the key file is read only when
-// COMPLIANCETF_BASELINE_KEY_FILE is set; a file that is not a usable key
-// warns and no read_digest is written.
-func TestBaselineReadKey(t *testing.T) {
-	dir := t.TempDir()
-	good := filepath.Join(dir, "baseline.key")
-	if err := os.WriteFile(good, []byte(strings.Repeat("ab", 32)+"\n"), 0o600); err != nil {
-		t.Fatal(err)
+// TestReadDigestNoSchema: without the upstream schema of the type the
+// sensitivity of a read is unknown, so no read_digest is written.
+func TestReadDigestNoSchema(t *testing.T) {
+	ctl := bundle.Control{ID: "c", Version: "1.0.0", ResourceType: "aws_db_instance", Reads: []string{"engine"}}
+	prior := objValue(t, json.RawMessage(readDigestPrior))
+	c := &Configured{Schemas: dbSchemas{}, readKey: bytes.Repeat([]byte{0xab}, 32)}
+	if c.readDigest(&ctl, prior) == "" {
+		t.Fatal("fixture: no digest with the schema")
 	}
-	bad := filepath.Join(dir, "short.key")
-	if err := os.WriteFile(bad, []byte("abab\n"), 0o600); err != nil {
-		t.Fatal(err)
-	}
-	for name, c := range map[string]struct {
-		path    string
-		key     bool
-		warning bool
-	}{
-		"unset": {"", false, false},
-		"good":  {good, true, false},
-		"bad":   {bad, false, true},
-	} {
-		t.Run(name, func(t *testing.T) {
-			t.Setenv(baseline.EnvKeyFile, c.path)
-			key, warns := baselineReadKey()
-			if (key != nil) != c.key || (len(warns) > 0) != c.warning {
-				t.Errorf("key %x, warnings %q", key, warns)
-			}
-			if c.key && !bytes.Equal(key, bytes.Repeat([]byte{0xab}, 32)) {
-				t.Errorf("key %x", key)
-			}
-		})
+	ctl.ResourceType = "aws_unknown_type"
+	if d := c.readDigest(&ctl, prior); d != "" {
+		t.Fatalf("read_digest %s without a schema", d)
 	}
 }

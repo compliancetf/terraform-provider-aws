@@ -1,8 +1,10 @@
 package baseline
 
 import (
+	"bytes"
 	"encoding/hex"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"math/big"
 	"os"
@@ -114,7 +116,8 @@ func (f *fixture) load(t *testing.T, mutate func(*Document)) (*Set, error) {
 	if err := os.WriteFile(f.filePath, sign(t, f.blKey, doc), 0o644); err != nil {
 		t.Fatal(err)
 	}
-	return Load(LoadInput{Path: f.filePath, KeyPath: f.keyPath, Profile: f.prof, Revocations: f.revs,
+	key, keyErr := ReadKey(f.keyPath)
+	return Load(LoadInput{Path: f.filePath, Key: key, KeyErr: keyErr, Profile: f.prof, Revocations: f.revs,
 		Coverable: func(string) bool { return f.coverableBaselines }, Now: now})
 }
 
@@ -280,8 +283,28 @@ func TestLoad(t *testing.T) {
 		b, _ := os.ReadFile(f.filePath)
 		b = []byte(strings.Replace(string(b), "aws_s3_bucket.logs", "aws_s3_bucket.other", 1))
 		_ = os.WriteFile(f.filePath, b, 0o644)
-		if _, err := Load(LoadInput{Path: f.filePath, KeyPath: f.keyPath, Profile: f.prof, Revocations: f.revs, Now: now}); err == nil {
+		key, _ := ReadKey(f.keyPath)
+		if _, err := Load(LoadInput{Path: f.filePath, Key: key, Profile: f.prof, Revocations: f.revs, Now: now}); err == nil {
 			t.Fatal("tampered baseline loaded")
+		}
+	})
+	t.Run("key bytes from the caller", func(t *testing.T) {
+		// Load never reads the key file: the set matches with the bytes
+		// Configure read once, even after the file is rotated.
+		f := newFixture(t)
+		if _, err := f.load(t, nil); err != nil {
+			t.Fatal(err)
+		}
+		key, err := ReadKey(f.keyPath)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if err := os.WriteFile(f.keyPath, []byte(strings.Repeat("cd", 32)+"\n"), 0o600); err != nil {
+			t.Fatal(err)
+		}
+		s, err := Load(LoadInput{Path: f.filePath, Key: key, Profile: f.prof, Revocations: f.revs, Now: now})
+		if err != nil || !bytes.Equal(s.key, key) {
+			t.Fatalf("err %v, set key %x, want %x", err, s.key, key)
 		}
 	})
 	t.Run("key file readable by others", func(t *testing.T) {
@@ -289,7 +312,7 @@ func TestLoad(t *testing.T) {
 		if err := os.Chmod(f.keyPath, 0o644); err != nil {
 			t.Fatal(err)
 		}
-		if _, err := f.load(t, nil); err == nil || strings.Contains(err.Error(), f.dir) {
+		if _, err := f.load(t, nil); !errors.Is(err, ErrKeyUnusable) || !strings.HasSuffix(err.Error(), ": grandfather cannot be evaluated") || strings.Contains(err.Error(), f.dir) {
 			t.Fatalf("err %v", err)
 		}
 	})

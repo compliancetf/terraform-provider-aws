@@ -19,7 +19,6 @@ import (
 	"github.com/compliancetf/terraform-provider-aws/internal/hook"
 	"github.com/compliancetf/terraform-provider-aws/internal/profile"
 	"github.com/compliancetf/terraform-provider-aws/internal/trust"
-	"github.com/compliancetf/terraform-provider-aws/internal/verdict"
 )
 
 // openEvidence replaces the process chain after a successful Configure and
@@ -265,31 +264,18 @@ func result(ctl *bundle.Control, out engine.Outcome, classified engine.State, st
 	return r
 }
 
-// baselineReadKey reads COMPLIANCETF_BASELINE_KEY_FILE for results[].read_digest
-// (nil when unset). A file that is not a usable key warns and writes no
-// read_digest; with a baseline file, baseline.Load already refused it.
-func baselineReadKey() ([]byte, []string) {
-	path := os.Getenv(baseline.EnvKeyFile)
-	if path == "" {
-		return nil, nil
-	}
-	key, ok := verdict.ReadSecretFile(path)
-	if !ok {
-		return nil, []string{"COMPLIANCETF_BASELINE_KEY_FILE must name a regular file owned by this user that group and others cannot read, holding 64 lowercase hex characters: evidence records carry no read_digest"}
-	}
-	return key, nil
-}
-
 // readDigest is results[].read_digest of ctl at plan: the baseline read
 // digest over the prior state, as baseline entries record it. "" without
 // the baseline key, without a prior state (a create), when a read is
-// unknown, or when ctl is not grandfatherable (a schema-sensitive or
+// unknown, without the upstream schema of the type, or when ctl is not
+// grandfatherable (a schema-sensitive or
 // unresolvable read: no keyed hash of a sensitive value is written).
 func (c *Configured) readDigest(ctl *bundle.Control, prior tftypes.Value) string {
 	if c.readKey == nil || !prior.IsKnown() || prior.IsNull() || c.Schemas == nil {
 		return ""
 	}
-	if s, _ := c.Schemas.Resource(ctl.ResourceType); !baseline.Grandfatherable(ctl, s) {
+	s, ok := c.Schemas.Resource(ctl.ResourceType)
+	if !ok || !baseline.Grandfatherable(ctl, s) { // no upstream schema: sensitivity unknown, no digest
 		return ""
 	}
 	d, _ := baseline.ReadDigest(c.readKey, ctl.Reads, prior) // "" when a read is unknown

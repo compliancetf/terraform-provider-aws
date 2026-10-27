@@ -405,13 +405,17 @@ func (l *Lifecycle) configure(ctx context.Context, compliance tftypes.Value) (*C
 	}
 	warns = append(warns, n.Warnings...)
 	// the signed baseline, verified before anything is saved.
-	bl, err := baseline.Load(baseline.LoadInput{Path: b.BaselineFile, KeyPath: os.Getenv(baseline.EnvKeyFile), Profile: res.Profile,
+	// The key file is read once: matching and evidence read digests share
+	// these bytes, so a key rotated mid-Configure cannot split them.
+	readKey, keyErr := baseline.ReadKey(os.Getenv(baseline.EnvKeyFile))
+	bl, err := baseline.Load(baseline.LoadInput{Path: b.BaselineFile, Key: readKey, KeyErr: keyErr, Profile: res.Profile,
 		Revocations: cs.Revocations(), Coverable: func(id string) bool { return cov.Coverable(id, string(bundle.CoverBaseline)) }, Now: now})
 	if err != nil {
 		return nil, nil, err
 	}
-	readKey, w := baselineReadKey()
-	warns = append(warns, w...)
+	if keyErr != nil { // no baseline file: Load did not need the key
+		warns = append(warns, keyErr.Error()+": evidence records carry no read_digest")
+	}
 
 	if res.Profile != nil {
 		delta.Profiles = map[string]int64{org.ID: profVersion}
