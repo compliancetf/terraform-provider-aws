@@ -23,7 +23,7 @@ import (
 const minStateStore = "v1.16.0-alpha20260513"
 
 // minStableStateStore is the oldest stable Terraform the test runs on. No
-// stable release ships state_store yet (v1.17.0 is at rc in 2026-10), so it
+// stable release ships state_store yet (v1.17.0 does not), so it
 // names one that does not exist: once state_store is GA, set it to that
 // release (and drop the experiment flag in the init step if GA rejects it)
 // instead of letting stable builds skip.
