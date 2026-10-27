@@ -64,7 +64,8 @@ func TestSignedArtifactsVerifyCtftest(t *testing.T) {
 }
 
 // TestSigBugsReproducible: the committed signature rejection set equals a fresh
-// `ctfbundle sigbugs` run, file for file.
+// `ctfbundle sigbugs` run, file for file; archives compare by tar stream
+// (see sameTar).
 func TestSigBugsReproducible(t *testing.T) {
 	set, err := sigbugSet(fixture)
 	if err != nil {
@@ -80,8 +81,15 @@ func TestSigBugsReproducible(t *testing.T) {
 	}
 	for name, want := range set {
 		got, err := os.ReadFile(filepath.Join(dir, name))
-		if err != nil || !bytes.Equal(got, want) {
-			t.Errorf("%s is stale: run go generate ./testdata/generate.go (%v)", name, err)
+		if err != nil {
+			t.Fatal(err)
+		}
+		same := bytes.Equal(got, want)
+		if !same && strings.HasSuffix(name, ".tar.gz") {
+			same = sameTar(t, got, want)
+		}
+		if !same {
+			t.Errorf("%s is stale: run go generate ./testdata/generate.go", name)
 		}
 	}
 }
