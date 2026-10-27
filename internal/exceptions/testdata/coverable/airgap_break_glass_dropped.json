@@ -1,8 +1,8 @@
 {
-  "description": "floor_mode airgap: break_glass listed by the bundle and the profile is dropped with one warning; other kinds kept",
+  "description": "floor_mode airgap: break_glass listed by the bundle is dropped with one warning; other bundle kinds kept; the profile list adds nothing",
   "declared": {"rds_db_instance_encryption_at_rest_enabled": ["baseline", "break_glass", "grant"]},
   "coverable": {"rds_db_instance_encryption_at_rest_enabled": ["break_glass", "self_service"]},
   "modes": ["airgap", "airgap"],
-  "kinds": {"baseline": true, "break_glass": false, "grant": true, "self_service": true},
+  "kinds": {"baseline": true, "break_glass": false, "grant": true, "self_service": false},
   "warnings": ["break_glass coverability ignored for rds_db_instance_encryption_at_rest_enabled: floor_mode airgap has no break-glass"]
 }

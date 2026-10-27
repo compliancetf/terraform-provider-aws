@@ -28,7 +28,7 @@ func scopeLifecycle(t *testing.T, k verdicttest.Key, scope *profile.Scope, hclEn
 	p := l.cfg.Resolution.Profile
 	p.Scope = scope
 	p.ModeFloor = profile.ModeFloor{Default: profile.SoftFail, Environments: map[string]profile.Mode{"dev": profile.SoftFail, "production": profile.HardFail}}
-	p.Exceptions = profile.Exceptions{SelfService: []string{opEncryption}, MaxLifetimeDays: 180, Coverable: map[string][]string{opEncryption: {"self_service"}}}
+	p.Exceptions = profile.Exceptions{SelfService: []string{opEncryption}, MaxLifetimeDays: 180}
 	in := profile.TableInput{Resolution: profile.Resolution{OrgID: "bobthecorp", Governed: true, Profile: p, Fallback: profile.ProfileApplied},
 		HCLEnvironment: hclEnv, Workspace: localWS, SidecarConfigured: true}
 	table, err := profile.ComputeModeTable(in)
@@ -48,7 +48,7 @@ func scopeLifecycle(t *testing.T, k verdicttest.Key, scope *profile.Scope, hclEn
 	}
 	c := l.cfg
 	c.Block, c.Resolution, c.Table, c.tableIn = Block{ExceptionsFile: side, HCLEnvironment: hclEnv, Workspace: localWS}, in.Resolution, table, in
-	cov, warns := exceptions.NewCoverability(c.Controls.Coverable(), table.Exceptions)
+	cov, warns := exceptions.NewCoverability(withSelfService(c.Controls, opEncryption), table.Exceptions)
 	if len(warns) != 0 {
 		t.Fatalf("coverability: %v", warns)
 	}

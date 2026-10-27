@@ -21,6 +21,12 @@ const inputsDir = "testdata/contentdigest"
 // in dir is read.
 func inputs(t *testing.T, set *bundle.ControlSet, dir string) (*profile.Profile, exceptions.Coverability, []string) {
 	t.Helper()
+	return inputsDeclared(t, set.Coverable(), dir)
+}
+
+// inputsDeclared is inputs over a given bundle-declared map.
+func inputsDeclared(t *testing.T, declared map[string][]bundle.ExemptionKind, dir string) (*profile.Profile, exceptions.Coverability, []string) {
+	t.Helper()
 	raw, err := os.ReadFile(filepath.Join(dir, "profile.json"))
 	if err != nil {
 		t.Fatal(err)
@@ -29,7 +35,7 @@ func inputs(t *testing.T, set *bundle.ControlSet, dir string) (*profile.Profile,
 	if err != nil {
 		t.Fatal(err)
 	}
-	cov, warns := exceptions.NewCoverability(set.Coverable(), &p.Exceptions, p.FloorMode, p.FloorMode)
+	cov, warns := exceptions.NewCoverability(declared, &p.Exceptions, p.FloorMode, p.FloorMode)
 	return p, cov, warns
 }
 
@@ -58,23 +64,27 @@ func swapGraphSet(t *testing.T) *bundle.ControlSet {
 }
 
 // TestContentDigestInputs: the content digest inputs are closed to
-// bundle content plus the bundle-declared coverable map. A profile that adds
-// a coverable kind or forbids an id changes enforcement (Coverable) but not
-// the digest; changing the profile mode_floor, budgets or floor_mode (one
-// fixture each) leaves it unchanged; a grant, baseline, verdict or memo
-// entry binds it and is never an input.
+// bundle content plus the bundle-declared coverable map. A profile that
+// forbids an id changes enforcement (Coverable) but not the digest; a
+// profile coverable list changes neither (it is ignored); changing the
+// profile mode_floor, budgets or floor_mode (one fixture each) leaves it
+// unchanged; a grant, baseline, verdict or memo entry binds it and is never
+// an input.
 func TestContentDigestInputs(t *testing.T) {
 	const id = "rds_kms_key_policy_denies"
 	set := swapGraphSet(t)
 	baseProfile, baseCov, _ := inputs(t, set, inputsDir)
 	base := inputsDigest(t, set, inputsDir)
-	if want := set.ContentDigest(bundleKinds(set)); base != want {
+	if want := set.ContentDigest(bundleKinds(set.Coverable())); base != want {
 		t.Fatalf("base digest %s, want the bundle-only %s", base, want)
 	}
-	for name, kind := range map[string]string{"coverable-kind-added": "self_service", "forbid-added": "baseline"} {
+	for name, tc := range map[string]struct {
+		kind    string
+		changes bool
+	}{"coverable-kind-added": {"self_service", false}, "forbid-added": {"grant", true}} {
 		dir := filepath.Join(inputsDir, name)
-		if _, cov, _ := inputs(t, set, dir); cov.Coverable(id, kind) == baseCov.Coverable(id, kind) {
-			t.Errorf("%s: Coverable(%s, %s) unchanged: the fixture changes no coverability", name, id, kind)
+		if _, cov, _ := inputs(t, set, dir); (cov.Coverable(id, tc.kind) != baseCov.Coverable(id, tc.kind)) != tc.changes {
+			t.Errorf("%s: Coverable(%s, %s) changed %v, want %v", name, id, tc.kind, !tc.changes, tc.changes)
 		}
 		if d := inputsDigest(t, set, dir); d != base {
 			t.Errorf("%s: a profile coverability change moved the digest to %s, want %s", name, d, base)
@@ -119,12 +129,14 @@ func TestContentDigestInputs(t *testing.T) {
 // in floor_mode share the digest and Kinds, yet Coverable and its warnings
 // differ: a value cached under the digest must be a pure function of bundle
 // content plus Kinds, and break_glass gating must be re-asked through
-// Coverable at use time.
+// Coverable at use time. The bundle map here also lists break_glass for id.
 func TestContentDigestCacheContract(t *testing.T) {
 	const id = "rds_kms_key_policy_denies"
 	set := swapGraphSet(t)
-	_, online, onlineWarns := inputs(t, set, inputsDir)
-	_, airgap, airgapWarns := inputs(t, set, filepath.Join(inputsDir, "floor-mode-changed"))
+	declared := set.Coverable()
+	declared[id] = []bundle.ExemptionKind{bundle.CoverBreakGlass, bundle.CoverGrant}
+	_, online, onlineWarns := inputsDeclared(t, declared, inputsDir)
+	_, airgap, airgapWarns := inputsDeclared(t, declared, filepath.Join(inputsDir, "floor-mode-changed"))
 	if !reflect.DeepEqual(online.Kinds(), airgap.Kinds()) {
 		t.Fatalf("Kinds differ across floor_mode: %v vs %v", online.Kinds(), airgap.Kinds())
 	}
@@ -138,15 +150,16 @@ func TestContentDigestCacheContract(t *testing.T) {
 	if len(onlineWarns) != 0 || len(airgapWarns) != 1 {
 		t.Errorf("warnings online %q airgap %q, want none and one", onlineWarns, airgapWarns)
 	}
-	if !reflect.DeepEqual(airgap.Kinds(), bundleKinds(set)) {
+	if !reflect.DeepEqual(airgap.Kinds(), bundleKinds(declared)) {
 		t.Errorf("airgap Kinds %v: Kinds is the bundle-declared map, not the gate", airgap.Kinds())
 	}
 }
 
-// bundleKinds is set.Coverable as the string map ContentDigest takes.
-func bundleKinds(set *bundle.ControlSet) map[string][]string {
+// bundleKinds is a bundle-declared map (set.Coverable) as the sorted string
+// map ContentDigest takes.
+func bundleKinds(declared map[string][]bundle.ExemptionKind) map[string][]string {
 	out := map[string][]string{}
-	for id, kinds := range set.Coverable() {
+	for id, kinds := range declared {
 		out[id] = []string{}
 		for _, k := range kinds {
 			out[id] = append(out[id], string(k))

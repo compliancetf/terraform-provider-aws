@@ -11,6 +11,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/compliancetf/terraform-provider-aws/internal/bundle"
 	"github.com/compliancetf/terraform-provider-aws/internal/evidence"
 	"github.com/compliancetf/terraform-provider-aws/internal/exceptions"
 	"github.com/compliancetf/terraform-provider-aws/internal/hook"
@@ -53,6 +54,16 @@ func opLifecycle(t *testing.T, control, match string, grant bool) (*Lifecycle, s
 	return l, evDir
 }
 
+// withSelfService is cs.Coverable with self_service added for ids, as if
+// the bundle declared it: only the bundle declares coverability.
+func withSelfService(cs *bundle.ControlSet, ids ...string) map[string][]bundle.ExemptionKind {
+	declared := cs.Coverable()
+	for _, id := range ids {
+		declared[id] = append(declared[id], bundle.CoverSelfService)
+	}
+	return declared
+}
+
 // withSidecar installs in l a sidecar entry bobthecorp-op on control with
 // selector match, self-service and scoped to the trusted workspace
 // bobthecorp-reporting-prod.
@@ -72,11 +83,10 @@ func withSidecar(t *testing.T, l *Lifecycle, control, match string, now time.Tim
 		t.Fatal(err)
 	}
 	c.Block = Block{ExceptionsFile: side}
-	c.Table.Exceptions = &profile.Exceptions{SelfService: []string{control}, MaxLifetimeDays: 180,
-		Coverable: map[string][]string{control: {"self_service"}}}
+	c.Table.Exceptions = &profile.Exceptions{SelfService: []string{control}, MaxLifetimeDays: 180}
 	c.Table.SidecarControls = []string{control}
 	c.Table.Workspace = profile.Dim{Value: "bobthecorp-reporting-prod", Source: "profile"}
-	cov, warns := exceptions.NewCoverability(c.Controls.Coverable(), c.Table.Exceptions)
+	cov, warns := exceptions.NewCoverability(withSelfService(c.Controls, control), c.Table.Exceptions)
 	if len(warns) != 0 {
 		t.Fatalf("coverability: %v", warns)
 	}

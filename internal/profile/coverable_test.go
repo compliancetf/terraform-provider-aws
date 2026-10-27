@@ -33,9 +33,10 @@ func TestCoverableGenerateProfiles(t *testing.T) {
 	}
 }
 
-// TestCoverableProfile: an unknown kind rejects the profile at load; a
-// self_service id is checked against the effective coverable map, so a
-// bundle-declared self_service kind counts and a missing one rejects.
+// TestCoverableProfile: exceptions.coverable is still validated (an unknown
+// kind rejects the profile at load) but otherwise ignored: a self_service id
+// is checked against the bundle-declared map only, so a bundle-declared
+// self_service kind counts and a profile-listed one does not.
 func TestCoverableProfile(t *testing.T) {
 	load := func(name string) (*Profile, error) {
 		v, err := verifyEnvelope(fixture(t, name), trust.NoRevocations())
@@ -59,6 +60,17 @@ func TestCoverableProfile(t *testing.T) {
 	bundleDeclared := func(id string) bool { return id == "bobthecorp-s3-001" }
 	if err := p.Exceptions.CheckSelfService(bundleDeclared); err != nil {
 		t.Fatalf("bundle-declared self_service: %v", err)
+	}
+	// A profile listing self_service for the id loads, and still needs the
+	// bundle to declare it.
+	listed, _, err := Parse(basePayload(10, func(m map[string]any) {
+		m["exceptions"].(map[string]any)["coverable"] = map[string][]string{"bobthecorp-s3-001": {"self_service"}}
+	}))
+	if err != nil {
+		t.Fatalf("profile coverable list: %v", err)
+	}
+	if err := listed.Exceptions.CheckSelfService(none); err == nil || !strings.Contains(err.Error(), "self_service_not_coverable") {
+		t.Fatalf("profile-listed self_service: %v", err)
 	}
 	var nilEx *Exceptions
 	if err := nilEx.CheckSelfService(none); err != nil || nilEx.Forbidden("x") {

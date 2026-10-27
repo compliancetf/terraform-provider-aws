@@ -384,10 +384,9 @@ func TestVerdictListedExceptions(t *testing.T) {
 				listedExpires = tc.expires + "T00:00:00Z"
 			}
 			c.Table.Workspace = profile.Dim{Value: "bobthecorp-reporting-prod", Source: "profile"}
-			c.Table.Exceptions = &profile.Exceptions{SelfService: []string{encryption}, MaxLifetimeDays: 180,
-				Coverable: map[string][]string{encryption: {"self_service"}}}
+			c.Table.Exceptions = &profile.Exceptions{SelfService: []string{encryption}, MaxLifetimeDays: 180}
 			c.Table.SidecarControls = []string{encryption}
-			cov, _ := exceptions.NewCoverability(c.Controls.Coverable(), c.Table.Exceptions)
+			cov, _ := exceptions.NewCoverability(withSelfService(c.Controls, encryption), c.Table.Exceptions)
 			side, _, err := loadSidecar(c.Block, c.Table, c.Controls, cov, now, exceptions.Clock{})
 			if err != nil {
 				t.Fatal(err)
@@ -489,10 +488,9 @@ func TestVerdictGraphRowExcepted(t *testing.T) {
 			c := r.l.cfg
 			c.Block.ExceptionsFile = side
 			c.Table.Workspace = profile.Dim{Value: "bobthecorp-reporting-prod", Source: "profile"}
-			c.Table.Exceptions = &profile.Exceptions{SelfService: []string{ctl.ID}, MaxLifetimeDays: 180,
-				Coverable: map[string][]string{ctl.ID: {"self_service"}}}
+			c.Table.Exceptions = &profile.Exceptions{SelfService: []string{ctl.ID}, MaxLifetimeDays: 180}
 			c.Table.SidecarControls = []string{ctl.ID}
-			cov, _ := exceptions.NewCoverability(c.Controls.Coverable(), c.Table.Exceptions)
+			cov, _ := exceptions.NewCoverability(withSelfService(c.Controls, ctl.ID), c.Table.Exceptions)
 			sc, _, err := loadSidecar(c.Block, c.Table, c.Controls, cov, verdictIssued, exceptions.Clock{})
 			if err != nil {
 				t.Fatal(err)
@@ -597,10 +595,9 @@ func TestVerdictGraphExceptionShape(t *testing.T) {
 				c := r.l.cfg
 				c.Block.ExceptionsFile = side
 				c.Table.Workspace = profile.Dim{Value: "bobthecorp-reporting-prod", Source: "profile"}
-				c.Table.Exceptions = &profile.Exceptions{SelfService: ids, MaxLifetimeDays: 180,
-					Coverable: map[string][]string{present.ID: {"self_service"}, guard.ID: {"self_service"}}}
+				c.Table.Exceptions = &profile.Exceptions{SelfService: ids, MaxLifetimeDays: 180}
 				c.Table.SidecarControls = ids
-				cov, _ := exceptions.NewCoverability(c.Controls.Coverable(), c.Table.Exceptions)
+				cov, _ := exceptions.NewCoverability(withSelfService(c.Controls, present.ID, guard.ID), c.Table.Exceptions)
 				sc, _, err := loadSidecar(c.Block, c.Table, c.Controls, cov, verdictIssued, exceptions.Clock{})
 				if err != nil {
 					t.Fatal(err)

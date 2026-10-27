@@ -7,6 +7,7 @@ import (
 	"encoding/json"
 	"errors"
 	"path/filepath"
+	"regexp"
 	"slices"
 	"strings"
 	"testing"
@@ -16,6 +17,8 @@ import (
 	"github.com/hashicorp/terraform-plugin-go/tftypes"
 
 	"github.com/compliancetf/terraform-provider-aws/internal/bundle"
+	"github.com/compliancetf/terraform-provider-aws/internal/bundle/bundletest"
+	"github.com/compliancetf/terraform-provider-aws/internal/embedded"
 	"github.com/compliancetf/terraform-provider-aws/internal/engine"
 	"github.com/compliancetf/terraform-provider-aws/internal/exceptions"
 	"github.com/compliancetf/terraform-provider-aws/internal/trust"
@@ -31,6 +34,38 @@ exception "legacy-reporting-db" {
   expires   = "2026-10-06"
 }
 `
+
+// coverableCIS is the embedded CIS archive re-signed with the test bundle
+// key, its legacyCtl declaring exemption_coverable kinds: only a bundle
+// declares coverability.
+func coverableCIS(t *testing.T, kinds ...string) []byte {
+	t.Helper()
+	archive := embedded.Archive()
+	var controls []byte
+	if _, err := bundletest.Rewrite(archive, func(name string, body []byte) ([]byte, bool, error) {
+		if name == bundle.ControlsFile {
+			controls = body
+		}
+		return body, true, nil
+	}); err != nil {
+		t.Fatal(err)
+	}
+	k, err := json.Marshal(kinds)
+	if err != nil {
+		t.Fatal(err)
+	}
+	// replace the control's exemption_coverable list with kinds.
+	m := regexp.MustCompile(`(?s)"id": "` + regexp.QuoteMeta(legacyCtl.ID) + `",.*?"exemption_coverable": (\[[^\]]*\])`).FindStringSubmatchIndex(string(controls))
+	if m == nil {
+		t.Fatalf("CIS controls.json lacks exemption_coverable for %s", legacyCtl.ID)
+	}
+	body := string(controls[:m[2]]) + string(k) + string(controls[m[3]:])
+	signed, err := bundletest.WithFile(archive, bundle.ControlsFile, []byte(body), testkeys.Bundle())
+	if err != nil {
+		t.Fatal(err)
+	}
+	return signed
+}
 
 // legacyCtl is the control the airgap sidecar and grant name.
 var legacyCtl = &bundle.Control{ID: "rds_db_instance_encryption_at_rest_enabled", Kind: bundle.KindResource, ResourceType: "aws_db_instance"}
@@ -50,7 +85,7 @@ func (idSchemas) Resource(typ string) (*tfprotov5.Schema, bool) {
 // (not governed, no bundles) has no air-gap time and applies no entry. The
 // floor is issued 2026-10-05T12:00Z and Configure runs at 2026-10-06T06:00Z,
 // so the entry expiring 2026-10-06 applies only against the floor time.
-// The profile also lists break_glass, dropped with a warning.
+// The bundle also lists break_glass, dropped with a warning.
 func TestAirgapClockConfigure(t *testing.T) {
 	for _, tc := range []struct {
 		name, profile, want string
@@ -70,8 +105,7 @@ func TestAirgapClockConfigure(t *testing.T) {
 			t.Setenv("COMPLIANCETF_EVIDENCE_DIR", filepath.Join(dir, "evidence"))
 			prof := filepath.Join(dir, "profile.dsse.json")
 			over := merge(t, map[string]any{"floor_mode": "airgap", "scope": map[string]string{"workspace": "bobthecorp-reporting-prod"},
-				"exceptions": map[string]any{"max_lifetime_days": 30, "self_service": []string{"rds_db_instance_encryption_at_rest_enabled"},
-					"coverable": map[string][]string{"rds_db_instance_encryption_at_rest_enabled": {"break_glass", "self_service"}}}}, json.RawMessage(tc.profile))
+				"exceptions": map[string]any{"max_lifetime_days": 30, "self_service": []string{"rds_db_instance_encryption_at_rest_enabled"}}}, json.RawMessage(tc.profile))
 			writeFile(t, prof, signed(t, trust.PayloadProfile, merge(t, baseProfile(), over), testkeys.Profile()))
 			t.Setenv("COMPLIANCETF_PROFILE_PATH", prof)
 			floor := filepath.Join(dir, "floor.dsse.json")
@@ -81,13 +115,14 @@ func TestAirgapClockConfigure(t *testing.T) {
 			writeFile(t, side, []byte(airgapClockSidecar))
 			t.Setenv("COMPLIANCETF_EXCEPTIONS_FILE", side)
 
-			l := New(Options{ProviderVersion: "6.40.0", Now: func() time.Time { return configureNow }})
+			l := New(Options{ProviderVersion: "6.40.0", Now: func() time.Time { return configureNow },
+				CISBundle: coverableCIS(t, "break_glass", "self_service")})
 			t.Cleanup(func() { _ = l.Close() }) //nolint:errcheck // test cleanup
 			warns, err := l.Configure(context.Background(), tftypes.NewValue(BlockType(), nil), "1.14.0", nil)
 			if err != nil {
 				t.Fatal(err)
 			}
-			// air-gap has no break-glass; the profile-listed kind is dropped.
+			// air-gap has no break-glass; the bundle-listed kind is dropped.
 			const bg = "break_glass coverability ignored for rds_db_instance_encryption_at_rest_enabled: floor_mode airgap has no break-glass"
 			if !slices.Contains(warns, bg) || l.Configured() == nil {
 				t.Errorf("warnings %q, want %q", warns, bg)
@@ -149,7 +184,6 @@ func TestAirgapClockGrantConfigure(t *testing.T) {
 			prof := filepath.Join(dir, "profile.dsse.json")
 			over := merge(t, map[string]any{"floor_mode": "airgap", "scope": map[string]string{"workspace": "bobthecorp-reporting-prod"},
 				"exceptions": map[string]any{"max_lifetime_days": 30,
-					"coverable": map[string][]string{"rds_db_instance_encryption_at_rest_enabled": {"grant"}},
 					"grant_keys": []map[string]string{{"kid": gk.KID, "alg": gk.Alg, "spki_b64": gk.SPKIB64,
 						"not_before": "2026-09-01T00:00:00Z", "not_after": "2026-10-30T00:00:00Z"}}}}, json.RawMessage(tc.profile))
 			writeFile(t, prof, signed(t, trust.PayloadProfile, merge(t, baseProfile(), over), testkeys.Profile()))
@@ -157,8 +191,9 @@ func TestAirgapClockGrantConfigure(t *testing.T) {
 			floor := filepath.Join(dir, "floor.dsse.json")
 			writeFile(t, floor, signed(t, trust.PayloadFloor, merge(t, baseFloor(), json.RawMessage(`{"issued_at": "2026-10-05T12:00:00Z"}`)), testkeys.Floor()))
 			t.Setenv("COMPLIANCETF_FLOOR_PATH", floor)
+			cis := coverableCIS(t, "grant")
 			configure := func() (*Lifecycle, []string) {
-				l := New(Options{ProviderVersion: "6.40.0", Now: func() time.Time { return configureNow }})
+				l := New(Options{ProviderVersion: "6.40.0", Now: func() time.Time { return configureNow }, CISBundle: cis})
 				t.Cleanup(func() { _ = l.Close() }) //nolint:errcheck // test cleanup
 				warns, err := l.Configure(context.Background(), tftypes.NewValue(BlockType(), nil), "1.14.0", nil)
 				if err != nil {
