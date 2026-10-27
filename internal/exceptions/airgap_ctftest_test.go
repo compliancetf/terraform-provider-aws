@@ -242,3 +242,21 @@ func TestOnlineClock(t *testing.T) {
 		}
 	}
 }
+
+// TestAirgapClockAcceptedOnly: the air-gap time is the issued_at of the last
+// accepted floor statement; a statement refused as revocation-pending never
+// advances it, and a pending time alone leaves the clock unknown.
+func TestAirgapClockAcceptedOnly(t *testing.T) {
+	st := floorState(floorAt)
+	m := st.Floors[org]
+	m.PendingIssuedAt = floorAt.Add(48 * time.Hour)
+	st.Floors[org] = m
+	if c := NewClock(st, org, trust.FloorAirgap); c.why != "" || !c.at.Equal(floorAt) {
+		t.Errorf("clock %+v, want the accepted %s", c, floorAt)
+	}
+	m.IssuedAt = time.Time{}
+	st.Floors[org] = m
+	if c := NewClock(st, org, trust.FloorAirgap); c.why == "" {
+		t.Errorf("pending only: clock %+v, want unknown", c)
+	}
+}

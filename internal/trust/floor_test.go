@@ -57,6 +57,9 @@ func TestFloorAcceptance(t *testing.T) {
 		{name: "kid retired in state", key: k2, mut: set("epoch", 8), marks: mark(1, 7, 0, kid2), want: "floor key " + kid2 + " (generation 2) is retired"},
 		{name: "older epoch", key: k1, mut: set("epoch", 6), marks: mark(1, 7, 0), want: "floor epoch 6 is below the accepted high-water 7 for bobthecorp"},
 		{name: "issued earlier", key: k1, mut: set("epoch", 8, "issued_at", "2026-10-05T23:00:00Z", "expires_at", "2026-10-06T23:00:00Z"), marks: mark(1, 7, 0), want: "is earlier than the accepted 2026-10-06T00:00:00Z"},
+		{name: "issued before a pending statement", key: k1, mut: set("issued_at", "2026-10-05T23:00:00Z", "expires_at", "2026-10-06T23:00:00Z"),
+			marks: map[string]FloorMark{"bobthecorp": {Generation: 1, Epoch: 7, IssuedAt: issued.Add(-2 * time.Hour), PendingIssuedAt: issued}},
+			want:  "is earlier than the accepted 2026-10-06T00:00:00Z"},
 		{name: "drops retired key", key: k1, mut: set("epoch", 8), marks: mark(1, 7, 0, kid2), want: "drops retired key " + kid2},
 		{name: "next generation retires the old key", key: k2, mut: set("epoch", 8, "retired_keys", []string{kid1}), marks: mark(1, 7, 0)},
 		{name: "old key retires the next", key: k1, mut: set("epoch", 8, "retired_keys", []string{kid2}), marks: mark(1, 7, 0), want: "signed by generation 1 retires a key of generation 2"},
@@ -113,8 +116,9 @@ func TestFloorAcceptance(t *testing.T) {
 		if !errors.Is(err, ErrFloorRevocationPending) {
 			t.Fatal(err)
 		}
-		// The pending delta pins (generation, epoch, issued_at) only.
-		if m := delta.Floors["bobthecorp"]; m.Generation != 1 || m.Epoch != 7 || !m.IssuedAt.Equal(issued) ||
+		// The pending delta pins (generation, epoch, pending issued_at) only:
+		// its issued_at never becomes the accepted one (the air-gap time).
+		if m := delta.Floors["bobthecorp"]; m.Generation != 1 || m.Epoch != 7 || !m.IssuedAt.IsZero() || !m.PendingIssuedAt.Equal(issued) ||
 			m.RevocationEpoch != 0 || m.RetiredKeys != nil || delta.Bundles != nil || delta.Profiles != nil {
 			t.Fatalf("pending delta %+v", delta)
 		}

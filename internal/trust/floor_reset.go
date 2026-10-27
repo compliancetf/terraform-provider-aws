@@ -239,11 +239,12 @@ func (k *Keyring) checkFloorReset(env []byte, in FloorInput, cur State, keyringD
 	switch {
 	case gen < mark.Generation || slices.Contains(mark.RetiredKeys, v.KeyID):
 		return 0, time.Time{}, fmt.Errorf("floor key %s (generation %d) is retired: accepted generation %d", v.KeyID, gen, mark.Generation)
-	case !issued.After(mark.IssuedAt):
-		// An accepted statement issued after the reset could raise the
-		// epoch straight back (it is after the reset marker).
+	case !issued.After(mark.highIssuedAt()):
+		// An accepted (or pending, once its revocations load) statement
+		// issued after the reset could raise the epoch straight back (it is
+		// after the reset marker).
 		return 0, time.Time{}, fmt.Errorf("reset issued %s is not after the accepted floor statement %s",
-			issued.Format(time.RFC3339), mark.IssuedAt.Format(time.RFC3339))
+			issued.Format(time.RFC3339), mark.highIssuedAt().Format(time.RFC3339))
 	case from != mark.Epoch:
 		return 0, time.Time{}, fmt.Errorf("from_epoch %d does not match the stored epoch %d", from, mark.Epoch)
 	case to < 1 || to >= from:

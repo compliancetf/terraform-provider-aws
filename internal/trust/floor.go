@@ -86,7 +86,8 @@ type floorPayload struct {
 // the run context. On success it returns the floor and the state delta to
 // persist with UpdateState (floor high-water and floor minimums). On
 // ErrFloorRevocationPending it returns no floor but a delta holding only the
-// statement's generation, epoch and issued_at: the caller persists it, then
+// statement's generation, epoch and issued_at (as PendingIssuedAt, so it
+// never sets the air-gap time): the caller persists it, then
 // fails Configure, so the older floor file stays refused while the revocation
 // bundle is withheld. On any other error it returns neither. in.State is the
 // state returned by ApplyFloorReset.
@@ -192,8 +193,9 @@ func (k *Keyring) verifyFloor(env []byte, in FloorInput, keyringDigest string) (
 	}
 	if have := revs.Epoch(); f.RevocationEpoch > have {
 		// Keep (generation, epoch) only: a pending statement must not pin a
-		// revocation epoch or retired keys that a reset cannot lower.
-		pending := State{Floors: map[string]FloorMark{org: {Generation: f.Generation, Epoch: f.Epoch, IssuedAt: f.IssuedAt}}}
+		// revocation epoch or retired keys that a reset cannot lower. Its
+		// issued_at is pending, never the accepted one (the air-gap time).
+		pending := State{Floors: map[string]FloorMark{org: {Generation: f.Generation, Epoch: f.Epoch, PendingIssuedAt: f.IssuedAt}}}
 		return nil, pending, fmt.Errorf("%w: floor for %s needs revocation epoch %d, provider has %d: fail closed until a bundle carrying the newer revocations loads",
 			ErrFloorRevocationPending, org, f.RevocationEpoch, have)
 	}
@@ -224,9 +226,9 @@ func acceptFloor(f *parsedFloor, h FloorMark) error {
 	if !advances && !equals || f.RevocationEpoch < h.RevocationEpoch {
 		return fmt.Errorf("floor epoch %d is below the accepted high-water %d for %s", f.Epoch, h.Epoch, org)
 	}
-	if f.IssuedAt.Before(h.IssuedAt) {
+	if hi := h.highIssuedAt(); f.IssuedAt.Before(hi) {
 		return fmt.Errorf("floor statement for %s issued %s is earlier than the accepted %s", org,
-			f.IssuedAt.Format(time.RFC3339), h.IssuedAt.Format(time.RFC3339))
+			f.IssuedAt.Format(time.RFC3339), hi.Format(time.RFC3339))
 	}
 	for _, kid := range h.RetiredKeys {
 		if _, ok := slices.BinarySearch(f.RetiredKeys, kid); !ok {

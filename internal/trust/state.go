@@ -43,7 +43,12 @@ type FloorMark struct {
 	Generation      int64     `json:"generation"`
 	Epoch           int64     `json:"epoch"`
 	RevocationEpoch int64     `json:"revocation_epoch"`
-	IssuedAt        time.Time `json:"issued_at"`
+	IssuedAt        time.Time `json:"issued_at"` // of the latest accepted statement: the air-gap time
+	// PendingIssuedAt is the issued_at of a statement refused as
+	// revocation-pending, kept only while later than IssuedAt. It bounds
+	// later statements and resets like IssuedAt (highIssuedAt) but never
+	// times the air-gap clock. Absent is zero.
+	PendingIssuedAt time.Time `json:"pending_issued_at,omitzero"`
 	RetiredKeys     []string  `json:"retired_keys"`
 	ResetIssuedAt   time.Time `json:"reset_issued_at,omitzero"` // issued_at of the last applied floor reset
 	// ResetUnrecorded: the reset at ResetIssuedAt was applied but no
@@ -261,13 +266,18 @@ func maxMerge(a, b map[string]int64) map[string]int64 {
 // Each side is one statement's mark or a stored mark, so its epoch and
 // issued_at belong together; this is not an aggregator of several deltas.
 // The merged issued_at may still come from a side whose epoch was dropped;
-// it is a signed issuer time and only moves forward.
+// it is a signed issuer time and only moves forward. The pending issued_at
+// is dropped once the accepted one reaches it.
 func mergeFloor(a, b FloorMark) FloorMark {
 	issued := latest(a.IssuedAt, b.IssuedAt)
+	pending := latest(a.PendingIssuedAt, b.PendingIssuedAt)
+	if !pending.After(issued) {
+		pending = time.Time{}
+	}
 	reset := latest(a.ResetIssuedAt, b.ResetIssuedAt)
 	var epoch int64
 	for _, m := range []FloorMark{a, b} {
-		if m.ResetIssuedAt.Equal(reset) || m.IssuedAt.After(reset) {
+		if m.ResetIssuedAt.Equal(reset) || m.highIssuedAt().After(reset) {
 			epoch = max(epoch, m.Epoch)
 		}
 	}
@@ -286,12 +296,17 @@ func mergeFloor(a, b FloorMark) FloorMark {
 		Epoch:             epoch,
 		RevocationEpoch:   max(a.RevocationEpoch, b.RevocationEpoch),
 		IssuedAt:          issued.UTC(),
+		PendingIssuedAt:   pending.UTC(),
 		RetiredKeys:       slices.Compact(keys),
 		ResetIssuedAt:     reset.UTC(),
 		ResetUnrecorded:   unrecorded,
 		MinWrapperVersion: maxWrapper(a.MinWrapperVersion, b.MinWrapperVersion),
 	}
 }
+
+// highIssuedAt is the latest issued_at seen for the org, accepted or
+// pending: the anti-rollback bound for floor statements and resets.
+func (m FloorMark) highIssuedAt() time.Time { return latest(m.IssuedAt, m.PendingIssuedAt) }
 
 func latest(a, b time.Time) time.Time {
 	if b.After(a) {
