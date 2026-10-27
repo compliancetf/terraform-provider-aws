@@ -153,18 +153,28 @@ func TestBaselineNativeIdentity(t *testing.T) {
 		r.profile("grandfather", "apply-"+name)
 		return r.TF("apply", "-no-color", "-input=false", g.File)
 	}
-	blocked := func(res result, address string) {
+	blocked := func(res result, name, address string) {
 		t.Helper()
 		out := strings.Join(strings.Fields(res.Stderr), " ")
-		if res.Exit == 0 || !strings.Contains(out, "fake_named size must be at most 10.") || !strings.Contains(out, "Stage: apply_pre") {
+		if res.Exit == 0 || !strings.Contains(out, "Error:") || !strings.Contains(out, "fake_named size must be at most 10.") {
 			t.Fatalf("%s: exit %d, want blocked by fake_named_size_max\n--- stdout\n%s--- stderr\n%s", address, res.Exit, res.Stdout, res.Stderr)
+		}
+		// The default diagnostic has no stage line; the evidence names the stage that blocked.
+		var pre bool
+		records(r, "apply-"+name, func(rec evRecord) {
+			for _, x := range rec.Results {
+				pre = pre || rec.Stage == "apply_pre" && x.Control == "fake_named_size_max" && x.State == "fail" && x.Decision == "blocked"
+			}
+		})
+		if !pre {
+			t.Fatalf("%s: no apply_pre evidence result fail blocked for fake_named_size_max", address)
 		}
 		if c := r.attrs(address)["crash"]; c != nil {
 			t.Fatalf("%s: blocked apply changed crash to %v", address, c)
 		}
 	}
-	blocked(apply("other", "fake_named.other", true), "fake_named.other")   // no entry for its identity
-	blocked(apply("unlisted", "fake_named.logs", false), "fake_named.logs") // entry not listed by the verdict
+	blocked(apply("other", "fake_named.other", true), "other", "fake_named.other")      // no entry for its identity
+	blocked(apply("unlisted", "fake_named.logs", false), "unlisted", "fake_named.logs") // entry not listed by the verdict
 
 	res := apply("logs", "fake_named.logs", true)
 	if res.Exit != 0 {
@@ -188,7 +198,8 @@ func TestBaselineNativeIdentity(t *testing.T) {
 // postApplyWarned asserts the grandfathered apply res re-checked the
 // applied state at apply_post: one fake_named_size_max result on each of n
 // distinct instances, failing with decision post_apply_violation, surfaced
-// as a warning (Stage: apply_post), not an error.
+// as a warning, not an error. The stage comes from the evidence: the
+// default diagnostic has no stage line.
 func postApplyWarned(t *testing.T, r *run, res result, evidence string, n int) {
 	t.Helper()
 	var got int
@@ -213,7 +224,7 @@ func postApplyWarned(t *testing.T, r *run, res result, evidence string, n int) {
 	}
 	out := strings.Join(strings.Fields(res.Stdout+res.Stderr), " ")
 	if strings.Contains(out, "Error:") || !strings.Contains(out, "Warning:") ||
-		!strings.Contains(out, "fake_named size must be at most 10.") || !strings.Contains(out, "Stage: apply_post") {
+		!strings.Contains(out, "fake_named size must be at most 10.") {
 		t.Fatalf("grandfathered apply: want an apply_post warning for fake_named_size_max and no error\n--- stdout\n%s--- stderr\n%s", res.Stdout, res.Stderr)
 	}
 }

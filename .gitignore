@@ -17,7 +17,7 @@ vendor/
 *.tfstate
 *.tfstate.*
 # Seeded prior state of a conformance scenario (fake upstream, no real resources)
-!test/conformance/scenarios/*/terraform.tfstate
+!test/conformance/*/*/terraform.tfstate
 *.tfplan
 .terraform.lock.hcl
 terraform.tfvars
