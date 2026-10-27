@@ -472,9 +472,10 @@ func (l *Lifecycle) check(ctx context.Context, c *Configured, stage Stage, ctl *
 
 // pendingKinds are the exemption kinds eligible at plan for a blocking
 // fail or not_evaluable of ctl under mode: the signed coverable
-// map only, never an exemption artifact; baseline also needs mode
-// grandfather and a grandfatherable control, break_glass a profile that
-// enables it online.
+// map only, never an exemption artifact; grant also needs
+// exception_grants_dir, self_service the control in the signed profile's
+// exceptions.self_service, baseline mode grandfather and a grandfatherable
+// control, break_glass a profile that enables it online.
 func pendingKinds(c *Configured, ctl *bundle.Control, mode profile.Mode) []string {
 	gf := false
 	if mode == profile.Grandfather && c.Schemas != nil {
@@ -482,7 +483,7 @@ func pendingKinds(c *Configured, ctl *bundle.Control, mode profile.Mode) []strin
 		gf = baseline.Grandfatherable(ctl, s)
 	}
 	return verdict.PendingKinds(verdict.Eligibility{Coverable: func(k string) bool { return c.Coverability.Coverable(ctl.ID, k) },
-		Grandfather: gf, BreakGlass: c.BreakGlass.Enabled()})
+		Grandfather: gf, BreakGlass: c.BreakGlass.Enabled(), Grants: c.Grants != nil, SelfService: slices.Contains(c.Table.SidecarControls, ctl.ID)})
 }
 
 // pendingDiags are the plan warnings of a blocking failure eligible for an

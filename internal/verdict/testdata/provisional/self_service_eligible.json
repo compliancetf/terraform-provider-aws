@@ -1,1 +1,1 @@
-{"note":"coverable for self_service warns at plan without the sidecar entry","bundle":["self_service"],"want":["self_service"]}
+{"note":"coverable for self_service and listed in the signed profile exceptions.self_service warns at plan, without the sidecar entry","bundle":["self_service"],"self_service":true,"want":["self_service"]}

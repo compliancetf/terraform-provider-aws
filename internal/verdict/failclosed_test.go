@@ -40,7 +40,9 @@ type failClosedGolden struct {
 	// Eligibility is the signed coverable kinds of the failing control at
 	// plan; nil when plan has no blocking failure.
 	Eligibility *struct {
-		Coverable []string `json:"coverable"`
+		Coverable   []string `json:"coverable"`
+		Grants      bool     `json:"grants"`
+		SelfService bool     `json:"self_service"`
 	} `json:"eligibility"`
 	Address string `json:"address"` // the provisional entry's address
 }
@@ -85,7 +87,8 @@ func TestFailClosed(t *testing.T) {
 			}
 			var warns []string
 			if g.Eligibility != nil {
-				e := Eligibility{Coverable: func(k string) bool { return slices.Contains(g.Eligibility.Coverable, k) }}
+				e := Eligibility{Coverable: func(k string) bool { return slices.Contains(g.Eligibility.Coverable, k) },
+					Grants: g.Eligibility.Grants, SelfService: g.Eligibility.SelfService}
 				for _, k := range PendingKinds(e) {
 					warns = append(warns, PendingSummary(k, res[0].Control))
 				}

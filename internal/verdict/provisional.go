@@ -5,8 +5,9 @@ package verdict
 // Exemption kinds of a control's coverable list, in PendingKinds order.
 var exemptionKinds = []string{"baseline", "break_glass", "grant", "self_service"}
 
-// Eligibility is what plan knows about one blocking control: only the
-// compliance.tf-signed bundle and profile, never an exemption artifact.
+// Eligibility is what plan knows about one blocking control: the
+// compliance.tf-signed bundle and profile, and whether the run configures
+// exception grants; never an exemption artifact.
 type Eligibility struct {
 	// Coverable is the effective signed coverability of the control for an
 	// exemption kind after the airgap break_glass drop
@@ -19,12 +20,19 @@ type Eligibility struct {
 	// BreakGlass: the signed profile enables break_glass under floor_mode
 	// online.
 	BreakGlass bool
+	// Grants: the run configures exception grants (exception_grants_dir).
+	// Without it no grant can exist at plan or apply, so grant is not
+	// eligible and the failure errors at plan.
+	Grants bool
+	// SelfService: the signed profile lists the control in
+	// exceptions.self_service, the only way a sidecar entry can cover it.
+	SelfService bool
 }
 
 // PendingKinds are the exemption kinds eligible at plan for a blocking
 // failure of the control, sorted; empty means the failure errors at plan.
-// grant and self_service need only their kind in the list, baseline also
-// Grandfather, break_glass also BreakGlass.
+// Each kind needs its kind in the list and its own signal: grant Grants,
+// self_service SelfService, baseline Grandfather, break_glass BreakGlass.
 func PendingKinds(e Eligibility) []string {
 	var out []string
 	for _, k := range exemptionKinds {
@@ -34,6 +42,10 @@ func PendingKinds(e Eligibility) []string {
 			ok = ok && e.Grandfather
 		case "break_glass":
 			ok = ok && e.BreakGlass
+		case "grant":
+			ok = ok && e.Grants
+		case "self_service":
+			ok = ok && e.SelfService
 		}
 		if ok {
 			out = append(out, k)

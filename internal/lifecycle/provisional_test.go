@@ -77,7 +77,9 @@ func pending(kinds ...string) [][2]string {
 
 // TestProvisionalPlan: a blocking failure eligible for an exemption
 // warns once per eligible kind at plan, without the artifact, from the
-// compliance.tf-signed coverable list only; with no eligible kind it errors.
+// compliance.tf-signed coverable list and each kind's run signal (grants: an
+// exception_grants_dir; listed: the signed profile lists the control in
+// exceptions.self_service); with no eligible kind it errors.
 func TestProvisionalPlan(t *testing.T) {
 	g, b, bg, ss := bundle.CoverGrant, bundle.CoverBaseline, bundle.CoverBreakGlass, bundle.CoverSelfService
 	for name, tc := range map[string]struct {
@@ -85,18 +87,23 @@ func TestProvisionalPlan(t *testing.T) {
 		grandfather bool
 		bg          bool
 		airgap      bool
+		grants      bool
+		listed      bool
 		want        [][2]string // nil: the plan error
 	}{
-		"grant":                         {kinds: []bundle.ExemptionKind{g}, want: pending("grant")},
-		"self_service":                  {kinds: []bundle.ExemptionKind{ss}, want: pending("self_service")},
+		"grant":                         {kinds: []bundle.ExemptionKind{g}, grants: true, want: pending("grant")},
+		"grant, no grants dir":          {kinds: []bundle.ExemptionKind{g}, listed: true},
+		"self_service":                  {kinds: []bundle.ExemptionKind{ss}, listed: true, want: pending("self_service")},
+		"self_service, not listed":      {kinds: []bundle.ExemptionKind{ss}, grants: true},
 		"baseline under grandfather":    {kinds: []bundle.ExemptionKind{b}, grandfather: true, want: pending("baseline")},
 		"baseline-only under hard_fail": {kinds: []bundle.ExemptionKind{b}, bg: true},
 		"break_glass enabled online":    {kinds: []bundle.ExemptionKind{bg}, bg: true, want: pending("break_glass")},
 		"break_glass not enabled":       {kinds: []bundle.ExemptionKind{bg}},
-		"break_glass not in the list":   {kinds: []bundle.ExemptionKind{g}, bg: true, want: pending("grant")},
-		"airgap drops break_glass":      {kinds: []bundle.ExemptionKind{bg, g}, airgap: true, want: pending("grant")},
+		"break_glass not in the list":   {kinds: []bundle.ExemptionKind{g}, bg: true, grants: true, want: pending("grant")},
+		"airgap drops break_glass":      {kinds: []bundle.ExemptionKind{bg, g}, airgap: true, grants: true, want: pending("grant")},
 		"hard_fail, empty list":         {kinds: []bundle.ExemptionKind{}, grandfather: true, bg: true},
-		"every kind":                    {kinds: []bundle.ExemptionKind{b, bg, g, ss}, grandfather: true, bg: true, want: pending("baseline", "break_glass", "grant", "self_service")},
+		"every kind":                    {kinds: []bundle.ExemptionKind{b, bg, g, ss}, grandfather: true, bg: true, grants: true, listed: true, want: pending("baseline", "break_glass", "grant", "self_service")},
+		"every kind, no run signal":     {kinds: []bundle.ExemptionKind{b, bg, g, ss}},
 	} {
 		t.Run(name, func(t *testing.T) {
 			r := newSituationRun(t, false)
@@ -110,6 +117,12 @@ func TestProvisionalPlan(t *testing.T) {
 			}
 			if tc.grandfather {
 				r.l.cfg.Table.RunMode = profile.Grandfather
+			}
+			if tc.grants {
+				r.l.cfg.Grants = &exceptions.Grants{} // exception_grants_dir set, no grant in it
+			}
+			if tc.listed {
+				r.l.cfg.Table.SidecarControls = []string{provControl}
 			}
 			d, res := provEval(t, r, hook.StagePlan)
 			if tc.want == nil {
