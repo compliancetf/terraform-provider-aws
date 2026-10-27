@@ -10,8 +10,8 @@ import (
 )
 
 // classificationRule is what the lifecycle sees in the last step of every
-// rpcseq scenario, as recorded on Terraform 1.5, 1.10, 1.16 and OpenTofu 1.13
-// (identical on all four): every hook call except validate, in order, as
+// rpcseq scenario, as recorded on Terraform 1.5, 1.10, 1.16, 1.17 and OpenTofu 1.13
+// (identical on all five): every hook call except validate, in order, as
 // "read", "import <op>", "plan <op> <prior> <planned> rr=<requires_replace>",
 // "apply_pre <op> <envelope op> <prior> <planned>[ imported]" or "apply_post <op> <new>".
 //
