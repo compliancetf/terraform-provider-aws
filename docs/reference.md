@@ -88,6 +88,20 @@ The embedded CIS bundle (`cis-aws`) holds these controls. Control ids follow the
 - **Exception grants** are DSSE-signed files, one per grant, in `exception_grants_dir`. They apply only to controls whose signed coverage allows grants, and only within their org, workspace scope and expiry. A grant naming any control that is unknown or not coverable for grants applies to none of its controls, with a warning per control. Under `floor_mode: airgap` grant expiry and key windows are checked against the latest accepted floor statement, never the local clock.
 - **Self-service exceptions** in `exceptions_file` are HCL. Without a signed org profile that lists the control under self-service, the file is ignored with a warning. Each entry selects resources with a CEL `match` expression over `type`, `resource`, `config`, `prior`, `op`, `env` and `provider` (see `examples/exception/exceptions.hcl`); an unknown result waives nothing at plan and is retried at apply, an error waives nothing. A match that reads `op` must hold under every op a control is checked under: apply checks each half of a replace under `replace` and under its own `create` or `delete`, and a `change` under the actual `create` or `update` too. Name the half ops (`op in ['replace', 'create', 'delete']`) or read no `op`; a match that says only `op == 'replace'` waives at plan, where it warns, and blocks at apply. The same holds for grant selectors. The file holds `exception` blocks only: a block or attribute naming a baseline, quarantine, floor or run key fails the load with `self_service_scope`. Under `floor_mode: airgap` break-glass coverability is dropped with a warning per control.
 
+### CIS bundle release asset
+
+Each release ships the embedded CIS bundle as `terraform-provider-aws_X.Y.Z_cis-aws.tar.gz`, listed in the release's signed `SHA256SUMS`. The verdict tool refuses a `--bundle-dir` without it, because the provider always loads this bundle. Use the asset of the provider version your lock file pins. The archive holds `manifest.dsse.json` and `controls.json` at its root, so extract it into a directory named after the bundle id:
+
+```bash
+V=X.Y.Z
+gpg --verify terraform-provider-aws_${V}_SHA256SUMS.sig terraform-provider-aws_${V}_SHA256SUMS
+sha256sum --ignore-missing -c terraform-provider-aws_${V}_SHA256SUMS   # macOS: shasum -a 256 --ignore-missing -c
+mkdir -p bundles/cis-aws
+tar xzf terraform-provider-aws_${V}_cis-aws.tar.gz -C bundles/cis-aws
+```
+
+Then pass `--bundle-dir bundles` to the verdict tool, next to one directory per other bundle.
+
 ## Diagnostics
 
 A failing control is reported as `[<control id>] <message>`, then the source snippet, then these lines:
