@@ -22,9 +22,9 @@ const (
 	// checked before decode.
 	MaxDocBytes = 256 << 10
 	// decodeCost is the admission estimate of token-level decode work per
-	// document byte. shortcut: one fixed rate, calibrate against the p99
-	// benchmark in test/bench.
-	decodeCost = 20 * time.Nanosecond
+	// document byte: 2.5x the slowest of 6 runs of BenchmarkJSONDecodeCost
+	// (40 ns/byte, dense) on an Apple M1 Max, go1.27.2.
+	decodeCost = 100 * time.Nanosecond
 	// DefaultDocCacheBytes is the process document cache cap until
 	// SetDocCacheBytes changes it (celeng Options.DocCacheBytes default).
 	DefaultDocCacheBytes = 64 << 20

@@ -10,12 +10,21 @@ const (
 	// MaxExpandedActions bounds actions_expanded + not_actions_expanded
 	// summed over one document; past it Normalize returns limit.
 	MaxExpandedActions = 10_000
-	// decodeCost is the admission estimate per document byte, the same rate
-	// as json.path. matchCost is the estimate per catalog action a pattern
-	// is matched against. shortcut: fixed rates, calibrate with the p99
-	// benchmark.
-	decodeCost = 20 * time.Nanosecond
-	matchCost  = 20 * time.Nanosecond
+	// The admission estimates bound an uncached iam.parse, set from
+	// cost_bench_test.go (iampolicy) and BenchmarkIAMParseCost (engine/lib)
+	// at about 2x the slowest of 6 runs on a shared, loaded Apple M1 Max
+	// (go1.27.2); a quiet run measures 4-10x below them.
+	// decodeCost is per document byte: decode, statements and the
+	// policyValue render (worst run 162 ns/byte, BenchmarkIAMParseCost/typical).
+	decodeCost = 350 * time.Nanosecond
+	// matchCost is per scanCost unit (worst run 137 ns,
+	// BenchmarkMatchCost/backtrack-3 and cross-service).
+	matchCost = 300 * time.Nanosecond
+	// expandCost is per action a pattern can add to the expanded sets:
+	// collect, sort and policyValue render (worst run 1.03 us,
+	// BenchmarkIAMParseCost/service-wildcard-ec2). Charged apart from
+	// matchCost so literal patterns, which add one action, stay cheap.
+	expandCost = 2 * time.Microsecond
 )
 
 // admitDecode is the pre-decode admission check: the decode estimate from
@@ -28,17 +37,21 @@ func admitDecode(doc string, budget time.Duration) error {
 }
 
 // expand fills the catalog fields of p.
-// Before any matching it charges every non-* pattern scanCost on top of the
-// decode estimate; over budget is limit.
+// Before any matching it charges every non-* pattern scanCost, and every
+// action the patterns can add (at most MaxExpandedActions) expandCost, on
+// top of the decode estimate; over budget is limit.
 // "*" is a flag and never expanded. A pattern matching no catalog
 // action is unresolved (unknown service, unknown action, empty wildcard).
 func expand(p *Policy, c *Catalog, docLen int, budget time.Duration) error {
 	cost := time.Duration(docLen+1) * decodeCost
+	adds := 0
 	for _, st := range p.Statements {
 		for _, pat := range slices.Concat(st.Actions, st.NotActions) {
 			cost += scanCost(c, pat)
+			adds += addBound(c, pat)
 		}
 	}
+	cost += time.Duration(min(adds, MaxExpandedActions)) * expandCost
 	if budget > 0 && cost > budget {
 		return limit(rAdmission)
 	}
@@ -139,17 +152,30 @@ func scan(c *Catalog, pat string, fn func(string) bool) {
 // scanCost is the admission estimate of matching pat: every action scan
 // visits, each at matchCost scaled by pattern length (glob keeps only the
 // last star, so a restart costs at most the trailing segment against one
-// catalog name). shortcut: fixed rates, calibrate with the bench gate.
+// catalog name).
 func scanCost(c *Catalog, pat string) time.Duration {
+	return time.Duration(visits(c, pat)) * matchCost * time.Duration(1+len(pat)/8)
+}
+
+// addBound is the most actions pat can add to an expanded set: one for a
+// pattern without wildcards, every action scan visits otherwise.
+func addBound(c *Catalog, pat string) int {
+	if !strings.ContainsAny(pat, "*?") {
+		return min(1, visits(c, pat))
+	}
+	return visits(c, pat)
+}
+
+// visits is the number of catalog actions scan calls fn with for pat.
+func visits(c *Catalog, pat string) int {
 	svc, _, _ := strings.Cut(pat, ":")
-	n := c.total
 	switch {
 	case pat == "*":
-		n = 0
+		return 0
 	case !strings.ContainsAny(svc, "*?"):
-		n = len(c.services[svc])
+		return len(c.services[svc])
 	}
-	return time.Duration(n) * matchCost * time.Duration(1+len(pat)/8)
+	return c.total
 }
 
 // Grants is iam.grants(stmt, a): with Action, action_all or any pattern
