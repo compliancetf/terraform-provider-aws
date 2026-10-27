@@ -10,6 +10,8 @@ import (
 	"runtime"
 	"sync"
 	"syscall"
+
+	"github.com/compliancetf/terraform-provider-aws/internal/fsutil"
 )
 
 const (
@@ -62,13 +64,13 @@ func checkOwnerPerm(path string, st os.FileInfo, ownOnly bool) error {
 	return unixACL(path, ownOnly, false)
 }
 
-// unixACL applies checkACL to path's extended ACL (macOS; none elsewhere).
+// unixACL applies fsutil.CheckACL to path's extended ACL (macOS; none elsewhere).
 func unixACL(path string, ownOnly, sticky bool) error {
 	entries, err := pathACL(path)
 	if err != nil {
 		return fmt.Errorf("reading ACL: %w", err)
 	}
-	return checkACL(entries, macCompatGUID(currentUID), map[string]bool{macCompatGUID(0): true}, ownOnly, sticky)
+	return fsutil.CheckACL(entries, macCompatGUID(currentUID), map[string]bool{macCompatGUID(0): true}, ownOnly, sticky)
 }
 
 // macCompatGUID is the GUID macOS uses for a uid without a directory record.

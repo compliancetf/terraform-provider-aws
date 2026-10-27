@@ -53,3 +53,6 @@ func checkDir(d *os.File, fi fs.FileInfo, path string, repair bool) error {
 	}
 	return nil
 }
+
+// MkdirPrivate creates dir with mode 0700.
+func MkdirPrivate(dir string) error { return os.Mkdir(dir, 0o700) }

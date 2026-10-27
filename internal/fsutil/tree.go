@@ -29,7 +29,11 @@ func OpenTree(root, dir string, create bool) (*os.Root, error) {
 		return nil, fmt.Errorf("%s is outside the cache %s", dir, root)
 	}
 	if create {
-		if err := os.MkdirAll(root, 0o700); err != nil {
+		// The dirs below root inherit its DACL on Windows, so root is made private.
+		if err := os.MkdirAll(filepath.Dir(root), 0o700); err != nil {
+			return nil, err
+		}
+		if err := MkdirPrivate(root); err != nil && !errors.Is(err, fs.ErrExist) {
 			return nil, err
 		}
 	}

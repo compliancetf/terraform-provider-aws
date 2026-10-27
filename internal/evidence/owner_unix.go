@@ -10,7 +10,7 @@ import (
 
 // checkOwner requires the directory to be owned by this process's uid and to
 // have none of the permission bits in deny.
-func checkOwner(fi os.FileInfo, deny os.FileMode) error {
+func checkOwner(_ *os.File, fi os.FileInfo, deny os.FileMode) error {
 	st, ok := fi.Sys().(*syscall.Stat_t)
 	if !ok || int(st.Uid) != os.Getuid() {
 		return errors.New("not owned by the current user")

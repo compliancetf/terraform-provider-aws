@@ -4,12 +4,13 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"strings"
 	"syscall"
 	"testing"
 )
 
-// Windows-only; these run on a Windows host (follow-up bead), and
-// GOOS=windows go vet compiles them everywhere.
+// Windows-only; these run on a Windows host, and GOOS=windows go vet
+// compiles them everywhere.
 
 // TestExecDirWindowsShortNameAlias: an 8.3 short spelling of a plugin cache
 // is the same directory, so the exec dir is never placed under it.
@@ -49,4 +50,23 @@ func TestExecDirRefusesWindowsACL(t *testing.T) {
 	}
 	_, err := newExecDir([]string{filepath.Join(open, "exec")}, nil)
 	wantUnsafe(t, err, "ACL")
+}
+
+// TestPrivateDirWindowsACL: the download cache is accepted with the default
+// per-user ACL and refused when Everyone may write it.
+func TestPrivateDirWindowsACL(t *testing.T) {
+	base := realTempDir(t)
+	if err := privateDir(filepath.Join(base, "cache")); err != nil {
+		t.Fatal(err)
+	}
+	open := filepath.Join(base, "open")
+	if err := os.Mkdir(open, 0o700); err != nil {
+		t.Fatal(err)
+	}
+	if out, err := exec.Command("icacls", open, "/grant", "*S-1-1-0:(M)").CombinedOutput(); err != nil {
+		t.Fatalf("icacls: %v %s", err, out)
+	}
+	if err := privateDir(open); err == nil || !strings.Contains(err.Error(), "ACL grants write") {
+		t.Fatalf("want ACL refusal, got %v", err)
+	}
 }

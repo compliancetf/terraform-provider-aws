@@ -1,4 +1,4 @@
-//go:build !unix
+//go:build !unix && !windows
 
 package fsutil
 
@@ -24,3 +24,6 @@ func checkDir(_ *os.File, fi fs.FileInfo, path string, _ bool) error {
 	}
 	return nil
 }
+
+// MkdirPrivate creates dir with mode 0700.
+func MkdirPrivate(dir string) error { return os.Mkdir(dir, 0o700) }

@@ -15,6 +15,8 @@ import (
 	"strconv"
 	"sync"
 	"time"
+
+	"github.com/compliancetf/terraform-provider-aws/internal/fsutil"
 )
 
 // Write error classes, for "evidence write failed: <class>".
@@ -148,7 +150,8 @@ func Open(o Options) (*Writer, error) {
 	return w, nil
 }
 
-// mkdirAllSync is os.MkdirAll (mode 0700) that also fsyncs the parent of
+// mkdirAllSync is os.MkdirAll (fsutil.MkdirPrivate: mode 0700, a private
+// DACL on Windows) that also fsyncs the parent of
 // every directory on the path it creates, so a crash cannot drop a new
 // ancestor of evidence_dir. A dir that a sibling process created first is
 // treated as created here: the sibling may not have fsynced it yet.
@@ -173,7 +176,7 @@ func mkdirAllSync(dir string, sync func(*os.File) error) error {
 			return err
 		}
 	}
-	if err := os.Mkdir(dir, 0o700); err != nil {
+	if err := fsutil.MkdirPrivate(dir); err != nil {
 		if !errors.Is(err, os.ErrExist) {
 			return err
 		}
@@ -228,7 +231,7 @@ func openDir(root *os.Root, name string, deny os.FileMode) (*os.File, error) {
 		err = errors.New("not a directory")
 	}
 	if err == nil {
-		err = checkOwner(fi, deny)
+		err = checkOwner(d, fi, deny)
 	}
 	if err != nil {
 		return nil, errors.Join(err, d.Close())
