@@ -6,7 +6,7 @@ import (
 	"github.com/compliancetf/terraform-provider-aws/internal/bundle"
 )
 
-// ContentDigest is build.json content_digest: the P1 content digest
+// ContentDigest is build.json content_digest: the bundle content digest
 // of one bundle alone, bundle.ContentDigestOf over the archive file bodies in
 // files (controls.json required; graph.json and iam-actions.json "" when
 // absent) and the bundle-declared exemption_coverable of every control in

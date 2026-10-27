@@ -31,7 +31,7 @@ type Case struct {
 }
 
 // CaseBindings are the case inputs: omitted attributes are null and
-// {"$unknown": true} is unknown (P1 rule).
+// {"$unknown": true} is unknown.
 type CaseBindings struct {
 	Op       string            `json:"op"`
 	Env      json.RawMessage   `json:"env,omitempty"`

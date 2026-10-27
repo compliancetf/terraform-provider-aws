@@ -63,7 +63,7 @@ func (s Schemas) kind(k bundle.Kind) func(string) (*tfprotov5.Schema, bool) {
 	return nil
 }
 
-// SchemaCompatDigest is the P0B schema_compat_digest of cs: sha256 of
+// SchemaCompatDigest is the manifest schema_compat_digest of cs: sha256 of
 // SchemaCompatLines joined by "\n".
 func SchemaCompatDigest(cs []bundle.Control, s Schemas) (string, error) {
 	lines, err := SchemaCompatLines(cs, s)
@@ -95,7 +95,7 @@ func SchemaCompatLines(cs []bundle.Control, s Schemas) ([]string, error) {
 			if t == nil {
 				return nil, errf("E_SCHEMA_TYPE", "%s: read %s.%s is not in the upstream schema", c.ID, c.ResourceType, r)
 			}
-			tj, err := t.MarshalJSON() //nolint:staticcheck // the P0B digest hashes the schema -json type signature
+			tj, err := t.MarshalJSON() //nolint:staticcheck // the digest hashes the schema -json type signature
 			if err != nil {
 				return nil, errf("E_SCHEMA_TYPE", "%s: read %s.%s: %v", c.ID, c.ResourceType, r, err)
 			}

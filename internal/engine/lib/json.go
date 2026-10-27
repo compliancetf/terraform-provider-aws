@@ -22,19 +22,19 @@ const (
 	// checked before decode.
 	MaxDocBytes = 256 << 10
 	// decodeCost is the admission estimate of token-level decode work per
-	// document byte. shortcut: one fixed rate, calibrate against the P1
-	// benchmark when it lands.
+	// document byte. shortcut: one fixed rate, calibrate against the p99
+	// benchmark in test/bench.
 	decodeCost = 20 * time.Nanosecond
 	// DefaultDocCacheBytes is the process document cache cap until
 	// SetDocCacheBytes changes it (celeng Options.DocCacheBytes default).
 	DefaultDocCacheBytes = 64 << 20
 	// nodeBytes is the cache charge per decoded JSON value on top of the
 	// document bytes: interface, map entry or slice slot and headers.
-	// shortcut: conservative guess, measure with the P1 benchmark.
+	// shortcut: conservative guess, measure with the p99 benchmark.
 	nodeBytes = 96
 	// entryBytes is the cache charge of every entry: key, map slot and
 	// buckets the map keeps after a clear. shortcut: measured ~550 B per
-	// entry with growth slack; the P1 benchmark can refine it.
+	// entry with growth slack; the p99 benchmark can refine it.
 	entryBytes = 512
 )
 

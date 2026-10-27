@@ -688,7 +688,7 @@ func upstreamWarnings(src, u string, loaded []*bundle.Bundle) []string {
 	var warns []string
 	for _, b := range loaded {
 		up := b.Manifest.Upstream
-		// No dev leniency: the upstream is a pinned release (P0A pins).
+		// No dev leniency: the upstream is a pinned release (pins.json).
 		if up.Source != src || !isRelease(u) || !meets(u, up.VersionRange, false) {
 			warns = append(warns, fmt.Sprintf("upstream %s %s is outside the upstream version range of bundle %s v%d", src, u, b.Manifest.BundleID, b.Manifest.BundleVersion))
 		}

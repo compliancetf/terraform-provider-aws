@@ -275,7 +275,7 @@ type stmtVal struct {
 
 // policyValue converts a normalized policy to its CEL map through the golden
 // JSON shape. n is the cache charge beyond the document: twice the JSON size.
-// shortcut: a guess like nodeBytes, measure with the P1 benchmark.
+// shortcut: a guess like nodeBytes, measure with the p99 benchmark.
 func policyValue(p *iampolicy.Policy, cat *iampolicy.Catalog) (ref.Val, int, error) {
 	stmts := make([]ref.Val, len(p.Statements))
 	n := 0

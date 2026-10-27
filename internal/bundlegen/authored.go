@@ -41,7 +41,7 @@ type Fixture struct {
 }
 
 // FixtureBindings are the crosscheck case bindings; an omitted attribute is
-// null and {"$unknown": true} marks an unknown (P1 rule).
+// null and {"$unknown": true} marks an unknown.
 type FixtureBindings struct {
 	Op       bundle.On      `yaml:"op" json:"op"`
 	Env      string         `yaml:"env,omitempty" json:"env,omitempty"`
@@ -208,7 +208,7 @@ func parseAuthored(id string, data []byte) (Authored, error) {
 		}
 		targets[key{t.Kind, t.Type}] = true
 	}
-	// The decoder the generator validates every kind with (P1 control schema).
+	// The decoder the generator validates every kind with (the control schema).
 	raw, err := canonicalJSON(cs)
 	if err != nil {
 		return Authored{}, err

@@ -33,7 +33,7 @@ func (k *coverableKinds) UnmarshalJSON(data []byte) error {
 
 // checkCoverable fails closed on a disposition whose exemption_coverable
 // holds an unknown or duplicate kind. Order is free: Generate emits the
-// list sorted into every control of the id (P1 normative control schema).
+// list sorted into every control of the id (the control schema).
 func checkCoverable(id string, d Disposition) error {
 	var seen []bundle.ExemptionKind
 	for _, k := range d.ExemptionCoverable {

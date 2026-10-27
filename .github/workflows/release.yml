@@ -71,7 +71,7 @@ jobs:
           go run ./tools/pinupstream -version "$VERSION" -out "$RUNNER_TEMP/pins.json"
           cmp pins.json "$RUNNER_TEMP/pins.json" || { echo "::error::pins.json is not the pinupstream output for $VERSION"; exit 1; }
       # refuse to publish a build that enforces no
-      # control. Fails unless main.go wires the Phase 0B lifecycle.
+      # control. Fails unless main.go wires the lifecycle evaluator.
       # A skipped, renamed or tag-excluded test exits 0, so require its PASS line.
       - name: Refuse a release without a compliance evaluator
         run: |
