@@ -41,16 +41,6 @@ const (
 	MaxAnchorBytes      = 64 << 10
 )
 
-// SinkType is the default evidence sink kind stamped in evidence chain headers.
-type SinkType string
-
-// Evidence sink kinds.
-const (
-	SinkS3ObjectLock       SinkType = "s3_object_lock"
-	SinkAzureImmutableBlob SinkType = "azure_immutable_blob"
-	SinkGCSRetentionLock   SinkType = "gcs_retention_lock"
-)
-
 // ErrProtocolUnsupported matches (errors.Is) the Load error for a protocol
 // other than SupportedProtocol.
 var ErrProtocolUnsupported = errors.New("wrapper: protocol not supported")
@@ -65,28 +55,25 @@ type Config struct {
 	UpstreamPins   []byte          // pins.json (compliancetf.upstream-pins/v1)
 	TrustAnchors   [][]byte        // ASCII-armored OpenPGP public keys
 	CISBundle      []byte          // signed bundle 2.0 archive
-	EvidenceSink   SinkType
 }
 
 // file is wrapper.json v1. Field order is the canonical order.
 type file struct {
-	Format          string   `json:"format"`
-	Address         string   `json:"address"`
-	Upstream        string   `json:"upstream"`
-	Protocol        int      `json:"protocol"`
-	ResourcePrefix  string   `json:"resource_prefix"`
-	CISBundleID     string   `json:"cis_bundle_id"`
-	CISFramework    string   `json:"cis_framework"`
-	CatalogProvider string   `json:"catalog_provider"`
-	EvidenceSink    SinkType `json:"evidence_sink"`
-	VerdictKMS      string   `json:"verdict_kms"`
+	Format          string `json:"format"`
+	Address         string `json:"address"`
+	Upstream        string `json:"upstream"`
+	Protocol        int    `json:"protocol"`
+	ResourcePrefix  string `json:"resource_prefix"`
+	CISBundleID     string `json:"cis_bundle_id"`
+	CISFramework    string `json:"cis_framework"`
+	CatalogProvider string `json:"catalog_provider"`
+	VerdictKMS      string `json:"verdict_kms"`
 }
 
 // catalogProviders maps an upstream type to its catalog provider name.
 var catalogProviders = map[string]string{"aws": "aws", "azurerm": "azure", "google": "gcp"}
 
 var (
-	sinks       = map[SinkType]bool{SinkS3ObjectLock: true, SinkAzureImmutableBlob: true, SinkGCSRetentionLock: true}
 	verdictKMS  = map[string]bool{"aws_kms": true, "azure_key_vault": true, "gcp_kms": true}
 	bundleIDRe  = regexp.MustCompile(`^cis-[a-z0-9]+$`)
 	frameworkRe = regexp.MustCompile(`^cis_[a-z0-9_]+$`)
@@ -127,7 +114,6 @@ func Load(wrapperJSON, pins []byte, anchors [][]byte, cis []byte) (Config, error
 		ResourcePrefix: f.ResourcePrefix,
 		UpstreamPins:   bytes.Clone(pins),
 		CISBundle:      bytes.Clone(cis),
-		EvidenceSink:   f.EvidenceSink,
 	}
 	for _, a := range anchors {
 		cfg.TrustAnchors = append(cfg.TrustAnchors, bytes.Clone(a))
@@ -191,8 +177,6 @@ func (f *file) validate() (up, addr tfaddr.Provider, err error) {
 		return up, addr, fmt.Errorf("wrapper: cis_bundle_id %q does not match %s", f.CISBundleID, bundleIDRe)
 	case !frameworkRe.MatchString(f.CISFramework):
 		return up, addr, fmt.Errorf("wrapper: cis_framework %q does not match %s", f.CISFramework, frameworkRe)
-	case !sinks[f.EvidenceSink]:
-		return up, addr, fmt.Errorf("wrapper: evidence_sink %q is not a known sink type", f.EvidenceSink)
 	case !verdictKMS[f.VerdictKMS]:
 		return up, addr, fmt.Errorf("wrapper: verdict_kms %q is not a known KMS type", f.VerdictKMS)
 	}

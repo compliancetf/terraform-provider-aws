@@ -23,8 +23,8 @@ func TestEmbeddedInputsLoad(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if cfg.Address.String() != "registry.compliance.tf/compliancetf/aws" || cfg.Upstream.String() != "registry.terraform.io/hashicorp/aws" || cfg.EvidenceSink != wrapper.SinkS3ObjectLock {
-		t.Fatalf("config %s / %s / %s", cfg.Address, cfg.Upstream, cfg.EvidenceSink)
+	if cfg.Address.String() != "registry.compliance.tf/compliancetf/aws" || cfg.Upstream.String() != "registry.terraform.io/hashicorp/aws" {
+		t.Fatalf("config %s / %s", cfg.Address, cfg.Upstream)
 	}
 }
 
