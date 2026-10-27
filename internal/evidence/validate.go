@@ -203,6 +203,9 @@ func checkResult(c *checker, res *Result) {
 		c.match("results.break_glass_id", res.BreakGlassID, reControlID)
 	}
 	c.optEnum("results.situation", res.Situation, situations)
+	if res.ReadDigest != "" {
+		c.match("results.read_digest", res.ReadDigest, reDigest)
+	}
 	if len(res.Paths) > maxPaths {
 		c.fail("results.paths")
 	}

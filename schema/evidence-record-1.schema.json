@@ -224,6 +224,7 @@
           "maxItems": 32,
           "items": {"type": "string", "pattern": "^[a-z0-9_]+(\\.[a-z0-9_]+|\\[\\*\\]|\\[[0-9]+\\])*$"}
         },
+        "read_digest": {"description": "Optional: the baseline read digest of the control over the prior state (sha256 of JCS of the control's reads, each hashed under a key derived from the org baseline key). Written at stage plan for an instance with a prior state when COMPLIANCETF_BASELINE_KEY_FILE is set; absent otherwise, and when a read is unknown or schema-sensitive. ctfkit baseline generation copies it into baseline entries.", "$ref": "#/$defs/digest"},
         "situation": {"description": "Verdict gate results only: the apply situation table row. Several matched entries with identical decisions carry the decision's row.", "enum": ["pass", "fail", "not_evaluable", "pending", "excepted", "exemption_unproven", "missing_decision", "no_match", "collision", "no_verdict"]},
         "err": {"enum": ["type_error", "limit", "timeout", "no_such_attribute", "unresolved", "scope_untrusted"]},
         "exception": {

@@ -91,6 +91,9 @@ type Configured struct {
 	Sidecar    *exceptions.Sidecar     // nil: no self-service sidecar applies
 	Grants     *exceptions.Grants      // nil: no exception_grants_dir
 	Baseline   Baseline                // *baseline.Set; nil, or a nil set: no baseline file
+	// readKey is the baseline key of COMPLIANCETF_BASELINE_KEY_FILE, with or
+	// without a baseline file; nil: plan writes no results[].read_digest.
+	readKey []byte
 	// Coverability is the effective signed coverable map; plan
 	// reads it for provisional exemption eligibility. The zero
 	// value covers nothing.
@@ -407,6 +410,8 @@ func (l *Lifecycle) configure(ctx context.Context, compliance tftypes.Value) (*C
 	if err != nil {
 		return nil, nil, err
 	}
+	readKey, w := baselineReadKey()
+	warns = append(warns, w...)
 
 	if res.Profile != nil {
 		delta.Profiles = map[string]int64{org.ID: profVersion}
@@ -421,7 +426,7 @@ func (l *Lifecycle) configure(ctx context.Context, compliance tftypes.Value) (*C
 		return nil, nil, err
 	}
 	warns = append(warns, grandfatherWarning(table, bl != nil)...) // last: only a successful Configure spends the once
-	return &Configured{Block: b, Resolution: res, Table: table, Floor: floor, Controls: cs, Content: cs.ContentDigest(cov.Kinds()), Bundles: digests, Sources: sources, Skipped: cacheSkipped(skipped), Events: events, Sidecar: side, Grants: grants, Baseline: bl, Coverability: cov, reset: unrec,
+	return &Configured{Block: b, Resolution: res, Table: table, Floor: floor, Controls: cs, Content: cs.ContentDigest(cov.Kinds()), Bundles: digests, Sources: sources, Skipped: cacheSkipped(skipped), Events: events, Sidecar: side, Grants: grants, Baseline: bl, readKey: readKey, Coverability: cov, reset: unrec,
 		BreakGlass: breakglass.Policy{Profile: res.Profile, FloorMode: floorMode, Revocations: cs.Revocations(), Coverable: func(id string) bool { return cov.Coverable(id, string(bundle.CoverBreakGlass)) }},
 		tableIn:    tableIn}, warns, nil
 }
