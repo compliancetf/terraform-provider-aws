@@ -2,6 +2,7 @@ package iampolicy
 
 import (
 	"errors"
+	"fmt"
 	"testing"
 )
 
@@ -55,6 +56,24 @@ func TestIdentity(t *testing.T) {
 		{"resource absent", `"Principal":"*"`, bucket, true, unres},
 		{"not resource", `"Principal":"*","NotResource":"arn:aws:s3:::bobthecorp-other"`, bucket, true, unres},
 		{"query resource wildcard", `"Principal":"*","Resource":"*"`, "arn:aws:s3:::bobthecorp-*", true, unres},
+		// Unresolved principals refuse the statement even beside a match.
+		{"role unique id", `"Principal":{"AWS":"AROAEXAMPLEBOBTHECORP"},"Resource":"*"`, role, false, unres},
+		{"canonical user", `"Principal":{"CanonicalUser":"79a59df900b949e55d96a1e698fbace"},"Resource":"*"`, role, false, unres},
+		{"federated star", `"Principal":{"Federated":"*"},"Resource":"*"`, role, false, unres},
+		{"aws star beside role name", `"Principal":{"AWS":["*","bobthecorp-app"]},"Resource":"*"`, role, false, unres},
+		{"not principal with query star", `"NotPrincipal":{"AWS":"` + role + `"},"Resource":"*"`, "*", false, unres},
+		{"query bare account", `"Principal":"*","Resource":"*"`, "222222222222", false, unres},
+		{"query variable", `"Principal":"*","Resource":"*"`, "arn:aws:iam::222222222222:role/${aws:username}", false, unres},
+		// principal_is reads the Resource dimension only through unresolved_resources.
+		{"not resource keeps principal_is", `"Principal":{"AWS":"` + role + `"},"NotResource":"arn:aws:s3:::b/*"`, role, false, "true"},
+		{"resource absent keeps principal_is", `"Principal":{"AWS":"` + role + `"}`, role, false, "true"},
+		{"unresolved resource refuses principal_is star", `"Principal":"*","Resource":"bobthecorp-logs"`, role, false, unres},
+		// resource_is reads the Principal dimension only through unresolved_principals.
+		{"not principal keeps resource_is", `"NotPrincipal":{"AWS":"bobthecorp-app"},"Resource":"` + bucket + `"`, bucket, true, "true"},
+		{"principal absent keeps resource_is", `"Resource":"` + bucket + `"`, bucket, true, "true"},
+		{"resource glob beside match", `"Principal":"*","Resource":["` + bucket + `","arn:aws:s3:::bobthecorp-logs/*"]`, bucket, true, unres},
+		{"not resource with query star", `"Principal":"*","NotResource":"` + bucket + `"`, "*", true, unres},
+		{"query resource name", `"Principal":"*","Resource":"*"`, "bobthecorp-logs", true, unres},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
 			f := PrincipalIs
@@ -173,6 +192,98 @@ func TestPrincipalsInAccountPartition(t *testing.T) {
 				}
 			case err != nil || (got != (tc.want == "true")):
 				t.Fatalf("got %v, %v; want %s", got, err, tc.want)
+			}
+		})
+	}
+}
+
+// TestPrincipalWildcardParse pins the parse rules for Principal and
+// NotPrincipal: a ${...} variable or any "*" / "?" other than a lone "*" is
+// rejected (type_error), a lone "*" is rejected in NotPrincipal and accepted
+// in Principal, and NotPrincipal values are kept as written.
+func TestPrincipalWildcardParse(t *testing.T) {
+	const role = "arn:aws:iam::222222222222:role/bobthecorp-app"
+	for _, tc := range []struct {
+		name, elem string
+		reason     string // "" when accepted
+		principals string // fmt of Principals, UnresolvedPrincipals, NotPrincipals
+	}{
+		{"variable", `"Principal":{"AWS":"${aws:username}"}`, rPrincipalVariable, ""},
+		{"variable in array", `"Principal":{"AWS":["` + role + `","arn:aws:iam::222222222222:role/${aws:username}"]}`, rPrincipalVariable, ""},
+		{"variable before wildcard", `"Principal":{"AWS":"${aws:username}*"}`, rPrincipalVariable, ""},
+		{"account glob", `"Principal":{"AWS":"arn:aws:iam::12345*:root"}`, rPrincipalWildcard, ""},
+		{"account glob in array", `"Principal":{"AWS":["` + role + `","arn:aws:iam::12345*:root"]}`, rPrincipalWildcard, ""},
+		{"lone question mark", `"Principal":{"AWS":"?"}`, rPrincipalWildcard, ""},
+		{"lone question mark in array", `"Principal":{"AWS":["?"]}`, rPrincipalWildcard, ""},
+		{"double star", `"Principal":{"AWS":"**"}`, rPrincipalWildcard, ""},
+		{"star beside glob", `"Principal":{"AWS":["*","arn:aws:iam::222222222222:role/bob*"]}`, rPrincipalWildcard, ""},
+		{"service glob", `"Principal":{"Service":"*.amazonaws.com"}`, rPrincipalWildcard, ""},
+		{"string question mark", `"Principal":"?"`, rPrincipalValue, ""},
+		{"string glob", `"Principal":"arn:aws:iam::12345*:root"`, rPrincipalValue, ""},
+		{"string variable", `"Principal":"${aws:username}"`, rPrincipalValue, ""},
+		{"top-level array", `"Principal":["*"]`, rPrincipalValue, ""},
+		{"not variable", `"NotPrincipal":{"AWS":"${aws:username}"}`, rPrincipalVariable, ""},
+		{"not star", `"NotPrincipal":{"AWS":"*"}`, rNotPrincipalStar, ""},
+		{"not star in array", `"NotPrincipal":{"AWS":["` + role + `","*"]}`, rNotPrincipalStar, ""},
+		{"not service star", `"NotPrincipal":{"Service":"*"}`, rNotPrincipalStar, ""},
+		{"not account glob", `"NotPrincipal":{"AWS":["arn:aws:iam::12345*:root"]}`, rPrincipalWildcard, ""},
+		{"not question mark", `"NotPrincipal":{"AWS":"?"}`, rPrincipalWildcard, ""},
+		{"not string star", `"NotPrincipal":"*"`, rPrincipalValue, ""},
+		{"star", `"Principal":"*"`, "", "map[aws:[*]] map[] map[]"},
+		{"aws star", `"Principal":{"AWS":"*"}`, "", "map[aws:[*]] map[] map[]"},
+		{"aws star in array", `"Principal":{"AWS":["*"]}`, "", "map[aws:[*]] map[] map[]"},
+		{"service star", `"Principal":{"Service":"*"}`, "", "map[service:[*]] map[] map[]"},
+		{"federated star is unresolved", `"Principal":{"Federated":"*"}`, "", "map[] map[federated:[*]] map[]"},
+		{"not principal as written", `"NotPrincipal":{"AWS":["bobthecorp-app","222222222222"]}`, "", "map[] map[] map[aws:[222222222222 bobthecorp-app]]"},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			p, err := Normalize(`{"Version":"2012-10-17","Statement":{"Effect":"Allow","Action":"s3:getobject","Resource":"*",`+tc.elem+`}}`, Options{})
+			if tc.reason != "" {
+				var e *Error
+				if !isReason(err, ErrInvalid, tc.reason) || !errors.As(err, &e) || e.Class() != "type_error" {
+					t.Fatalf("got %v; want type_error %s", err, tc.reason)
+				}
+				return
+			}
+			if err != nil {
+				t.Fatal(err)
+			}
+			st := p.Statements[0]
+			if got := fmt.Sprint(st.Principals, " ", st.UnresolvedPrincipals, " ", st.NotPrincipals); got != tc.principals {
+				t.Fatalf("got %s; want %s", got, tc.principals)
+			}
+		})
+	}
+}
+
+// TestResourceResolution pins identity resolution of Resource: "*" and full
+// ARNs stay canonical, globs, variables and names move to
+// unresolved_resources, NotResource stays as written.
+func TestResourceResolution(t *testing.T) {
+	const bucket = "arn:aws:s3:::bobthecorp-logs"
+	for _, tc := range []struct {
+		name, elem string
+		want       string // fmt of Resources, UnresolvedResources, NotResources
+	}{
+		{"star", `"Resource":"*"`, "[*] [] []"},
+		{"full arn", `"Resource":"` + bucket + `"`, "[" + bucket + "] [] []"},
+		{"object glob", `"Resource":"arn:aws:s3:::bobthecorp-logs/*"`, "[] [arn:aws:s3:::bobthecorp-logs/*] []"},
+		{"question mark", `"Resource":"arn:aws:s3:::bobthecorp-log?"`, "[] [arn:aws:s3:::bobthecorp-log?] []"},
+		{"double star", `"Resource":"**"`, "[] [**] []"},
+		{"variable", `"Resource":"arn:aws:s3:::${aws:username}"`, "[] [arn:aws:s3:::${aws:username}] []"},
+		{"name", `"Resource":"bobthecorp-logs"`, "[] [bobthecorp-logs] []"},
+		{"unknown partition", `"Resource":"arn:bobthecorp:s3:::bobthecorp-logs"`, "[] [arn:bobthecorp:s3:::bobthecorp-logs] []"},
+		{"mixed", `"Resource":["*","` + bucket + `","arn:aws:s3:::bobthecorp-logs/*"]`, "[* " + bucket + "] [arn:aws:s3:::bobthecorp-logs/*] []"},
+		{"not resource as written", `"NotResource":["arn:aws:s3:::bobthecorp-logs/*","bobthecorp-logs"]`, "[] [] [arn:aws:s3:::bobthecorp-logs/* bobthecorp-logs]"},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			p, err := Normalize(`{"Version":"2012-10-17","Statement":{"Effect":"Allow","Action":"s3:getobject","Principal":"*",`+tc.elem+`}}`, Options{})
+			if err != nil {
+				t.Fatal(err)
+			}
+			st := p.Statements[0]
+			if got := fmt.Sprint(st.Resources, " ", st.UnresolvedResources, " ", st.NotResources); got != tc.want {
+				t.Fatalf("got %s; want %s", got, tc.want)
 			}
 		})
 	}
