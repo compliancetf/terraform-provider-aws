@@ -92,8 +92,11 @@ func TestWalkRootSwap(t *testing.T) {
 			}
 			return os.Symlink("real", p)
 		},
+		// The listed directory is moved aside, not removed: a removed one
+		// frees its inode, which Linux hands straight to the new directory,
+		// and the same device and inode is the same directory to any check.
 		"other dir": func(p string) error {
-			if err := os.RemoveAll(p); err != nil {
+			if err := os.Rename(p, p+".listed"); err != nil {
 				return err
 			}
 			return os.Mkdir(p, 0o755)
