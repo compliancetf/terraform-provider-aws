@@ -91,6 +91,9 @@ type Configured struct {
 	Sidecar    *exceptions.Sidecar     // nil: no self-service sidecar applies
 	Grants     *exceptions.Grants      // nil: no exception_grants_dir
 	Baseline   Baseline                // *baseline.Set; nil, or a nil set: no baseline file
+	// readKey is the baseline key of COMPLIANCETF_BASELINE_KEY_FILE, with or
+	// without a baseline file; nil: plan writes no results[].read_digest.
+	readKey []byte
 	// Coverability is the effective signed coverable map; plan
 	// reads it for provisional exemption eligibility. The zero
 	// value covers nothing.
@@ -402,10 +405,16 @@ func (l *Lifecycle) configure(ctx context.Context, compliance tftypes.Value) (*C
 	}
 	warns = append(warns, n.Warnings...)
 	// the signed baseline, verified before anything is saved.
-	bl, err := baseline.Load(baseline.LoadInput{Path: b.BaselineFile, KeyPath: os.Getenv(baseline.EnvKeyFile), Profile: res.Profile,
+	// The key file is read once: matching and evidence read digests share
+	// these bytes, so a key rotated mid-Configure cannot split them.
+	readKey, keyErr := baseline.ReadKey(os.Getenv(baseline.EnvKeyFile))
+	bl, err := baseline.Load(baseline.LoadInput{Path: b.BaselineFile, Key: readKey, KeyErr: keyErr, Profile: res.Profile,
 		Revocations: cs.Revocations(), Coverable: func(id string) bool { return cov.Coverable(id, string(bundle.CoverBaseline)) }, Now: now})
 	if err != nil {
 		return nil, nil, err
+	}
+	if keyErr != nil { // no baseline file: Load did not need the key
+		warns = append(warns, keyErr.Error()+": evidence records carry no read_digest")
 	}
 
 	if res.Profile != nil {
@@ -421,7 +430,7 @@ func (l *Lifecycle) configure(ctx context.Context, compliance tftypes.Value) (*C
 		return nil, nil, err
 	}
 	warns = append(warns, grandfatherWarning(table, bl != nil)...) // last: only a successful Configure spends the once
-	return &Configured{Block: b, Resolution: res, Table: table, Floor: floor, Controls: cs, Content: cs.ContentDigest(cov.Kinds()), Bundles: digests, Sources: sources, Skipped: cacheSkipped(skipped), Events: events, Sidecar: side, Grants: grants, Baseline: bl, Coverability: cov, reset: unrec,
+	return &Configured{Block: b, Resolution: res, Table: table, Floor: floor, Controls: cs, Content: cs.ContentDigest(cov.Kinds()), Bundles: digests, Sources: sources, Skipped: cacheSkipped(skipped), Events: events, Sidecar: side, Grants: grants, Baseline: bl, readKey: readKey, Coverability: cov, reset: unrec,
 		BreakGlass: breakglass.Policy{Profile: res.Profile, FloorMode: floorMode, Revocations: cs.Revocations(), Coverable: func(id string) bool { return cov.Coverable(id, string(bundle.CoverBreakGlass)) }},
 		tableIn:    tableIn}, warns, nil
 }

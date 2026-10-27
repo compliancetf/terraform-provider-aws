@@ -11,6 +11,7 @@ import (
 
 	"github.com/hashicorp/terraform-plugin-go/tftypes"
 
+	"github.com/compliancetf/terraform-provider-aws/internal/baseline"
 	"github.com/compliancetf/terraform-provider-aws/internal/bundle"
 	"github.com/compliancetf/terraform-provider-aws/internal/engine"
 	"github.com/compliancetf/terraform-provider-aws/internal/engine/celeng"
@@ -261,6 +262,24 @@ func result(ctl *bundle.Control, out engine.Outcome, classified engine.State, st
 		r.Paths = evidencePaths(cc.Paths(ctl))
 	}
 	return r
+}
+
+// readDigest is results[].read_digest of ctl at plan: the baseline read
+// digest over the prior state, as baseline entries record it. "" without
+// the baseline key, without a prior state (a create), when a read is
+// unknown, without the upstream schema of the type, or when ctl is not
+// grandfatherable (a schema-sensitive or
+// unresolvable read: no keyed hash of a sensitive value is written).
+func (c *Configured) readDigest(ctl *bundle.Control, prior tftypes.Value) string {
+	if c.readKey == nil || !prior.IsKnown() || prior.IsNull() || c.Schemas == nil {
+		return ""
+	}
+	s, ok := c.Schemas.Resource(ctl.ResourceType)
+	if !ok || !baseline.Grandfatherable(ctl, s) { // no upstream schema: sensitivity unknown, no digest
+		return ""
+	}
+	d, _ := baseline.ReadDigest(c.readKey, ctl.Reads, prior) // "" when a read is unknown
+	return d
 }
 
 func decision(stage Stage, state engine.State, sev Severity) string {

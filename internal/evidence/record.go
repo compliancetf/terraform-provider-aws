@@ -145,7 +145,9 @@ type Resource struct {
 
 // Result is one control's outcome. Paths are schema attribute paths, never
 // map keys or values; Err is an error class. Situation is the apply
-// situation table row label of a verdict gate result.
+// situation table row label of a verdict gate result. ReadDigest is the
+// baseline read digest of the control over the prior state (plan stage,
+// COMPLIANCETF_BASELINE_KEY_FILE set); "" when not computed.
 type Result struct {
 	// BreakGlassID is the override_id of the honored break-glass receipt
 	// that downgraded this result; "" when none.
@@ -156,6 +158,7 @@ type Result struct {
 	Exception    *Exception `json:"exception,omitempty"`
 	Half         string     `json:"half,omitempty"`
 	Paths        []string   `json:"paths"`
+	ReadDigest   string     `json:"read_digest,omitempty"`
 	Situation    string     `json:"situation,omitempty"`
 	State        string     `json:"state"`
 	Version      string     `json:"version"`

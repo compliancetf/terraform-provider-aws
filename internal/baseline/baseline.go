@@ -105,16 +105,36 @@ type Set struct {
 }
 
 // LoadInput is the Configure context of a baseline. Path is the baseline
-// file ("" none), KeyPath the baseline key file. Profile is the
-// floor-validated signed profile, the only source of trusted keys;
-// Coverable reports whether the signed coverable map lists baseline for a
-// control.
+// file ("" none); Key and KeyErr are what ReadKey returned for the baseline
+// key file, read once per Configure so matching and evidence read digests
+// use the same bytes. Profile is the floor-validated signed profile, the
+// only source of trusted keys; Coverable reports whether the signed
+// coverable map lists baseline for a control.
 type LoadInput struct {
-	Path, KeyPath string
-	Profile       *profile.Profile
-	Revocations   trust.Revocations
-	Coverable     func(control string) bool
-	Now           time.Time
+	Path        string
+	Key         []byte
+	KeyErr      error
+	Profile     *profile.Profile
+	Revocations trust.Revocations
+	Coverable   func(control string) bool
+	Now         time.Time
+}
+
+// ErrKeyUnusable is ReadKey's error for a key file that is not a usable key.
+var ErrKeyUnusable = errors.New("COMPLIANCETF_BASELINE_KEY_FILE must name a regular file owned by this user that group and others cannot read, holding 64 lowercase hex characters")
+
+// ReadKey reads the baseline key file at path: nil, nil when path is ""
+// (COMPLIANCETF_BASELINE_KEY_FILE unset), ErrKeyUnusable when the file is
+// not a usable key.
+func ReadKey(path string) ([]byte, error) {
+	if path == "" {
+		return nil, nil
+	}
+	key, ok := verdict.ReadSecretFile(path)
+	if !ok {
+		return nil, ErrKeyUnusable
+	}
+	return key, nil
 }
 
 var (
@@ -128,16 +148,16 @@ func Load(in LoadInput) (*Set, error) {
 	if in.Path == "" {
 		return nil, nil
 	}
-	if in.KeyPath == "" {
+	if in.Key == nil && in.KeyErr == nil {
 		return nil, errors.New(ErrNoKey) //nolint:staticcheck // normative text
 	}
 	if in.Profile == nil || in.Profile.Baseline == nil {
 		return nil, errors.New("a baseline file is set, but the signed profile lists no baseline keys")
 	}
-	key, ok := verdict.ReadSecretFile(in.KeyPath)
-	if !ok {
-		return nil, errors.New("COMPLIANCETF_BASELINE_KEY_FILE must name a regular file owned by this user that group and others cannot read, holding 64 lowercase hex characters: grandfather cannot be evaluated")
+	if in.KeyErr != nil {
+		return nil, fmt.Errorf("%w: grandfather cannot be evaluated", in.KeyErr)
 	}
+	key := in.Key
 	raw, err := readFile(in.Path)
 	if err != nil {
 		return nil, err

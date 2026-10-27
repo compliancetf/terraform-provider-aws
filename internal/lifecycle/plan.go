@@ -373,6 +373,9 @@ func (l *Lifecycle) check(ctx context.Context, c *Configured, stage Stage, ctl *
 		v.Severity = SeverityWarning
 	}
 	r := result(ctl, out, state, stage, v.Severity, half, c.pathCompiler())
+	if stage == StagePlan {
+		r.ReadDigest = c.readDigest(ctl, a.Prior)
+	}
 	split = split && v.Severity == SeverityError
 	if split {
 		v.Severity = SeverityWarning

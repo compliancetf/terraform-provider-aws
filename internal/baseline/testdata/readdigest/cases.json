@@ -1,0 +1,2217 @@
+{
+  "key_hex": "abababababababababababababababababababababababababababababababab",
+  "k_read_hex": "1a36cdca3bdc1b75695b8babafb7afc70fc4db54dffca484323d06aa41471a97",
+  "type": [
+    "object",
+    {
+      "id": "string",
+      "acl": "string",
+      "versioning": [
+        "object",
+        {
+          "enabled": "bool",
+          "mfa": "string"
+        }
+      ],
+      "tags": [
+        "map",
+        "string"
+      ],
+      "names": [
+        "set",
+        "string"
+      ],
+      "order": [
+        "list",
+        "string"
+      ],
+      "rules": [
+        "list",
+        [
+          "object",
+          {
+            "port": "number",
+            "cidrs": [
+              "set",
+              "string"
+            ]
+          }
+        ]
+      ],
+      "grants": [
+        "set",
+        [
+          "object",
+          {
+            "id": "string",
+            "perm": "string"
+          }
+        ]
+      ],
+      "pair": [
+        "tuple",
+        [
+          "string",
+          "number"
+        ]
+      ],
+      "n": "number"
+    }
+  ],
+  "cases": [
+    {
+      "name": "base",
+      "reads": [
+        "acl",
+        "versioning.enabled"
+      ],
+      "value": {
+        "id": "bkt-1",
+        "acl": "public-read",
+        "versioning": {
+          "enabled": false,
+          "mfa": null
+        },
+        "tags": {
+          "env": "prod",
+          "owner": null
+        },
+        "names": [
+          "b",
+          "a"
+        ],
+        "order": [
+          "x",
+          "y"
+        ],
+        "rules": [
+          {
+            "port": 443,
+            "cidrs": [
+              "10.0.0.0/8",
+              "0.0.0.0/0"
+            ]
+          }
+        ],
+        "grants": [
+          {
+            "id": "g2",
+            "perm": "READ"
+          },
+          {
+            "id": "g1",
+            "perm": "WRITE"
+          }
+        ],
+        "pair": [
+          "p",
+          1
+        ],
+        "n": 0.1
+      },
+      "unknown": [],
+      "digest": "sha256:13be98da7af57e58ace065ea57f25eea71ba2672602cbf9d00cd0ec534258d8c"
+    },
+    {
+      "name": "unrelated attribute changed",
+      "reads": [
+        "acl",
+        "versioning.enabled"
+      ],
+      "value": {
+        "id": "bkt-2",
+        "acl": "public-read",
+        "versioning": {
+          "enabled": false,
+          "mfa": null
+        },
+        "tags": {
+          "env": "prod",
+          "owner": null
+        },
+        "names": [
+          "b",
+          "a"
+        ],
+        "order": [
+          "x",
+          "y"
+        ],
+        "rules": [
+          {
+            "port": 443,
+            "cidrs": [
+              "10.0.0.0/8",
+              "0.0.0.0/0"
+            ]
+          }
+        ],
+        "grants": [
+          {
+            "id": "g2",
+            "perm": "READ"
+          },
+          {
+            "id": "g1",
+            "perm": "WRITE"
+          }
+        ],
+        "pair": [
+          "p",
+          1
+        ],
+        "n": 0.1
+      },
+      "unknown": [],
+      "digest": "sha256:13be98da7af57e58ace065ea57f25eea71ba2672602cbf9d00cd0ec534258d8c"
+    },
+    {
+      "name": "read attribute changed",
+      "reads": [
+        "acl",
+        "versioning.enabled"
+      ],
+      "value": {
+        "id": "bkt-1",
+        "acl": "private",
+        "versioning": {
+          "enabled": false,
+          "mfa": null
+        },
+        "tags": {
+          "env": "prod",
+          "owner": null
+        },
+        "names": [
+          "b",
+          "a"
+        ],
+        "order": [
+          "x",
+          "y"
+        ],
+        "rules": [
+          {
+            "port": 443,
+            "cidrs": [
+              "10.0.0.0/8",
+              "0.0.0.0/0"
+            ]
+          }
+        ],
+        "grants": [
+          {
+            "id": "g2",
+            "perm": "READ"
+          },
+          {
+            "id": "g1",
+            "perm": "WRITE"
+          }
+        ],
+        "pair": [
+          "p",
+          1
+        ],
+        "n": 0.1
+      },
+      "unknown": [],
+      "digest": "sha256:85f89b0aecb033a9292914f41392c44056e28dd1aaee47f19ff8f2b5a41aafe4"
+    },
+    {
+      "name": "other baseline key",
+      "reads": [
+        "acl",
+        "versioning.enabled"
+      ],
+      "value": {
+        "id": "bkt-1",
+        "acl": "public-read",
+        "versioning": {
+          "enabled": false,
+          "mfa": null
+        },
+        "tags": {
+          "env": "prod",
+          "owner": null
+        },
+        "names": [
+          "b",
+          "a"
+        ],
+        "order": [
+          "x",
+          "y"
+        ],
+        "rules": [
+          {
+            "port": 443,
+            "cidrs": [
+              "10.0.0.0/8",
+              "0.0.0.0/0"
+            ]
+          }
+        ],
+        "grants": [
+          {
+            "id": "g2",
+            "perm": "READ"
+          },
+          {
+            "id": "g1",
+            "perm": "WRITE"
+          }
+        ],
+        "pair": [
+          "p",
+          1
+        ],
+        "n": 0.1
+      },
+      "unknown": [],
+      "key_hex": "cdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcd",
+      "digest": "sha256:9598015186c07a4ef005ee844e0b63a1c91aff1e58221496cbbac78963819a80"
+    },
+    {
+      "name": "null read",
+      "reads": [
+        "acl",
+        "versioning.enabled"
+      ],
+      "value": {
+        "id": "bkt-1",
+        "acl": null,
+        "versioning": {
+          "enabled": false,
+          "mfa": null
+        },
+        "tags": {
+          "env": "prod",
+          "owner": null
+        },
+        "names": [
+          "b",
+          "a"
+        ],
+        "order": [
+          "x",
+          "y"
+        ],
+        "rules": [
+          {
+            "port": 443,
+            "cidrs": [
+              "10.0.0.0/8",
+              "0.0.0.0/0"
+            ]
+          }
+        ],
+        "grants": [
+          {
+            "id": "g2",
+            "perm": "READ"
+          },
+          {
+            "id": "g1",
+            "perm": "WRITE"
+          }
+        ],
+        "pair": [
+          "p",
+          1
+        ],
+        "n": 0.1
+      },
+      "unknown": [],
+      "digest": "sha256:8d52ee9b0873404f7925bd565651d7168aed531810b7c058cb3b466ba294b9bc"
+    },
+    {
+      "name": "absent attribute is null",
+      "reads": [
+        "acl",
+        "versioning.enabled"
+      ],
+      "value": {
+        "id": "bkt-1",
+        "versioning": {
+          "enabled": false,
+          "mfa": null
+        },
+        "tags": {
+          "env": "prod",
+          "owner": null
+        },
+        "names": [
+          "b",
+          "a"
+        ],
+        "order": [
+          "x",
+          "y"
+        ],
+        "rules": [
+          {
+            "port": 443,
+            "cidrs": [
+              "10.0.0.0/8",
+              "0.0.0.0/0"
+            ]
+          }
+        ],
+        "grants": [
+          {
+            "id": "g2",
+            "perm": "READ"
+          },
+          {
+            "id": "g1",
+            "perm": "WRITE"
+          }
+        ],
+        "pair": [
+          "p",
+          1
+        ],
+        "n": 0.1
+      },
+      "unknown": [],
+      "digest": "sha256:8d52ee9b0873404f7925bd565651d7168aed531810b7c058cb3b466ba294b9bc"
+    },
+    {
+      "name": "null object on the path",
+      "reads": [
+        "acl",
+        "versioning.enabled"
+      ],
+      "value": {
+        "id": "bkt-1",
+        "acl": "public-read",
+        "versioning": null,
+        "tags": {
+          "env": "prod",
+          "owner": null
+        },
+        "names": [
+          "b",
+          "a"
+        ],
+        "order": [
+          "x",
+          "y"
+        ],
+        "rules": [
+          {
+            "port": 443,
+            "cidrs": [
+              "10.0.0.0/8",
+              "0.0.0.0/0"
+            ]
+          }
+        ],
+        "grants": [
+          {
+            "id": "g2",
+            "perm": "READ"
+          },
+          {
+            "id": "g1",
+            "perm": "WRITE"
+          }
+        ],
+        "pair": [
+          "p",
+          1
+        ],
+        "n": 0.1
+      },
+      "unknown": [],
+      "digest": "sha256:67b102fa7f12201a5abddb19b42895a0c336548e1002df595edb6fa8d964da0a"
+    },
+    {
+      "name": "null scalar on the path",
+      "reads": [
+        "acl.x"
+      ],
+      "value": {
+        "id": "bkt-1",
+        "acl": null,
+        "versioning": {
+          "enabled": false,
+          "mfa": null
+        },
+        "tags": {
+          "env": "prod",
+          "owner": null
+        },
+        "names": [
+          "b",
+          "a"
+        ],
+        "order": [
+          "x",
+          "y"
+        ],
+        "rules": [
+          {
+            "port": 443,
+            "cidrs": [
+              "10.0.0.0/8",
+              "0.0.0.0/0"
+            ]
+          }
+        ],
+        "grants": [
+          {
+            "id": "g2",
+            "perm": "READ"
+          },
+          {
+            "id": "g1",
+            "perm": "WRITE"
+          }
+        ],
+        "pair": [
+          "p",
+          1
+        ],
+        "n": 0.1
+      },
+      "unknown": [],
+      "digest": "sha256:420aa2a2ab0e7f5788ef48b6552934344671fecfaf14dba1d8c3dd98c3b9adba"
+    },
+    {
+      "name": "path into a string",
+      "reads": [
+        "acl.x"
+      ],
+      "value": {
+        "id": "bkt-1",
+        "acl": "public-read",
+        "versioning": {
+          "enabled": false,
+          "mfa": null
+        },
+        "tags": {
+          "env": "prod",
+          "owner": null
+        },
+        "names": [
+          "b",
+          "a"
+        ],
+        "order": [
+          "x",
+          "y"
+        ],
+        "rules": [
+          {
+            "port": 443,
+            "cidrs": [
+              "10.0.0.0/8",
+              "0.0.0.0/0"
+            ]
+          }
+        ],
+        "grants": [
+          {
+            "id": "g2",
+            "perm": "READ"
+          },
+          {
+            "id": "g1",
+            "perm": "WRITE"
+          }
+        ],
+        "pair": [
+          "p",
+          1
+        ],
+        "n": 0.1
+      },
+      "unknown": [],
+      "digest": ""
+    },
+    {
+      "name": "step into a map",
+      "reads": [
+        "tags.env"
+      ],
+      "value": {
+        "id": "bkt-1",
+        "acl": "public-read",
+        "versioning": {
+          "enabled": false,
+          "mfa": null
+        },
+        "tags": {
+          "env": "prod",
+          "owner": null
+        },
+        "names": [
+          "b",
+          "a"
+        ],
+        "order": [
+          "x",
+          "y"
+        ],
+        "rules": [
+          {
+            "port": 443,
+            "cidrs": [
+              "10.0.0.0/8",
+              "0.0.0.0/0"
+            ]
+          }
+        ],
+        "grants": [
+          {
+            "id": "g2",
+            "perm": "READ"
+          },
+          {
+            "id": "g1",
+            "perm": "WRITE"
+          }
+        ],
+        "pair": [
+          "p",
+          1
+        ],
+        "n": 0.1
+      },
+      "unknown": [],
+      "digest": ""
+    },
+    {
+      "name": "step into a list",
+      "reads": [
+        "order.0"
+      ],
+      "value": {
+        "id": "bkt-1",
+        "acl": "public-read",
+        "versioning": {
+          "enabled": false,
+          "mfa": null
+        },
+        "tags": {
+          "env": "prod",
+          "owner": null
+        },
+        "names": [
+          "b",
+          "a"
+        ],
+        "order": [
+          "x",
+          "y"
+        ],
+        "rules": [
+          {
+            "port": 443,
+            "cidrs": [
+              "10.0.0.0/8",
+              "0.0.0.0/0"
+            ]
+          }
+        ],
+        "grants": [
+          {
+            "id": "g2",
+            "perm": "READ"
+          },
+          {
+            "id": "g1",
+            "perm": "WRITE"
+          }
+        ],
+        "pair": [
+          "p",
+          1
+        ],
+        "n": 0.1
+      },
+      "unknown": [],
+      "digest": ""
+    },
+    {
+      "name": "undeclared attribute",
+      "reads": [
+        "nope"
+      ],
+      "value": {
+        "id": "bkt-1",
+        "acl": "public-read",
+        "versioning": {
+          "enabled": false,
+          "mfa": null
+        },
+        "tags": {
+          "env": "prod",
+          "owner": null
+        },
+        "names": [
+          "b",
+          "a"
+        ],
+        "order": [
+          "x",
+          "y"
+        ],
+        "rules": [
+          {
+            "port": 443,
+            "cidrs": [
+              "10.0.0.0/8",
+              "0.0.0.0/0"
+            ]
+          }
+        ],
+        "grants": [
+          {
+            "id": "g2",
+            "perm": "READ"
+          },
+          {
+            "id": "g1",
+            "perm": "WRITE"
+          }
+        ],
+        "pair": [
+          "p",
+          1
+        ],
+        "n": 0.1
+      },
+      "unknown": [],
+      "digest": ""
+    },
+    {
+      "name": "unknown read",
+      "reads": [
+        "acl",
+        "versioning.enabled"
+      ],
+      "value": {
+        "id": "bkt-1",
+        "acl": "public-read",
+        "versioning": {
+          "enabled": false,
+          "mfa": null
+        },
+        "tags": {
+          "env": "prod",
+          "owner": null
+        },
+        "names": [
+          "b",
+          "a"
+        ],
+        "order": [
+          "x",
+          "y"
+        ],
+        "rules": [
+          {
+            "port": 443,
+            "cidrs": [
+              "10.0.0.0/8",
+              "0.0.0.0/0"
+            ]
+          }
+        ],
+        "grants": [
+          {
+            "id": "g2",
+            "perm": "READ"
+          },
+          {
+            "id": "g1",
+            "perm": "WRITE"
+          }
+        ],
+        "pair": [
+          "p",
+          1
+        ],
+        "n": 0.1
+      },
+      "unknown": [
+        [
+          "acl"
+        ]
+      ],
+      "digest": ""
+    },
+    {
+      "name": "unknown unrelated attribute",
+      "reads": [
+        "acl",
+        "versioning.enabled"
+      ],
+      "value": {
+        "id": "bkt-1",
+        "acl": "public-read",
+        "versioning": {
+          "enabled": false,
+          "mfa": null
+        },
+        "tags": {
+          "env": "prod",
+          "owner": null
+        },
+        "names": [
+          "b",
+          "a"
+        ],
+        "order": [
+          "x",
+          "y"
+        ],
+        "rules": [
+          {
+            "port": 443,
+            "cidrs": [
+              "10.0.0.0/8",
+              "0.0.0.0/0"
+            ]
+          }
+        ],
+        "grants": [
+          {
+            "id": "g2",
+            "perm": "READ"
+          },
+          {
+            "id": "g1",
+            "perm": "WRITE"
+          }
+        ],
+        "pair": [
+          "p",
+          1
+        ],
+        "n": 0.1
+      },
+      "unknown": [
+        [
+          "id"
+        ]
+      ],
+      "digest": "sha256:13be98da7af57e58ace065ea57f25eea71ba2672602cbf9d00cd0ec534258d8c"
+    },
+    {
+      "name": "unknown descendant of a read",
+      "reads": [
+        "versioning"
+      ],
+      "value": {
+        "id": "bkt-1",
+        "acl": "public-read",
+        "versioning": {
+          "enabled": false,
+          "mfa": null
+        },
+        "tags": {
+          "env": "prod",
+          "owner": null
+        },
+        "names": [
+          "b",
+          "a"
+        ],
+        "order": [
+          "x",
+          "y"
+        ],
+        "rules": [
+          {
+            "port": 443,
+            "cidrs": [
+              "10.0.0.0/8",
+              "0.0.0.0/0"
+            ]
+          }
+        ],
+        "grants": [
+          {
+            "id": "g2",
+            "perm": "READ"
+          },
+          {
+            "id": "g1",
+            "perm": "WRITE"
+          }
+        ],
+        "pair": [
+          "p",
+          1
+        ],
+        "n": 0.1
+      },
+      "unknown": [
+        [
+          "versioning",
+          "enabled"
+        ]
+      ],
+      "digest": ""
+    },
+    {
+      "name": "unknown set element",
+      "reads": [
+        "names"
+      ],
+      "value": {
+        "id": "bkt-1",
+        "acl": "public-read",
+        "versioning": {
+          "enabled": false,
+          "mfa": null
+        },
+        "tags": {
+          "env": "prod",
+          "owner": null
+        },
+        "names": [
+          "b",
+          "a"
+        ],
+        "order": [
+          "x",
+          "y"
+        ],
+        "rules": [
+          {
+            "port": 443,
+            "cidrs": [
+              "10.0.0.0/8",
+              "0.0.0.0/0"
+            ]
+          }
+        ],
+        "grants": [
+          {
+            "id": "g2",
+            "perm": "READ"
+          },
+          {
+            "id": "g1",
+            "perm": "WRITE"
+          }
+        ],
+        "pair": [
+          "p",
+          1
+        ],
+        "n": 0.1
+      },
+      "unknown": [
+        [
+          "names",
+          "*"
+        ]
+      ],
+      "digest": ""
+    },
+    {
+      "name": "whole object with a null member",
+      "reads": [
+        "versioning"
+      ],
+      "value": {
+        "id": "bkt-1",
+        "acl": "public-read",
+        "versioning": {
+          "enabled": false,
+          "mfa": null
+        },
+        "tags": {
+          "env": "prod",
+          "owner": null
+        },
+        "names": [
+          "b",
+          "a"
+        ],
+        "order": [
+          "x",
+          "y"
+        ],
+        "rules": [
+          {
+            "port": 443,
+            "cidrs": [
+              "10.0.0.0/8",
+              "0.0.0.0/0"
+            ]
+          }
+        ],
+        "grants": [
+          {
+            "id": "g2",
+            "perm": "READ"
+          },
+          {
+            "id": "g1",
+            "perm": "WRITE"
+          }
+        ],
+        "pair": [
+          "p",
+          1
+        ],
+        "n": 0.1
+      },
+      "unknown": [],
+      "digest": "sha256:a154f71162277940fcfe95acf0b3734701e0233f5b5476b2be29e8ecc88a58a8"
+    },
+    {
+      "name": "map with a null value",
+      "reads": [
+        "tags"
+      ],
+      "value": {
+        "id": "bkt-1",
+        "acl": "public-read",
+        "versioning": {
+          "enabled": false,
+          "mfa": null
+        },
+        "tags": {
+          "env": "prod",
+          "owner": null
+        },
+        "names": [
+          "b",
+          "a"
+        ],
+        "order": [
+          "x",
+          "y"
+        ],
+        "rules": [
+          {
+            "port": 443,
+            "cidrs": [
+              "10.0.0.0/8",
+              "0.0.0.0/0"
+            ]
+          }
+        ],
+        "grants": [
+          {
+            "id": "g2",
+            "perm": "READ"
+          },
+          {
+            "id": "g1",
+            "perm": "WRITE"
+          }
+        ],
+        "pair": [
+          "p",
+          1
+        ],
+        "n": 0.1
+      },
+      "unknown": [],
+      "digest": "sha256:eedf11988857d15d45f37b254c6d7d770e953bfb7dd632d2956ff6444ae05b3c"
+    },
+    {
+      "name": "map without the null key",
+      "reads": [
+        "tags"
+      ],
+      "value": {
+        "id": "bkt-1",
+        "acl": "public-read",
+        "versioning": {
+          "enabled": false,
+          "mfa": null
+        },
+        "tags": {
+          "env": "prod"
+        },
+        "names": [
+          "b",
+          "a"
+        ],
+        "order": [
+          "x",
+          "y"
+        ],
+        "rules": [
+          {
+            "port": 443,
+            "cidrs": [
+              "10.0.0.0/8",
+              "0.0.0.0/0"
+            ]
+          }
+        ],
+        "grants": [
+          {
+            "id": "g2",
+            "perm": "READ"
+          },
+          {
+            "id": "g1",
+            "perm": "WRITE"
+          }
+        ],
+        "pair": [
+          "p",
+          1
+        ],
+        "n": 0.1
+      },
+      "unknown": [],
+      "digest": "sha256:76282f45bad3cbc6f703587da4e040162bd966d754362741efbbe4f3cf322f45"
+    },
+    {
+      "name": "set order a",
+      "reads": [
+        "names"
+      ],
+      "value": {
+        "id": "bkt-1",
+        "acl": "public-read",
+        "versioning": {
+          "enabled": false,
+          "mfa": null
+        },
+        "tags": {
+          "env": "prod",
+          "owner": null
+        },
+        "names": [
+          "b",
+          "a"
+        ],
+        "order": [
+          "x",
+          "y"
+        ],
+        "rules": [
+          {
+            "port": 443,
+            "cidrs": [
+              "10.0.0.0/8",
+              "0.0.0.0/0"
+            ]
+          }
+        ],
+        "grants": [
+          {
+            "id": "g2",
+            "perm": "READ"
+          },
+          {
+            "id": "g1",
+            "perm": "WRITE"
+          }
+        ],
+        "pair": [
+          "p",
+          1
+        ],
+        "n": 0.1
+      },
+      "unknown": [],
+      "digest": "sha256:10a36073c3a5f27b00bd415328d0d37fab0f89e05df5eca6784bc277298fe0f5"
+    },
+    {
+      "name": "set order b",
+      "reads": [
+        "names"
+      ],
+      "value": {
+        "id": "bkt-1",
+        "acl": "public-read",
+        "versioning": {
+          "enabled": false,
+          "mfa": null
+        },
+        "tags": {
+          "env": "prod",
+          "owner": null
+        },
+        "names": [
+          "a",
+          "b"
+        ],
+        "order": [
+          "x",
+          "y"
+        ],
+        "rules": [
+          {
+            "port": 443,
+            "cidrs": [
+              "10.0.0.0/8",
+              "0.0.0.0/0"
+            ]
+          }
+        ],
+        "grants": [
+          {
+            "id": "g2",
+            "perm": "READ"
+          },
+          {
+            "id": "g1",
+            "perm": "WRITE"
+          }
+        ],
+        "pair": [
+          "p",
+          1
+        ],
+        "n": 0.1
+      },
+      "unknown": [],
+      "digest": "sha256:10a36073c3a5f27b00bd415328d0d37fab0f89e05df5eca6784bc277298fe0f5"
+    },
+    {
+      "name": "list order a",
+      "reads": [
+        "order"
+      ],
+      "value": {
+        "id": "bkt-1",
+        "acl": "public-read",
+        "versioning": {
+          "enabled": false,
+          "mfa": null
+        },
+        "tags": {
+          "env": "prod",
+          "owner": null
+        },
+        "names": [
+          "b",
+          "a"
+        ],
+        "order": [
+          "x",
+          "y"
+        ],
+        "rules": [
+          {
+            "port": 443,
+            "cidrs": [
+              "10.0.0.0/8",
+              "0.0.0.0/0"
+            ]
+          }
+        ],
+        "grants": [
+          {
+            "id": "g2",
+            "perm": "READ"
+          },
+          {
+            "id": "g1",
+            "perm": "WRITE"
+          }
+        ],
+        "pair": [
+          "p",
+          1
+        ],
+        "n": 0.1
+      },
+      "unknown": [],
+      "digest": "sha256:77843872f1324c0774725a038942b0ff0edece4832c248e02c820400b59c23ab"
+    },
+    {
+      "name": "list order b",
+      "reads": [
+        "order"
+      ],
+      "value": {
+        "id": "bkt-1",
+        "acl": "public-read",
+        "versioning": {
+          "enabled": false,
+          "mfa": null
+        },
+        "tags": {
+          "env": "prod",
+          "owner": null
+        },
+        "names": [
+          "b",
+          "a"
+        ],
+        "order": [
+          "y",
+          "x"
+        ],
+        "rules": [
+          {
+            "port": 443,
+            "cidrs": [
+              "10.0.0.0/8",
+              "0.0.0.0/0"
+            ]
+          }
+        ],
+        "grants": [
+          {
+            "id": "g2",
+            "perm": "READ"
+          },
+          {
+            "id": "g1",
+            "perm": "WRITE"
+          }
+        ],
+        "pair": [
+          "p",
+          1
+        ],
+        "n": 0.1
+      },
+      "unknown": [],
+      "digest": "sha256:996148b96af1e7bc71d4b6558c3e2612d92f101de8be7aba11bfcb5f1fe50878"
+    },
+    {
+      "name": "list of objects with a nested set",
+      "reads": [
+        "rules"
+      ],
+      "value": {
+        "id": "bkt-1",
+        "acl": "public-read",
+        "versioning": {
+          "enabled": false,
+          "mfa": null
+        },
+        "tags": {
+          "env": "prod",
+          "owner": null
+        },
+        "names": [
+          "b",
+          "a"
+        ],
+        "order": [
+          "x",
+          "y"
+        ],
+        "rules": [
+          {
+            "port": 443,
+            "cidrs": [
+              "10.0.0.0/8",
+              "0.0.0.0/0"
+            ]
+          }
+        ],
+        "grants": [
+          {
+            "id": "g2",
+            "perm": "READ"
+          },
+          {
+            "id": "g1",
+            "perm": "WRITE"
+          }
+        ],
+        "pair": [
+          "p",
+          1
+        ],
+        "n": 0.1
+      },
+      "unknown": [],
+      "digest": "sha256:326624a35cec84431f7621498e6f387bd2a27fd183190c3010ce39d5297b0bfc"
+    },
+    {
+      "name": "set of objects a",
+      "reads": [
+        "grants"
+      ],
+      "value": {
+        "id": "bkt-1",
+        "acl": "public-read",
+        "versioning": {
+          "enabled": false,
+          "mfa": null
+        },
+        "tags": {
+          "env": "prod",
+          "owner": null
+        },
+        "names": [
+          "b",
+          "a"
+        ],
+        "order": [
+          "x",
+          "y"
+        ],
+        "rules": [
+          {
+            "port": 443,
+            "cidrs": [
+              "10.0.0.0/8",
+              "0.0.0.0/0"
+            ]
+          }
+        ],
+        "grants": [
+          {
+            "id": "g2",
+            "perm": "READ"
+          },
+          {
+            "id": "g1",
+            "perm": "WRITE"
+          }
+        ],
+        "pair": [
+          "p",
+          1
+        ],
+        "n": 0.1
+      },
+      "unknown": [],
+      "digest": "sha256:e7cb50f955903f50f91b96dd418bdf95302b0ed1d678e495db64361e74c159bb"
+    },
+    {
+      "name": "set of objects b",
+      "reads": [
+        "grants"
+      ],
+      "value": {
+        "id": "bkt-1",
+        "acl": "public-read",
+        "versioning": {
+          "enabled": false,
+          "mfa": null
+        },
+        "tags": {
+          "env": "prod",
+          "owner": null
+        },
+        "names": [
+          "b",
+          "a"
+        ],
+        "order": [
+          "x",
+          "y"
+        ],
+        "rules": [
+          {
+            "port": 443,
+            "cidrs": [
+              "10.0.0.0/8",
+              "0.0.0.0/0"
+            ]
+          }
+        ],
+        "grants": [
+          {
+            "id": "g1",
+            "perm": "WRITE"
+          },
+          {
+            "id": "g2",
+            "perm": "READ"
+          }
+        ],
+        "pair": [
+          "p",
+          1
+        ],
+        "n": 0.1
+      },
+      "unknown": [],
+      "digest": "sha256:e7cb50f955903f50f91b96dd418bdf95302b0ed1d678e495db64361e74c159bb"
+    },
+    {
+      "name": "tuple",
+      "reads": [
+        "pair"
+      ],
+      "value": {
+        "id": "bkt-1",
+        "acl": "public-read",
+        "versioning": {
+          "enabled": false,
+          "mfa": null
+        },
+        "tags": {
+          "env": "prod",
+          "owner": null
+        },
+        "names": [
+          "b",
+          "a"
+        ],
+        "order": [
+          "x",
+          "y"
+        ],
+        "rules": [
+          {
+            "port": 443,
+            "cidrs": [
+              "10.0.0.0/8",
+              "0.0.0.0/0"
+            ]
+          }
+        ],
+        "grants": [
+          {
+            "id": "g2",
+            "perm": "READ"
+          },
+          {
+            "id": "g1",
+            "perm": "WRITE"
+          }
+        ],
+        "pair": [
+          "p",
+          1
+        ],
+        "n": 0.1
+      },
+      "unknown": [],
+      "digest": "sha256:99814c99c6a8095eb3a97f9fbe0d38abae559bc042abb8507a5d7b173687645c"
+    },
+    {
+      "name": "no reads",
+      "reads": [],
+      "value": {
+        "id": "bkt-1",
+        "acl": "public-read",
+        "versioning": {
+          "enabled": false,
+          "mfa": null
+        },
+        "tags": {
+          "env": "prod",
+          "owner": null
+        },
+        "names": [
+          "b",
+          "a"
+        ],
+        "order": [
+          "x",
+          "y"
+        ],
+        "rules": [
+          {
+            "port": 443,
+            "cidrs": [
+              "10.0.0.0/8",
+              "0.0.0.0/0"
+            ]
+          }
+        ],
+        "grants": [
+          {
+            "id": "g2",
+            "perm": "READ"
+          },
+          {
+            "id": "g1",
+            "perm": "WRITE"
+          }
+        ],
+        "pair": [
+          "p",
+          1
+        ],
+        "n": 0.1
+      },
+      "unknown": [],
+      "digest": "sha256:44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+    },
+    {
+      "name": "duplicate reads",
+      "reads": [
+        "acl",
+        "acl"
+      ],
+      "value": {
+        "id": "bkt-1",
+        "acl": "public-read",
+        "versioning": {
+          "enabled": false,
+          "mfa": null
+        },
+        "tags": {
+          "env": "prod",
+          "owner": null
+        },
+        "names": [
+          "b",
+          "a"
+        ],
+        "order": [
+          "x",
+          "y"
+        ],
+        "rules": [
+          {
+            "port": 443,
+            "cidrs": [
+              "10.0.0.0/8",
+              "0.0.0.0/0"
+            ]
+          }
+        ],
+        "grants": [
+          {
+            "id": "g2",
+            "perm": "READ"
+          },
+          {
+            "id": "g1",
+            "perm": "WRITE"
+          }
+        ],
+        "pair": [
+          "p",
+          1
+        ],
+        "n": 0.1
+      },
+      "unknown": [],
+      "digest": "sha256:894046c2d3e9bef3eea1585759a229fa3cb3eac22988398a7344e028439070a8"
+    },
+    {
+      "name": "single read",
+      "reads": [
+        "acl"
+      ],
+      "value": {
+        "id": "bkt-1",
+        "acl": "public-read",
+        "versioning": {
+          "enabled": false,
+          "mfa": null
+        },
+        "tags": {
+          "env": "prod",
+          "owner": null
+        },
+        "names": [
+          "b",
+          "a"
+        ],
+        "order": [
+          "x",
+          "y"
+        ],
+        "rules": [
+          {
+            "port": 443,
+            "cidrs": [
+              "10.0.0.0/8",
+              "0.0.0.0/0"
+            ]
+          }
+        ],
+        "grants": [
+          {
+            "id": "g2",
+            "perm": "READ"
+          },
+          {
+            "id": "g1",
+            "perm": "WRITE"
+          }
+        ],
+        "pair": [
+          "p",
+          1
+        ],
+        "n": 0.1
+      },
+      "unknown": [],
+      "digest": "sha256:894046c2d3e9bef3eea1585759a229fa3cb3eac22988398a7344e028439070a8"
+    },
+    {
+      "name": "number 0.1",
+      "reads": [
+        "n"
+      ],
+      "value": {
+        "id": "bkt-1",
+        "acl": "public-read",
+        "versioning": {
+          "enabled": false,
+          "mfa": null
+        },
+        "tags": {
+          "env": "prod",
+          "owner": null
+        },
+        "names": [
+          "b",
+          "a"
+        ],
+        "order": [
+          "x",
+          "y"
+        ],
+        "rules": [
+          {
+            "port": 443,
+            "cidrs": [
+              "10.0.0.0/8",
+              "0.0.0.0/0"
+            ]
+          }
+        ],
+        "grants": [
+          {
+            "id": "g2",
+            "perm": "READ"
+          },
+          {
+            "id": "g1",
+            "perm": "WRITE"
+          }
+        ],
+        "pair": [
+          "p",
+          1
+        ],
+        "n": 0.1
+      },
+      "unknown": [],
+      "digest": "sha256:42a5d6e0e6eb30639101739a46fe61721258fa739e710633d67a1b24b1efdc1a"
+    },
+    {
+      "name": "number 1e21",
+      "reads": [
+        "n"
+      ],
+      "value": {
+        "id": "bkt-1",
+        "acl": "public-read",
+        "versioning": {
+          "enabled": false,
+          "mfa": null
+        },
+        "tags": {
+          "env": "prod",
+          "owner": null
+        },
+        "names": [
+          "b",
+          "a"
+        ],
+        "order": [
+          "x",
+          "y"
+        ],
+        "rules": [
+          {
+            "port": 443,
+            "cidrs": [
+              "10.0.0.0/8",
+              "0.0.0.0/0"
+            ]
+          }
+        ],
+        "grants": [
+          {
+            "id": "g2",
+            "perm": "READ"
+          },
+          {
+            "id": "g1",
+            "perm": "WRITE"
+          }
+        ],
+        "pair": [
+          "p",
+          1
+        ],
+        "n": 1e21
+      },
+      "unknown": [],
+      "digest": "sha256:710e6975d085f3b65871d2023278636b3f47f46aa8b7b87d5dd1807bb2938077"
+    },
+    {
+      "name": "number 9223372036854775808",
+      "reads": [
+        "n"
+      ],
+      "value": {
+        "id": "bkt-1",
+        "acl": "public-read",
+        "versioning": {
+          "enabled": false,
+          "mfa": null
+        },
+        "tags": {
+          "env": "prod",
+          "owner": null
+        },
+        "names": [
+          "b",
+          "a"
+        ],
+        "order": [
+          "x",
+          "y"
+        ],
+        "rules": [
+          {
+            "port": 443,
+            "cidrs": [
+              "10.0.0.0/8",
+              "0.0.0.0/0"
+            ]
+          }
+        ],
+        "grants": [
+          {
+            "id": "g2",
+            "perm": "READ"
+          },
+          {
+            "id": "g1",
+            "perm": "WRITE"
+          }
+        ],
+        "pair": [
+          "p",
+          1
+        ],
+        "n": 9223372036854775808
+      },
+      "unknown": [],
+      "digest": "sha256:f0024c7ea114b994e6ca34c2dc244f9b6d8b04b4ab1db75593dd806ed46d86fc"
+    },
+    {
+      "name": "number -0",
+      "reads": [
+        "n"
+      ],
+      "value": {
+        "id": "bkt-1",
+        "acl": "public-read",
+        "versioning": {
+          "enabled": false,
+          "mfa": null
+        },
+        "tags": {
+          "env": "prod",
+          "owner": null
+        },
+        "names": [
+          "b",
+          "a"
+        ],
+        "order": [
+          "x",
+          "y"
+        ],
+        "rules": [
+          {
+            "port": 443,
+            "cidrs": [
+              "10.0.0.0/8",
+              "0.0.0.0/0"
+            ]
+          }
+        ],
+        "grants": [
+          {
+            "id": "g2",
+            "perm": "READ"
+          },
+          {
+            "id": "g1",
+            "perm": "WRITE"
+          }
+        ],
+        "pair": [
+          "p",
+          1
+        ],
+        "n": -0
+      },
+      "unknown": [],
+      "digest": "sha256:2c9c84dfbadc8c45c5922b56010d068051e123cb3cde126fe54d3691d4722c72"
+    },
+    {
+      "name": "number 1234567.5",
+      "reads": [
+        "n"
+      ],
+      "value": {
+        "id": "bkt-1",
+        "acl": "public-read",
+        "versioning": {
+          "enabled": false,
+          "mfa": null
+        },
+        "tags": {
+          "env": "prod",
+          "owner": null
+        },
+        "names": [
+          "b",
+          "a"
+        ],
+        "order": [
+          "x",
+          "y"
+        ],
+        "rules": [
+          {
+            "port": 443,
+            "cidrs": [
+              "10.0.0.0/8",
+              "0.0.0.0/0"
+            ]
+          }
+        ],
+        "grants": [
+          {
+            "id": "g2",
+            "perm": "READ"
+          },
+          {
+            "id": "g1",
+            "perm": "WRITE"
+          }
+        ],
+        "pair": [
+          "p",
+          1
+        ],
+        "n": 1234567.5
+      },
+      "unknown": [],
+      "digest": "sha256:2334518334a89fdbcb7478d8bf7f0e4bca3e0d26fda03f629f7101979989ff35"
+    },
+    {
+      "name": "number 0.00001",
+      "reads": [
+        "n"
+      ],
+      "value": {
+        "id": "bkt-1",
+        "acl": "public-read",
+        "versioning": {
+          "enabled": false,
+          "mfa": null
+        },
+        "tags": {
+          "env": "prod",
+          "owner": null
+        },
+        "names": [
+          "b",
+          "a"
+        ],
+        "order": [
+          "x",
+          "y"
+        ],
+        "rules": [
+          {
+            "port": 443,
+            "cidrs": [
+              "10.0.0.0/8",
+              "0.0.0.0/0"
+            ]
+          }
+        ],
+        "grants": [
+          {
+            "id": "g2",
+            "perm": "READ"
+          },
+          {
+            "id": "g1",
+            "perm": "WRITE"
+          }
+        ],
+        "pair": [
+          "p",
+          1
+        ],
+        "n": 0.00001
+      },
+      "unknown": [],
+      "digest": "sha256:5a9912e80dbd1957fa5128e549aa27ece3fb6acbdb8f447ff04d0bde2d94494b"
+    },
+    {
+      "name": "number 1e-999",
+      "reads": [
+        "n"
+      ],
+      "value": {
+        "id": "bkt-1",
+        "acl": "public-read",
+        "versioning": {
+          "enabled": false,
+          "mfa": null
+        },
+        "tags": {
+          "env": "prod",
+          "owner": null
+        },
+        "names": [
+          "b",
+          "a"
+        ],
+        "order": [
+          "x",
+          "y"
+        ],
+        "rules": [
+          {
+            "port": 443,
+            "cidrs": [
+              "10.0.0.0/8",
+              "0.0.0.0/0"
+            ]
+          }
+        ],
+        "grants": [
+          {
+            "id": "g2",
+            "perm": "READ"
+          },
+          {
+            "id": "g1",
+            "perm": "WRITE"
+          }
+        ],
+        "pair": [
+          "p",
+          1
+        ],
+        "n": 1e-999
+      },
+      "unknown": [],
+      "digest": "sha256:7f71ed2d3198a9df1fe5b31f542b2fbb93a078063613c8426b76456fafb217a7"
+    },
+    {
+      "name": "number 1e1000",
+      "reads": [
+        "n"
+      ],
+      "value": {
+        "id": "bkt-1",
+        "acl": "public-read",
+        "versioning": {
+          "enabled": false,
+          "mfa": null
+        },
+        "tags": {
+          "env": "prod",
+          "owner": null
+        },
+        "names": [
+          "b",
+          "a"
+        ],
+        "order": [
+          "x",
+          "y"
+        ],
+        "rules": [
+          {
+            "port": 443,
+            "cidrs": [
+              "10.0.0.0/8",
+              "0.0.0.0/0"
+            ]
+          }
+        ],
+        "grants": [
+          {
+            "id": "g2",
+            "perm": "READ"
+          },
+          {
+            "id": "g1",
+            "perm": "WRITE"
+          }
+        ],
+        "pair": [
+          "p",
+          1
+        ],
+        "n": 1e1000
+      },
+      "unknown": [],
+      "digest": "sha256:a010e421c9d64cf528ab05d8c0fe8e6b86724517978140871ba8949fdab31ab9"
+    },
+    {
+      "name": "number -2.5e-3",
+      "reads": [
+        "n"
+      ],
+      "value": {
+        "id": "bkt-1",
+        "acl": "public-read",
+        "versioning": {
+          "enabled": false,
+          "mfa": null
+        },
+        "tags": {
+          "env": "prod",
+          "owner": null
+        },
+        "names": [
+          "b",
+          "a"
+        ],
+        "order": [
+          "x",
+          "y"
+        ],
+        "rules": [
+          {
+            "port": 443,
+            "cidrs": [
+              "10.0.0.0/8",
+              "0.0.0.0/0"
+            ]
+          }
+        ],
+        "grants": [
+          {
+            "id": "g2",
+            "perm": "READ"
+          },
+          {
+            "id": "g1",
+            "perm": "WRITE"
+          }
+        ],
+        "pair": [
+          "p",
+          1
+        ],
+        "n": -2.5e-3
+      },
+      "unknown": [],
+      "digest": "sha256:429340a5bcbdbfbfbf1e5bc6959e29da8309fa1297ae9b4d38ba3b16387b0e02"
+    },
+    {
+      "name": "number 2e1001",
+      "reads": [
+        "n"
+      ],
+      "value": {
+        "id": "bkt-1",
+        "acl": "public-read",
+        "versioning": {
+          "enabled": false,
+          "mfa": null
+        },
+        "tags": {
+          "env": "prod",
+          "owner": null
+        },
+        "names": [
+          "b",
+          "a"
+        ],
+        "order": [
+          "x",
+          "y"
+        ],
+        "rules": [
+          {
+            "port": 443,
+            "cidrs": [
+              "10.0.0.0/8",
+              "0.0.0.0/0"
+            ]
+          }
+        ],
+        "grants": [
+          {
+            "id": "g2",
+            "perm": "READ"
+          },
+          {
+            "id": "g1",
+            "perm": "WRITE"
+          }
+        ],
+        "pair": [
+          "p",
+          1
+        ],
+        "n": 2e1001
+      },
+      "unknown": [],
+      "digest": ""
+    },
+    {
+      "name": "number 1e-1001",
+      "reads": [
+        "n"
+      ],
+      "value": {
+        "id": "bkt-1",
+        "acl": "public-read",
+        "versioning": {
+          "enabled": false,
+          "mfa": null
+        },
+        "tags": {
+          "env": "prod",
+          "owner": null
+        },
+        "names": [
+          "b",
+          "a"
+        ],
+        "order": [
+          "x",
+          "y"
+        ],
+        "rules": [
+          {
+            "port": 443,
+            "cidrs": [
+              "10.0.0.0/8",
+              "0.0.0.0/0"
+            ]
+          }
+        ],
+        "grants": [
+          {
+            "id": "g2",
+            "perm": "READ"
+          },
+          {
+            "id": "g1",
+            "perm": "WRITE"
+          }
+        ],
+        "pair": [
+          "p",
+          1
+        ],
+        "n": 1e-1001
+      },
+      "unknown": [],
+      "digest": ""
+    }
+  ]
+}
