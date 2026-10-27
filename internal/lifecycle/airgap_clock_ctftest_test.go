@@ -5,6 +5,7 @@ package lifecycle
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"path/filepath"
 	"slices"
 	"strings"
@@ -195,5 +196,61 @@ func TestAirgapClockGrantConfigure(t *testing.T) {
 				}
 			}
 		})
+	}
+}
+
+// TestAirgapClockIgnoresPendingFloor: a floor statement refused as
+// revocation-pending never sets the air-gap time. After an accepted floor
+// issued 2026-10-05T12:00Z and a pending one issued 2026-10-06T05:00Z, a run
+// that skips the floor (not governed, no bundles) still times exceptions at
+// the accepted issued_at, so the entry expiring 2026-10-06 applies.
+func TestAirgapClockIgnoresPendingFloor(t *testing.T) {
+	dir := t.TempDir()
+	for _, k := range []string{"COMPLIANCETF_ENFORCEMENT_MODE", "COMPLIANCETF_GOVERNED", "COMPLIANCETF_OFFLINE", "COMPLIANCETF_TOKEN",
+		"COMPLIANCETF_WORKSPACE", "COMPLIANCETF_BUNDLE_PATH", "COMPLIANCETF_MIN_BUNDLE_VERSION", "COMPLIANCETF_MIN_PROFILE_VERSION",
+		"COMPLIANCETF_EXCEPTION_GRANTS"} {
+		t.Setenv(k, "")
+	}
+	t.Setenv("COMPLIANCETF_STATE_DIR", filepath.Join(dir, "state"))
+	t.Setenv("COMPLIANCETF_CACHE_DIR", filepath.Join(dir, "cache"))
+	t.Setenv("COMPLIANCETF_ORG_ID", "bobthecorp")
+	t.Setenv("COMPLIANCETF_EVIDENCE_DIR", filepath.Join(dir, "evidence"))
+	side := filepath.Join(dir, "exceptions.hcl")
+	writeFile(t, side, []byte(airgapClockSidecar))
+	t.Setenv("COMPLIANCETF_EXCEPTIONS_FILE", side)
+	prof, floor := filepath.Join(dir, "profile.dsse.json"), filepath.Join(dir, "floor.dsse.json")
+	t.Setenv("COMPLIANCETF_PROFILE_PATH", prof)
+	t.Setenv("COMPLIANCETF_FLOOR_PATH", floor)
+	configure := func(profile, statement string) (*Lifecycle, error) {
+		over := merge(t, map[string]any{"floor_mode": "airgap", "scope": map[string]string{"workspace": "bobthecorp-reporting-prod"},
+			"exceptions": map[string]any{"max_lifetime_days": 30, "self_service": []string{"rds_db_instance_encryption_at_rest_enabled"},
+				"coverable": map[string][]string{"rds_db_instance_encryption_at_rest_enabled": {"self_service"}}}}, json.RawMessage(profile))
+		writeFile(t, prof, signed(t, trust.PayloadProfile, merge(t, baseProfile(), over), testkeys.Profile()))
+		writeFile(t, floor, signed(t, trust.PayloadFloor, merge(t, baseFloor(), json.RawMessage(statement)), testkeys.Floor()))
+		l := New(Options{ProviderVersion: "6.40.0", Now: func() time.Time { return configureNow }})
+		t.Cleanup(func() { _ = l.Close() }) //nolint:errcheck // test cleanup
+		_, err := l.Configure(context.Background(), tftypes.NewValue(BlockType(), nil), "1.14.0", nil)
+		return l, err
+	}
+	if _, err := configure(`{"governed": true}`, `{"issued_at": "2026-10-05T12:00:00Z"}`); err != nil {
+		t.Fatalf("accepted floor: %v", err)
+	}
+	const pending = `{"epoch": 2, "revocation_epoch": 99, "issued_at": "2026-10-06T05:00:00Z"}`
+	if _, err := configure(`{"governed": true}`, pending); !errors.Is(err, trust.ErrFloorRevocationPending) {
+		t.Fatalf("pending floor: %v, want ErrFloorRevocationPending", err)
+	}
+	l, err := configure(`{"governed": false}`, pending)
+	if err != nil {
+		t.Fatalf("floor skipped: %v", err)
+	}
+	res := tftypes.NewValue(tftypes.Object{AttributeTypes: map[string]tftypes.Type{"identifier": tftypes.String}},
+		map[string]tftypes.Value{"identifier": tftypes.NewValue(tftypes.String, "legacy-reporting")})
+	ctx, cancel := context.WithTimeout(t.Context(), time.Minute)
+	defer cancel()
+	for _, local := range []time.Time{time.Date(2026, 1, 1, 0, 0, 0, 0, time.UTC), time.Date(2030, 1, 1, 0, 0, 0, 0, time.UTC)} {
+		d := l.Configured().Sidecar.Lookup(ctx, legacyCtl, idSchemas{}, &engine.Activation{Resource: res}, local)
+		if d.Exception == nil || d.Exception.Status != exceptions.StatusApplied {
+			t.Errorf("process clock %s: %+v, want the entry applied at the accepted floor time", local.Format(time.DateOnly), d.Exception)
+		}
 	}
 }

@@ -467,3 +467,55 @@ func TestStateResetUnrecorded(t *testing.T) {
 		t.Errorf("newer reset's flag dropped: %+v", m)
 	}
 }
+
+// TestStatePendingIssuedAt: a revocation-pending statement's issued_at is
+// kept apart from the accepted one, so it never advances IssuedAt (the
+// air-gap time) but still bounds later statements; an accepted statement at
+// or after it clears it. A state file written before the field existed loads
+// with IssuedAt as stored, and a state without a pending time encodes
+// without the field, so older providers can still read it.
+func TestStatePendingIssuedAt(t *testing.T) {
+	accepted := time.Date(2026, 10, 6, 1, 0, 0, 0, time.UTC)
+	pending := accepted.Add(time.Hour)
+	dir := t.TempDir()
+	old := `{"floors":{"bobthecorp":{"generation":1,"epoch":7,"revocation_epoch":0,"issued_at":"2026-10-06T01:00:00Z","retired_keys":[]}}}`
+	if err := os.WriteFile(filepath.Join(dir, stateFileName), []byte(old), 0o600); err != nil {
+		t.Fatal(err)
+	}
+	s, err := LoadState(dir)
+	if m := s.Floors["bobthecorp"]; err != nil || !m.IssuedAt.Equal(accepted) || !m.PendingIssuedAt.IsZero() {
+		t.Fatalf("old state file: %+v, %v", m, err)
+	}
+	s, err = UpdateState(dir, State{Floors: map[string]FloorMark{"bobthecorp": {Generation: 1, Epoch: 8, PendingIssuedAt: pending}}})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if m := s.Floors["bobthecorp"]; m.Epoch != 8 || !m.IssuedAt.Equal(accepted) || !m.PendingIssuedAt.Equal(pending) || !m.highIssuedAt().Equal(pending) {
+		t.Fatalf("after pending: %+v", m)
+	}
+	if s, err = LoadState(dir); err != nil || !s.Floors["bobthecorp"].PendingIssuedAt.Equal(pending) {
+		t.Fatalf("pending not persisted: %+v, %v", s.Floors, err)
+	}
+	// An older pending delta does not lower it.
+	if s, err = UpdateState(dir, State{Floors: map[string]FloorMark{"bobthecorp": {Generation: 1, Epoch: 8, PendingIssuedAt: accepted.Add(time.Minute)}}}); err != nil ||
+		!s.Floors["bobthecorp"].PendingIssuedAt.Equal(pending) {
+		t.Fatalf("older pending: %+v, %v", s.Floors, err)
+	}
+	if _, err = UpdateState(dir, State{Floors: map[string]FloorMark{"bobthecorp": {Generation: 1, Epoch: 8, IssuedAt: pending}}}); err != nil {
+		t.Fatal(err)
+	}
+	data, err := os.ReadFile(filepath.Join(dir, stateFileName))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if strings.Contains(string(data), "pending_issued_at") {
+		t.Fatalf("accepted statement at the pending time left the field: %s", data)
+	}
+	// The epoch of a pending side issued after a reset survives the reset
+	// guard, as when the pending time was stored as issued_at.
+	reset := accepted.Add(30 * time.Minute)
+	m := mergeFloor(FloorMark{Generation: 1, Epoch: 2, IssuedAt: accepted, ResetIssuedAt: reset}, FloorMark{Generation: 1, Epoch: 3, PendingIssuedAt: pending})
+	if m.Epoch != 3 || !m.IssuedAt.Equal(accepted) || !m.PendingIssuedAt.Equal(pending) {
+		t.Fatalf("pending after reset: %+v", m)
+	}
+}

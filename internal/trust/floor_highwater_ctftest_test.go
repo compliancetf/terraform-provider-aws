@@ -312,6 +312,21 @@ func TestFloorResetIgnored(t *testing.T) {
 			t.Fatal(applied, err)
 		}
 	})
+	// A pending statement issued after the reset could raise the epoch back
+	// once its revocations load, so the reset must be issued after it too.
+	t.Run("issued before a pending statement", func(t *testing.T) {
+		dir := epoch7Dir(t)
+		pending := State{Floors: map[string]FloorMark{"bobthecorp": {Generation: 1, Epoch: 7,
+			PendingIssuedAt: time.Date(2026, 10, 6, 3, 0, 0, 0, time.UTC)}}}
+		if _, err := UpdateState(dir, pending); err != nil {
+			t.Fatal(err)
+		}
+		writeReset(t, dir, reset(nil))
+		if _, applied, err := applyReset(t, dir, NoRevocations()); applied || !errors.Is(err, ErrFloorResetIgnored) ||
+			!strings.Contains(err.Error(), "is not after the accepted floor statement 2026-10-06T03:00:00Z") {
+			t.Fatal(applied, err)
+		}
+	})
 }
 
 // TestFloorResetRevocationPending: a reset naming a revocation epoch above

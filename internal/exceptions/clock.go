@@ -27,8 +27,9 @@ type Clock struct {
 // resolved profile's floor_mode and the mode the floor was obtained in), the
 // trust state returned after the floor and the run org. A value other than
 // "", online or airgap makes it unknown; else any airgap makes it airgap,
-// timed by Floors[orgID].IssuedAt (never ResetIssuedAt); no org, no mark or a
-// zero issued_at is unknown.
+// timed by Floors[orgID].IssuedAt (never ResetIssuedAt or PendingIssuedAt: a
+// statement refused as revocation-pending never sets the air-gap time); no
+// org, no mark or a zero issued_at is unknown.
 func NewClock(st trust.State, orgID string, modes ...string) Clock {
 	airgap, invalid := floorModes(modes...)
 	if invalid != "" {
