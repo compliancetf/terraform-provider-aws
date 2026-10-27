@@ -2,8 +2,10 @@ package main
 
 import (
 	"bytes"
+	"compress/gzip"
 	"encoding/base64"
 	"encoding/json"
+	"io"
 	"os"
 	"path/filepath"
 	"strings"
@@ -24,8 +26,31 @@ func mustBuild(t *testing.T) []byte {
 	return b
 }
 
-// TestBuildReproducible is the oracle: two builds are byte-equal and
-// equal the committed good.tar.gz, so `go generate` is reproducible.
+// sameTar reports whether two archives carry the same tar stream. The deflate
+// output of compress/gzip differs between Go releases, so a committed archive
+// is compared below the gzip layer; the tar stream (signed manifest, files,
+// fixed headers) is what build makes reproducible.
+func sameTar(t *testing.T, a, b []byte) bool {
+	t.Helper()
+	return bytes.Equal(gunzip(t, a), gunzip(t, b))
+}
+
+func gunzip(t *testing.T, b []byte) []byte {
+	t.Helper()
+	zr, err := gzip.NewReader(bytes.NewReader(b))
+	if err != nil {
+		t.Fatal(err)
+	}
+	out, err := io.ReadAll(zr)
+	if err != nil {
+		t.Fatal(err)
+	}
+	return out
+}
+
+// TestBuildReproducible is the oracle: two builds are byte-equal and carry
+// the tar stream of the committed good.tar.gz, so `go generate` is
+// reproducible.
 func TestBuildReproducible(t *testing.T) {
 	a, b := mustBuild(t), mustBuild(t)
 	if !bytes.Equal(a, b) {
@@ -35,7 +60,7 @@ func TestBuildReproducible(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if !bytes.Equal(a, committed) {
+	if !sameTar(t, a, committed) {
 		t.Fatal("good.tar.gz is stale: run go generate ./testdata/generate.go")
 	}
 }
@@ -53,7 +78,7 @@ func TestBuildIAMCatalog(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if !bytes.Equal(got, committed) {
+	if !sameTar(t, got, committed) {
 		t.Fatal("release-iam.tar.gz is stale: run go generate ./testdata/generate.go")
 	}
 	dir := t.TempDir()
