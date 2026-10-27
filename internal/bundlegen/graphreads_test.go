@@ -176,4 +176,14 @@ func TestGraphSchemaCompatFailsClosed(t *testing.T) {
 	if err := checkSupported([]bundle.Control{c}, s, map[string]Schemas{"6.66.0": s}, []string{"6.66.0"}); errCode(err) != "E_SUPPORTED_SCHEMA" {
 		t.Errorf("graph control with reads in the release check: err = %v, want E_SUPPORTED_SCHEMA", err)
 	}
+	// Nor a stray expr, which checkSupported keeps out of celeng.Load.
+	c = graphControl(bundle.GraphCompanionPresent, "")
+	expr := "resource.region == 'x'"
+	c.Expr = &expr
+	if _, err := SchemaCompatLines([]bundle.Control{c}, s); errCode(err) != "E_SCHEMA_TYPE" || !strings.Contains(err.Error(), "expr") {
+		t.Errorf("graph control with expr: err = %v, want E_SCHEMA_TYPE", err)
+	}
+	if err := checkSupported([]bundle.Control{c}, s, map[string]Schemas{"6.66.0": s}, []string{"6.66.0"}); errCode(err) != "E_SUPPORTED_SCHEMA" {
+		t.Errorf("graph control with expr in the release check: err = %v, want E_SUPPORTED_SCHEMA", err)
+	}
 }

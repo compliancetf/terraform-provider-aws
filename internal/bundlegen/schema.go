@@ -138,9 +138,10 @@ func ControlReads(c *bundle.Control, s Schemas) ([]SchemaRead, error) {
 // either rule; and every read of companion_expr on the companion, from the
 // reads analysis resource controls get (celeng.CompanionReads against the
 // companion schema in s). A target or companion type s lacks, a graph
-// control without graph or with reads (DecodeControls rejects both; a
-// control built in memory must not have them dropped unpinned), or a
-// companion_expr whose reads cannot be bounded fails with E_SCHEMA_TYPE.
+// control without graph, with reads or with expr (DecodeControls rejects
+// each; a control built in memory must not have them dropped unchecked),
+// or a companion_expr whose reads cannot be bounded fails with
+// E_SCHEMA_TYPE.
 func GraphReads(c *bundle.Control, s Schemas) ([]SchemaRead, error) {
 	g := c.Graph
 	switch {
@@ -148,6 +149,8 @@ func GraphReads(c *bundle.Control, s Schemas) ([]SchemaRead, error) {
 		return nil, errf("E_SCHEMA_TYPE", "%s: graph control without graph", c.ID)
 	case len(c.Reads) > 0:
 		return nil, errf("E_SCHEMA_TYPE", "%s: graph control must not set reads", c.ID)
+	case c.Expr != nil:
+		return nil, errf("E_SCHEMA_TYPE", "%s: graph control must not set expr", c.ID)
 	}
 	var out []SchemaRead
 	for _, side := range []struct {
