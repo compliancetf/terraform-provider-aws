@@ -55,6 +55,7 @@
 /pkg/engine @antonbabenko
 /internal/evidence @antonbabenko
 /internal/fetch @antonbabenko
+/internal/fsutil @antonbabenko
 /internal/bundle @antonbabenko
 /internal/embedded @antonbabenko
 /internal/verdict @antonbabenko

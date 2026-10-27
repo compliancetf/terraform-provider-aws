@@ -8,6 +8,8 @@ import (
 	"path/filepath"
 	"strings"
 	"testing"
+
+	"github.com/compliancetf/terraform-provider-aws/internal/fsutil"
 )
 
 // TestExecDirACLPolicy: an ACL entry that lets anyone but us (or a trusted
@@ -16,7 +18,7 @@ import (
 func TestExecDirACLPolicy(t *testing.T) {
 	const self, admin, other = "me", "admin", "other"
 	trusted := map[string]bool{admin: true}
-	allow := func(who string, rights uint8) aclEntry { return aclEntry{who: who, allow: true, rights: rights} }
+	allow := func(who string, rights uint8) aclEntry { return aclEntry{Who: who, Allow: true, Rights: rights} }
 	cases := []struct {
 		name            string
 		e               aclEntry
@@ -32,11 +34,11 @@ func TestExecDirACLPolicy(t *testing.T) {
 		{"other delete-child on sticky ancestor", allow(other, aclModify), false, true, "write"},
 		{"other read on child", allow(other, aclRead), true, false, "access"},
 		{"unknown add", allow("", aclAdd), false, false, "(unknown)"},
-		{"deny ignored", aclEntry{who: other, rights: aclModify}, true, false, ""},
-		{"inherit-only ignored", aclEntry{who: other, allow: true, inheritOnly: true, rights: aclModify}, true, false, ""},
+		{"deny ignored", aclEntry{Who: other, Rights: aclModify}, true, false, ""},
+		{"inherit-only ignored", aclEntry{Who: other, Allow: true, InheritOnly: true, Rights: aclModify}, true, false, ""},
 	}
 	for _, c := range cases {
-		err := checkACL([]aclEntry{c.e}, self, trusted, c.ownOnly, c.sticky)
+		err := fsutil.CheckACL([]aclEntry{c.e}, self, trusted, c.ownOnly, c.sticky)
 		switch {
 		case c.want == "" && err != nil:
 			t.Errorf("%s: refused: %v", c.name, err)
@@ -61,9 +63,9 @@ func TestExecDirParseFilesec(t *testing.T) {
 			t.Fatalf("%v: %v", order, err)
 		}
 		want := []aclEntry{
-			{who: "ABCDEFAB-CDEF-ABCD-EFAB-CDEF0000000C", allow: true, rights: aclAdd},
-			{who: "ABCDEFAB-CDEF-ABCD-EFAB-CDEF0000000C", inheritOnly: true, rights: aclModify},
-			{who: "FFFFEEEE-DDDD-CCCC-BBBB-AAAA000001F5", allow: true, rights: aclRead},
+			{Who: "ABCDEFAB-CDEF-ABCD-EFAB-CDEF0000000C", Allow: true, Rights: aclAdd},
+			{Who: "ABCDEFAB-CDEF-ABCD-EFAB-CDEF0000000C", InheritOnly: true, Rights: aclModify},
+			{Who: "FFFFEEEE-DDDD-CCCC-BBBB-AAAA000001F5", Allow: true, Rights: aclRead},
 		}
 		if fmt.Sprint(got) != fmt.Sprint(want) {
 			t.Fatalf("%v: got %+v, want %+v", order, got, want)
@@ -71,7 +73,7 @@ func TestExecDirParseFilesec(t *testing.T) {
 	}
 	// KAUTH_ACE_GENERIC_WRITE is 1<<23 and GENERIC_ALL 1<<21 (sys/kauth.h).
 	for _, m := range []uint32{1 << 21, 1 << 23} {
-		if coarsen(m, kauthAdd, kauthModify)&aclModify == 0 {
+		if fsutil.Coarsen(m, kauthAdd, kauthModify)&aclModify == 0 {
 			t.Fatalf("generic mask %#x not treated as modify", m)
 		}
 	}
