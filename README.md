@@ -8,7 +8,7 @@ It is a product of [compliance.tf](https://compliance.tf), by Anton Babenko, mai
 
 - You change the provider `source`. Your resources, code and version numbers stay the same: compliancetf/aws X.Y.Z runs hashicorp/aws X.Y.Z.
 - The provider checks each resource when Terraform plans it, again before apply, and on refresh and import. The checks run wherever Terraform runs, locally or in CI, with no extra pipeline step.
-- A violated `deny` control fails the run in `hard_fail` mode and warns in the default `soft_fail` mode. A violated `warn` control always warns. When the configuration, the `COMPLIANCETF_ENFORCEMENT_MODE` variable and an organization profile set different modes, the strictest one wins.
+- A violated `deny` control fails the run in `hard_fail` mode and warns in the default `soft_fail` mode. A violated `warn` control warns in every mode but `advisory`, which only writes evidence. An existing resource with no planned change only warns, even in `hard_fail`; any change to it is blocked. When the configuration, the `COMPLIANCETF_ENFORCEMENT_MODE` variable and an organization profile set different modes, the strictest one wins.
 - It warns or denies, and never changes a value you wrote.
 
 ## Before you start
@@ -51,7 +51,7 @@ Run `terraform providers` first. Its "Providers required by state" part shows th
 
 5. Run `terraform plan`. In the default `soft_fail` mode findings are warnings and the exit code of `terraform plan` does not change. To see what findings look like, plan [examples/soft-fail](examples/soft-fail).
 
-If something goes wrong part way, follow [Switch back](#switch-back) for that state, undoing only the steps you already did there. To restore a backup: `terraform state push state-default.backup.tfstate`.
+If something goes wrong part way, follow [Switch back](#switch-back) for that state, undoing only the steps you already did there; the reverse `replace-provider` is the normal way back. The backup is for last-resort recovery: `terraform state push state-default.backup.tfstate` refuses it once `replace-provider` has written a newer serial, and only `-force` overrides that check. `-force` overwrites whatever the state holds now, so use it only when you are sure nothing else changed that state since the backup.
 
 ## Roll out without blocking anyone
 
@@ -106,9 +106,9 @@ Each directory in [examples/](examples/) is a complete configuration with a `REA
 
 - `terraform init` downloads the provider from registry.compliance.tf. Release archives are signed with the compliance.tf release key, which Terraform checks at `terraform init`.
 - At run time the provider downloads `hashicorp/aws` from releases.hashicorp.com only when no verified copy is cached. It checks the HashiCorp signature and the pinned checksum before it starts the binary.
-- It contacts compliance.tf only when you configure an organization (`org_id` and `COMPLIANCETF_TOKEN`), to fetch the organization's signed profile and bundles. Those requests carry the compliance.tf token. Your configuration, state and AWS credentials are never sent.
+- It contacts compliance.tf only when you configure an organization (`org_id` and `COMPLIANCETF_TOKEN`), to fetch the organization's signed profile, bundles and floor statement. Those requests carry the compliance.tf token. Your configuration, state and AWS credentials are never sent.
 - Control bundles are signed by compliance.tf and verified against keys built into the provider. A bundle that fails verification is not loaded and the run stops.
-- Every check writes a record to a local evidence directory (`.terraform/compliancetf/evidence` by default): the control, the resource address and its identifiers (id and identity), the result and the mode. Other attribute values are not recorded. Each line is hash-chained to the one before it, so a line edited or removed in the middle of a file shows; a file cut short at the end does not. The files are local: copy them to write-once storage if you rely on them as evidence.
+- Every check writes a record to a local evidence directory (`.terraform/compliancetf/evidence` by default): the control, the resource type, the operation, the resource id and identity, the result and the mode. The resource address is not recorded, so a record alone does not name the module or the `count` or `for_each` instance. Other attribute values are not recorded. Each line is hash-chained to the one before it, so a line edited or removed in the middle of a file shows; a file cut short at the end does not. The files are local: copy them to write-once storage if you rely on them as evidence.
 
 ## Documentation
 

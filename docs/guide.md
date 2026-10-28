@@ -13,6 +13,8 @@ The mode decides what a violated control does:
 | `soft_fail` (default) | Warning | Warning |
 | `advisory` | No diagnostic, evidence record only | No diagnostic, evidence record only |
 
+The table is the outcome at plan and before apply. An existing resource with no planned change (planned and prior state equal and fully known) is the exception at plan: a blocking violation of it is a warning with the note "No change planned: this violation warns until the resource changes; any change to it is blocked." So turning on `hard_fail` does not fail the plan for non-compliant resources you leave alone, but the plan of any change to them fails.
+
 The mode comes from three places: `enforcement_mode` in the `compliance {}` block, the `COMPLIANCETF_ENFORCEMENT_MODE` variable and the floor of a signed organization profile. The strictest one wins, in the order `advisory < soft_fail < grandfather < hard_fail`. So `soft_fail` in the configuration cannot lower a stricter variable or floor.
 
 `grandfather` is for existing resources that an organization accepts for now:
@@ -42,6 +44,7 @@ terraform apply -input=false tfplan
 - `COMPLIANCETF_ENFORCEMENT_MODE` makes every configuration the job runs at least that strict, whatever its `compliance {}` block says. Each Terraform run reads the variables itself, so set the same ones in the plan job and the apply job.
 - With a saved plan, the provider checks each resource again before apply. A value that is unknown at plan gives a `pending` warning and is checked before apply. A saved plan holds the configuration it was made from: after you change the configuration, plan again.
 - Replacing a resource that has an identity needs Terraform 1.16.6 or later; Terraform 1.12 to 1.16.5 and OpenTofu block that apply, and saved plans have a related limit. See [Limitations](reference.md#limitations).
+- With an organization, a run that needs a floor statement (a governed organization, or a signed profile that lists bundles) under `floor_mode: online` fetches it from compliance.tf at every start. Such jobs need `COMPLIANCETF_TOKEN` and network access, and fail configuration without them even when the profile and bundles are cached. Only `floor_mode: airgap` with its floor file runs without the service. See [Environment variables](reference.md#environment-variables).
 - `COMPLIANCETF_DIAGNOSTICS` chooses the lines each finding prints in the CI log (see [Reading diagnostics](#reading-diagnostics)).
 
 ## Caches
@@ -57,7 +60,7 @@ In CI, persist both between jobs, or accept that each fresh runner downloads and
 
 Every check writes a record to a local evidence directory: `.terraform/compliancetf/evidence` by default, or `evidence_dir` in the `compliance {}` block (`COMPLIANCETF_EVIDENCE_DIR` wins).
 
-A record holds the control, the resource address and its identifiers (id and identity), the stage, the result and the mode. Other attribute values are not recorded. While `COMPLIANCETF_BASELINE_KEY_FILE` is set, plan results of existing resources also carry `read_digest`, a keyed digest of the attributes the control reads, from which baseline entries are written.
+A record holds the control, the resource type, the operation, the resource id and identity, the stage, the result and the mode. The resource address is not recorded: a `for_each` key can carry a value, so a record alone does not name the module or the `count` or `for_each` instance. Other attribute values are not recorded. While `COMPLIANCETF_BASELINE_KEY_FILE` is set, plan results of existing resources also carry `read_digest`, a keyed digest of the attributes the control reads, from which baseline entries are written.
 
 Each line is hash-chained to the one before it. A line edited or removed in the middle of a file shows; a file cut short at the end does not. The files stay on the machine that ran Terraform, and a CI runner usually discards `.terraform` when the job ends. If you rely on them as evidence, copy them to write-once storage after each run.
 
