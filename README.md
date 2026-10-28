@@ -1,42 +1,61 @@
 # compliance.tf provider for AWS
 
-`compliancetf/aws` is the AWS provider for Terraform and OpenTofu with compliance controls built in. It runs the official `hashicorp/aws` provider unmodified and checks `aws_*` resources against signed controls before Terraform calls AWS. A resource that breaks a control warns, or fails the plan, with the control id, its framework references and the fix.
+`compliancetf/aws` is the AWS provider for Terraform and OpenTofu with compliance controls built in. It runs the official `hashicorp/aws` provider unmodified and checks your `aws_*` resources against signed controls before Terraform calls AWS. A resource that breaks a control produces a warning or fails the plan, with the control id, the setting to change and a link to the control's docs.
 
 It is a product of [compliance.tf](https://compliance.tf), by Anton Babenko, maintainer of terraform-aws-modules.
 
-## Why use it
+## How it works
 
-- You keep your code. Existing `aws_*` resources stay as they are; you change the provider `source`.
-- Checks run wherever Terraform runs. The controls are part of the provider, so a local `terraform apply` is checked the same way as a CI run, without a separate pipeline step.
-- Violations can be stopped before they reach AWS. In `hard_fail` mode a violated `deny` control found at plan or before apply stops the run, so the resource is not created or changed and there is no finding to clean up later. `warn` controls stay warnings.
-- Each finding names its clause. Errors list the control, its framework references (for example `cis_aws:2.2.1`) and the setting to change.
-- Nothing is forked. compliancetf/aws X.Y.Z runs hashicorp/aws X.Y.Z, taken from your plugin cache or downloaded from HashiCorp (with its signature checked), and verified against a pinned checksum before it starts. Your version constraints and lock file workflow stay the same.
-- You can leave at any time. To switch back to `hashicorp/aws`, change the source back, remove the `compliance {}` block, run the state command in reverse and `terraform init`.
+- You change the provider `source`. Your resources, code and version numbers stay the same: compliancetf/aws X.Y.Z runs hashicorp/aws X.Y.Z.
+- The provider checks each resource when Terraform plans it, again before apply, and on refresh and import. The checks run wherever Terraform runs, locally or in CI, with no extra pipeline step.
+- A violated `deny` control fails the run in `hard_fail` mode and warns in the default `soft_fail` mode. A violated `warn` control always warns. When the configuration, the `COMPLIANCETF_ENFORCEMENT_MODE` variable and an organization profile set different modes, the strictest one wins.
+- It warns or denies, and never changes a value you wrote.
 
-## Get started
+## Before you start
 
-1. Change the provider source. Keep your `version` constraint: the version numbers match hashicorp/aws.
+- **Resources in child modules that require `hashicorp/aws` are not checked.** Every terraform-aws-modules module lists `hashicorp/aws` in its own `required_providers`, so Terraform installs `hashicorp/aws` separately for it and those resources bypass the checks. compliance.tf serves versions of terraform-aws-modules with the controls built into the modules. See [Modules that require hashicorp/aws](docs/guide.md#modules-that-require-hashicorpaws) for the options.
+- **A module call that passes `providers = { aws = aws }` to such a module fails** with a provider type mismatch once the root `aws` provider is compliancetf/aws. The same guide section shows the fix.
+- **What it checks.** The built-in CIS baseline has 18 controls on 11 resource types: encryption, public access, backup retention, deletion protection, and SSH and RDP ingress. Other resource types are not checked. Each check looks at one resource at a time. It is not a monitor: it sees a resource only when Terraform plans, applies, refreshes or imports it.
+- **What it contacts.** `terraform init` downloads the provider from registry.compliance.tf. At run time it downloads `hashicorp/aws` from releases.hashicorp.com only when no verified copy is cached, and checks its signature and pinned checksum. It contacts compliance.tf only when you configure an organization. It never sends your configuration, state or AWS credentials to compliance.tf. Details are in [Data and trust](#data-and-trust).
+- **Known limit.** Replacing a resource that has an identity needs Terraform 1.16.6 or later. Terraform 1.12 to 1.16.5 and OpenTofu block that apply; tainting the object first works, but destroys and recreates it. See [Limitations](docs/reference.md#limitations). The provider is tested with Terraform 1.5 and later and with OpenTofu.
+
+## Quick start
+
+Run `terraform providers` first. Its "Providers required by state" part shows the address your state records, and the module list shows which modules still require `hashicorp/aws`. The commands below use the Terraform address `registry.terraform.io/hashicorp/aws`; OpenTofu state usually records `registry.opentofu.org/hashicorp/aws`, and `tofu` takes the same commands.
+
+1. Change the provider source. During the switch, pin the exact version you run today; the version numbers match hashicorp/aws.
 
    ```hcl
    terraform {
      required_providers {
        aws = {
          source  = "registry.compliance.tf/compliancetf/aws" # was "hashicorp/aws"
-         version = "~> 6.67"
+         version = "6.70.0"
        }
      }
    }
    ```
 
-2. If the configuration already has resources in state, point them at the new provider once. This changes only the provider address recorded in state, not your resources.
+2. Run `terraform init`. It adds a lock file entry for the new address. If your team or CI runs on other platforms, add their hashes: `terraform providers lock -platform=linux_amd64 -platform=darwin_arm64` (list every platform you use).
+
+3. Only if the configuration already has resources in state: back up the state and point it at the new provider. Do this in every workspace and every state; planning a workspace does not change its state.
 
    ```bash
+   terraform state pull > state-default.backup.tfstate   # holds secrets: keep it out of git and CI logs
    terraform state replace-provider registry.terraform.io/hashicorp/aws registry.compliance.tf/compliancetf/aws
    ```
 
-3. Run `terraform init` and `terraform plan` as usual.
+   This changes only the provider address recorded in state, not your resources. Add `-auto-approve` in non-interactive runs. Do not run it on a state that holds resources of modules that stay on `hashicorp/aws`: the command has no module filter.
 
-By default (`soft_fail`) the provider only warns, so you can see what it finds without blocking anyone; warnings do not change the exit code of `terraform plan`. When you are ready, make violations fail the plan:
+4. Run `terraform init` again and review the lock file diff. The `hashicorp/aws` entry is removed only when neither the state nor any module still requires it.
+
+5. Run `terraform plan`. In the default `soft_fail` mode findings are warnings and the exit code of `terraform plan` does not change. To see what findings look like, plan [examples/soft-fail](examples/soft-fail).
+
+If something goes wrong part way, follow [Switch back](#switch-back) for that state, undoing only the steps you already did there. To restore a backup: `terraform state push state-default.backup.tfstate`.
+
+## Roll out without blocking anyone
+
+Start with the default `soft_fail` everywhere: findings are warnings and no run fails on them. When a configuration is clean, make violations fail the plan, either in the provider block or for every configuration of a CI job at once with `COMPLIANCETF_ENFORCEMENT_MODE=hard_fail`:
 
 ```hcl
 provider "aws" {
@@ -48,59 +67,56 @@ provider "aws" {
 }
 ```
 
-You can also set `COMPLIANCETF_ENFORCEMENT_MODE=hard_fail` in CI for every configuration at once; the strictest setting wins. An unencrypted EBS volume then stops the plan:
+An unencrypted RDS instance then stops the plan:
 
 ```
-Error: [ebs_volume_encryption_at_rest_enabled] EBS volumes must be encrypted.
+Error: [rds_db_instance_encryption_at_rest_enabled] RDS instances must have storage encryption enabled.
 
-  with aws_ebs_volume.data,
-  on main.tf line 18, in resource "aws_ebs_volume" "data":
-  18:   encrypted         = false
+  with aws_db_instance.non_compliant,
+  on main.tf line 25, in resource "aws_db_instance" "non_compliant":
+  25:   storage_encrypted       = false # deny
 
-Fix: Set encrypted = true.
-Docs: https://compliance.tf/docs/controls/aws/ebs_volume_encryption_at_rest_enabled/
+Fix: Set storage_encrypted = true.
+Docs: https://compliance.tf/docs/controls/aws/rds_db_instance_encryption_at_rest_enabled/
 ```
 
-`COMPLIANCETF_DIAGNOSTICS` chooses the lines after the source snippet; `full` adds severity, mode, stage and framework references (see [docs/reference.md](docs/reference.md#diagnostics)).
+The [guide](docs/guide.md) covers CI setup, all four modes, reading diagnostics and what to do with a finding you cannot fix yet.
 
-The provider is tested with Terraform 1.5 and later and with OpenTofu; replacing a resource that has an identity needs Terraform 1.16.6 or later (see [Limitations](docs/reference.md#limitations)). The [examples](#examples) are complete configurations to start from.
+## Switch back
 
-## What is included
+The same steps in reverse, per configuration:
 
-The provider ships with a CIS baseline for AWS: 18 controls on 11 resource types, with checks for encryption, public access, backup retention, deletion protection, and SSH and RDP ingress on those types. It is free, built into the binary, and needs no account or token. Resource types without a control are not checked. The controls are listed in [docs/reference.md](docs/reference.md#cis-controls), and each error links the control's docs page, which names its CIS references.
-
-Bundles for other frameworks, organization rules and exceptions come from [compliance.tf](https://compliance.tf). Without them there are no exceptions: use the default warning mode for resources you cannot fix yet.
+1. Set `source` back to `hashicorp/aws`. If you pinned a prerelease such as `6.70.0-compliancetf.1`, change the pin to the matching `6.70.0`. Remove the `compliance {}` block.
+2. Run `terraform init`.
+3. In every workspace and state: `terraform state replace-provider registry.compliance.tf/compliancetf/aws registry.terraform.io/hashicorp/aws` (on OpenTofu, the target is usually `registry.opentofu.org/hashicorp/aws`).
+4. Run `terraform init` again, review the lock file diff, and run `terraform plan` for each state.
 
 ## Examples
 
-Each directory in [examples/](examples/) has a `README.md` with how to run it and the expected output.
-
-| Example | Shows | Expected plan |
-|---------|-------|---------------|
-| [basic](examples/basic) | A compliant RDS instance; a quick setup check | Succeeds, no compliance diagnostics |
-| [cis-complete](examples/cis-complete) | Every resource type the CIS bundle checks, configured to pass every control, with the control id next to each setting | Succeeds, 23 resources, no compliance diagnostics |
-| [hard-fail](examples/hard-fail) | Violations in `hard_fail` mode | Fails with 4 errors and 1 warning |
-| [soft-fail](examples/soft-fail) | The same violations in the default `soft_fail` mode | Succeeds with 5 warnings |
-| [exception](examples/exception) | Self-service exceptions, with every entry attribute and `match` variable explained | Succeeds; needs a signed org profile (signed with the test key for a development build) |
-| [custom-bundle](examples/custom-bundle) | A signed team bundle next to the embedded CIS bundle | Fails with 1 error and 1 warning; needs a development build |
+Each directory in [examples/](examples/) is a complete configuration with a `README.md` and the expected output: [basic](examples/basic), [cis-complete](examples/cis-complete), [hard-fail](examples/hard-fail), [soft-fail](examples/soft-fail), [exception](examples/exception) and [custom-bundle](examples/custom-bundle). The [guide](docs/guide.md#examples) has the table of what each one shows.
 
 ## What it does not do
 
 - It does not make you compliant with CIS or any other framework. It checks the controls it has, on the resources Terraform manages through it.
-- It is not a monitor. It sees a resource only when Terraform plans, applies, refreshes or imports it, and does not discover resources Terraform does not manage. Keep AWS Config, Security Hub or your scanner for continuous detection.
-- It does not check resources inside modules that declare `hashicorp/aws` in their own `required_providers`, which includes terraform-aws-modules. Terraform installs `hashicorp/aws` separately for those modules. For terraform-aws-modules, compliance.tf serves versions with the controls built into the modules.
+- It does not replace continuous detection. Keep AWS Config, Security Hub or your scanner for resources Terraform does not manage or that change outside Terraform.
 - It checks settings on single resources, not how resources fit together.
-- It denies or warns. It never changes a value you wrote.
 - Anyone who can edit the configuration can change the provider source or the mode. Protect those lines in code review.
 
 ## Data and trust
 
-- `terraform init` downloads the provider from registry.compliance.tf. At run time the provider sends no configuration, state or credentials to compliance.tf. It contacts releases.hashicorp.com only to download hashicorp/aws when the binary is not already cached, and compliance.tf only when you configure an organization (`org_id`), to fetch its signed profile and bundles.
+- `terraform init` downloads the provider from registry.compliance.tf. Release archives are signed with the compliance.tf release key, which Terraform checks at `terraform init`.
+- At run time the provider downloads `hashicorp/aws` from releases.hashicorp.com only when no verified copy is cached. It checks the HashiCorp signature and the pinned checksum before it starts the binary.
+- It contacts compliance.tf only when you configure an organization (`org_id` and `COMPLIANCETF_TOKEN`), to fetch the organization's signed profile and bundles. Those requests carry the compliance.tf token. Your configuration, state and AWS credentials are never sent.
 - Control bundles are signed by compliance.tf and verified against keys built into the provider. A bundle that fails verification is not loaded and the run stops.
 - Every check writes a record to a local evidence directory (`.terraform/compliancetf/evidence` by default): the control, the resource address and its identifiers (id and identity), the result and the mode. Other attribute values are not recorded. Each line is hash-chained to the one before it, so a line edited or removed in the middle of a file shows; a file cut short at the end does not. The files are local: copy them to write-once storage if you rely on them as evidence.
-- Release archives are signed with the compliance.tf release key, which Terraform checks at `terraform init`.
 
-All settings, modes and known limitations are in [docs/reference.md](docs/reference.md).
+## Documentation
+
+| Document | For |
+|---|---|
+| [docs/guide.md](docs/guide.md) | Day-to-day use: modes, CI, caches, evidence, diagnostics, upgrades, findings you cannot fix yet |
+| [docs/reference.md](docs/reference.md) | Every setting, mode, control, environment variable and limitation. Where the README or guide is shorter, follow the reference |
+| [docs/performance.md](docs/performance.md) | Startup cost, caches and measurements |
 
 ## Questions and feedback
 
