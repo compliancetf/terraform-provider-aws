@@ -1,6 +1,6 @@
 # Reference
 
-Configuration, enforcement modes, the built-in CIS controls, exceptions and known limitations of the compliance.tf provider for AWS. Start with the [README](../README.md).
+Configuration, enforcement modes, the built-in CIS controls, exceptions and known limitations of the compliance.tf provider for AWS. Start with the [README](../README.md); day-to-day use, CI and rollout are in the [guide](guide.md).
 
 ## Versions
 
@@ -46,16 +46,18 @@ provider "aws" {
 
 ## Enforcement modes
 
-`enforcement_mode`, `COMPLIANCETF_ENFORCEMENT_MODE` and a signed org profile floor combine to the strictest of them, in the order `advisory < soft_fail < grandfather < hard_fail`. A control blocks when its action is `deny` and its mode is `hard_fail` (or `grandfather`, which acts as `hard_fail` until baselines ship).
+The strictest of `enforcement_mode`, `COMPLIANCETF_ENFORCEMENT_MODE` and a signed org profile floor wins, in the order `advisory < soft_fail < grandfather < hard_fail`. A control blocks when its action is `deny` and its mode is `hard_fail`. A `deny` control in `grandfather` mode also blocks, unless a verified verdict lists a matching baseline entry for the violation (see below).
 
 | Mode | Blocking `deny` violation | `warn` violation |
 |------|---------------------------|------------------|
 | `hard_fail` | Error: the plan fails and the apply is not forwarded | Warning |
-| `grandfather` | Same as `hard_fail` in this version | Warning |
+| `grandfather` | As `hard_fail`, except a violation that a baseline can cover: a warning at plan, blocked at apply unless a verified verdict lists a matching baseline entry | Warning |
 | `soft_fail` (default) | Warning | Warning |
 | `advisory` | No diagnostic, evidence record only | No diagnostic, evidence record only |
 
-The table is the plan and before-apply outcome. After apply and on refresh or import a violation is a warning, except an error after an update; Terraform has already changed the resource at that point. A value that is unknown until apply gives a `pending` warning at plan and is checked again before apply. A control that cannot be evaluated counts as a failure.
+The table is the plan and before-apply outcome. After apply and on refresh or import a violation is a warning, except an error after an update; Terraform has already changed the resource at that point. A value that is unknown until apply gives a `pending` warning at plan and is checked again before apply. A control that cannot be evaluated counts as a failure. An existing resource with no planned change (planned and prior state equal and fully known) is the exception at plan: a blocking violation of it is a warning with the note "No change planned: this violation warns until the resource changes; any change to it is blocked." So an unchanged non-compliant resource does not fail a `hard_fail` plan, and the plan of any change to it does.
+
+In `grandfather` mode, a violation is a `pending exemption: baseline <control id>` warning at plan, even with no baseline file, when the control's signed coverage allows `baseline` and the control reads no sensitive attribute. Apply blocks it unless a verified verdict lists a matching entry of the signed baseline (`baseline_file`). A verified verdict is the `compliancetf.verdict/v1` file named by `COMPLIANCETF_VERDICT` that `ctfkit gate` writes for a saved plan. It is signed with a key that the signed org profile lists under `verdict.public_keys`, and the provider checks it at the first apply. A `baseline_file` that cannot load (the signed profile lists no baseline keys, `COMPLIANCETF_BASELINE_KEY_FILE` is missing or not a usable key, or the signature does not verify) fails configuration. With no baseline loaded, the provider warns once that every violation is treated as new.
 
 ## CIS controls
 
@@ -124,6 +126,8 @@ A failing control is reported as `[<control id>] <message>`, then the source sni
 | Name | Meaning |
 |------|---------|
 | `COMPLIANCETF_DIAGNOSTICS` | Lines of control diagnostics: `default`, `minimal`, `full` or a comma list of fields (see [Diagnostics](#diagnostics)). |
+| `COMPLIANCETF_TOKEN` | compliance.tf token, sent as a bearer token with requests to the compliance.tf service. With `org_id` set, the token lets the provider fetch the organization's signed profile, bundles and floor statement. Without the token the provider does not contact the service: the profile and bundles come from cached copies, and a run that needs a floor statement (a governed organization, or a signed profile that lists bundles) works only under a signed profile with `floor_mode: airgap` and its floor file (the profile's floor path, else `COMPLIANCETF_FLOOR_PATH`). Under `floor_mode: online` such a run fails configuration. |
+| `COMPLIANCETF_OFFLINE` | Set to `true` to turn off every request to the compliance.tf service. The signed profile and bundles then come from cached copies. A run that needs a floor statement works offline only under `floor_mode: airgap`; under `floor_mode: online` it fails configuration. Other values are ignored. |
 | `COMPLIANCETF_UPSTREAM_PATH` | Explicit path to the `hashicorp/aws` binary, for air-gapped installs. The binary must match the pinned checksum. |
 | `COMPLIANCETF_BASELINE_KEY_FILE` | The organization's baseline key: a file owned by the current user that group and others cannot read, holding 64 lowercase hex characters. `baseline_file` needs it to match entries. While it is set, with or without a baseline file, each plan evidence result of a resource that already exists carries `read_digest`, a keyed digest of the attributes the control reads in the prior state, from which ctfkit writes baseline entries. Results of a create, of a control that reads a sensitive attribute and of a read that is unknown carry none. A file that is not a usable key warns and no `read_digest` is written. |
 | `COMPLIANCETF_CACHE_DIR` | Directory of the cached signed organization bundles and profiles fetched from the bundle service. Default: `compliancetf` in the user cache directory (`$XDG_CACHE_HOME` or `~/.cache` on Linux, `~/Library/Caches` on macOS, `%LocalAppData%` on Windows). |

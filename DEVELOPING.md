@@ -122,7 +122,7 @@ test/
   fixtures/                 Terraform configs for scripts/fixtures.sh
 testdata/                   schemas, bundles and other shared test inputs
 examples/                   user-facing example configurations
-docs/                       user reference and performance notes
+docs/                       user guide, reference and performance notes
 scripts/                    see Scripts
 ```
 
