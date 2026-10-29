@@ -425,3 +425,32 @@ func TestReleaseBackfillGate(t *testing.T) {
 		t.Error(".goreleaser.yml: a backfill must not become the latest release")
 	}
 }
+
+// TestReleaseChangelogMerge: the changelog job merges its own PR, and only
+// after checking that the PR changes CHANGELOG.md and nothing else: the
+// owner-approval status it sets is the verdict protected-paths.yml gives a
+// PR that touches no protected path, so it must never cover another file.
+func TestReleaseChangelogMerge(t *testing.T) {
+	wf, err := os.ReadFile(".github/workflows/release.yml")
+	if err != nil {
+		t.Fatal(err)
+	}
+	s := string(wf)
+	order := []string{
+		`files=$(gh api "repos/$REPO/pulls/$pr/files"`,
+		`if [ "$files" != "CHANGELOG.md" ]; then`,
+		`-f state=success -f context=owner-approval`,
+		`-X PUT "repos/$REPO/pulls/$pr/merge" -f merge_method=squash -f sha="$head"`,
+	}
+	at := 0
+	for _, want := range order {
+		i := strings.Index(s[at:], want)
+		if i < 0 {
+			t.Fatalf("release.yml: missing, or out of order: %s", want)
+		}
+		at += i + len(want)
+	}
+	if !regexp.MustCompile(`(?m)^\s*statuses: write$`).MatchString(s) {
+		t.Error("release.yml: the changelog job needs statuses: write to set owner-approval")
+	}
+}

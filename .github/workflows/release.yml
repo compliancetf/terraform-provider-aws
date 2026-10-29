@@ -160,10 +160,13 @@ jobs:
           CTF_BACKFILL: ${{ steps.origin.outputs.backfill }}
 
   # After a published release, a PR puts the same section at the top of
-  # CHANGELOG.md on master. PRs opened with GITHUB_TOKEN start no workflows:
-  # the owner merges it by hand, like the pin PRs.
+  # CHANGELOG.md on master and this job merges it. A PR opened with
+  # GITHUB_TOKEN starts no workflows, so protected-paths.yml never sets
+  # owner-approval on it; the job sets it with the verdict that workflow gives
+  # a PR touching no protected path, after checking the PR changes CHANGELOG.md
+  # and nothing else.
   changelog:
-    name: Open the CHANGELOG PR
+    name: Update CHANGELOG.md
     needs: release
     # A backfill adds no CHANGELOG.md section: it changes only the pin.
     if: needs.release.outputs.backfill != 'true'
@@ -172,6 +175,7 @@ jobs:
     permissions:
       contents: write
       pull-requests: write
+      statuses: write
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -181,7 +185,7 @@ jobs:
       - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
         with:
           go-version-file: go.mod
-      - name: Update CHANGELOG.md, push the branch, open the PR
+      - name: Update CHANGELOG.md, open the PR and merge it
         env:
           GH_TOKEN: ${{ github.token }}
           REPO: ${{ github.repository }}
@@ -200,6 +204,17 @@ jobs:
           auth="AUTHORIZATION: basic $(printf 'x-access-token:%s' "$GH_TOKEN" | base64 -w0)"
           echo "::add-mask::$auth"
           git -c http.https://github.com/.extraheader="$auth" push origin "refs/heads/$branch:refs/heads/$branch"
-          url=$(gh api "repos/$REPO/pulls" -f title="docs(changelog): $GITHUB_REF_NAME" -f head="$branch" -f base=master \
-            -f body="Adds the $GITHUB_REF_NAME release notes to CHANGELOG.md (tools/changelog). Merge by hand." --jq .html_url)
-          echo "::notice::opened $url"
+          pr=$(gh api "repos/$REPO/pulls" -f title="docs(changelog): $GITHUB_REF_NAME" -f head="$branch" -f base=master \
+            -f body="Adds the $GITHUB_REF_NAME release notes to CHANGELOG.md (tools/changelog). Merged by the release workflow." --jq .number)
+          echo "::notice::opened PR #$pr"
+          files=$(gh api "repos/$REPO/pulls/$pr/files" --jq '[.[].filename] | join(" ")')
+          if [ "$files" != "CHANGELOG.md" ]; then
+            echo "::error::PR #$pr changes $files, not only CHANGELOG.md; merge it by hand"
+            exit 1
+          fi
+          head=$(git rev-parse HEAD)
+          gh api --silent "repos/$REPO/statuses/$head" -f state=success -f context=owner-approval \
+            -f description="no protected path touched (CHANGELOG.md only)"
+          gh api --silent -X PUT "repos/$REPO/pulls/$pr/merge" -f merge_method=squash -f sha="$head"
+          gh api --silent -X DELETE "repos/$REPO/git/refs/heads/$branch"
+          echo "::notice::merged PR #$pr"
