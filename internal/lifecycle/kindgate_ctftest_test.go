@@ -7,6 +7,7 @@ import (
 	"context"
 	"os"
 	"path/filepath"
+	"strings"
 	"testing"
 	"time"
 
@@ -119,4 +120,21 @@ func TestConfigureLoadsEveryKind(t *testing.T) {
 			}
 		})
 	}
+
+	// a v0.1 bundle control with a legacy predicate fails Configure.
+	t.Run("legacy predicate", func(t *testing.T) {
+		controls := controlsOf(archive)
+		i := bytes.LastIndexByte(controls, ']')
+		extra := `,{"id": "ami_most_recent", "version": "1.0.0", "kind": "resource", "resource_type": "aws_ami",
+			"reads": ["most_recent"], "presence_mode": "configured", "predicate": {"eq": ["most_recent", true]},
+			"action": "deny", "severity": "high", "message": "m"}`
+		body := append(append(append([]byte{}, controls[:i]...), extra...), controls[i:]...)
+		signed, err := bundletest.WithFile(archive, bundle.ControlsFile, body, testkeys.Bundle())
+		if err != nil {
+			t.Fatal(err)
+		}
+		if _, err := configure(t, signed); err == nil || !strings.Contains(err.Error(), "control_predicate") {
+			t.Fatalf("Configure with a predicate control: %v, want control_predicate", err)
+		}
+	})
 }

@@ -96,6 +96,8 @@ compliancetf/aws X.Y.Z runs hashicorp/aws X.Y.Z, so upgrading the provider upgra
 
 Fixes to the compliance.tf layer alone ship as `X.Y.Z-compliancetf.N`, and betas as `X.Y.Z-beta.N`. Terraform never selects a prerelease from a range constraint, so to use one, pin it exactly (`version = "6.70.0-compliancetf.1"`). See [Versions](reference.md#versions).
 
+Upgrading from 0.1.x: a bundle with controls written as a `predicate` does not load. Configure fails with `control_predicate` and the run stops. Rewrite each check as a CEL `expr`, then rebuild and re-sign the bundle with `cmd/ctfbundle`.
+
 ## Findings you cannot fix yet
 
 Without an organization there are no exceptions. Keep the configuration that has the finding on `soft_fail` (or `advisory`) and make the others `hard_fail`. A CI job that sets `COMPLIANCETF_ENFORCEMENT_MODE=hard_fail` overrides that, so leave the variable off for that configuration's job. An `exceptions_file` is ignored with a warning until a signed organization profile allows it.
