@@ -867,6 +867,12 @@
                     "optional": true,
                     "type": "string"
                   },
+                  "bedrockdataautomation": {
+                    "description": "Use this to override the default service endpoint URL",
+                    "description_kind": "plain",
+                    "optional": true,
+                    "type": "string"
+                  },
                   "bedrockruntime": {
                     "description": "Use this to override the default service endpoint URL",
                     "description_kind": "plain",
@@ -2325,6 +2331,12 @@
                     "optional": true,
                     "type": "string"
                   },
+                  "securityir": {
+                    "description": "Use this to override the default service endpoint URL",
+                    "description_kind": "plain",
+                    "optional": true,
+                    "type": "string"
+                  },
                   "securitylake": {
                     "description": "Use this to override the default service endpoint URL",
                     "description_kind": "plain",
@@ -3201,6 +3213,12 @@
                 "type": "string"
               },
               "multi_az": {
+                "computed": true,
+                "description_kind": "plain",
+                "optional": true,
+                "type": "bool"
+              },
+              "multi_tenant": {
                 "computed": true,
                 "description_kind": "plain",
                 "optional": true,
