@@ -222,7 +222,14 @@ func TestStateUnwritableDir(t *testing.T) {
 		t.Fatal(err)
 	}
 	// Not a directory: the existing state cannot be read either, so fatal.
-	if _, err := UpdateState(filepath.Join(file, "sub"), stateDelta(t, 2)); err == nil || errors.Is(err, ErrStateNotSaved) {
+	// Windows reports a path under a regular file as not found: no state,
+	// warn and continue, as for a missing dir that cannot be created.
+	_, err := UpdateState(filepath.Join(file, "sub"), stateDelta(t, 2))
+	if runtime.GOOS == "windows" {
+		if !errors.Is(err, ErrStateNotSaved) {
+			t.Fatalf("write under a regular file: err = %v, want not saved", err)
+		}
+	} else if err == nil || errors.Is(err, ErrStateNotSaved) {
 		t.Fatalf("write under a regular file: err = %v, want fatal", err)
 	}
 	// Missing dir that cannot be created: no state exists, so warn and continue.

@@ -1,2 +1,5 @@
+# Check out text with LF on every platform: goldens, protos, embedded JSON
+# and signed fixtures are compared or hashed byte for byte.
+* text=auto eol=lf
 testdata/schemas/aws-subset.json linguist-generated=true -text
 testdata/schemas/aws-subset.provenance.json -text

@@ -155,7 +155,8 @@ func Launch(ctx context.Context, bin VerifiedBinary, logger hclog.Logger) (*Upst
 	}
 	rpc, err := client.Client()
 	var pe *fs.PathError
-	if err != nil && bin.retry != nil && errors.As(err, &pe) { // exec itself failed: entry removed, noexec, busy
+	var ee *exec.Error                                                                  // Windows: exec's lookup fails for a removed entry before any start
+	if err != nil && bin.retry != nil && (errors.As(err, &pe) || errors.As(err, &ee)) { // exec itself failed: entry removed, noexec, busy
 		client.Kill()
 		log.Printf("[upstream] %q did not start (%v); retrying with a private copy", bin.path, err)
 		vb, rerr := bin.retry(ctx)

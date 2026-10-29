@@ -4,8 +4,10 @@ import (
 	"bytes"
 	"encoding/json"
 	"errors"
+	"io/fs"
 	"os"
 	"path/filepath"
+	"runtime"
 	"slices"
 	"testing"
 
@@ -127,8 +129,12 @@ func TestWriteFileAtomic(t *testing.T) {
 	if b, _ := os.ReadFile(target); string(b) != "keep" {
 		t.Errorf("symlink target overwritten: %q", b)
 	}
+	want := fs.FileMode(0o644)
+	if runtime.GOOS == "windows" {
+		want = 0o666 // Windows reports every writable file as 0666
+	}
 	fi, err := os.Lstat(link)
-	if err != nil || !fi.Mode().IsRegular() || fi.Mode().Perm() != 0o644 {
+	if err != nil || !fi.Mode().IsRegular() || fi.Mode().Perm() != want {
 		t.Fatalf("out.json mode %v (err %v), want regular 0644", fi.Mode(), err)
 	}
 	if b, _ := os.ReadFile(link); string(b) != "new" {

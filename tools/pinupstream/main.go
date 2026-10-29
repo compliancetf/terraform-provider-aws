@@ -26,6 +26,7 @@ import (
 	"os"
 	"path/filepath"
 	"regexp"
+	"runtime"
 	"strings"
 	"syscall"
 	"time"
@@ -326,6 +327,9 @@ func writeAtomic(path string, data []byte) error {
 	}
 	if err := os.Rename(f.Name(), path); err != nil {
 		return err
+	}
+	if runtime.GOOS == "windows" { // Windows cannot fsync a directory handle
+		return nil
 	}
 	if d, err := os.Open(dir); err == nil { // best effort where directories cannot be opened
 		defer cleanup(d.Close)
