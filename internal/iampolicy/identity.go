@@ -115,13 +115,16 @@ func usableIdentity(st Statement, absent bool) error {
 	return nil
 }
 
-// PrincipalIs is iam.principal_is(stmt, arn): exact match of a canonical
-// identity. An ARN query matches the AWS and Federated lists, a host query
-// the Service and Federated lists; "*" in the AWS list (everyone) matches any
-// query, "*" elsewhere only queries of that type. An unresolved identity, a
+// PrincipalIs is iam.principal_is(stmt, arn): whether the statement's
+// Principal grants arn. An ARN query matches the AWS and Federated lists, a
+// host query the Service and Federated lists; "*" in the AWS list (everyone)
+// matches any query, "*" elsewhere only queries of that type. In the AWS list
+// an account root also matches every IAM and STS principal of its account and
+// partition, and a role its sessions (see covers). An unresolved identity, a
 // NotPrincipal (whether it excludes arn depends on the control polarity), an
 // absent Principal (an identity policy applies to the identity it is attached
-// to) or a non-canonical query is ErrUnresolved.
+// to) or a non-canonical query is ErrUnresolved; so is a match that AWS
+// documentation does not decide, unless another principal matches.
 func PrincipalIs(st Statement, arn string) (bool, error) {
 	if err := usableIdentity(st, len(st.NotPrincipals) > 0 || len(st.Principals) == 0); err != nil {
 		return false, err
@@ -143,7 +146,76 @@ func PrincipalIs(st Statement, arn string) (bool, error) {
 			return true, nil
 		}
 	}
+	undecided := false
+	for _, v := range st.Principals["aws"] {
+		m, err := covers(v, arn)
+		if m {
+			return true, nil
+		}
+		undecided = undecided || err != nil
+	}
+	if undecided {
+		return false, unresolved(rUnresolvedIdentity)
+	}
 	return false, nil
+}
+
+// covers: the canonical AWS principal v (not "*", not arn) grants principal
+// q of its account and partition. An account root delegates to every
+// principal of the account (reference_policies_elements_principal.html, "AWS
+// account principals"); a role grants its sessions, which name the role
+// without its path (access_policies.html, "Session policies"). A session
+// queried as its role, and role names that differ only in case (unique
+// regardless of case, matched by an undocumented rule), are ErrUnresolved.
+// So is a user against a federated user of its account either way: a grant
+// to a user applies to the sessions it federates
+// (reference_policies_evaluation-logic_policy-eval-denyallow.html), and the
+// session name does not name that user. Other names compare exactly: a
+// Principal user name is case sensitive.
+func covers(v, q string) (bool, error) {
+	p := strings.SplitN(v, ":", 6)
+	if len(p) != 6 {
+		return false, nil
+	}
+	prefix, account := p[0]+":"+p[1], p[4]
+	if !accountPrincipal(q, prefix, account) || !accountPrincipal(v, prefix, account) {
+		return false, nil
+	}
+	if v == prefix+":iam::"+account+":root" {
+		return true, nil
+	}
+	iamUser, fedUser := prefix+":iam::"+account+":user/", prefix+":sts::"+account+":federated-user/"
+	if strings.HasPrefix(v, iamUser) && strings.HasPrefix(q, fedUser) || strings.HasPrefix(v, fedUser) && strings.HasPrefix(q, iamUser) {
+		return false, unresolved(rUnresolvedIdentity)
+	}
+	vn, vs, ok := roleName(v, prefix, account)
+	qn, qs, qok := roleName(q, prefix, account)
+	if !ok || !qok || !strings.EqualFold(vn, qn) {
+		return false, nil
+	}
+	switch {
+	case vn == qn && !vs && qs: // the role grants its session
+		return true, nil
+	case vn == qn && vs == qs: // two roles on different paths, or two sessions
+		return false, nil
+	case vs && qs && !strings.EqualFold(v, q): // sessions of one role, other names
+		return false, nil
+	}
+	return false, unresolved(rUnresolvedIdentity)
+}
+
+// roleName: the role name of a role ARN (last path segment) or of an
+// assumed-role session ARN of account under prefix, and whether it is a
+// session.
+func roleName(s, prefix, account string) (name string, session, ok bool) {
+	if res, found := strings.CutPrefix(s, prefix+":iam::"+account+":role/"); found {
+		return res[strings.LastIndex(res, "/")+1:], false, res != "" && !strings.HasSuffix(res, "/")
+	}
+	if rs, found := strings.CutPrefix(s, prefix+":sts::"+account+":assumed-role/"); found {
+		role, _, cut := strings.Cut(rs, "/")
+		return role, true, cut && role != ""
+	}
+	return "", false, false
 }
 
 // PrincipalsInAccount is iam.principals_in_account(stmt, account, partition):
