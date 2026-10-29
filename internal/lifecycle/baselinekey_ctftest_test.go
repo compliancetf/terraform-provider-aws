@@ -8,6 +8,7 @@ import (
 	"errors"
 	"os"
 	"path/filepath"
+	"runtime"
 	"slices"
 	"strings"
 	"testing"
@@ -45,6 +46,9 @@ func TestConfigureBaselineKey(t *testing.T) {
 		}
 	})
 	t.Run("usable key, read once", func(t *testing.T) {
+		if runtime.GOOS == "windows" {
+			t.Skip("the baseline key file loads only on unix (internal/verdict file_other.go)")
+		}
 		cfg, _, err := run(t, good, nil, nil)
 		if err != nil {
 			t.Fatal(err)

@@ -10,6 +10,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"runtime"
 	"strings"
 	"testing"
 	"time"
@@ -39,6 +40,9 @@ func TestMain(m *testing.M) {
 	}
 	for _, v := range []int{5, 6} {
 		bins[v] = filepath.Join(dir, fmt.Sprintf("fake%d", v))
+		if runtime.GOOS == "windows" {
+			bins[v] += ".exe" // exec finds a binary on Windows only by its extension
+		}
 		if out, err := exec.Command("go", "build", "-o", bins[v], fmt.Sprintf("./v%d", v)).CombinedOutput(); err != nil {
 			fmt.Fprintf(os.Stderr, "build v%d: %v\n%s", v, err, out)
 			os.Exit(1)
