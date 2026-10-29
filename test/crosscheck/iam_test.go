@@ -61,8 +61,8 @@ func TestIAMControls(t *testing.T) {
 // role name, unique id, path wildcard, unknown queried ARN and
 // catalog miss are not_evaluable / unresolved; canonical matches decide.
 func TestIAMIdentity(t *testing.T) {
-	if n, cases := runControls(t, filepath.Join(root, "crosscheck", "iam-identity"), true); n != 3 || cases < 6 {
-		t.Fatalf("%d iam-identity controls with %d cases, want 3 with at least 6", n, cases)
+	if n, cases := runControls(t, filepath.Join(root, "crosscheck", "iam-identity"), true); n != 4 || cases < 6 {
+		t.Fatalf("%d iam-identity controls with %d cases, want 4 with at least 6", n, cases)
 	}
 }
 

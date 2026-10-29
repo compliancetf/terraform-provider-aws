@@ -167,18 +167,26 @@ func PrincipalIs(st Statement, arn string) (bool, error) {
 // without its path (access_policies.html, "Session policies"). A session
 // queried as its role, and role names that differ only in case (unique
 // regardless of case, matched by an undocumented rule), are ErrUnresolved.
-// Other names compare exactly: a Principal user name is case sensitive.
+// So is a user against a federated user of its account either way: a grant
+// to a user applies to the sessions it federates
+// (reference_policies_evaluation-logic_policy-eval-denyallow.html), and the
+// session name does not name that user. Other names compare exactly: a
+// Principal user name is case sensitive.
 func covers(v, q string) (bool, error) {
 	p := strings.SplitN(v, ":", 6)
 	if len(p) != 6 {
 		return false, nil
 	}
 	prefix, account := p[0]+":"+p[1], p[4]
-	if !accountPrincipal(q, prefix, account) {
+	if !accountPrincipal(q, prefix, account) || !accountPrincipal(v, prefix, account) {
 		return false, nil
 	}
 	if v == prefix+":iam::"+account+":root" {
 		return true, nil
+	}
+	iamUser, fedUser := prefix+":iam::"+account+":user/", prefix+":sts::"+account+":federated-user/"
+	if strings.HasPrefix(v, iamUser) && strings.HasPrefix(q, fedUser) || strings.HasPrefix(v, fedUser) && strings.HasPrefix(q, iamUser) {
+		return false, unresolved(rUnresolvedIdentity)
 	}
 	vn, vs, ok := roleName(v, prefix, account)
 	qn, qs, qok := roleName(q, prefix, account)

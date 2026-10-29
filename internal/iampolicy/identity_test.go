@@ -107,6 +107,20 @@ func TestIdentity(t *testing.T) {
 		{"case variant beside match", `"Principal":{"AWS":["arn:aws:iam::222222222222:role/BobTheCorp-App","` + role + `"]},"Resource":"*"`, role, false, "true"},
 		{"case variant beside other root", `"Principal":{"AWS":["arn:aws:iam::222222222222:role/BobTheCorp-App","arn:aws:iam::333333333333:root"]},"Resource":"*"`, role, false, unres},
 		{"case variant in other account", `"Principal":{"AWS":"arn:aws:iam::333333333333:role/BobTheCorp-App"},"Resource":"*"`, role, false, "false"},
+		// A user's grant applies to the federated user sessions it creates;
+		// the session name does not name that user.
+		{"user queried as same-name federated user", `"Principal":{"AWS":"arn:aws:iam::222222222222:user/bob"},"Resource":"*"`, "arn:aws:sts::222222222222:federated-user/bob", false, unres},
+		{"user queried as other-name federated user", `"Principal":{"AWS":"arn:aws:iam::222222222222:user/bob"},"Resource":"*"`, "arn:aws:sts::222222222222:federated-user/alice", false, unres},
+		{"user with path queried as federated user", `"Principal":{"AWS":"arn:aws:iam::222222222222:user/ops/bob"},"Resource":"*"`, "arn:aws:sts::222222222222:federated-user/bob", false, unres},
+		{"user queried as federated user in other account", `"Principal":{"AWS":"arn:aws:iam::333333333333:user/bob"},"Resource":"*"`, "arn:aws:sts::222222222222:federated-user/bob", false, "false"},
+		{"user queried as federated user in other partition", `"Principal":{"AWS":"arn:aws-cn:iam::222222222222:user/bob"},"Resource":"*"`, "arn:aws:sts::222222222222:federated-user/bob", false, "false"},
+		{"user beside matching federated user", `"Principal":{"AWS":["arn:aws:iam::222222222222:user/bob","arn:aws:sts::222222222222:federated-user/alice"]},"Resource":"*"`, "arn:aws:sts::222222222222:federated-user/alice", false, "true"},
+		{"user beside own root", `"Principal":{"AWS":["arn:aws:iam::222222222222:user/bob","` + root + `"]},"Resource":"*"`, "arn:aws:sts::222222222222:federated-user/alice", false, "true"},
+		// As a session queried as its role: the session may be the queried user's.
+		{"federated user queried as a user", `"Principal":{"AWS":"arn:aws:sts::222222222222:federated-user/bob"},"Resource":"*"`, "arn:aws:iam::222222222222:user/alice", false, unres},
+		{"federated user queried as a user in other account", `"Principal":{"AWS":"arn:aws:sts::333333333333:federated-user/bob"},"Resource":"*"`, "arn:aws:iam::222222222222:user/bob", false, "false"},
+		{"other federated user", `"Principal":{"AWS":"arn:aws:sts::222222222222:federated-user/bob"},"Resource":"*"`, "arn:aws:sts::222222222222:federated-user/alice", false, "false"},
+		{"user is not a role session", `"Principal":{"AWS":"arn:aws:iam::222222222222:user/bob"},"Resource":"*"`, session, false, "false"},
 		{"user name case is significant", `"Principal":{"AWS":"arn:aws:iam::222222222222:user/Bob"},"Resource":"*"`, "arn:aws:iam::222222222222:user/bob", false, "false"},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
