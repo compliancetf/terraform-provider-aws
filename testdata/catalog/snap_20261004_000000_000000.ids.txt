@@ -1,6 +1,6 @@
 # Synthetic catalog pin snap_20261004_000000_000000: the ids of the embedded
 # CIS controls (internal/embedded/cis), which ship in the binary. Ids only.
-ebs_volume_encryption_at_rest_enabled
+ebs_attached_volume_encryption_enabled
 efs_file_system_encrypt_data_at_rest
 efs_file_system_encrypted_with_cmk
 elasticache_replication_group_encryption_at_rest_enabled

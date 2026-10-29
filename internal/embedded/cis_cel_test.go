@@ -62,7 +62,7 @@ func TestEmbeddedVerdicts(t *testing.T) {
 		{"aws_rds_cluster", "rds_db_cluster_encryption_at_rest_enabled", "storage_encrypted", boolTrue},
 		{"aws_rds_cluster", "rds_db_cluster_deletion_protection_enabled", "deletion_protection", boolTrue},
 		{"aws_rds_cluster", "rds_db_instance_backup_retention_period_less_than_7", "backup_retention_period", retention},
-		{"aws_ebs_volume", "ebs_volume_encryption_at_rest_enabled", "encrypted", boolTrue},
+		{"aws_ebs_volume", "ebs_attached_volume_encryption_enabled", "encrypted", boolTrue},
 		{"aws_efs_file_system", "efs_file_system_encrypt_data_at_rest", "encrypted", boolTrue},
 		{"aws_efs_file_system", "efs_file_system_encrypted_with_cmk", "kms_key_id",
 			[]in{{"arn:aws:kms:us-east-1:111111111111:key/bobthecorp", P}, {"", P}, {nil, F}, {unk, U}}},

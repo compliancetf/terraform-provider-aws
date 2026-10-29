@@ -61,7 +61,7 @@ In `grandfather` mode, a violation is a `pending exemption: baseline <control id
 
 ## CIS controls
 
-The embedded CIS bundle (`cis-aws`) holds these controls. Control ids follow the compliance.tf control catalog.
+The embedded CIS bundle (`cis-aws`) holds these controls. Control ids follow the compliance.tf control catalog. Every CIS control declares `exemption_coverable` `[baseline, break_glass, grant, self_service]`: each kind still applies only where its own signed source allows it (a grant, the org profile's `exceptions.self_service` list, a baseline, a break-glass policy), and the profile's `exceptions.forbid_controls` empties the list for a control.
 
 | Control | Resource types | Action | Severity |
 |---------|----------------|--------|----------|
@@ -71,7 +71,7 @@ The embedded CIS bundle (`cis-aws`) holds these controls. Control ids follow the
 | `rds_db_instance_deletion_protection_enabled` | `aws_db_instance` | warn | medium |
 | `rds_db_cluster_encryption_at_rest_enabled` | `aws_rds_cluster` | deny | critical |
 | `rds_db_cluster_deletion_protection_enabled` | `aws_rds_cluster` | warn | medium |
-| `ebs_volume_encryption_at_rest_enabled` | `aws_ebs_volume` | deny | critical |
+| `ebs_attached_volume_encryption_enabled` | `aws_ebs_volume` | deny | critical |
 | `efs_file_system_encrypt_data_at_rest` | `aws_efs_file_system` | deny | critical |
 | `efs_file_system_encrypted_with_cmk` | `aws_efs_file_system` | warn | medium |
 | `elasticache_replication_group_encryption_at_rest_enabled` | `aws_elasticache_replication_group` | deny | critical |

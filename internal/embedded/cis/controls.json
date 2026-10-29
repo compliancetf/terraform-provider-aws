@@ -12,7 +12,7 @@
     "severity": "critical",
     "message": "RDS instances must have storage encryption enabled.",
     "fix": "Set storage_encrypted = true.",
-    "framework_refs": ["cis_aws:2.3.1", "cis_v600:3", "cis_v600:3.2"]
+    "framework_refs": ["cis_aws:2.3.1", "cis_v600:3", "cis_v600:3.2"], "exemption_coverable": ["baseline", "break_glass", "grant", "self_service"]
   },
   {
     "id": "rds_db_instance_prohibit_public_access",
@@ -27,7 +27,7 @@
     "severity": "critical",
     "message": "RDS instances must not be publicly accessible.",
     "fix": "Set publicly_accessible = false or remove it.",
-    "framework_refs": ["cis_aws:2.3.2", "cis_v600:3.2"]
+    "framework_refs": ["cis_aws:2.3.2", "cis_v600:3.2"], "exemption_coverable": ["baseline", "break_glass", "grant", "self_service"]
   },
   {
     "id": "rds_db_instance_backup_retention_period_less_than_7",
@@ -42,7 +42,7 @@
     "severity": "high",
     "message": "RDS backup retention period must be at least 7 days.",
     "fix": "Set backup_retention_period to 7 or more.",
-    "framework_refs": ["cis_aws:2.3.3"]
+    "framework_refs": ["cis_aws:2.3.3"], "exemption_coverable": ["baseline", "break_glass", "grant", "self_service"]
   },
   {
     "id": "rds_db_instance_deletion_protection_enabled",
@@ -57,7 +57,7 @@
     "severity": "medium",
     "message": "RDS instances should have deletion protection enabled.",
     "fix": "Set deletion_protection = true.",
-    "framework_refs": ["cis_aws:2.3.4"]
+    "framework_refs": ["cis_aws:2.3.4"], "exemption_coverable": ["baseline", "break_glass", "grant", "self_service"]
   },
   {
     "id": "rds_db_cluster_encryption_at_rest_enabled",
@@ -72,7 +72,7 @@
     "severity": "critical",
     "message": "RDS clusters must have storage encryption enabled.",
     "fix": "Set storage_encrypted = true.",
-    "framework_refs": ["cis_aws:2.3.1"]
+    "framework_refs": ["cis_aws:2.3.1"], "exemption_coverable": ["baseline", "break_glass", "grant", "self_service"]
   },
   {
     "id": "rds_db_cluster_deletion_protection_enabled",
@@ -87,7 +87,7 @@
     "severity": "medium",
     "message": "RDS clusters should have deletion protection enabled.",
     "fix": "Set deletion_protection = true.",
-    "framework_refs": ["cis_aws:2.3.4"]
+    "framework_refs": ["cis_aws:2.3.4"], "exemption_coverable": ["baseline", "break_glass", "grant", "self_service"]
   },
   {
     "id": "rds_db_instance_backup_retention_period_less_than_7",
@@ -102,10 +102,10 @@
     "severity": "high",
     "message": "RDS cluster backup retention period must be at least 7 days.",
     "fix": "Set backup_retention_period to 7 or more.",
-    "framework_refs": ["cis_aws:2.3.3"]
+    "framework_refs": ["cis_aws:2.3.3"], "exemption_coverable": ["baseline", "break_glass", "grant", "self_service"]
   },
   {
-    "id": "ebs_volume_encryption_at_rest_enabled",
+    "id": "ebs_attached_volume_encryption_enabled",
     "version": "1.0.0",
     "kind": "resource",
     "resource_type": "aws_ebs_volume",
@@ -117,7 +117,7 @@
     "severity": "critical",
     "message": "EBS volumes must be encrypted.",
     "fix": "Set encrypted = true.",
-    "framework_refs": ["cis_aws:2.2.1", "cis_v600:6"]
+    "framework_refs": ["cis_aws:2.2.1", "cis_v600:6"], "exemption_coverable": ["baseline", "break_glass", "grant", "self_service"]
   },
   {
     "id": "efs_file_system_encrypt_data_at_rest",
@@ -132,7 +132,7 @@
     "severity": "critical",
     "message": "EFS file systems must be encrypted.",
     "fix": "Set encrypted = true.",
-    "framework_refs": ["cis_aws:2.4.1", "cis_v600:3", "cis_v600:3.3"]
+    "framework_refs": ["cis_aws:2.4.1", "cis_v600:3", "cis_v600:3.3"], "exemption_coverable": ["baseline", "break_glass", "grant", "self_service"]
   },
   {
     "id": "efs_file_system_encrypted_with_cmk",
@@ -147,7 +147,7 @@
     "severity": "medium",
     "message": "EFS file systems should use a customer-managed KMS key.",
     "fix": "Set kms_key_id to a customer-managed KMS key ARN.",
-    "framework_refs": ["cis_aws:2.4.2"]
+    "framework_refs": ["cis_aws:2.4.2"], "exemption_coverable": ["baseline", "break_glass", "grant", "self_service"]
   },
   {
     "id": "elasticache_replication_group_encryption_at_rest_enabled",
@@ -162,7 +162,7 @@
     "severity": "critical",
     "message": "ElastiCache replication groups must have encryption at rest enabled.",
     "fix": "Set at_rest_encryption_enabled = \"true\".",
-    "framework_refs": ["cis_aws:3.1.1"]
+    "framework_refs": ["cis_aws:3.1.1"], "exemption_coverable": ["baseline", "break_glass", "grant", "self_service"]
   },
   {
     "id": "elasticache_replication_group_encryption_in_transit_enabled",
@@ -177,7 +177,7 @@
     "severity": "critical",
     "message": "ElastiCache replication groups must have encryption in transit enabled.",
     "fix": "Set transit_encryption_enabled = true.",
-    "framework_refs": ["cis_aws:3.1.2"]
+    "framework_refs": ["cis_aws:3.1.2"], "exemption_coverable": ["baseline", "break_glass", "grant", "self_service"]
   },
   {
     "id": "redshift_cluster_kms_enabled",
@@ -192,7 +192,7 @@
     "severity": "critical",
     "message": "Redshift clusters must be encrypted.",
     "fix": "Set encrypted = \"true\" or remove it.",
-    "framework_refs": ["cis_aws:2.5.1"]
+    "framework_refs": ["cis_aws:2.5.1"], "exemption_coverable": ["baseline", "break_glass", "grant", "self_service"]
   },
   {
     "id": "redshift_cluster_prohibit_public_access",
@@ -207,7 +207,7 @@
     "severity": "critical",
     "message": "Redshift clusters must not be publicly accessible.",
     "fix": "Set publicly_accessible = false or remove it.",
-    "framework_refs": ["cis_aws:2.5.2"]
+    "framework_refs": ["cis_aws:2.5.2"], "exemption_coverable": ["baseline", "break_glass", "grant", "self_service"]
   },
   {
     "id": "elb_application_network_listener_uses_secure_protocol",
@@ -222,7 +222,7 @@
     "severity": "critical",
     "message": "Load balancer listeners must use HTTPS or TLS.",
     "fix": "Set protocol = \"HTTPS\" (ALB) or \"TLS\" (NLB) with a certificate.",
-    "framework_refs": ["cis_aws:4.1.1"]
+    "framework_refs": ["cis_aws:4.1.1"], "exemption_coverable": ["baseline", "break_glass", "grant", "self_service"]
   },
   {
     "id": "s3_bucket_restrict_public_read_access",
@@ -237,7 +237,7 @@
     "severity": "critical",
     "message": "S3 buckets must not use the public-read ACL.",
     "fix": "Remove acl or set it to private.",
-    "framework_refs": ["cis_aws:2.1.1"]
+    "framework_refs": ["cis_aws:2.1.1"], "exemption_coverable": ["baseline", "break_glass", "grant", "self_service"]
   },
   {
     "id": "s3_bucket_restrict_public_write_access",
@@ -252,7 +252,7 @@
     "severity": "critical",
     "message": "S3 buckets must not use the public-read-write ACL.",
     "fix": "Remove acl or set it to private.",
-    "framework_refs": ["cis_aws:2.1.2", "cis_v600:3"]
+    "framework_refs": ["cis_aws:2.1.2", "cis_v600:3"], "exemption_coverable": ["baseline", "break_glass", "grant", "self_service"]
   },
   {
     "id": "vpc_security_group_remote_administration_ipv4",
@@ -267,7 +267,7 @@
     "severity": "critical",
     "message": "Security groups must not allow SSH or RDP ingress from 0.0.0.0/0.",
     "fix": "Restrict cidr_blocks on ingress rules whose port range covers 22 or 3389, or whose protocol is -1. A prefix list source there is not evaluable at plan and is treated as a failure.",
-    "framework_refs": ["cis_aws:5.2.1", "cis_v600:6"]
+    "framework_refs": ["cis_aws:5.2.1", "cis_v600:6"], "exemption_coverable": ["baseline", "break_glass", "grant", "self_service"]
   },
   {
     "id": "vpc_security_group_remote_administration_ipv6",
@@ -282,7 +282,7 @@
     "severity": "critical",
     "message": "Security groups must not allow SSH or RDP ingress from ::/0.",
     "fix": "Restrict ipv6_cidr_blocks on ingress rules whose port range covers 22 or 3389, or whose protocol is -1. A prefix list source there is not evaluable at plan and is treated as a failure.",
-    "framework_refs": ["cis_aws:5.2.2", "cis_v600:6"]
+    "framework_refs": ["cis_aws:5.2.2", "cis_v600:6"], "exemption_coverable": ["baseline", "break_glass", "grant", "self_service"]
   },
   {
     "id": "vpc_security_group_remote_administration_ipv4",
@@ -297,7 +297,7 @@
     "severity": "critical",
     "message": "Security group rules must not allow SSH or RDP ingress from 0.0.0.0/0.",
     "fix": "Restrict cidr_blocks on ingress rules whose port range covers 22 or 3389, or whose protocol is -1. A prefix list source there is not evaluable at plan and is treated as a failure.",
-    "framework_refs": ["cis_aws:5.2.1", "cis_v600:6"]
+    "framework_refs": ["cis_aws:5.2.1", "cis_v600:6"], "exemption_coverable": ["baseline", "break_glass", "grant", "self_service"]
   },
   {
     "id": "vpc_security_group_remote_administration_ipv6",
@@ -312,7 +312,7 @@
     "severity": "critical",
     "message": "Security group rules must not allow SSH or RDP ingress from ::/0.",
     "fix": "Restrict ipv6_cidr_blocks on ingress rules whose port range covers 22 or 3389, or whose protocol is -1. A prefix list source there is not evaluable at plan and is treated as a failure.",
-    "framework_refs": ["cis_aws:5.2.2", "cis_v600:6"]
+    "framework_refs": ["cis_aws:5.2.2", "cis_v600:6"], "exemption_coverable": ["baseline", "break_glass", "grant", "self_service"]
   },
   {
     "id": "vpc_security_group_remote_administration_ipv4",
@@ -327,7 +327,7 @@
     "severity": "critical",
     "message": "Security group ingress rules must not allow SSH or RDP from 0.0.0.0/0.",
     "fix": "Restrict cidr_ipv4 on rules whose port range covers 22 or 3389, or whose ip_protocol is -1. A prefix list source there is not evaluable at plan and is treated as a failure.",
-    "framework_refs": ["cis_aws:5.2.1", "cis_v600:6"]
+    "framework_refs": ["cis_aws:5.2.1", "cis_v600:6"], "exemption_coverable": ["baseline", "break_glass", "grant", "self_service"]
   },
   {
     "id": "vpc_security_group_remote_administration_ipv6",
@@ -342,6 +342,6 @@
     "severity": "critical",
     "message": "Security group ingress rules must not allow SSH or RDP from ::/0.",
     "fix": "Restrict cidr_ipv6 on rules whose port range covers 22 or 3389, or whose ip_protocol is -1. A prefix list source there is not evaluable at plan and is treated as a failure.",
-    "framework_refs": ["cis_aws:5.2.2", "cis_v600:6"]
+    "framework_refs": ["cis_aws:5.2.2", "cis_v600:6"], "exemption_coverable": ["baseline", "break_glass", "grant", "self_service"]
   }
 ]

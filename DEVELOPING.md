@@ -215,7 +215,7 @@ The fixtures declare `source = "compliancetf/aws"` (`registry.terraform.io/compl
 
 ## Embedded CIS bundle
 
-The CIS controls live in `internal/embedded/cis/` (`controls.json`, `manifest.json`). After editing them, rebuild the test-signed `cis_ctftest.tar.gz` and run the bundle tests. The owner re-signs `cis.tar.gz` from the same `cis/` with the production bundle key (`KEY=<key PEM> scripts/owner-sign-cis.sh`); `TestReleaseKeyGuard` fails until both archives carry the same payload.
+The CIS controls live in `internal/embedded/cis/` (`controls.json`, `manifest.json`). A change to the controls raises manifest `bundle_version` by one (and `label`), so revocation and anti-rollback can tell the payloads apart; the configure goldens in `internal/lifecycle/testdata/configure/` name `cis-aws@<version>`. After editing `cis/`, rebuild the test-signed `cis_ctftest.tar.gz` and run the bundle tests. The owner re-signs `cis.tar.gz` from the same `cis/` with the production bundle key (`KEY=<key PEM> scripts/owner-sign-cis.sh`); `TestReleaseKeyGuard` fails until both archives carry the same payload.
 
 ```bash
 go generate ./internal/embedded/

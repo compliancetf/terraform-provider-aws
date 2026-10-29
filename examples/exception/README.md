@@ -47,13 +47,13 @@ From the repository root:
 | `aws_db_instance.restore` | `rds_db_instance_encryption_at_rest_enabled` | `dev-db-unencrypted` (also matched by `reporting-replica-restore`) |
 | `aws_db_instance.restore` | `rds_db_instance_backup_retention_period_less_than_7` | `reporting-replica-restore` |
 | `aws_db_instance.migration_target` | `rds_db_instance_backup_retention_period_less_than_7` | `migration-target-backups` (create only) |
-| `aws_ebs_volume.scratch` | `ebs_volume_encryption_at_rest_enabled` | `scratch-volumes` |
+| `aws_ebs_volume.scratch` | `ebs_attached_volume_encryption_enabled` | `scratch-volumes` |
 | `aws_s3_bucket.docs` | `s3_bucket_restrict_public_read_access` | `public-docs-site` |
 
 Warnings:
-- `exception old-load-test: expired at 2026-10-01T00:00:00Z; ebs_volume_encryption_at_rest_enabled enforced` (entry 7).
+- `exception old-load-test: expired at 2026-10-01T00:00:00Z; ebs_attached_volume_encryption_enabled enforced` (entry 7).
 - The `hashicorp/aws` deprecation warning for `acl`.
-- With a development build, `upstream hashicorp/aws 0.0.0-ctftest is outside the upstream version range of bundle cis-aws v1`. This is expected with `CTFTEST_UPSTREAM_PATH`.
+- With a development build, `upstream hashicorp/aws 0.0.0-ctftest is outside the upstream version range of bundle cis-aws v2`. This is expected with `CTFTEST_UPSTREAM_PATH`.
 
 Every waived violation is still recorded in `.terraform/compliancetf/evidence/`, with `"state": "fail"`, `"decision": "excepted"` and the entry: its label, source, workspace, expiry, status and a digest of the entry. The reason and ticket stay in `exceptions.hcl`, so keep the file with your audit trail.
 
