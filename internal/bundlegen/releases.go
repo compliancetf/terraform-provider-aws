@@ -6,7 +6,6 @@ import (
 	"math"
 	"os"
 	"path/filepath"
-	"slices"
 	"strconv"
 	"strings"
 
@@ -141,9 +140,8 @@ func checkSupported(cs []bundle.Control, pin Schemas, supported map[string]Schem
 		if err := sameReadTypes(cs, s, pin); err != nil {
 			return errf("E_SUPPORTED_SCHEMA", "hashicorp/aws %s: %v", v, err)
 		}
-		// graph controls carry no expr; GraphReads covers their reads above.
-		exprs := slices.DeleteFunc(slices.Clone(cs), func(c bundle.Control) bool { return c.Kind == bundle.KindGraph })
-		_, diags, err := celeng.Load(exprs, s.ProviderSchema())
+		// GraphReads covers the reads of the graph controls above.
+		_, diags, err := celeng.Load(exprControls(cs), s.ProviderSchema())
 		if err == nil && len(diags) > 0 {
 			err = &diags[0]
 		}

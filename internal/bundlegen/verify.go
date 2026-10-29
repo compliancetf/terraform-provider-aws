@@ -43,7 +43,9 @@ type VerifyReport struct {
 
 // Verify loads each bundle of out (<id>/controls.json, iam-actions.json when
 // present) with eng against s, the way the provider does, and replays its
-// cases (<id>/cases/, CasePath) with Compiled.Evaluate
+// cases (<id>/cases/, CasePath) with Compiled.Evaluate. Graph controls are
+// skipped as the provider skips them: ctfkit gate decides them, and a case
+// for one is an error.
 // Findings:
 //   - E_FIXTURE_MISSING: a control without a pass and a fail case;
 //   - E_FIXTURE_CONTROL: a case's control is not the bundle's control;
@@ -124,7 +126,7 @@ func verifyBundle(out *Output, id string, s Schemas, eng *celeng.Engine) ([]Find
 	if content.Digest, err = ContentDigest(id, files); err != nil {
 		return nil, err
 	}
-	comp, diags, err := eng.Load(cs, s.ProviderSchema(), content)
+	comp, diags, err := eng.Load(exprControls(cs), s.ProviderSchema(), content)
 	if err != nil {
 		return nil, err
 	}
@@ -144,6 +146,12 @@ func verifyBundle(out *Output, id string, s Schemas, eng *celeng.Engine) ([]Find
 		key := caseID(*c, "")
 		mine := cases[key]
 		delete(cases, key)
+		if c.Kind == bundle.KindGraph {
+			if len(mine) > 0 {
+				return nil, fmt.Errorf("graph control %s has cases; the provider does not evaluate graph controls", c.ID)
+			}
+			continue
+		}
 		want, err := canonicalJSON(c)
 		if err != nil {
 			return nil, err
@@ -259,6 +267,12 @@ func caseBindings(s Schemas, c *bundle.Control, k Case) (celeng.Bindings, error)
 	b.Provider.AccountID, b.Provider.AccountKnown = str("account_id")
 	b.Provider.Partition, b.Provider.PartitionKnown = str("partition")
 	return b, nil
+}
+
+// exprControls are the controls of cs the provider evaluates with CEL: all
+// but the graph controls, which carry no expr (ctfkit gate decides them).
+func exprControls(cs []bundle.Control) []bundle.Control {
+	return slices.DeleteFunc(slices.Clone(cs), func(c bundle.Control) bool { return c.Kind == bundle.KindGraph })
 }
 
 // evalOne evaluates control id alone.

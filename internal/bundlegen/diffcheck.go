@@ -184,8 +184,9 @@ func (r DiffcheckReport) JSON() ([]byte, error) { return canonicalJSON(r) }
 //     checked nothing;
 //   - W_DIFFCHECK_SKIPPED: a control diffcheck cannot check by design: no
 //     intent postcondition (spec: diffcheck covers the content policies that
-//     carry one; authored-only ids), or a load diagnostic (verify fails
-//     on it, E_LOAD_DIAG);
+//     carry one; authored-only ids), a load diagnostic (verify fails
+//     on it, E_LOAD_DIAG), or a graph control (the provider does not
+//     evaluate it; ctfkit gate does);
 //   - W_DIFFCHECK_NO_POLICY_FIXTURES: a checked control without policy
 //     fixtures, or one that is not a resource control (policy fixtures are
 //     resource values), so only its bundle cases were compared;
@@ -247,7 +248,7 @@ func diffcheckBundle(out *Output, id string, intents map[string]Intent, fixtures
 	if content.Digest, err = ContentDigest(id, files); err != nil {
 		return nil, err
 	}
-	comp, diags, err := eng.Load(cs, s.ProviderSchema(), content)
+	comp, diags, err := eng.Load(exprControls(cs), s.ProviderSchema(), content)
 	if err != nil {
 		return nil, err
 	}
@@ -267,6 +268,9 @@ func diffcheckBundle(out *Output, id string, intents map[string]Intent, fixtures
 		}
 		it, ok := intents[c.ID]
 		switch {
+		case c.Kind == bundle.KindGraph:
+			f("W_DIFFCHECK_SKIPPED", "", "a graph control is decided by ctfkit gate, not by the provider")
+			continue
 		case !ok || it.Postcondition == "":
 			f("W_DIFFCHECK_SKIPPED", "", "no content postcondition for the control")
 			continue
