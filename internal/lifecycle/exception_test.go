@@ -1,7 +1,6 @@
 package lifecycle
 
 import (
-	"path/filepath"
 	"testing"
 	"time"
 
@@ -35,7 +34,8 @@ func TestExceptionStages(t *testing.T) {
 		}
 		l.opt.Now = func() time.Time { return now }
 		c := *l.cfg
-		c.Block.ExceptionsFile = filepath.Join("testdata", "stages", e.Sidecar)
+		// As a user writes it: diagnostics echo the path, and Windows accepts "/".
+		c.Block.ExceptionsFile = "testdata/stages/" + e.Sidecar
 		declared := c.Controls.Coverable()
 		if !e.NoProfile {
 			c.Table.Exceptions = &profile.Exceptions{SelfService: e.SelfService, MaxLifetimeDays: 180}
