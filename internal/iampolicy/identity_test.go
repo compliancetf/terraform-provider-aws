@@ -11,6 +11,8 @@ import (
 func TestIdentity(t *testing.T) {
 	const role = "arn:aws:iam::222222222222:role/bobthecorp-app"
 	const bucket = "arn:aws:s3:::bobthecorp-logs"
+	const root = "arn:aws:iam::222222222222:root"
+	const session = "arn:aws:sts::222222222222:assumed-role/bobthecorp-app/s"
 	stmt := func(rest string) Statement {
 		t.Helper()
 		p, err := Normalize(`{"Version":"2012-10-17","Statement":{"Effect":"Allow","Action":"s3:getobject",`+rest+`}}`, Options{})
@@ -74,6 +76,38 @@ func TestIdentity(t *testing.T) {
 		{"resource glob beside match", `"Principal":"*","Resource":["` + bucket + `","arn:aws:s3:::bobthecorp-logs/*"]`, bucket, true, unres},
 		{"not resource with query star", `"Principal":"*","NotResource":"` + bucket + `"`, "*", true, unres},
 		{"query resource name", `"Principal":"*","Resource":"*"`, "bobthecorp-logs", true, unres},
+		// An account root delegates to every principal of its account.
+		{"own root covers role", `"Principal":{"AWS":"` + root + `"},"Resource":"*"`, role, false, "true"},
+		{"own root covers user", `"Principal":{"AWS":"` + root + `"},"Resource":"*"`, "arn:aws:iam::222222222222:user/bob", false, "true"},
+		{"own root covers role session", `"Principal":{"AWS":"` + root + `"},"Resource":"*"`, session, false, "true"},
+		{"own root covers federated user", `"Principal":{"AWS":"` + root + `"},"Resource":"*"`, "arn:aws:sts::222222222222:federated-user/bob", false, "true"},
+		{"own root covers itself", `"Principal":{"AWS":"` + root + `"},"Resource":"*"`, root, false, "true"},
+		{"other account root", `"Principal":{"AWS":"arn:aws:iam::333333333333:root"},"Resource":"*"`, role, false, "false"},
+		{"other partition root", `"Principal":{"AWS":"arn:aws-cn:iam::222222222222:root"},"Resource":"*"`, role, false, "false"},
+		{"root is not its provider", `"Principal":{"AWS":"` + root + `"},"Resource":"*"`, "arn:aws:iam::222222222222:saml-provider/bobthecorp", false, "false"},
+		{"root is not a resource arn", `"Principal":{"AWS":"` + root + `"},"Resource":"*"`, "arn:aws:lambda:eu-west-1:222222222222:function:bobthecorp", false, "false"},
+		{"root is not a service", `"Principal":{"AWS":"` + root + `"},"Resource":"*"`, "ec2.amazonaws.com", false, "false"},
+		{"role is not the account", `"Principal":{"AWS":"` + role + `"},"Resource":"*"`, root, false, "false"},
+		{"root beside aws star", `"Principal":{"AWS":["*","` + root + `"]},"Resource":"*"`, role, false, "true"},
+		{"not principal root", `"NotPrincipal":{"AWS":"` + root + `"},"Resource":"*"`, role, false, unres},
+		// A role covers its sessions; a session ARN carries no role path.
+		{"role covers its session", `"Principal":{"AWS":"` + role + `"},"Resource":"*"`, session, false, "true"},
+		{"role with path covers its session", `"Principal":{"AWS":"arn:aws:iam::222222222222:role/ops/bobthecorp-app"},"Resource":"*"`, session, false, "true"},
+		{"role is not another role's session", `"Principal":{"AWS":"` + role + `"},"Resource":"*"`, "arn:aws:sts::222222222222:assumed-role/bobthecorp-ops/s", false, "false"},
+		{"role is not a session in another account", `"Principal":{"AWS":"` + role + `"},"Resource":"*"`, "arn:aws:sts::333333333333:assumed-role/bobthecorp-app/s", false, "false"},
+		{"session exact", `"Principal":{"AWS":"` + session + `"},"Resource":"*"`, session, false, "true"},
+		{"other session of the role", `"Principal":{"AWS":"` + session + `"},"Resource":"*"`, "arn:aws:sts::222222222222:assumed-role/bobthecorp-app/t", false, "false"},
+		{"session queried as its role", `"Principal":{"AWS":"` + session + `"},"Resource":"*"`, role, false, unres},
+		{"session queried as its role with path", `"Principal":{"AWS":"` + session + `"},"Resource":"*"`, "arn:aws:iam::222222222222:role/ops/bobthecorp-app", false, unres},
+		{"session of another role", `"Principal":{"AWS":"arn:aws:sts::222222222222:assumed-role/bobthecorp-ops/s"},"Resource":"*"`, role, false, "false"},
+		{"role path differs", `"Principal":{"AWS":"arn:aws:iam::222222222222:role/ops/bobthecorp-app"},"Resource":"*"`, role, false, "false"},
+		// Role names are unique regardless of case; matching ignoring case is undocumented.
+		{"role name case variant", `"Principal":{"AWS":"arn:aws:iam::222222222222:role/BobTheCorp-App"},"Resource":"*"`, role, false, unres},
+		{"role case variant session", `"Principal":{"AWS":"arn:aws:iam::222222222222:role/BobTheCorp-App"},"Resource":"*"`, session, false, unres},
+		{"case variant beside match", `"Principal":{"AWS":["arn:aws:iam::222222222222:role/BobTheCorp-App","` + role + `"]},"Resource":"*"`, role, false, "true"},
+		{"case variant beside other root", `"Principal":{"AWS":["arn:aws:iam::222222222222:role/BobTheCorp-App","arn:aws:iam::333333333333:root"]},"Resource":"*"`, role, false, unres},
+		{"case variant in other account", `"Principal":{"AWS":"arn:aws:iam::333333333333:role/BobTheCorp-App"},"Resource":"*"`, role, false, "false"},
+		{"user name case is significant", `"Principal":{"AWS":"arn:aws:iam::222222222222:user/Bob"},"Resource":"*"`, "arn:aws:iam::222222222222:user/bob", false, "false"},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
 			f := PrincipalIs
@@ -90,6 +124,24 @@ func TestIdentity(t *testing.T) {
 				t.Fatalf("got %v, %v; want %s", got, err, tc.want)
 			}
 		})
+	}
+}
+
+// TestPrincipalIsBareAccount pins a bare account id normalized with a
+// partition: it is the account root and covers that account's principals.
+func TestPrincipalIsBareAccount(t *testing.T) {
+	p, err := Normalize(`{"Version":"2012-10-17","Statement":{"Effect":"Allow","Action":"s3:getobject","Resource":"*","Principal":{"AWS":"222222222222"}}}`, Options{Partition: "aws"})
+	if err != nil {
+		t.Fatal(err)
+	}
+	for q, want := range map[string]bool{
+		"arn:aws:iam::222222222222:role/bobthecorp-app":    true,
+		"arn:aws:iam::333333333333:role/bobthecorp-app":    false,
+		"arn:aws-cn:iam::222222222222:role/bobthecorp-app": false,
+	} {
+		if got, err := PrincipalIs(p.Statements[0], q); err != nil || got != want {
+			t.Errorf("%s: got %v, %v; want %v", q, got, err, want)
+		}
 	}
 }
 
