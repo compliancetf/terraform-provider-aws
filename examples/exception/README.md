@@ -2,7 +2,7 @@
 
 Self-service exceptions: resources that break CIS `deny` controls, waived by entries in `exceptions.hcl`, so `terraform plan` succeeds in `hard_fail` mode. The example also includes two entries that do not apply, one for another environment and one that has expired, to show what happens to those.
 
-An exceptions file counts only together with a **signed org profile** that allows self-service exceptions for the controls. compliance.tf issues that profile for your organization. This example signs `profile.json` with the test key, so it runs with a development build.
+An exceptions file counts only together with a **signed org profile** that allows self-service exceptions for the controls. compliance.tf issues that profile for your organization. Each control must also be declared coverable for `self_service` by the bundle that ships it. This example signs `profile.json` with the test key, so it runs with a development build.
 
 ## Files
 
@@ -80,7 +80,7 @@ exception "<label>" {
 | Attribute | Required | Rules |
 |---|---|---|
 | label | yes | Unique in the file; letters, digits, `_`, `.`, `-`, up to 128 characters, starting with a letter or digit. It names the entry in warnings and evidence. |
-| `controls` | yes | 1 to 64 control ids. Each must be in the profile's `exceptions.self_service` list and coverable for `self_service`; any other id is ignored with a warning. |
+| `controls` | yes | 1 to 64 control ids. Each must be in the profile's `exceptions.self_service` list and declared coverable for `self_service` by its bundle; any other id is ignored with a warning. |
 | `match` | yes | A CEL expression; the entry applies where it is `true`. Variables below. |
 | `workspace` | yes | The workspace the entry is for. It applies only where this equals the workspace the signed profile trusts (`scope.workspace`); elsewhere it waives nothing, without a warning. |
 | `environments` | no | Up to 64 names. When set, the entry applies only in those environments and waives nothing, without a warning, elsewhere. A control listed in the profile's `exceptions.forbid_environment_scoped` cannot be waived by an entry with `environments`; that entry is rejected with a warning. |
@@ -126,8 +126,7 @@ The `exceptions` section of `profile.json` controls what the file may waive:
 | Field | Meaning |
 |---|---|
 | `scope.workspace`, `scope.environment` | The trusted workspace and environment. Entries must name this workspace. |
-| `exceptions.self_service` | Controls that may be waived from the exceptions file. |
-| `exceptions.coverable` | Per control, which exception kinds may cover it (`self_service`, or `grant` for signed exception grants in `exception_grants_dir`). A self-service control must list `self_service` here too. |
+| `exceptions.self_service` | Controls that may be waived from the exceptions file. Each must be declared coverable for `self_service` by its bundle (`exemption_coverable` in the bundle's `controls.json`), or Configure fails with `self_service_not_coverable`. An `exceptions.coverable` list in the profile is ignored: only the bundle decides which exception kinds may cover a control. |
 | `exceptions.max_lifetime_days` | The latest allowed `expires`, counted from the run date. |
 | `exceptions.forbid_environment_scoped` | Controls that entries with `environments` may not waive (optional). |
 | `issued_at`, `expires_at` | The profile's validity; an expired profile is not used. |

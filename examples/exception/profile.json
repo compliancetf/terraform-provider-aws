@@ -9,12 +9,6 @@
   "scope": {"environment": "dev", "workspace": "bobthecorp-dev"},
   "verdict_required": false,
   "exceptions": {
-    "coverable": {
-      "rds_db_instance_encryption_at_rest_enabled": ["self_service"],
-      "rds_db_instance_backup_retention_period_less_than_7": ["self_service"],
-      "ebs_attached_volume_encryption_enabled": ["self_service"],
-      "s3_bucket_restrict_public_read_access": ["self_service"]
-    },
     "self_service": [
       "rds_db_instance_encryption_at_rest_enabled",
       "rds_db_instance_backup_retention_period_less_than_7",

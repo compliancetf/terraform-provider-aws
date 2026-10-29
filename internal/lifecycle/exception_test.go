@@ -17,8 +17,8 @@ type exceptionGolden struct {
 	Workspace   string   `json:"workspace"`
 	SelfService []string `json:"self_service"`
 	NoProfile   bool     `json:"no_profile"`
-	// NotCoverable leaves the self_service ids out of the profile coverable
-	// map, so no list names self_service for them.
+	// NotCoverable leaves self_service out of the bundle-declared lists of
+	// the self_service ids, so no list names self_service for them.
 	NotCoverable bool `json:"not_coverable"`
 }
 
@@ -36,19 +36,18 @@ func TestExceptionStages(t *testing.T) {
 		l.opt.Now = func() time.Time { return now }
 		c := *l.cfg
 		c.Block.ExceptionsFile = filepath.Join("testdata", "stages", e.Sidecar)
+		declared := c.Controls.Coverable()
 		if !e.NoProfile {
-			c.Table.Exceptions = &profile.Exceptions{SelfService: e.SelfService, MaxLifetimeDays: 180, Coverable: map[string][]string{}}
+			c.Table.Exceptions = &profile.Exceptions{SelfService: e.SelfService, MaxLifetimeDays: 180}
 			c.Table.SidecarControls = e.SelfService
-			for _, id := range e.SelfService {
-				if !e.NotCoverable {
-					c.Table.Exceptions.Coverable[id] = []string{"self_service"}
-				}
+			if !e.NotCoverable {
+				declared = withSelfService(c.Controls, e.SelfService...)
 			}
 		}
 		if e.Workspace != "" {
 			c.Table.Workspace = profile.Dim{Value: e.Workspace, Source: "profile"}
 		}
-		cov, _ := exceptions.NewCoverability(c.Controls.Coverable(), c.Table.Exceptions)
+		cov, _ := exceptions.NewCoverability(declared, c.Table.Exceptions)
 		side, _, err := loadSidecar(c.Block, c.Table, c.Controls, cov, now, exceptions.Clock{})
 		if err != nil {
 			t.Fatal(err)

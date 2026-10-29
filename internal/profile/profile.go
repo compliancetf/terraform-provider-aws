@@ -91,6 +91,10 @@ type BundleMin struct {
 }
 
 type Exceptions struct {
+	// Coverable is parsed and validated (a null list or an unknown kind
+	// still rejects the profile) but never read: only the bundle's
+	// exemption_coverable declares coverability. Profiles signed with it
+	// keep loading.
 	Coverable               map[string][]string `json:"coverable,omitempty"`
 	SelfService             []string            `json:"self_service,omitempty"`
 	MaxLifetimeDays         int64               `json:"max_lifetime_days,omitempty"`
@@ -338,8 +342,8 @@ func (e *Exceptions) Forbidden(id string) bool {
 }
 
 // CheckSelfService rejects the profile when a self_service id is not
-// coverable for self_service on the effective coverable map (bundle and
-// profile lists, forbid_controls applied): selfService reports
+// coverable for self_service on the effective coverable map (bundle
+// lists, forbid_controls applied): selfService reports
 // that for one id. Configure calls it on every run, so a bundle that drops
 // self_service from a control fails Configure for a profile still listing
 // it. A nil receiver (no signed profile) has no self_service ids.

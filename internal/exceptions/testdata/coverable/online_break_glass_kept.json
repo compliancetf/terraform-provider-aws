@@ -1,8 +1,8 @@
 {
-  "description": "floor_mode online: break_glass coverability is kept, no warning",
+  "description": "floor_mode online: break_glass coverability is kept, no warning; the profile list adds nothing",
   "declared": {"rds_db_instance_encryption_at_rest_enabled": ["baseline", "break_glass", "grant"]},
   "coverable": {"rds_db_instance_encryption_at_rest_enabled": ["break_glass", "self_service"]},
   "modes": ["online", "online"],
-  "kinds": {"baseline": true, "break_glass": true, "grant": true, "self_service": true},
+  "kinds": {"baseline": true, "break_glass": true, "grant": true, "self_service": false},
   "warnings": null
 }

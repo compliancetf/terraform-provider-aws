@@ -1,1 +1,1 @@
-{"note":"the compliance.tf-signed profile coverable map adds a kind","bundle":[],"profile":{"coverable":{"s3_bucket_versioning_enabled":["grant"]}},"grants":true,"want":["grant"]}
+{"note":"a coverable list in the signed profile is ignored: only the bundle list counts","bundle":[],"profile":{"coverable":{"s3_bucket_versioning_enabled":["grant"]}},"grants":true,"want":[]}

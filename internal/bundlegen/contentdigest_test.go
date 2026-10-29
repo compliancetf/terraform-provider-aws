@@ -179,9 +179,10 @@ var verdictVectors = map[string]string{
 
 // TestContentDigestBundleOnly: Configure's content digest
 // (ContentDigest of Coverability.Kinds) is over the bundle-declared
-// coverable lists only. A signed profile that adds coverable kinds and
-// forbids a control changes enforcement (Coverable) but leaves the digest
-// equal to the no-profile digest and to the verdict producer's vectors.
+// coverable lists only. A signed profile that forbids a control changes
+// enforcement (Coverable) and one that lists coverable kinds does not (the
+// list is ignored); both leave the digest equal to the no-profile digest and
+// to the verdict producer's vectors.
 func TestContentDigestBundleOnly(t *testing.T) {
 	const (
 		kms = "iam_bobthecorp_no_kms_wildcard"
@@ -196,8 +197,8 @@ func TestContentDigestBundleOnly(t *testing.T) {
 		set := loadedSet(t, dir)
 		bare, _ := exceptions.NewCoverability(set.Coverable(), nil, "online", "online")
 		cov, _ := exceptions.NewCoverability(set.Coverable(), ex, "online", "online")
-		if !cov.Coverable(kms, "grant") || bare.Coverable(kms, "grant") || cov.Coverable(rds, "baseline") || !bare.Coverable(rds, "baseline") {
-			t.Fatalf("%s: the profile must change enforcement", dir)
+		if cov.Coverable(kms, "grant") || bare.Coverable(kms, "grant") || cov.Coverable(rds, "baseline") || !bare.Coverable(rds, "baseline") {
+			t.Fatalf("%s: forbid_controls must change enforcement and the profile coverable list must not", dir)
 		}
 		got, noProfile := set.ContentDigest(cov.Kinds()), set.ContentDigest(bare.Kinds())
 		if got != noProfile || got != verdictVectors[dir] || got != loadedDigest(t, dir) {

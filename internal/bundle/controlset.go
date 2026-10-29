@@ -156,11 +156,12 @@ func (s *ControlSet) All() []Control { return slices.Clone(s.all) }
 // is absent). coverable is the bundle-declared exemption_coverable map
 // (exceptions.Coverability.Kinds, the lists of Coverable); every loaded
 // control id appears, [] when no kind covers it. The signed profile's
-// coverable lists and forbid_controls are not inputs. Nothing else is.
+// forbid_controls is not an input (its coverable lists are never read).
+// Nothing else is.
 //
 // Cache contract: the digest keys the celeng prefilter memo and
 // the IAM document cache, and it is profile and floor_mode invariant by
-// design (Kinds is the bundle-declared map, before any profile merge or
+// design (Kinds is the bundle-declared map, before forbid_controls or the
 // airgap break_glass drop). A value cached under it
 // must be a pure function of bundle content plus Kinds and of the inputs its
 // own key adds (the memo adds the projected reads, and op, env and provider

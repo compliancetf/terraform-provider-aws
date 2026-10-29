@@ -19,10 +19,11 @@ type Coverability struct {
 // NewCoverability builds the map once per Configure from compliance.tf-signed
 // content only: declared is bundle.ControlSet.Coverable (verified bundles)
 // and ex the verified org profile's exceptions (nil without a signed
-// profile: bundle only). Per id it is the union of both lists (exact profile
-// keys), emptied when forbid_controls lists the id (case-insensitive,
-// deliberately wider). Grants, sidecar entries, verdicts and baselines are
-// never inputs.
+// profile). Per id it is the bundle-declared list, emptied when
+// forbid_controls lists the id (case-insensitive, deliberately wider). The
+// profile's exceptions.coverable is never read: only the bundle declares
+// coverability, as the verdict tool does. Grants, sidecar entries, verdicts
+// and baselines are never inputs.
 //
 // modes are the resolved profile floor_mode and the mode the floor was
 // obtained in (as for NewClock). break_glass is kept only when every mode is
@@ -31,8 +32,8 @@ type Coverability struct {
 // path already reject an invalid mode; the drop is defense in depth. The
 // post-drop Coverable(id, break_glass) is the only break-glass gate: the verdict gate
 // must not read the signed lists directly. The content digest is over the
-// bundle-declared lists only (Kinds): the profile lists, forbid_controls and
-// floor_mode are never digest inputs; profile_digest binds the profile.
+// bundle-declared lists only (Kinds): forbid_controls and floor_mode are
+// never digest inputs; profile_digest binds the profile.
 func NewCoverability(declared map[string][]bundle.ExemptionKind, ex *profile.Exceptions, modes ...string) (Coverability, []string) {
 	m := map[string][]string{}
 	bundleOnly := make(map[string][]string, len(declared))
@@ -44,11 +45,6 @@ func NewCoverability(declared map[string][]bundle.ExemptionKind, ex *profile.Exc
 		}
 		slices.Sort(bundleOnly[id])
 		bundleOnly[id] = slices.Compact(bundleOnly[id])
-	}
-	if ex != nil {
-		for id, kinds := range ex.Coverable {
-			m[id] = append(m[id], kinds...)
-		}
 	}
 	airgap, invalid := floorModes(modes...)
 	why := "floor_mode airgap has no break-glass"
@@ -80,8 +76,8 @@ func (c Coverability) Coverable(id, kind string) bool {
 
 // Kinds is a copy of the bundle-declared map (every declared id, sorted
 // unique kinds, [] when none), the coverable input of
-// bundle.ControlSet.ContentDigest. The profile coverable lists and
-// forbid_controls are not in it: they change Coverable, never the digest.
+// bundle.ControlSet.ContentDigest. forbid_controls is not in it: it
+// changes Coverable, never the digest.
 // Never resolve with it: Coverable is the only resolver. Kinds and the
 // digest are profile and floor_mode invariant while Coverable is not, so
 // nothing cached under the digest may hold a coverability or break_glass

@@ -16,7 +16,9 @@ const (
 	rdsKMS = "rds_instance_kms_key_configured"
 )
 
-// TestCoverableResolve: per-kind resolution of the effective map.
+// TestCoverableResolve: per-kind resolution of the effective map. Only the
+// bundle lists count; a signed profile's coverable list is ignored and its
+// forbid_controls still empties a list.
 func TestCoverableResolve(t *testing.T) {
 	k := func(ks ...bundle.ExemptionKind) []bundle.ExemptionKind { return ks }
 	declared := map[string][]bundle.ExemptionKind{
@@ -34,13 +36,14 @@ func TestCoverableResolve(t *testing.T) {
 		id, kind string
 		want     bool
 	}{
-		{"baseline_only", "baseline", true},     // bundle_declared
-		{"baseline_only", "grant", true},        // profile_listed merges per kind
-		{"baseline_only", "break_glass", false}, // neither lists it
-		{"profile_only", "break_glass", true},   // profile id not in a bundle
-		{"forbidden", "grant", false},           // forbid_controls empties, case-insensitively
+		{"baseline_only", "baseline", true},      // bundle_declared
+		{"baseline_only", "grant", false},        // profile_listed adds nothing
+		{"baseline_only", "self_service", false}, // profile_listed adds nothing
+		{"baseline_only", "break_glass", false},  // neither lists it
+		{"profile_only", "break_glass", false},   // profile id not in a bundle
+		{"forbidden", "grant", false},            // forbid_controls empties, case-insensitively
 		{"forbidden", "self_service", false},
-		{"empty", "grant", false}, // profile keys are exact: "Empty" adds nothing
+		{"empty", "grant", false},
 		{"unknown", "grant", false},
 		{"grant_only", "waiver", false},
 	}
@@ -55,8 +58,12 @@ func TestCoverableResolve(t *testing.T) {
 			t.Errorf("Coverable(%s, %s) = %v", tc.id, tc.kind, got)
 		}
 	}
-	// Kinds is the ContentDigest input: the bundle-declared lists alone, the
-	// profile merge and forbid_controls ignored.
+	// A grant on a control the profile alone lists for grant is not applied.
+	if ok, nc := c.GrantCoverable(Grant{Controls: []string{"baseline_only"}}, func(id string) []string { return []string{id} }); ok || !slices.Equal(nc, []string{"baseline_only"}) {
+		t.Errorf("grant on a profile-only grant kind: %v %v", ok, nc)
+	}
+	// Kinds is the ContentDigest input: the bundle-declared lists alone,
+	// forbid_controls ignored.
 	want := map[string][]string{"baseline_only": {"baseline"}, "grant_only": {"grant"}, "empty": {}, "forbidden": {"grant", "self_service"}}
 	if k := c.Kinds(); !reflect.DeepEqual(k, want) {
 		t.Errorf("Kinds %v, want %v", k, want)
