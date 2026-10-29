@@ -223,18 +223,23 @@ func TestNilSchemaParts(t *testing.T) {
 }
 
 // TestGraph: a graph control is checked on its target type
-// (target_attrs) and its companion type (link_attr), each finding naming
+// (target_attrs) and its companion type (link_attr and the companion_expr
+// reads), each finding naming
 // the type it is about, instead of aborting the diff; missing types and
 // attributes fail with the existing checks and a stale base warns.
 func TestGraph(t *testing.T) {
-	ce := "companion.bucket == \"" + scrubtest.Marker(0) + "\""
 	graph := func(target string, attrs []string, companion, link string) bundle.Control {
+		ce := "companion." + link + " == \"" + scrubtest.Marker(0) + "\""
 		return bundle.Control{
 			ID: "g", Version: "1.0.0", Kind: bundle.KindGraph, ResourceType: target,
 			Action: bundle.ActionDeny, Severity: bundle.SeverityHigh, Message: scrubtest.Marker(1),
 			Graph: &bundle.Graph{Rule: bundle.GraphCompanionPresent, CompanionType: companion,
 				LinkAttr: link, TargetAttrs: attrs, CompanionExpr: &ce},
 		}
+	}
+	withExpr := func(c bundle.Control, expr string) bundle.Control {
+		c.Graph.CompanionExpr = &expr
+		return c
 	}
 	// companionSide: the logging type is the companion; targetSide: the target.
 	companionSide := graph("aws_db_instance", []string{"identifier"}, "aws_s3_bucket_logging", "target_bucket")
@@ -263,6 +268,12 @@ func TestGraph(t *testing.T) {
 			[]Finding{f("aws_nope", "", CheckTypeRemoved, Fail)}},
 		{"unknown target_attr", graph("aws_db_instance", []string{"identifier", "nope"}, "aws_s3_bucket_logging", "bucket"), "base", "base", Fail,
 			[]Finding{f("aws_db_instance", "nope", CheckReadMissing, Fail)}},
+		{"companion_expr read removed", withExpr(graph("aws_db_instance", []string{"identifier"}, "aws_s3_bucket_logging", "bucket"),
+			"companion.target_bucket != ''"), "base", "removed-attr", Fail,
+			[]Finding{f("aws_s3_bucket_logging", "target_bucket", CheckReadMissing, Fail)}},
+		{"companion_expr does not compile", withExpr(graph("aws_db_instance", []string{"identifier"}, "aws_s3_bucket_logging", "bucket"),
+			"companion.bucket +"), "base", "base", Fail,
+			[]Finding{f("aws_s3_bucket_logging", "", CheckExprCompile, Fail)}},
 		{"stale base", companionSide, "type-removed", "base", Warn,
 			[]Finding{f("aws_s3_bucket_logging", "", CheckTypeNotInBase, Warn)}},
 	} {

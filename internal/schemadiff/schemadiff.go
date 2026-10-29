@@ -65,9 +65,10 @@ type Finding struct {
 // generated against. A type or read base lacks is a warn finding, so a
 // stale base never yields a clean pass. A graph control is checked on both
 // of its resource types: target_attrs as reads of resource_type and
-// link_attr as a read of companion_type (findings name that type); its
-// companion_expr is not compiled here (the provider never evaluates graph
-// controls). An error is an unknown control kind or a graph control without
+// link_attr and the companion_expr reads as reads of companion_type
+// (findings name that type), as bundlegen.GraphReads pins them; a
+// companion_expr that no longer compiles against next fails expr_compile.
+// An error is an unknown control kind or a graph control without
 // graph (E_SCHEMA_TYPE), or a schema celeng cannot use.
 func Diff(content []bundle.Control, base, next bundlegen.Schemas) (Report, error) {
 	r := Report{Findings: []Finding{}}
@@ -97,7 +98,15 @@ func Diff(content []bundle.Control, base, next bundlegen.Schemas) (Report, error
 			}
 			none := func(string) bool { return false } // no expr reads config
 			checkReads(add, bundle.KindResource, c.ResourceType, c.Graph.TargetAttrs, none, base, next)
-			checkReads(add, bundle.KindResource, c.Graph.CompanionType, []string{c.Graph.LinkAttr}, none, base, next)
+			companion := []string{c.Graph.LinkAttr}
+			if ce := c.Graph.CompanionExpr; ce != nil {
+				reads, ok := companionReads(*ce, c.Graph.CompanionType, base, next)
+				if !ok {
+					add(c.Graph.CompanionType, "", CheckExprCompile, Fail)
+				}
+				companion = append(companion, reads...)
+			}
+			checkReads(add, bundle.KindResource, c.Graph.CompanionType, companion, none, base, next)
 		default:
 			return Report{}, &bundlegen.Error{Code: "E_SCHEMA_TYPE", Msg: fmt.Sprintf("%s: unknown kind %q", c.ID, c.Kind)}
 		}
@@ -117,6 +126,26 @@ func Diff(content []bundle.Control, base, next bundlegen.Schemas) (Report, error
 		}
 	}
 	return r, nil
+}
+
+// companionReads is the read paths of companion_expr on companion type typ,
+// from base (the schema the content was generated against), else next; ok
+// is false when the expression does not compile against next.
+func companionReads(expr, typ string, base, next bundlegen.Schemas) (reads []string, ok bool) {
+	ns, inNext := next.Resource(typ)
+	if !inNext {
+		return nil, true // type_removed covers it
+	}
+	nr, err := celeng.CompanionReads(expr, ns)
+	if err != nil {
+		return nil, false
+	}
+	if bs, inBase := base.Resource(typ); inBase {
+		if br, err := celeng.CompanionReads(expr, bs); err == nil {
+			return br, true
+		}
+	}
+	return nr, true
 }
 
 // checkReads checks type typ of kind k and its reads against next and base,
