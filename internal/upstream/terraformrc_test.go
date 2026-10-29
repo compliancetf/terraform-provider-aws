@@ -3,6 +3,7 @@ package upstream
 import (
 	"os"
 	"path/filepath"
+	"runtime"
 	"testing"
 )
 
@@ -227,13 +228,15 @@ func TestFindCLIConfigPath_DefaultFallback(t *testing.T) {
 		t.Fatal("expected a default path, got empty string")
 	}
 
-	// On non-Windows, should end with .terraformrc
 	home, err := os.UserHomeDir()
 	if err != nil {
 		t.Skipf("cannot determine home directory: %v", err)
 	}
 
 	expected := filepath.Join(home, ".terraformrc")
+	if runtime.GOOS == "windows" {
+		expected = filepath.Join(os.Getenv("APPDATA"), "terraform.rc")
+	}
 	if got != expected {
 		t.Fatalf("expected %q, got %q", expected, got)
 	}

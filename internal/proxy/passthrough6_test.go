@@ -10,6 +10,7 @@ import (
 	"net"
 	"os/exec"
 	"path/filepath"
+	"runtime"
 	"slices"
 	"strings"
 	"testing"
@@ -46,6 +47,9 @@ func (v6Plugin) GRPCClient(_ context.Context, _ *plugin.GRPCBroker, c *grpc.Clie
 func v6Proxy(t *testing.T) *grpc.ClientConn {
 	t.Helper()
 	bin := filepath.Join(t.TempDir(), "fake6")
+	if runtime.GOOS == "windows" {
+		bin += ".exe" // exec finds a binary on Windows only by its extension
+	}
 	build := exec.Command("go", "build", "-o", bin, "./v6")
 	build.Dir = filepath.Join("..", "..", "test", "fakeupstream")
 	if out, err := build.CombinedOutput(); err != nil {

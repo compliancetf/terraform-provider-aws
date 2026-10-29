@@ -9,6 +9,7 @@ import (
 	"io"
 	"os/exec"
 	"path/filepath"
+	"runtime"
 	"testing"
 
 	"google.golang.org/grpc"
@@ -139,6 +140,9 @@ func orNull(t *testing.T, dv *tfplugin5.DynamicValue) *tfplugin5.DynamicValue {
 func launchFake(t *testing.T) *grpc.ClientConn {
 	t.Helper()
 	bin := filepath.Join(t.TempDir(), "fakeupstream")
+	if runtime.GOOS == "windows" {
+		bin += ".exe" // exec finds a binary on Windows only by its extension
+	}
 	cmd := exec.Command("go", "build", "-o", bin, "./v5")
 	cmd.Dir = filepath.Join("..", "..", "test", "fakeupstream")
 	if out, err := cmd.CombinedOutput(); err != nil {

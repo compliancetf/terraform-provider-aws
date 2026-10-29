@@ -9,6 +9,7 @@ import (
 	"io/fs"
 	"os"
 	"path/filepath"
+	"runtime"
 	"strconv"
 	"strings"
 	"testing"
@@ -134,16 +135,20 @@ func TestDigestAlgorithms(t *testing.T) {
 				t.Fatalf("%s: dirModes %04o (listed %v), golden mode %q", rel, mode, ok, inGolden[rel])
 			}
 		}
-		root := copyTree(t)
-		got, err := DigestDir(root)
-		if err != nil || got != DigestRaw(golden) {
-			t.Fatalf("DigestDir %s (%v), want %s", got, err, DigestRaw(golden))
-		}
-		if err := os.Chmod(filepath.Join(root, "a.txt"), 0o600); err != nil {
-			t.Fatal(err)
-		}
-		if changed, err := DigestDir(root); err != nil || changed == got {
-			t.Fatalf("a mode change must change the digest: %s (%v)", changed, err)
+		// Windows keeps no POSIX modes (a file reads 0666 or 0444), so the
+		// golden's modes and a mode change cannot be reproduced there.
+		if runtime.GOOS != "windows" {
+			root := copyTree(t)
+			got, err := DigestDir(root)
+			if err != nil || got != DigestRaw(golden) {
+				t.Fatalf("DigestDir %s (%v), want %s", got, err, DigestRaw(golden))
+			}
+			if err := os.Chmod(filepath.Join(root, "a.txt"), 0o600); err != nil {
+				t.Fatal(err)
+			}
+			if changed, err := DigestDir(root); err != nil || changed == got {
+				t.Fatalf("a mode change must change the digest: %s (%v)", changed, err)
+			}
 		}
 		// Directories carry no entry: an empty tree is the digest of [].
 		empty := t.TempDir()

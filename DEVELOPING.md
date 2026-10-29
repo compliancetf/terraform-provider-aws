@@ -156,6 +156,8 @@ cd test/fakeupstream && go test ./...      # the fake upstream module
 
 Proxy tests start the fake upstream or use in-memory gRPC (bufconn). They never contact AWS and need no Terraform binary.
 
+The Test workflow runs `make test` on Linux, macOS and Windows. `.gitattributes` checks text out with LF on every platform, since goldens, protos and signed fixtures are compared byte for byte. A test that builds a binary names it with `.exe` on Windows; a test that needs POSIX modes, ownership or a POSIX shell skips on Windows with the reason.
+
 ## Conformance
 
 `test/conformance` (build tag `conformance`) builds the proxy and the fake upstream, writes a CLI config whose `dev_overrides` point `registry.compliance.tf/compliancetf/aws` at the built proxy, and runs every scenario under `test/conformance/scenarios/` with one Terraform or OpenTofu binary:

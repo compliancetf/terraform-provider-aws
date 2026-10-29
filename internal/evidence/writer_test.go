@@ -149,7 +149,9 @@ func TestGoldens(t *testing.T) {
 	must(t, w.Close())
 	golden(t, "chain-truncated.jsonl", readFile(t, filepath.Join(dir, chainID+".jsonl")))
 	golden(t, "chain-segment.jsonl", readFile(t, filepath.Join(dir, chainID+".1.jsonl")))
-	if fi, err := os.Stat(filepath.Join(dir, chainID+".1.jsonl")); err != nil || fi.Mode().Perm() != 0o600 {
+	// Windows has no mode bits: the run dir's private DACL guards the file
+	// (TestOpenWindowsCreatesPrivate).
+	if fi, err := os.Stat(filepath.Join(dir, chainID+".1.jsonl")); err != nil || (runtime.GOOS != "windows" && fi.Mode().Perm() != 0o600) {
 		t.Errorf("segment file mode: %v %v", fi, err)
 	}
 }

@@ -46,6 +46,7 @@ func opLifecycle(t *testing.T, control, match string, grant bool) (*Lifecycle, s
 		t.Fatal(err)
 	}
 	l.ev = w
+	t.Cleanup(func() { _ = w.Close() }) // Windows cannot remove the TempDir of an open chain
 	if grant {
 		withGrant(t, l, match, now)
 		return l, evDir

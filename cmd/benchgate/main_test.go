@@ -7,6 +7,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"runtime"
 	"slices"
 	"strings"
 	"testing"
@@ -294,6 +295,9 @@ func TestMakeRawVars(t *testing.T) {
 				continue
 			}
 			t.Run(c.target+" "+c.name+" "+from, func(t *testing.T) {
+				if runtime.GOOS == "windows" && slices.ContainsFunc(c.want, func(w []string) bool { return slices.Contains(w, tf) }) {
+					t.Skip("the MSYS shell make runs resolves terraform on PATH to a POSIX path")
+				}
 				// A stale file from the previous subtest must not pass this one.
 				if err := os.Remove(out); err != nil && !os.IsNotExist(err) {
 					t.Fatal(err)

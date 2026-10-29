@@ -107,6 +107,7 @@ func TestWorkflowPins(t *testing.T) {
 		t.Fatalf("no workflows: %v", err)
 	}
 	for _, f := range files {
+		f = filepath.ToSlash(f) // allowedTriggers keys use "/"
 		b, wf := parseWorkflow(t, f)
 		for _, line := range strings.Split(string(b), "\n") {
 			if usesRe.MatchString(line) && !tagNoteRe.MatchString(strings.TrimSpace(line)) {

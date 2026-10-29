@@ -9,6 +9,7 @@ import (
 	"math/big"
 	"os"
 	"path/filepath"
+	"runtime"
 	"strings"
 	"testing"
 	"time"
@@ -57,6 +58,9 @@ type fixture struct {
 
 func newFixture(t *testing.T) *fixture {
 	t.Helper()
+	if runtime.GOOS == "windows" {
+		t.Skip("the baseline key file loads only on unix (internal/verdict file_other.go)")
+	}
 	f := &fixture{dir: t.TempDir(), revs: trust.NoRevocations(), coverableBaselines: true}
 	f.blKey, f.rcKey = verdicttest.NewKey(t, now.Add(-24*time.Hour)), verdicttest.NewKey(t, now.Add(-24*time.Hour))
 	f.blKey.Signer.Use, f.rcKey.Signer.Use = verdict.UseBaseline, verdict.UseReceipt

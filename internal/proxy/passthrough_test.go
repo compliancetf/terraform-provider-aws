@@ -10,6 +10,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"runtime"
 	"slices"
 	"sort"
 	"strings"
@@ -45,13 +46,17 @@ func TestMain(m *testing.M) {
 // buildBinaries builds the provider binary and the fake v5 upstream once.
 func buildBinaries(t *testing.T) (provider, fake string) {
 	t.Helper()
+	exe := ""
+	if runtime.GOOS == "windows" {
+		exe = ".exe" // exec finds a binary on Windows only by its extension
+	}
 	buildOnce.Do(func() {
 		if binDir, buildErr = os.MkdirTemp("", "passthrough-test"); buildErr != nil {
 			return
 		}
 		for _, b := range []struct{ dir, pkg, out string }{
-			{filepath.Join("..", ".."), ".", "provider"},
-			{filepath.Join("..", "..", "test", "fakeupstream"), "./v5", "fakeupstream"},
+			{filepath.Join("..", ".."), ".", "provider" + exe},
+			{filepath.Join("..", "..", "test", "fakeupstream"), "./v5", "fakeupstream" + exe},
 		} {
 			cmd := exec.Command("go", "build", "-tags", "ctftest", "-o", filepath.Join(binDir, b.out), b.pkg)
 			cmd.Dir = b.dir
@@ -64,7 +69,7 @@ func buildBinaries(t *testing.T) (provider, fake string) {
 	if buildErr != nil {
 		t.Fatalf("build: %v", buildErr)
 	}
-	return filepath.Join(binDir, "provider"), filepath.Join(binDir, "fakeupstream")
+	return filepath.Join(binDir, "provider"+exe), filepath.Join(binDir, "fakeupstream"+exe)
 }
 
 // launch starts bin through upstream.Launch, the path main uses. The provider

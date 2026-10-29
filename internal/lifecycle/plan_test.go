@@ -239,6 +239,7 @@ func runStages(t *testing.T, pattern string, setup ...func(*testing.T, *stageGol
 					t.Fatal(err)
 				}
 				l.ev = w
+				t.Cleanup(func() { _ = w.Close() }) // a skipping setup must not leave the chain open
 			}
 			for _, f := range setup {
 				f(t, &g, l)
