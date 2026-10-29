@@ -187,3 +187,51 @@ func TestGraphSchemaCompatFailsClosed(t *testing.T) {
 		t.Errorf("graph control with expr in the release check: err = %v, want E_SUPPORTED_SCHEMA", err)
 	}
 }
+
+// TestVerifyGraph: the provider never evaluates a graph control (ctfkit
+// gate decides it), so verify loads and replays the other controls of the
+// bundle and skips the graph control: no expr to load or mutate, no cases
+// to want.
+func TestVerifyGraph(t *testing.T) {
+	s := subsetSchemas(t)
+	good := testControl("ctf_good", "aws_db_instance", "resource.storage_encrypted == true", bundle.PresenceEffective, "storage_encrypted")
+	g := graphControl(bundle.GraphCompanionPresent, versioningExpr)
+	rep, err := Verify(bundleOutput(t, []bundle.Control{good, g}, synth(t, s, good)), s, verifyEngine())
+	if err != nil || len(rep.Findings) != 0 {
+		t.Fatalf("Verify = %v, %v; want no finding", rep.Findings, err)
+	}
+	// a case for the graph control would verify nothing: an error
+	stray := retarget(synth(t, s, good), g)
+	for i := range stray {
+		stray[i].ResourceType = g.ResourceType
+	}
+	if _, err := Verify(bundleOutput(t, []bundle.Control{good, g}, stray), s, verifyEngine()); err == nil ||
+		!strings.Contains(err.Error(), "graph control "+g.ID+" has cases") {
+		t.Fatalf("graph control with cases: err = %v", err)
+	}
+}
+
+// TestDiffcheckGraph: diffcheck compares the provider's CEL state with the
+// postcondition; the provider does not evaluate a graph control, so it is
+// skipped by design, with or without a postcondition, and the other
+// controls of the bundle are still compared.
+func TestDiffcheckGraph(t *testing.T) {
+	s := subsetSchemas(t)
+	c := testControl("ctf_bare", "aws_db_instance", "resource.storage_encrypted == true", bundle.PresenceEffective, "storage_encrypted")
+	g := graphControl(bundle.GraphCompanionPresent, versioningExpr)
+	in := Intents{Policies: []Intent{
+		{ID: "ctf_bare", ResourceType: "aws_db_instance", Postcondition: "self.storage_encrypted == true"},
+		{ID: g.ID, ResourceType: g.ResourceType, Postcondition: "true"},
+	}}
+	rep, err := Diffcheck(bundleOutput(t, []bundle.Control{c, g}, synth(t, s, c)), in, PolicyFixtures{}, nil, s, verifyEngine())
+	if err != nil {
+		t.Fatal(err)
+	}
+	want := []string{
+		"W_DIFFCHECK_NO_POLICY_FIXTURES ctf_bare : no policy fixtures; only bundle cases are compared",
+		"W_DIFFCHECK_SKIPPED s3_bucket_versioning_kept : a graph control is decided by ctfkit gate, not by the provider",
+	}
+	if got := findingKeys(rep.Findings); !slices.Equal(got, want) || rep.Failed() {
+		t.Fatalf("findings (failed %v):\n%s\nwant:\n%s", rep.Failed(), strings.Join(got, "\n"), strings.Join(want, "\n"))
+	}
+}
