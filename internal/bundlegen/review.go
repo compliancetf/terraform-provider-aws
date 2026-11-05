@@ -57,12 +57,15 @@ func translateID(id string, d Disposition, it Intent, ok bool, s Schemas) (bundl
 
 // partialTargets queues every disposition target the controls cs (one
 // id, translated or authored) do not cover, as partial_targets
-// (E_REVIEW_PENDING); by names the source in the detail. Coverage counts
-// the id as generated only when every target has a control (generatedIDs).
+// (E_REVIEW_PENDING); by names the source in the detail. An alias target
+// whose canonical type has a control is covered (mirrorAliases). Coverage
+// counts the id as generated only when every target has a control
+// (generatedIDs).
 func partialTargets(id string, cs []bundle.Control, d Disposition, by string) []ReviewItem {
 	var out []ReviewItem
 	for _, t := range d.Targets {
-		if !slices.ContainsFunc(cs, func(c bundle.Control) bool { return string(c.Kind) == t.Kind && c.ResourceType == t.Type }) {
+		if !slices.ContainsFunc(cs, func(c bundle.Control) bool { return string(c.Kind) == t.Kind && c.ResourceType == t.Type }) &&
+			!aliasCovered(cs, t) {
 			out = append(out, ReviewItem{ID: id, ResourceType: t.Type, Reason: ReviewPartialTargets,
 				Detail: fmt.Sprintf("%s target not covered by %s", t.Kind, by)})
 		}

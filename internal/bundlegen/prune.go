@@ -33,10 +33,10 @@ type prunedProvider struct {
 }
 
 // PruneSchema reduces `terraform providers schema -json` output to the aws
-// types the controls cs reference plus the full list of type names
-// A referenced type the schema lacks is left
-// out, for schemadiff to report as removed. The output is canonical JSON
-// that LoadSchemas reads, independent of input key order.
+// types the controls cs reference (and their typeAliases) plus the full
+// list of type names. A referenced type the schema lacks is left out, for
+// schemadiff to report as removed. The output is canonical JSON that
+// LoadSchemas reads, independent of input key order.
 func PruneSchema(raw []byte, cs []bundle.Control) ([]byte, error) {
 	var doc struct {
 		FormatVersion   string                                `json:"format_version"`
@@ -66,6 +66,15 @@ func PruneSchema(raw []byte, cs []bundle.Control) ([]byte, error) {
 		}
 		for _, t := range types {
 			keep[key][t] = true
+		}
+	}
+	// Generate mirrors a control on a canonical type to its alias, so a
+	// pruned schema keeps the alias whatever controls it was pruned by.
+	for alias, canon := range typeAliases {
+		for _, k := range keep {
+			if k[canon] {
+				k[alias] = true
+			}
 		}
 	}
 	// A pruned input keeps its type names: pruning is idempotent.
