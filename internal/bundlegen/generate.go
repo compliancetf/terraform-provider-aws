@@ -131,7 +131,8 @@ type provenance struct {
 // with no control is not emitted: an empty controls.json does not load.
 // Each bundle carries the cases of its controls under <id>/cases/
 // (controlCases) and the output must verify clean (Verify): a finding fails
-// the run with its code, so no bundle ships unverified.
+// the run with its code, so no bundle ships unverified. A control on a type
+// with an alias (typeAliases) ships on the alias too (mirrorAliases).
 //
 // With in.PolicyFixtures set, Diffcheck then runs on the verified output
 // (generate step 5) and its report is diffcheck.json. A control id with an
@@ -323,17 +324,20 @@ func generateOnce(in Inputs, opts Options, held map[string]ReviewItem) (*Output,
 	if err != nil {
 		return nil, err
 	}
-	// The range admits every supported release: the controls must hold on
-	// each one's schema, not only the pin's.
-	if err := checkSupported(cs, in.Schemas, in.SupportedSchemas, older); err != nil {
-		return nil, err
-	}
 	translated := map[ControlKey]bool{}
 	for i := range autos {
 		translated[keyOf(&autos[i])] = true
 	}
 	cases, err := controlCases(in, cs, translated, opts.CaseSchema)
 	if err != nil {
+		return nil, err
+	}
+	if cs, err = mirrorAliases(cs, cases, in.Schemas); err != nil {
+		return nil, err
+	}
+	// The range admits every supported release: the controls must hold on
+	// each one's schema, not only the pin's.
+	if err := checkSupported(cs, in.Schemas, in.SupportedSchemas, older); err != nil {
 		return nil, err
 	}
 	lj, err := canonicalJSON(lock)

@@ -21,27 +21,41 @@ import (
 
 // postFuncs are the Terraform functions content postconditions call, as
 // Terraform's function table (internal/lang/functions.go) binds them:
-// try, can, contains, lower and jsondecode are the same hcl/go-cty
-// functions; alltrue, anytrue, coalesce, length, one and startswith are
-// ports of internal/lang/funcs below; tobool, tonumber and tolist use the
-// stdlib MakeToFunc, which differs from funcs.MakeToFunc only in sensitive
-// and ephemeral marks, which fixtures never carry. A postcondition calling
-// any other function does not evaluate (E_DIFFCHECK_EVAL).
+// try, can, contains, join, jsondecode, lower, regex, regexall, split,
+// substr, trimprefix, trimspace, trimsuffix and upper are the same
+// hcl/go-cty functions; alltrue, anytrue, coalesce, endswith, length, one,
+// startswith and strcontains are ports of internal/lang/funcs below;
+// tobool, tonumber, tostring and tolist use the stdlib MakeToFunc, which
+// differs from funcs.MakeToFunc only in sensitive and ephemeral marks,
+// which fixtures never carry. A postcondition calling any other function
+// does not evaluate (E_DIFFCHECK_EVAL).
 var postFuncs = map[string]function.Function{
-	"alltrue":    allTrueFunc,
-	"anytrue":    anyTrueFunc,
-	"can":        tryfunc.CanFunc,
-	"coalesce":   coalesceFunc,
-	"contains":   stdlib.ContainsFunc,
-	"jsondecode": stdlib.JSONDecodeFunc,
-	"length":     lengthFunc,
-	"lower":      stdlib.LowerFunc,
-	"one":        oneFunc,
-	"startswith": startsWithFunc,
-	"tobool":     stdlib.MakeToFunc(cty.Bool),
-	"tolist":     stdlib.MakeToFunc(cty.List(cty.DynamicPseudoType)),
-	"tonumber":   stdlib.MakeToFunc(cty.Number),
-	"try":        tryfunc.TryFunc,
+	"alltrue":     allTrueFunc,
+	"anytrue":     anyTrueFunc,
+	"can":         tryfunc.CanFunc,
+	"coalesce":    coalesceFunc,
+	"contains":    stdlib.ContainsFunc,
+	"endswith":    endsWithFunc,
+	"join":        stdlib.JoinFunc,
+	"jsondecode":  stdlib.JSONDecodeFunc,
+	"length":      lengthFunc,
+	"lower":       stdlib.LowerFunc,
+	"one":         oneFunc,
+	"regex":       stdlib.RegexFunc,
+	"regexall":    stdlib.RegexAllFunc,
+	"split":       stdlib.SplitFunc,
+	"startswith":  startsWithFunc,
+	"strcontains": strContainsFunc,
+	"substr":      stdlib.SubstrFunc,
+	"tobool":      stdlib.MakeToFunc(cty.Bool),
+	"tolist":      stdlib.MakeToFunc(cty.List(cty.DynamicPseudoType)),
+	"tonumber":    stdlib.MakeToFunc(cty.Number),
+	"tostring":    stdlib.MakeToFunc(cty.String),
+	"trimprefix":  stdlib.TrimPrefixFunc,
+	"trimspace":   stdlib.TrimSpaceFunc,
+	"trimsuffix":  stdlib.TrimSuffixFunc,
+	"try":         tryfunc.TryFunc,
+	"upper":       stdlib.UpperFunc,
 }
 
 // postcondition is a parsed content resource_postcondition condition.
@@ -305,8 +319,8 @@ func ctyValue(v tftypes.Value) (cty.Value, error) {
 
 // The functions below are ports of hashicorp/terraform
 // internal/lang/funcs (collection.go: LengthFunc, AllTrueFunc, AnyTrueFunc,
-// CoalesceFunc, OneFunc; string.go: StartsWithFunc), without mark handling:
-// fixture values carry no marks.
+// CoalesceFunc, OneFunc; string.go: StartsWithFunc, EndsWithFunc,
+// StrContainsFunc), without mark handling: fixture values carry no marks.
 
 func refineNotNull(b *cty.RefinementBuilder) *cty.RefinementBuilder { return b.NotNull() }
 
@@ -483,6 +497,25 @@ var startsWithFunc = function.New(&function.Spec{
 			return cty.UnknownVal(cty.Bool), nil
 		}
 		return cty.BoolVal(strings.HasPrefix(args[0].AsString(), prefix)), nil
+	},
+})
+
+// endsWithFunc is Terraform's endswith.
+var endsWithFunc = function.New(&function.Spec{
+	Params:       []function.Parameter{{Name: "str", Type: cty.String}, {Name: "suffix", Type: cty.String}},
+	Type:         function.StaticReturnType(cty.Bool),
+	RefineResult: refineNotNull,
+	Impl: func(args []cty.Value, _ cty.Type) (cty.Value, error) {
+		return cty.BoolVal(strings.HasSuffix(args[0].AsString(), args[1].AsString())), nil
+	},
+})
+
+// strContainsFunc is Terraform's strcontains.
+var strContainsFunc = function.New(&function.Spec{
+	Params: []function.Parameter{{Name: "str", Type: cty.String}, {Name: "substr", Type: cty.String}},
+	Type:   function.StaticReturnType(cty.Bool),
+	Impl: func(args []cty.Value, _ cty.Type) (cty.Value, error) {
+		return cty.BoolVal(strings.Contains(args[0].AsString(), args[1].AsString())), nil
 	},
 })
 

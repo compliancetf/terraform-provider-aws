@@ -105,7 +105,10 @@ func generatedIDs(data []byte, disp map[string]Disposition) (map[string]bool, er
 // Coverage builds coverage.json and coverage.md from validated inputs (the
 // disposition and catalog control id sets are equal, E_DISPOSITION_COVERAGE)
 // and the emitted bundle files. Every selector is reported, an empty bundle too, so
-// the gap of a bundle with no generated control stays visible.
+// the gap of a bundle with no generated control stays visible. Counts are of
+// catalog ids: a control mirrored to an alias type (mirrorAliases) is the
+// same id, so the alias adds no count; only controls.json lists it, as one
+// more entry of that id.
 func Coverage(in Inputs, files map[string][]byte) (jsonData, md []byte, err error) {
 	rep := coverageReport{CatalogSnapshotID: in.Catalog.Manifest.SnapshotID, Bundles: map[string]bundleCoverage{}}
 	ids := slices.Sorted(maps.Keys(in.Catalog.Dispositions.Controls))
