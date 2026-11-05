@@ -1,6 +1,6 @@
 # Reference
 
-Configuration, enforcement modes, the built-in CIS controls, exceptions and known limitations of the compliance.tf provider for AWS. Start with the [README](../README.md); day-to-day use, CI and rollout are in the [guide](guide.md).
+Configuration, enforcement modes, the built-in CIS controls and known limitations of the compliance.tf provider for AWS. Start with the [README](../README.md); day-to-day use, CI and rollout are in the [guide](guide.md).
 
 ## Versions
 
@@ -14,6 +14,12 @@ aws = {
   version = "6.67.0-compliancetf.1"
 }
 ```
+
+## Organization mode is not available yet
+
+Organization mode is configured with `org_id` (or `COMPLIANCETF_ORG_ID`) and `COMPLIANCETF_TOKEN`. It is not available yet: there is no compliance.tf service yet that serves organization profiles, so with `org_id` set every plan fails. Leave it unset.
+
+Everything that needs a signed organization profile is therefore not available either: organization bundles, mode floors, self-service exceptions, exception grants, grandfather baselines and verified verdicts. The settings for them (`org_id`, `profile_path`, `exceptions_file`, `exception_grants_dir`, `baseline_file`, `COMPLIANCETF_TOKEN`, `COMPLIANCETF_OFFLINE`, `COMPLIANCETF_CACHE_DIR`) are accepted but have no use today. Without an organization the provider applies the embedded CIS bundle, in `soft_fail` or `hard_fail`.
 
 ## Configuration
 
@@ -32,36 +38,37 @@ provider "aws" {
 
 | Attribute | Type | Required | Default | Description |
 |-----------|------|----------|---------|-------------|
-| `enforcement_mode` | `string` | No | `"soft_fail"` | `advisory`, `soft_fail`, `grandfather` or `hard_fail`; `COMPLIANCETF_ENFORCEMENT_MODE` (the stricter one wins) |
-| `org_id` | `string` | No | `""` | Organization ID; `COMPLIANCETF_ORG_ID` |
+| `enforcement_mode` | `string` | No | `"soft_fail"` | `soft_fail` or `hard_fail`; `COMPLIANCETF_ENFORCEMENT_MODE` (the stricter one wins). `advisory` and `grandfather` are accepted but need organization features that are not available yet (see [Enforcement modes](#enforcement-modes)) |
+| `org_id` | `string` | No | `""` | Organization ID; `COMPLIANCETF_ORG_ID`. Not available yet: with it set, every plan fails (see [Organization mode](#organization-mode-is-not-available-yet)) |
 | `control_profile` | `string` | No | `"cis"` | Only `cis` (the embedded bundle) |
 | `control_bundle_path` | `string` | No | `""` | Signed bundle archive for air-gapped runs; `COMPLIANCETF_BUNDLE_PATH` wins |
-| `profile_path` | `string` | No | `""` | Signed org profile; `COMPLIANCETF_PROFILE_PATH` |
-| `exceptions_file` | `string` | No | `""` | Self-service exception file; `COMPLIANCETF_EXCEPTIONS_FILE` wins |
-| `exception_grants_dir` | `string` | No | `""` | Directory of signed exception grants; `COMPLIANCETF_EXCEPTION_GRANTS` wins |
+| `profile_path` | `string` | No | `""` | Signed org profile; `COMPLIANCETF_PROFILE_PATH`. Not available yet: compliance.tf does not issue org profiles yet |
+| `exceptions_file` | `string` | No | `""` | Self-service exception file; `COMPLIANCETF_EXCEPTIONS_FILE` wins. Needs a signed org profile, so not available yet: the file is ignored with a warning |
+| `exception_grants_dir` | `string` | No | `""` | Directory of signed exception grants; `COMPLIANCETF_EXCEPTION_GRANTS` wins. Grant keys come from a signed org profile, so not available yet |
 | `environment` | `string` | No | `""` | Deployment environment; `COMPLIANCETF_ENVIRONMENT` |
 | `evidence_dir` | `string` | No | `".terraform/compliancetf/evidence"` | Evidence chain directory; `COMPLIANCETF_EVIDENCE_DIR` wins |
-| `data_sources` | `string` | No | `"advisory"` | `advisory` or `deny`; `COMPLIANCETF_DATA_SOURCES` and the org profile `data_sources` (the stricter one wins). Under `advisory` every data source control only warns; under `deny` a `deny` data source control follows the enforcement mode |
-| `baseline_file` | `string` | No | `""` | Signed grandfather baseline (`compliancetf.baseline/v1`); `COMPLIANCETF_BASELINE_FILE` wins. Needs `COMPLIANCETF_BASELINE_KEY_FILE`; a baseline that does not verify fails configuration |
+| `data_sources` | `string` | No | `"advisory"` | `advisory` or `deny`; `COMPLIANCETF_DATA_SOURCES` (the stricter one wins). This is not the `advisory` enforcement mode. Under `advisory` every data source control only warns; under `deny` a `deny` data source control follows the enforcement mode |
+| `baseline_file` | `string` | No | `""` | Signed grandfather baseline (`compliancetf.baseline/v1`); `COMPLIANCETF_BASELINE_FILE` wins. Needs `COMPLIANCETF_BASELINE_KEY_FILE` and baseline keys from a signed org profile, so not available yet; a baseline that does not verify fails configuration |
 
 ## Enforcement modes
 
-The strictest of `enforcement_mode`, `COMPLIANCETF_ENFORCEMENT_MODE` and a signed org profile floor wins, in the order `advisory < soft_fail < grandfather < hard_fail`. A control blocks when its action is `deny` and its mode is `hard_fail`. A `deny` control in `grandfather` mode also blocks, unless a verified verdict lists a matching baseline entry for the violation (see below).
+The stricter of `enforcement_mode` and `COMPLIANCETF_ENFORCEMENT_MODE` wins, and the default is `soft_fail`. A control blocks when its action is `deny` and its mode is `hard_fail`.
 
 | Mode | Blocking `deny` violation | `warn` violation |
 |------|---------------------------|------------------|
 | `hard_fail` | Error: the plan fails and the apply is not forwarded | Warning |
-| `grandfather` | As `hard_fail`, except a violation that a baseline can cover: a warning at plan, blocked at apply unless a verified verdict lists a matching baseline entry | Warning |
 | `soft_fail` (default) | Warning | Warning |
-| `advisory` | No diagnostic, evidence record only | No diagnostic, evidence record only |
 
 The table is the plan and before-apply outcome. After apply and on refresh or import a violation is a warning, except an error after an update; Terraform has already changed the resource at that point. A value that is unknown until apply gives a `pending` warning at plan and is checked again before apply. A control that cannot be evaluated counts as a failure. An existing resource with no planned change (planned and prior state equal and fully known) is the exception at plan: a blocking violation of it is a warning with the note "No change planned: this violation warns until the resource changes; any change to it is blocked." So an unchanged non-compliant resource does not fail a `hard_fail` plan, and the plan of any change to it does.
 
-In `grandfather` mode, a violation is a `pending exemption: baseline <control id>` warning at plan, even with no baseline file, when the control's signed coverage allows `baseline` and the control reads no sensitive attribute. Apply blocks it unless a verified verdict lists a matching entry of the signed baseline (`baseline_file`). A verified verdict is the `compliancetf.verdict/v1` file named by `COMPLIANCETF_VERDICT` that `ctfkit gate` writes for a saved plan. It is signed with a key that the signed org profile lists under `verdict.public_keys`, and the provider checks it at the first apply. A `baseline_file` that cannot load (the signed profile lists no baseline keys, `COMPLIANCETF_BASELINE_KEY_FILE` is missing or not a usable key, or the signature does not verify) fails configuration. With no baseline loaded, the provider warns once that every violation is treated as new.
+Two more values are accepted, but both need organization features that are not available yet:
+
+- `advisory` has no effect. The provider warns `enforcement_mode advisory is below the default soft_fail and has no effect` and runs in `soft_fail`, so findings still warn.
+- `grandfather` needs signed organization baselines. Without them it blocks at apply like `hard_fail`, while plan shows each violation that a baseline could cover (the control's signed coverage allows `baseline` and it reads no sensitive attribute) as a `pending exemption: baseline <control id>` warning. The provider also warns once that every violation is treated as new. Use `hard_fail` instead.
 
 ## CIS controls
 
-The embedded CIS bundle (`cis-aws`) holds these controls. Control ids follow the compliance.tf control catalog. Every CIS control declares `exemption_coverable` `[baseline, break_glass, grant, self_service]`: each kind still applies only where its own signed source allows it (a grant, the org profile's `exceptions.self_service` list, a baseline, a break-glass policy), and the profile's `exceptions.forbid_controls` empties the list for a control.
+The embedded CIS bundle (`cis-aws`) holds these controls. Control ids follow the compliance.tf control catalog. Every CIS control declares `exemption_coverable` `[baseline, break_glass, grant, self_service]`, but each kind needs a signed source that comes with an organization profile (a grant, the profile's self-service list, a baseline, a break-glass policy). Organization mode is not available yet, so no CIS violation can be waived today.
 
 | Control | Resource types | Action | Severity |
 |---------|----------------|--------|----------|
@@ -85,6 +92,8 @@ The embedded CIS bundle (`cis-aws`) holds these controls. Control ids follow the
 | `vpc_security_group_remote_administration_ipv6` | `aws_security_group`, `aws_security_group_rule`, `aws_vpc_security_group_ingress_rule` | deny | critical |
 
 ## Bundles and exceptions
+
+Exceptions of every kind need a signed organization profile, which is not available yet (see [Organization mode](#organization-mode-is-not-available-yet)). The rules below describe how they are checked.
 
 - **Bundles** are signed bundle 2.0 archives (`.tar.gz` with a manifest and a DSSE signature). The embedded CIS bundle always loads; `control_bundle_path` adds an air-gapped archive. `cmd/ctfbundle` builds, signs and verifies archives.
 - **Exception grants** are DSSE-signed files, one per grant, in `exception_grants_dir`. They apply only to controls whose bundle declares them coverable for grants (`exemption_coverable` in the signed bundle; a `coverable` list in the org profile is ignored), and only within their org, workspace scope and expiry. A grant naming any control that is unknown or not coverable for grants applies to none of its controls, with a warning per control. Under `floor_mode: airgap` grant expiry and key windows are checked against the latest accepted floor statement, never the local clock.
@@ -113,7 +122,7 @@ A failing control is reported as `[<control id>] <message>`, then the source sni
 |-------|------|---------|
 | `fix` | `Fix: <how to fix it>`, when the control has one | yes |
 | `docs` | `Docs: https://compliance.tf/docs/controls/aws/<control id>/` | yes |
-| `waive` | `To waive: add an exception for <control id> in <exceptions_file>`, only when an entry in `exceptions_file` can waive this control: the signed org profile lists it under self-service with `max_lifetime_days`, a trusted workspace is set, and the exceptions clock is known | yes |
+| `waive` | `To waive: add an exception for <control id> in <exceptions_file>`, only when an entry in `exceptions_file` can waive this control: the signed org profile lists it under self-service with `max_lifetime_days`, a trusted workspace is set, and the exceptions clock is known. Org profiles are not available yet, so this line does not print today | yes |
 | `severity` | `Severity: <severity>` | no |
 | `mode` | `Mode: <enforcement mode>` | no |
 | `stage` | `Stage: <stage>` (and `Type: <data source type>` for data sources) | no |
@@ -126,11 +135,11 @@ A failing control is reported as `[<control id>] <message>`, then the source sni
 | Name | Meaning |
 |------|---------|
 | `COMPLIANCETF_DIAGNOSTICS` | Lines of control diagnostics: `default`, `minimal`, `full` or a comma list of fields (see [Diagnostics](#diagnostics)). |
-| `COMPLIANCETF_TOKEN` | compliance.tf token, sent as a bearer token with requests to the compliance.tf service. With `org_id` set, the token lets the provider fetch the organization's signed profile, bundles and floor statement. Without the token the provider does not contact the service: the profile and bundles come from cached copies, and a run that needs a floor statement (a governed organization, or a signed profile that lists bundles) works only under a signed profile with `floor_mode: airgap` and its floor file (the profile's floor path, else `COMPLIANCETF_FLOOR_PATH`). Under `floor_mode: online` such a run fails configuration. |
-| `COMPLIANCETF_OFFLINE` | Set to `true` to turn off every request to the compliance.tf service. The signed profile and bundles then come from cached copies. A run that needs a floor statement works offline only under `floor_mode: airgap`; under `floor_mode: online` it fails configuration. Other values are ignored. |
+| `COMPLIANCETF_TOKEN` | compliance.tf token for organization mode, which is not available yet. It is sent as a bearer token with requests to the compliance.tf service, and only when `org_id` is set. With `org_id` set, the token lets the provider fetch the organization's signed profile, bundles and floor statement. Without the token the provider does not contact the service: the profile and bundles come from cached copies, and a run that needs a floor statement (a governed organization, or a signed profile that lists bundles) works only under a signed profile with `floor_mode: airgap` and its floor file (the profile's floor path, else `COMPLIANCETF_FLOOR_PATH`). Under `floor_mode: online` such a run fails configuration. |
+| `COMPLIANCETF_OFFLINE` | Set to `true` to turn off every request to the compliance.tf service. The provider sends such requests only with `org_id` set, and organization mode is not available yet. The signed profile and bundles then come from cached copies. A run that needs a floor statement works offline only under `floor_mode: airgap`; under `floor_mode: online` it fails configuration. Other values are ignored. |
 | `COMPLIANCETF_UPSTREAM_PATH` | Explicit path to the `hashicorp/aws` binary, for air-gapped installs. The binary must match the pinned checksum. |
 | `COMPLIANCETF_BASELINE_KEY_FILE` | The organization's baseline key: a file owned by the current user that group and others cannot read, holding 64 lowercase hex characters. `baseline_file` needs it to match entries. While it is set, with or without a baseline file, each plan evidence result of a resource that already exists carries `read_digest`, a keyed digest of the attributes the control reads in the prior state, from which ctfkit writes baseline entries. Results of a create, of a control that reads a sensitive attribute and of a read that is unknown carry none. A file that is not a usable key warns and no `read_digest` is written. |
-| `COMPLIANCETF_CACHE_DIR` | Directory of the cached signed organization bundles and profiles fetched from the bundle service. Default: `compliancetf` in the user cache directory (`$XDG_CACHE_HOME` or `~/.cache` on Linux, `~/Library/Caches` on macOS, `%LocalAppData%` on Windows). |
+| `COMPLIANCETF_CACHE_DIR` | Directory of the cached signed organization bundles and profiles fetched from the bundle service. Organization mode is not available yet, so nothing is cached here today. Default: `compliancetf` in the user cache directory (`$XDG_CACHE_HOME` or `~/.cache` on Linux, `~/Library/Caches` on macOS, `%LocalAppData%` on Windows). |
 
 On unix systems such as Linux and macOS the cache directory and every directory below it must be owned by the current user and must not be a symlink; the provider creates missing ones with mode 0700, sets existing ones to 0700 when it writes, and does not read one that group or others can write. On Windows the same directories must not be a symlink or junction, must be owned by the current user (or SYSTEM or Administrators) and their ACL must not let anyone else write them or pass write on to the files and directories created in them; a missing cache directory is created with an ACL that only grants the current user, SYSTEM and Administrators, and an existing ACL is never changed. A directory that fails these checks is skipped with a warning and the run goes on without the cache. Cached archives are verified on every load, and when the bundle service cannot be reached the best cached copy that verifies is used, so in CI either persist this directory between jobs (restored with the job user as owner and no group or other write bit) or point it at a fresh per-job directory. The verified `hashicorp/aws` copy, its download and the cached upstream schema do not follow this variable: they stay under `compliancetf` in the user cache directory (see [performance.md](performance.md)).
 
