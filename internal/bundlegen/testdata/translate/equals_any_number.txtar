@@ -28,12 +28,12 @@ integers on a number attribute
     "reads": [
       "port"
     ],
-    "presence_mode": "effective",
+    "presence_mode": "configured",
     "on": [
       "create",
       "update"
     ],
-    "expr": "resource.port in [15432, 15433]",
+    "expr": "config.port in [15432, 15433]",
     "action": "deny",
     "severity": "",
     "message": "",

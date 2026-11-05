@@ -340,9 +340,9 @@ func TestSynthesizeValues(t *testing.T) {
 
 // TestVerifyTranslated synthesizes and verifies every control of the
 // translation table (testdata/translate): synthesized cases never disagree
-// with the translator, the mutant always flips, and the only finding is
-// E_OPTIONAL_COMPUTED, exactly for effective deny controls with an
-// Optional+Computed read.
+// with the translator, the mutant always flips, and there is no finding:
+// an Optional+Computed read is configured, so E_OPTIONAL_COMPUTED never
+// applies to a translated control.
 func TestVerifyTranslated(t *testing.T) {
 	files, err := filepath.Glob("testdata/translate/*.txtar")
 	if err != nil {
@@ -378,19 +378,8 @@ func TestVerifyTranslated(t *testing.T) {
 			if err != nil {
 				t.Fatal(err)
 			}
-			sc, _ := subset.Resource(c.ResourceType)
-			var wantF []string
-			for _, r := range c.Reads {
-				if c.PresenceMode == bundle.PresenceEffective && optionalComputed(sc.Block, strings.Split(r, ".")) {
-					wantF = append(wantF, "E_OPTIONAL_COMPUTED "+r)
-				}
-			}
-			var got []string
-			for _, f := range rep.Findings {
-				got = append(got, f.Code+" "+strings.SplitN(f.Detail, ":", 2)[0])
-			}
-			if !slices.Equal(got, wantF) {
-				t.Fatalf("findings %+v, want %q", rep.Findings, wantF)
+			if len(rep.Findings) > 0 {
+				t.Fatalf("findings %+v, want none", rep.Findings)
 			}
 		})
 	}

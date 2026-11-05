@@ -105,9 +105,10 @@ var fixtureProvider = map[string]string{"region": "eu-west-1", "account_id": "11
 // pass sets every term to its first accepted value; fail breaks the first
 // term (negated bool, BOBTHECORP_INVALID, null, zero blocks); every
 // Optional+Computed read gets an unknown case on the pass value that
-// expects unknown, so it never decides: an effective deny control with such
-// a read fails verify (E_OPTIONAL_COMPUTED) until an authored deciding case
-// exists. The value binds as both resource and config. Any other expression
+// expects unknown, so it never decides: Translate makes such a control
+// configured, and an effective deny control with such a read fails verify
+// (E_OPTIONAL_COMPUTED) until an authored deciding case exists. The value
+// binds as both resource and config. Any other expression
 // shape is E_FIXTURE_SYNTH: authored controls carry their own cases.
 func Synthesize(c bundle.Control, s *tfprotov5.Schema) ([]Case, error) {
 	synthErr := func(format string, a ...any) ([]Case, error) {
