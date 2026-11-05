@@ -468,6 +468,15 @@ func safeName(s string) string {
 	return "<non-name>"
 }
 
+// safeID is safeName for a control id: a valid id (bundle.ValidID) up to
+// 128 characters is printed as is.
+func safeID(s string) string {
+	if bundle.ValidID(s) {
+		return s
+	}
+	return "<non-name>"
+}
+
 // hasNil reports a nil attribute, nested block or block body anywhere in b;
 // the schema walk and celeng would dereference it.
 func hasNil(b *tfprotov5.SchemaBlock) bool {
