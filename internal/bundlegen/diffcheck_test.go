@@ -269,8 +269,9 @@ func TestPostconditionFuncs(t *testing.T) {
 	obj := tftypes.Object{AttributeTypes: map[string]tftypes.Type{"a": tftypes.String, "b": tftypes.String}}
 	set := tftypes.Set{ElementType: tftypes.String}
 	self := tftypes.NewValue(tftypes.Object{AttributeTypes: map[string]tftypes.Type{
-		"s": tftypes.String, "u": tftypes.String, "l": tftypes.List{ElementType: tftypes.String}, "set": set, "obj": obj,
+		"s": tftypes.String, "u": tftypes.String, "n": tftypes.String, "l": tftypes.List{ElementType: tftypes.String}, "set": set, "obj": obj,
 	}}, map[string]tftypes.Value{
+		"n":   tftypes.NewValue(tftypes.String, nil),
 		"s":   tftypes.NewValue(tftypes.String, "bobthecorp"),
 		"u":   tftypes.NewValue(tftypes.String, tftypes.UnknownValue),
 		"l":   tftypes.NewValue(tftypes.List{ElementType: tftypes.String}, []tftypes.Value{tftypes.NewValue(tftypes.String, "a")}),
@@ -337,6 +338,25 @@ func TestPostconditionFuncs(t *testing.T) {
 		`join("-", ["a", "b"]) == "a-b"`:         "pass",
 		`substr(self.s, 0, 3) == "bob"`:          "pass",
 		`tostring(1) == "1"`:                     "pass",
+		`tostring([1]) == "1"`:                   "fail!",
+		// unknown arguments give unknown, null arguments an error
+		`endswith(self.u, "x")`:           "unknown",
+		`strcontains(self.u, "x")`:        "unknown",
+		`upper(self.u) == "X"`:            "unknown",
+		`length(split(",", self.u)) == 1`: "unknown",
+		`join(",", [self.u]) == "x"`:      "unknown",
+		`can(regex(self.u, "x"))`:         "unknown",
+		`regex(self.u, "x") == "x"`:       "unknown",
+		`endswith(self.n, "x")`:           "fail!",
+		`strcontains(self.n, "x")`:        "fail!",
+		`split(",", self.n) == []`:        "fail!",
+		`join(self.n, ["a"]) == "a"`:      "fail!",
+		`join(",", [self.n]) == ""`:       "fail!",
+		// substr: a negative offset counts from the end, length -1 is the rest
+		`substr(self.s, -4, -1) == "corp"`:   "pass",
+		`substr(self.s, 3, -1) == "thecorp"`: "pass",
+		`substr(self.s, 8, 10) == "rp"`:      "pass",
+		`substr(self.s, 20, 1) == ""`:        "pass",
 	} {
 		p, err := parsePostcondition(src)
 		if err != nil {

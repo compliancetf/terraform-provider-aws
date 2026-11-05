@@ -70,8 +70,8 @@ func PruneSchema(raw []byte, cs []bundle.Control) ([]byte, error) {
 	}
 	// Generate mirrors a control on a canonical type to its alias, so a
 	// pruned schema keeps the alias whatever controls it was pruned by.
-	for alias, canon := range typeAliases {
-		for _, k := range keep {
+	for key, k := range keep {
+		for alias, canon := range typeAliases[key] {
 			if k[canon] {
 				k[alias] = true
 			}
