@@ -16,7 +16,7 @@
 #   1. Path: generated bundle output (dist/bundles/, <bundle-id>/{controls,build}.json,
 #      <bundle-id>/cases/ where <bundle-id> is `all` or a framework bundle such as
 #      soc2-aws), authored control bodies (provider/controls/**.yaml) and the
-#      content export (provider_dispositions.json) may only appear under the
+#      content export (control_dispositions.json) may only appear under the
 #      synthetic test catalog, internal/bundlegen/testdata/.
 #   2. Content, everywhere: a build record must come from the test generator
 #      (generator.version 0.0.0-test); a content export manifest must carry
@@ -43,7 +43,7 @@ ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 SYNTHETIC='internal/bundlegen/testdata/'
 MAX_CATALOG_BYTES=65536
 # Matched case-insensitively: macOS checkouts fold case.
-BUNDLE_PATH_RE='(^|/)dist/bundles/|(^|/)([^/]+-(aws|azurerm|google)|all)/(controls\.json$|build\.json$|cases/)|(^|/)provider/controls/.+\.ya?ml$|(^|/)provider_dispositions\.json$'
+BUNDLE_PATH_RE='(^|/)dist/bundles/|(^|/)([^/]+-(aws|azurerm|google)|all)/(controls\.json$|build\.json$|cases/)|(^|/)provider/controls/.+\.ya?ml$|(^|/)control_dispositions\.json$'
 TEST_GENERATOR_RE='"generator":\{[^}]*"version":"0\.0\.0-test"'
 REAL_DIGEST_RE='"sha256":"[0-9a-f]*[1-9a-f][0-9a-f]*"'
 AGENT_PATH_RE='(^|/)\.(beads|claude|codex|cursor|agents)/|(^|/)issues\.jsonl$'
@@ -186,7 +186,7 @@ self_test() {
   expect 1 all-bundle 'out/all/controls.json=[]'
   expect 1 all-bundle-cases 'all/cases/c1/fail.json={}'
   expect 1 authored-controls-nested 'provider/controls/storage/s3.yml=id: x'
-  expect 1 dispositions-export 'exports/provider_dispositions.json={}'
+  expect 1 dispositions-export 'exports/control_dispositions.json={}'
   expect 1 other-testdata-bundle 'internal/bundle/testdata/soc2-aws/controls.json=[]'
   expect 1 real-build-in-testdata "$G/golden/fixture/soc2-aws/build.json=$REAL_BUILD"
   expect 1 real-manifest-in-testdata "$G/inputs/export/manifest.json=$REAL_MANIFEST"
@@ -211,7 +211,7 @@ self_test() {
     "$G/golden/fixture/soc2-aws/build.json=$SYNTH_BUILD" \
     "$G/golden/fixture/cis-aws/cases/c1/pass.json={}" \
     "$G/inputs/export/manifest.json=$SYNTH_MANIFEST" \
-    "$G/inputs/export/provider_dispositions.json={}"
+    "$G/inputs/export/control_dispositions.json={}"
   expect 0 bundle-schema-testdata 'internal/bundle/testdata/controls/invalid/empty.json=[]'
   expect 0 example-bundle 'examples/custom-bundle/my-controls.json=[]'
   expect 0 embedded-baseline 'internal/embedded/cis/controls.json=[]'

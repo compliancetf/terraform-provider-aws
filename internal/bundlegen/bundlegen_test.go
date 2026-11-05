@@ -125,7 +125,7 @@ func TestDeterministic(t *testing.T) {
 		r := rand.New(rand.NewPCG(seed, seed))
 		dir := t.TempDir()
 		writeSections(t, readDirFiles(t, filepath.Join(inputs, "authored")), "", filepath.Join(dir, "authored"))
-		for _, f := range []string{"catalog/controls.json", "catalog/provider_dispositions.json", "catalog/frameworks_metadata.json", "catalog/manifest.json", "intents.json", "schema.json"} {
+		for _, f := range []string{"catalog/controls.json", "catalog/control_dispositions.json", "catalog/frameworks_metadata.json", "catalog/manifest.json", "intents.json", "schema.json"} {
 			data, err := os.ReadFile(filepath.Join(inputs, f))
 			if err != nil {
 				t.Fatal(err)

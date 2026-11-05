@@ -39,19 +39,19 @@ const (
 var coverableNow = time.Date(2026, 10, 15, 0, 0, 0, 0, time.UTC)
 
 // coverableInputs are the test inputs with the raw JSON value spliced in as
-// id's exemption_coverable in provider_dispositions.json (nil drops the
+// id's exemption_coverable in control_dispositions.json (nil drops the
 // field), decoded by LoadCatalog as ctf-bundlegen generate does.
 func coverableInputs(t *testing.T, id string, raw []byte) (Inputs, error) {
 	t.Helper()
 	in := loadInputs(t, inputs, true)
 	dir := t.TempDir()
 	src := filepath.Join(inputs, "catalog")
-	for _, name := range []string{"manifest.json", "controls.json", "frameworks_metadata.json", "provider_dispositions.json"} {
+	for _, name := range []string{"manifest.json", "controls.json", "frameworks_metadata.json", "control_dispositions.json"} {
 		data, err := os.ReadFile(filepath.Join(src, name))
 		if err != nil {
 			t.Fatal(err)
 		}
-		if name == "provider_dispositions.json" {
+		if name == "control_dispositions.json" {
 			var doc map[string]any
 			if err := json.Unmarshal(data, &doc); err != nil {
 				t.Fatal(err)
