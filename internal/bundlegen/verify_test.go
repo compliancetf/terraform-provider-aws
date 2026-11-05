@@ -245,6 +245,34 @@ func TestAddCases(t *testing.T) {
 	}
 }
 
+// TestAddCasesNameLength: a 128-character control id (the longest valid
+// one) keeps every case path segment within the 255-byte file name limit,
+// the id being a directory of its own; a case name that would pass it is
+// E_FIXTURE.
+func TestAddCasesNameLength(t *testing.T) {
+	s := subsetSchemas(t)
+	id := "1" + strings.Repeat("a", 127)
+	c := testControl(id, "aws_db_instance", "resource.multi_az == true", bundle.PresenceEffective, "multi_az")
+	cases := synth(t, s, c)
+	var out Output
+	if err := out.AddCases("test", cases); err != nil || len(out.Files) != len(cases) {
+		t.Fatalf("%d files, %v", len(out.Files), err)
+	}
+	for p := range out.Files {
+		for _, seg := range strings.Split(p, "/") {
+			if len(seg) > 255 {
+				t.Fatalf("%s: segment of %d bytes", p, len(seg))
+			}
+		}
+	}
+	long := cases[0]
+	long.ID = caseID(c, strings.Repeat("x", 256))
+	var e *Error
+	if err := (&Output{}).AddCases("test", []Case{long}); !errors.As(err, &e) || e.Code != "E_FIXTURE" {
+		t.Fatalf("long case name: %v", err)
+	}
+}
+
 // TestUnknownCaseNames: reads a.b and a_b get distinct unknown cases, and
 // a read through an Optional+Computed object attribute is Optional+Computed.
 func TestUnknownCaseNames(t *testing.T) {
@@ -340,9 +368,9 @@ func TestSynthesizeValues(t *testing.T) {
 
 // TestVerifyTranslated synthesizes and verifies every control of the
 // translation table (testdata/translate): synthesized cases never disagree
-// with the translator, the mutant always flips, and the only finding is
-// E_OPTIONAL_COMPUTED, exactly for effective deny controls with an
-// Optional+Computed read.
+// with the translator, the mutant always flips, and there is no finding:
+// an Optional+Computed read is configured, so E_OPTIONAL_COMPUTED never
+// applies to a translated control.
 func TestVerifyTranslated(t *testing.T) {
 	files, err := filepath.Glob("testdata/translate/*.txtar")
 	if err != nil {
@@ -378,19 +406,8 @@ func TestVerifyTranslated(t *testing.T) {
 			if err != nil {
 				t.Fatal(err)
 			}
-			sc, _ := subset.Resource(c.ResourceType)
-			var wantF []string
-			for _, r := range c.Reads {
-				if c.PresenceMode == bundle.PresenceEffective && optionalComputed(sc.Block, strings.Split(r, ".")) {
-					wantF = append(wantF, "E_OPTIONAL_COMPUTED "+r)
-				}
-			}
-			var got []string
-			for _, f := range rep.Findings {
-				got = append(got, f.Code+" "+strings.SplitN(f.Detail, ":", 2)[0])
-			}
-			if !slices.Equal(got, wantF) {
-				t.Fatalf("findings %+v, want %q", rep.Findings, wantF)
+			if len(rep.Findings) > 0 {
+				t.Fatalf("findings %+v, want none", rep.Findings)
 			}
 		})
 	}

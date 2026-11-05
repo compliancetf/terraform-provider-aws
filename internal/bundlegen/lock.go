@@ -73,7 +73,7 @@ func MergeBumps(bumps Bumps, authored map[string]Bump, controls map[string][]bun
 			k := keyOf(&controls[id][i]).String()
 			if have, ok := out[k]; ok && have != b {
 				return nil, errf("E_BUMP_CONFLICT", "%s: bumps.yaml %s and %s.yaml version_bump %s differ",
-					safeKey(k), safeBump(have), safeName(id), safeBump(b))
+					safeKey(k), safeBump(have), safeID(id), safeBump(b))
 			}
 			out[k] = b
 		}

@@ -350,6 +350,13 @@ func attrPred(at *tfprotov5.SchemaAttribute, a IntentAttribute) (bundle.Presence
 	if at.Optional {
 		optMode = bundle.PresenceConfigured // Optional, incl. Optional+Computed
 	}
+	// An unset Optional+Computed value is unknown in the plan, so an
+	// effective control could not decide it before apply: the written value
+	// decides, and unset fails.
+	valMode := bundle.PresenceEffective
+	if at.Optional && at.Computed {
+		valMode = bundle.PresenceConfigured
+	}
 	var ref *ReviewItem
 	if a.ValuesFromRef != nil {
 		ref = &ReviewItem{Reason: ReviewValuesRef, Detail: "values from " + safeName(*a.ValuesFromRef)}
@@ -368,7 +375,7 @@ func attrPred(at *tfprotov5.SchemaAttribute, a IntentAttribute) (bundle.Presence
 			} else {
 				pred = func(acc string) string { return sel(acc) + " in [" + strings.Join(lits, ", ") + "]" }
 			}
-			return bundle.PresenceEffective, pred, ref
+			return valMode, pred, ref
 		case "contains":
 			pred = func(acc string) string {
 				p := sel(acc) + " != null"
@@ -382,7 +389,7 @@ func attrPred(at *tfprotov5.SchemaAttribute, a IntentAttribute) (bundle.Presence
 				return sel(acc) + " != null && !(" + sel(acc) + " in [" + strings.Join(lits, ", ") + "])"
 			}
 		}
-		return bundle.PresenceEffective, pred, firstRefusal(ref, &ReviewItem{Reason: ReviewCondition, Detail: a.Condition + " needs review"})
+		return valMode, pred, firstRefusal(ref, &ReviewItem{Reason: ReviewCondition, Detail: a.Condition + " needs review"})
 	case "not_empty":
 		if !at.Type.Is(tftypes.String) && !isCollection(at.Type) {
 			return refuse(ReviewType, "not_empty on a %s attribute", at.Type)
@@ -456,6 +463,15 @@ var safeNameRe = regexp.MustCompile(`^[a-z0-9_]{1,64}$`)
 // replaced.
 func safeName(s string) string {
 	if safeNameRe.MatchString(s) {
+		return s
+	}
+	return "<non-name>"
+}
+
+// safeID is safeName for a control id: a valid id (bundle.ValidID) up to
+// 128 characters is printed as is.
+func safeID(s string) string {
+	if bundle.ValidID(s) {
 		return s
 	}
 	return "<non-name>"

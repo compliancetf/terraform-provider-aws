@@ -1,4 +1,4 @@
-several values: x in [...], effective
+several values: x in [...]; an Optional+Computed attribute is configured
 -- intent.json --
 {
  "id": "ec2_instance_uses_imdsv2",
@@ -29,12 +29,12 @@ several values: x in [...], effective
       "metadata_options",
       "metadata_options.http_tokens"
     ],
-    "presence_mode": "effective",
+    "presence_mode": "configured",
     "on": [
       "create",
       "update"
     ],
-    "expr": "resource.metadata_options.exists(e0, e0.http_tokens in [\"required\", \"optional\"])",
+    "expr": "config.metadata_options.exists(e0, e0.http_tokens in [\"required\", \"optional\"])",
     "action": "deny",
     "severity": "",
     "message": "",

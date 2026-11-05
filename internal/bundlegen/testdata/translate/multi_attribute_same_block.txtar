@@ -37,12 +37,12 @@ two attributes of one max_items = 1 block share one exists()
       "versioning_configuration.mfa_delete",
       "versioning_configuration.status"
     ],
-    "presence_mode": "effective",
+    "presence_mode": "configured",
     "on": [
       "create",
       "update"
     ],
-    "expr": "resource.versioning_configuration.exists(e0, e0.status == \"Enabled\" && e0.mfa_delete == \"Enabled\")",
+    "expr": "config.versioning_configuration.exists(e0, e0.status == \"Enabled\" && e0.mfa_delete == \"Enabled\")",
     "action": "deny",
     "severity": "",
     "message": "",

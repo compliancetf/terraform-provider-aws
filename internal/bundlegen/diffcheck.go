@@ -97,8 +97,8 @@ func LoadPolicyFixtures(path string) (PolicyFixtures, error) {
 	seen := map[string]bool{}
 	for _, p := range pf.Policies {
 		key := p.ID + " " + p.ResourceType
-		if safeName(p.ID) != p.ID || safeName(p.ResourceType) != p.ResourceType || seen[key] {
-			return pf, errf("E_INPUT", "%s: policy %s %s: want a unique name-shaped id and type", path, safeName(p.ID), safeName(p.ResourceType))
+		if !bundle.ValidID(p.ID) || safeName(p.ResourceType) != p.ResourceType || seen[key] {
+			return pf, errf("E_INPUT", "%s: policy %s %s: want a unique control id and name-shaped type", path, safeID(p.ID), safeName(p.ResourceType))
 		}
 		seen[key] = true
 		if len(p.Cases) == 0 {
@@ -116,8 +116,9 @@ func LoadPolicyFixtures(path string) (PolicyFixtures, error) {
 }
 
 // LoadDiffAllow reads diffcheck-allow.yaml, a list of {id, case, cel,
-// postcondition, reason}; every field is required, cel and postcondition
-// are engine state names, and an (id, case) appears once.
+// postcondition, reason}; every field is required, id is a control id
+// (bundle.ValidID), cel and postcondition are engine state names, and an
+// (id, case) appears once.
 func LoadDiffAllow(path string) ([]DiffAllow, error) {
 	data, err := readRegular(path)
 	if err != nil {
@@ -137,9 +138,9 @@ func LoadDiffAllow(path string) ([]DiffAllow, error) {
 		k := [2]string{a.ID, a.Case}
 		name := strings.TrimPrefix(a.Case, policyCasePrefix)
 		var st engine.State
-		if safeName(a.ID) != a.ID || safeName(name) != name || strings.TrimSpace(a.Reason) == "" || seen[k] ||
+		if !bundle.ValidID(a.ID) || safeName(name) != name || strings.TrimSpace(a.Reason) == "" || seen[k] ||
 			st.UnmarshalText([]byte(a.CEL)) != nil || st.UnmarshalText([]byte(a.Postcondition)) != nil || a.CEL == a.Postcondition {
-			return nil, errf("E_INPUT", "%s: entry %d: want a unique name-shaped id and case, two different states cel and postcondition, and a reason", path, i)
+			return nil, errf("E_INPUT", "%s: entry %d: want a unique control id and name-shaped case, two different states cel and postcondition, and a reason", path, i)
 		}
 		seen[k] = true
 	}
@@ -180,12 +181,16 @@ func (r DiffcheckReport) JSON() ([]byte, error) { return canonicalJSON(r) }
 //     decode against the schema (no comparison);
 //   - W_DIFFCHECK_STALE: an allow entry that matched no difference;
 //   - E_DIFFCHECK_NO_COMPARISON: a control with a postcondition for which
-//     no bundle case and no policy fixture was compared, so diffcheck
+//     no bundle case and no policy fixture was compared, or an id whose
+//     postcondition validates on none of its target types, so diffcheck
 //     checked nothing;
 //   - W_DIFFCHECK_SKIPPED: a control diffcheck cannot check by design: no
 //     intent postcondition (spec: diffcheck covers the content policies that
-//     carry one; authored-only ids), a load diagnostic (verify fails
-//     on it, E_LOAD_DIAG), or a graph control (the provider does not
+//     carry one; authored-only ids), a target type other than the intent's
+//     resource_type whose schema the postcondition does not validate on (it
+//     is written for the intent's type; the detail counts the policy
+//     fixtures of that type left unreplayed), a load diagnostic (verify
+//     fails on it, E_LOAD_DIAG), or a graph control (the provider does not
 //     evaluate it; ctfkit gate does);
 //   - W_DIFFCHECK_NO_POLICY_FIXTURES: a checked control without policy
 //     fixtures, or one that is not a resource control (policy fixtures are
@@ -261,8 +266,14 @@ func diffcheckBundle(out *Output, id string, intents map[string]Intent, fixtures
 		return nil, err
 	}
 	var fs []Finding
+	// controls per id, and those skipped as a target type the
+	// postcondition does not validate on: an id skipped on every type
+	// checked nothing
+	total, typeSkipped := map[string]int{}, map[string]int{}
+	var skippedOrder []string
 	for i := range cs {
 		c := &cs[i]
+		total[c.ID]++
 		f := func(code, kase, format string, a ...any) {
 			fs = append(fs, Finding{Code: code, Bundle: id, Control: c.ID, Case: kase, Detail: fmt.Sprintf(format, a...)})
 		}
@@ -283,16 +294,30 @@ func diffcheckBundle(out *Output, id string, intents map[string]Intent, fixtures
 			return nil, fmt.Errorf("no %s schema for %s", c.Kind, c.ResourceType)
 		}
 		post, err := parsePostcondition(it.Postcondition)
-		if err == nil {
-			err = post.validateSelf(sc.Block)
-		}
 		if err != nil {
 			f("E_DIFFCHECK_EVAL", "", "postcondition %v", err)
 			continue
 		}
-		compared := 0
+		if err := post.validateSelf(sc.Block); err != nil {
+			if c.ResourceType == it.ResourceType {
+				f("E_DIFFCHECK_EVAL", "", "postcondition %v", err)
+				continue
+			}
+			// one postcondition per id, written for the intent's type: another
+			// target type is compared only where its schema has the same paths
+			skip := fmt.Sprintf("the content postcondition for %s does not validate on %s (%v)", it.ResourceType, c.ResourceType, err)
+			if n := len(fixtures[[2]string{c.ID, c.ResourceType}]); n > 0 {
+				skip += fmt.Sprintf("; its %d policy fixtures are not replayed", n)
+			}
+			f("W_DIFFCHECK_SKIPPED", "", "%s", skip)
+			if typeSkipped[c.ID]++; typeSkipped[c.ID] == 1 {
+				skippedOrder = append(skippedOrder, c.ID)
+			}
+			continue
+		}
+		n := 0
 		compare := func(name string, k Case) error {
-			compared++
+			n++
 			b, err := caseBindings(s, c, k)
 			if err != nil {
 				return err
@@ -338,8 +363,14 @@ func diffcheckBundle(out *Output, id string, intents map[string]Intent, fixtures
 				return nil, fmt.Errorf("policy fixture %s: %w", name, err)
 			}
 		}
-		if compared == 0 {
+		if n == 0 {
 			f("E_DIFFCHECK_NO_COMPARISON", "", "the control has a postcondition but no bundle case or policy fixture was compared")
+		}
+	}
+	for _, cid := range skippedOrder {
+		if typeSkipped[cid] == total[cid] {
+			fs = append(fs, Finding{Code: "E_DIFFCHECK_NO_COMPARISON", Bundle: id, Control: cid,
+				Detail: "the content postcondition validates on no target type of the control"})
 		}
 	}
 	return fs, nil

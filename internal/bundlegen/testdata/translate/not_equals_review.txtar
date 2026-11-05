@@ -24,6 +24,6 @@ not_equals: review with a proposal
     "resource_type": "aws_db_instance",
     "reason": "condition",
     "detail": "username not_equals: not_equals needs review",
-    "proposal": "resource.username != null && !(resource.username in [\"admin\"])"
+    "proposal": "config.username != null && !(config.username in [\"admin\"])"
   }
 }

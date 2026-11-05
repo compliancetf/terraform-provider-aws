@@ -33,7 +33,7 @@ func intentsByID(ps []Intent) (map[string]Intent, error) {
 	m := map[string]Intent{}
 	for _, it := range ps {
 		if _, dup := m[it.ID]; dup {
-			return nil, errf("E_INTENT", "duplicate intent %s", safeName(it.ID))
+			return nil, errf("E_INTENT", "duplicate intent %s", safeID(it.ID))
 		}
 		m[it.ID] = it
 	}

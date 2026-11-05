@@ -9,6 +9,7 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/hashicorp/terraform-plugin-go/tfprotov5"
 	"github.com/hashicorp/terraform-plugin-go/tftypes"
 
 	"github.com/compliancetf/terraform-provider-aws/internal/bundle"
@@ -374,6 +375,87 @@ func TestLoadDiffcheckInputs(t *testing.T) {
 	if a, err := LoadDiffAllow(write("empty.yaml", "")); err != nil || len(a) != 0 {
 		t.Fatalf("empty allow file: %v %v", a, err)
 	}
+}
+
+// TestLoadDiffcheckInputsLongID: an id longer than 64 characters is a valid
+// control id, so it can get an allow entry and policy fixtures; an id the
+// control id rule rejects cannot.
+func TestLoadDiffcheckInputsLongID(t *testing.T) {
+	const long = "elb_application_network_lb_https_tls_listener_recommended_security_policy" // 73
+	dir := t.TempDir()
+	write := func(name, body string) string {
+		p := filepath.Join(dir, name)
+		if err := os.WriteFile(p, []byte(body), 0o600); err != nil {
+			t.Fatal(err)
+		}
+		return p
+	}
+	a, err := LoadDiffAllow(write("long.yaml", "- {id: "+long+", case: pass, cel: pass, postcondition: fail, reason: r}\n"))
+	if err != nil || len(a) != 1 || a[0].ID != long {
+		t.Fatalf("long id allow entry: %v %v", a, err)
+	}
+	pf, err := LoadPolicyFixtures(write("long.json", `{"format": "content.policy-fixtures/1", "policies": [{"id": "`+long+`", "resource_type": "aws_lb_listener", "cases": [{"name": "c", "resource": {}}]}]}`))
+	if err != nil || len(pf.Policies) != 1 || pf.Policies[0].ID != long {
+		t.Fatalf("long id policy fixtures: %v %v", pf, err)
+	}
+	digit := "1" + long[1:]
+	if a, err := LoadDiffAllow(write("digit.yaml", "- {id: "+digit+", case: pass, cel: pass, postcondition: fail, reason: r}\n")); err != nil || len(a) != 1 || a[0].ID != digit {
+		t.Fatalf("long id with a leading digit: %v %v", a, err)
+	}
+	_, err = LoadPolicyFixtures(write("dup.json", `{"format": "content.policy-fixtures/1", "policies": [`+
+		`{"id": "`+long+`", "resource_type": "aws_lb_listener", "cases": [{"name": "c", "resource": {}}]},`+
+		`{"id": "`+long+`", "resource_type": "aws_lb_listener", "cases": [{"name": "c", "resource": {}}]}]}`))
+	if err == nil || !strings.Contains(err.Error(), "policy "+long+" aws_lb_listener") {
+		t.Fatalf("duplicate long id: the error names the id: %v", err)
+	}
+	for name, id := range map[string]string{"129 chars": "a" + strings.Repeat("b", 128), "leading underscore": "_abc", "two chars": "ab", "dash": "a-bc"} {
+		if _, err := LoadDiffAllow(write("bad.yaml", "- {id: "+id+", case: pass, cel: pass, postcondition: fail, reason: r}\n")); err == nil {
+			t.Errorf("%s: want an error", name)
+		}
+	}
+}
+
+// TestDiffcheckTargetType: the intent's postcondition is written for its
+// resource_type. A control of the same id on another target type is
+// compared when the postcondition validates on that type's schema (an
+// alias type with the same schema still reports a disagreement), and
+// skipped otherwise, with a count of its unreplayed policy fixtures; an id
+// skipped on every target type is E_DIFFCHECK_NO_COMPARISON.
+func TestDiffcheckTargetType(t *testing.T) {
+	s := subsetSchemas(t)
+	const id = "vpc_bobthecorp_two_types"
+	sg := testControl(id, "aws_security_group", "resource.revoke_rules_on_delete == true", bundle.PresenceEffective, "revoke_rules_on_delete")
+	rule := testControl(id, "aws_security_group_rule", "resource.self == false", bundle.PresenceEffective, "self")
+	in := Intents{Policies: []Intent{{ID: id, ResourceType: "aws_security_group", Postcondition: "self.revoke_rules_on_delete == true"}}}
+	pf := PolicyFixtures{Policies: []PolicyFixture{{ID: id, ResourceType: "aws_security_group_rule", Cases: []PolicyCase{{Name: "x", Resource: []byte(`{}`)}}}}}
+	check := func(name string, out *Output, in Intents, s Schemas, failed bool, want ...string) {
+		t.Helper()
+		rep, err := Diffcheck(out, in, pf, nil, s, verifyEngine())
+		if err != nil {
+			t.Fatal(err)
+		}
+		if got := findingKeys(rep.Findings); !slices.Equal(got, want) || rep.Failed() != failed {
+			t.Fatalf("%s: findings (failed %v):\n%s\nwant:\n%s", name, rep.Failed(), strings.Join(got, "\n"), strings.Join(want, "\n"))
+		}
+	}
+	skipped := "W_DIFFCHECK_SKIPPED " + id + " : the content postcondition for aws_security_group does not validate on aws_security_group_rule" +
+		" (self reference: Unsupported attribute); its 1 policy fixtures are not replayed"
+	check("other type", bundleOutput(t, []bundle.Control{sg, rule}, slices.Concat(synth(t, s, sg), synth(t, s, rule))), in, s, false,
+		"W_DIFFCHECK_NO_POLICY_FIXTURES "+id+" : no policy fixtures; only bundle cases are compared", skipped)
+	check("no target of the intent type", bundleOutput(t, []bundle.Control{rule}, synth(t, s, rule)), in, s, true,
+		"E_DIFFCHECK_NO_COMPARISON "+id+" : the content postcondition validates on no target type of the control", skipped)
+
+	// aws_alb_listener is an alias of aws_lb_listener with the same schema
+	alias := Schemas{resp: &tfprotov5.GetProviderSchemaResponse{ResourceSchemas: maps.Clone(s.resp.ResourceSchemas)}}
+	alias.resp.ResourceSchemas["aws_alb_listener"] = s.resp.ResourceSchemas["aws_lb_listener"]
+	const lid = "elb_bobthecorp_listener_port"
+	lb := testControl(lid, "aws_lb_listener", "resource.port == 443", bundle.PresenceEffective, "port")
+	alb := testControl(lid, "aws_alb_listener", "resource.port == 443", bundle.PresenceEffective, "port")
+	lin := Intents{Policies: []Intent{{ID: lid, ResourceType: "aws_lb_listener", Postcondition: "self.port == 80"}}}
+	mismatch := "E_DIFFCHECK_MISMATCH " + lid + " pass: cel pass, postcondition fail"
+	noFixtures := "W_DIFFCHECK_NO_POLICY_FIXTURES " + lid + " : no policy fixtures; only bundle cases are compared"
+	check("alias type", bundleOutput(t, []bundle.Control{alb, lb}, slices.Concat(synth(t, alias, alb), synth(t, alias, lb))), lin, alias, true,
+		noFixtures, noFixtures, mismatch, mismatch)
 }
 
 // diffcheckGenInputs is the generator fixture with the rds control

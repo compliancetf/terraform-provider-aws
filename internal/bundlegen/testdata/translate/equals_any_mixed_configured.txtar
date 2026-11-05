@@ -1,0 +1,34 @@
+an Optional+Computed term and a Required term: the whole control is configured
+-- intent.json --
+{
+ "id": "rds_bobthecorp_class_multi_az",
+ "resource_type": "aws_db_instance",
+ "attributes": [{"schema_path": "instance_class", "condition": "equals_any", "values": ["db.m5.large"], "values_from_ref": null}, {"schema_path": "multi_az", "condition": "equals_any", "values": [true], "values_from_ref": null}],
+ "explanation": "Explanation of rds_bobthecorp_class_multi_az.",
+ "postcondition": "",
+ "has_strategy_condition": false
+}
+-- want.json --
+{
+  "control": {
+    "id": "rds_bobthecorp_class_multi_az",
+    "version": "1.0.0",
+    "kind": "resource",
+    "resource_type": "aws_db_instance",
+    "reads": [
+      "instance_class",
+      "multi_az"
+    ],
+    "presence_mode": "configured",
+    "on": [
+      "create",
+      "update"
+    ],
+    "expr": "config.instance_class == \"db.m5.large\" && config.multi_az == true",
+    "action": "deny",
+    "severity": "",
+    "message": "",
+    "fix": "Explanation of rds_bobthecorp_class_multi_az.",
+    "exemption_coverable": []
+  }
+}

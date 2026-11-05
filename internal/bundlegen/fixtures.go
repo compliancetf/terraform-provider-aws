@@ -67,8 +67,12 @@ func CasePath(id string, k Case) string {
 	return id + "/cases/" + k.Control.ID + "/" + strings.TrimPrefix(k.ID, prefix) + ".json"
 }
 
-// AddCases writes cs canonically under bundle id. A path already in o is an
-// error: a case never overwrites another file.
+// maxFileName is the file name limit of common file systems (255 bytes).
+const maxFileName = 255
+
+// AddCases writes cs canonically under bundle id. A path already in o, or
+// one with a segment over maxFileName, is an error: a case never
+// overwrites another file.
 func (o *Output) AddCases(id string, cs []Case) error {
 	if o.Files == nil {
 		o.Files = map[string][]byte{}
@@ -83,6 +87,9 @@ func (o *Output) AddCases(id string, cs []Case) error {
 			return err
 		}
 		p := CasePath(id, k)
+		if slices.ContainsFunc(strings.Split(p, "/"), func(seg string) bool { return len(seg) > maxFileName }) {
+			return errf("E_FIXTURE", "case %q: a segment of %s is over %d bytes", k.ID, p, maxFileName)
+		}
 		if _, dup := o.Files[p]; dup {
 			return errf("E_FIXTURE", "case %q: %s is already in the output", k.ID, p)
 		}
@@ -105,9 +112,10 @@ var fixtureProvider = map[string]string{"region": "eu-west-1", "account_id": "11
 // pass sets every term to its first accepted value; fail breaks the first
 // term (negated bool, BOBTHECORP_INVALID, null, zero blocks); every
 // Optional+Computed read gets an unknown case on the pass value that
-// expects unknown, so it never decides: an effective deny control with such
-// a read fails verify (E_OPTIONAL_COMPUTED) until an authored deciding case
-// exists. The value binds as both resource and config. Any other expression
+// expects unknown, so it never decides: Translate makes such a control
+// configured, and an effective deny control with such a read fails verify
+// (E_OPTIONAL_COMPUTED) until an authored deciding case exists. The value
+// binds as both resource and config. Any other expression
 // shape is E_FIXTURE_SYNTH: authored controls carry their own cases.
 func Synthesize(c bundle.Control, s *tfprotov5.Schema) ([]Case, error) {
 	synthErr := func(format string, a ...any) ([]Case, error) {
