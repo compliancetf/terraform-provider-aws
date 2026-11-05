@@ -107,7 +107,7 @@ type buildUpstream struct {
 }
 
 // buildCatalog carries the catalog manifest keys plus the bundle.DigestJSON digests
-// of the catalog controls.json and provider_dispositions.json; the
+// of the catalog controls.json and control_dispositions.json; the
 // digests stay in build.json, never in the manifest.
 type buildCatalog struct {
 	SnapshotID         string `json:"snapshot_id"`
@@ -259,7 +259,7 @@ func generateOnce(in Inputs, opts Options, held map[string]ReviewItem) (*Output,
 	// The catalog digests are of the files LoadCatalog read; in-memory inputs
 	// without them fail rather than write a digest of no file.
 	if !digestRe.MatchString(in.Catalog.ControlsSHA256) || !digestRe.MatchString(in.Catalog.DispositionsSHA256) {
-		return nil, errf("E_INPUT", "catalog controls.json and provider_dispositions.json digests missing: load the export with LoadCatalog")
+		return nil, errf("E_INPUT", "catalog controls.json and control_dispositions.json digests missing: load the export with LoadCatalog")
 	}
 
 	intents, err := intentsByID(in.Intents.Policies)

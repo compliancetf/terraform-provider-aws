@@ -74,10 +74,10 @@ type Inputs struct {
 	DiffAllow      []DiffAllow
 }
 
-// Catalog is a catalog provider export: controls.json, provider_dispositions.json,
+// Catalog is a catalog provider export: controls.json, control_dispositions.json,
 // frameworks_metadata.json and manifest.json. ControlsSHA256 and
 // DispositionsSHA256 are bundle.DigestJSON of controls.json and
-// provider_dispositions.json as LoadCatalog read them (build.json catalog).
+// control_dispositions.json as LoadCatalog read them (build.json catalog).
 type Catalog struct {
 	Manifest           Manifest
 	Controls           map[string]CatalogControl
@@ -187,16 +187,19 @@ func LoadCatalog(dir string) (Catalog, error) {
 		return c, err
 	}
 	defer root.Close() //nolint:errcheck // read-only
-	digests := map[string]*string{"controls.json": &c.ControlsSHA256, "provider_dispositions.json": &c.DispositionsSHA256}
+	digests := map[string]*string{"controls.json": &c.ControlsSHA256, "control_dispositions.json": &c.DispositionsSHA256}
 	for name, v := range map[string]any{
-		"manifest.json":              &c.Manifest,
-		"controls.json":              &c.Controls,
-		"provider_dispositions.json": &c.Dispositions,
-		"frameworks_metadata.json":   &c.Frameworks,
+		"manifest.json":             &c.Manifest,
+		"controls.json":             &c.Controls,
+		"control_dispositions.json": &c.Dispositions,
+		"frameworks_metadata.json":  &c.Frameworks,
 	} {
 		path := filepath.Join(dir, name)
 		data, err := readRootFile(root, name)
 		if err != nil {
+			if _, old := root.Lstat("provider_dispositions.json"); old == nil && name == "control_dispositions.json" {
+				return c, errf("E_INPUT", "%s: missing; the export has provider_dispositions.json, the name before the rename: use a catalog export written after it", path)
+			}
 			return c, err
 		}
 		if err := decodeJSON(path, data, v); err != nil {

@@ -28,7 +28,7 @@ func noBlock(t *testing.T, what string, f func() error) error {
 // E_SPECIAL_FILE at once, never blocking on it.
 func TestDigestsFIFO(t *testing.T) {
 	dir := copyCatalog(t, func(_ string, data []byte) []byte { return data })
-	p := filepath.Join(dir, "provider_dispositions.json")
+	p := filepath.Join(dir, "control_dispositions.json")
 	if err := os.Remove(p); err != nil {
 		t.Fatal(err)
 	}

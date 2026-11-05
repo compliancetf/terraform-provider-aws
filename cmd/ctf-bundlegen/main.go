@@ -55,7 +55,7 @@ func run(args []string) error {
 	}
 	cmd := args[0]
 	fs := flag.NewFlagSet(cmd, flag.ContinueOnError)
-	catalog := fs.String("catalog", "", "catalog provider export directory (controls.json, provider_dispositions.json, frameworks_metadata.json, manifest.json)")
+	catalog := fs.String("catalog", "", "catalog provider export directory (controls.json, control_dispositions.json, frameworks_metadata.json, manifest.json)")
 	intents := fs.String("intents", "", "content provider-intents.json")
 	schema := fs.String("schema", "", "pruned `terraform providers schema -json` output")
 	authored := fs.String("authored", "", "provider/controls directory of <id>.yaml authored controls")

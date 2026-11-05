@@ -125,7 +125,7 @@ func TestDeterministic(t *testing.T) {
 		r := rand.New(rand.NewPCG(seed, seed))
 		dir := t.TempDir()
 		writeSections(t, readDirFiles(t, filepath.Join(inputs, "authored")), "", filepath.Join(dir, "authored"))
-		for _, f := range []string{"catalog/controls.json", "catalog/provider_dispositions.json", "catalog/frameworks_metadata.json", "catalog/manifest.json", "intents.json", "schema.json"} {
+		for _, f := range []string{"catalog/controls.json", "catalog/control_dispositions.json", "catalog/frameworks_metadata.json", "catalog/manifest.json", "intents.json", "schema.json"} {
 			data, err := os.ReadFile(filepath.Join(inputs, f))
 			if err != nil {
 				t.Fatal(err)
@@ -306,6 +306,16 @@ func TestFailClosedIO(t *testing.T) {
 	}
 	if _, err := LoadCatalog(filepath.Join(tmp, "catalog")); code(err) != "E_SPECIAL_FILE" {
 		t.Errorf("symlinked catalog dir: %v", err)
+	}
+	oldName := filepath.Join(tmp, "oldname")
+	if err := os.CopyFS(oldName, os.DirFS(filepath.Join(abs, "catalog"))); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.Rename(filepath.Join(oldName, "control_dispositions.json"), filepath.Join(oldName, "provider_dispositions.json")); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := LoadCatalog(oldName); code(err) != "E_INPUT" || !strings.Contains(fmt.Sprint(err), "before the rename") {
+		t.Errorf("pre-rename catalog export: %v", err)
 	}
 	out := &Output{Files: map[string][]byte{"all/build.json": []byte("{}\n")}}
 	if err := out.WriteDir(filepath.Join(tmp, "catalog")); code(err) != "E_SPECIAL_FILE" {

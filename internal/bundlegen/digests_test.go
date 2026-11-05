@@ -17,7 +17,7 @@ import (
 	"github.com/compliancetf/terraform-provider-aws/internal/trust"
 )
 
-var catalogFiles = []string{"manifest.json", "controls.json", "frameworks_metadata.json", "provider_dispositions.json"}
+var catalogFiles = []string{"manifest.json", "controls.json", "frameworks_metadata.json", "control_dispositions.json"}
 
 // copyCatalog copies the test catalog export to a temp dir, passing each file
 // through edit, and returns the dir.
@@ -54,7 +54,7 @@ func TestDigests(t *testing.T) {
 	in := loadInputs(t, inputs, true)
 	gen := generate(t, in)
 	want := map[string]string{}
-	for _, name := range []string{"controls.json", "provider_dispositions.json"} {
+	for _, name := range []string{"controls.json", "control_dispositions.json"} {
 		raw, err := os.ReadFile(filepath.Join(inputs, "catalog", name))
 		if err != nil {
 			t.Fatal(err)
@@ -74,7 +74,7 @@ func TestDigests(t *testing.T) {
 		if err := json.Unmarshal(gen[p], &b); err != nil {
 			t.Fatal(err)
 		}
-		if b.Catalog.ControlsSHA256 != want["controls.json"] || b.Catalog.DispositionsSHA256 != want["provider_dispositions.json"] {
+		if b.Catalog.ControlsSHA256 != want["controls.json"] || b.Catalog.DispositionsSHA256 != want["control_dispositions.json"] {
 			t.Errorf("%s: catalog digests %+v, want %v", id, b.Catalog, want)
 		}
 		if cd, err := ContentDigest(id, bundleFiles(gen, id)); err != nil || b.ContentDigest != cd {
@@ -92,7 +92,7 @@ func TestDigests(t *testing.T) {
 	t.Run("dispositions reordered", func(t *testing.T) {
 		var orig []byte
 		dir := copyCatalog(t, func(name string, data []byte) []byte {
-			if name != "provider_dispositions.json" {
+			if name != "control_dispositions.json" {
 				return data
 			}
 			orig = data
@@ -104,7 +104,7 @@ func TestDigests(t *testing.T) {
 			writeShuffled(&b, v, rand.New(rand.NewPCG(7, 7)))
 			return []byte(" \n" + b.String() + "\n\n")
 		})
-		re, err := os.ReadFile(filepath.Join(dir, "provider_dispositions.json"))
+		re, err := os.ReadFile(filepath.Join(dir, "control_dispositions.json"))
 		if err != nil || bytes.Equal(re, orig) {
 			t.Fatalf("reordered file must differ in bytes: %v", err)
 		}
@@ -112,20 +112,20 @@ func TestDigests(t *testing.T) {
 		if r.Catalog, err = LoadCatalog(dir); err != nil {
 			t.Fatal(err)
 		}
-		if r.Catalog.DispositionsSHA256 != want["provider_dispositions.json"] {
-			t.Fatalf("reordered dispositions_sha256 %s, want %s", r.Catalog.DispositionsSHA256, want["provider_dispositions.json"])
+		if r.Catalog.DispositionsSHA256 != want["control_dispositions.json"] {
+			t.Fatalf("reordered dispositions_sha256 %s, want %s", r.Catalog.DispositionsSHA256, want["control_dispositions.json"])
 		}
 		if bad := diffFiles(generate(t, r), gen); bad != nil {
 			t.Fatalf("reordered dispositions change the output: %v", bad)
 		}
 		// A changed value changes the digest.
 		dir = copyCatalog(t, func(name string, data []byte) []byte {
-			if name == "provider_dispositions.json" {
+			if name == "control_dispositions.json" {
 				return bytes.Replace(data, []byte(`"severity": "high"`), []byte(`"severity": "low"`), 1)
 			}
 			return data
 		})
-		if c, err := LoadCatalog(dir); err != nil || c.DispositionsSHA256 == want["provider_dispositions.json"] {
+		if c, err := LoadCatalog(dir); err != nil || c.DispositionsSHA256 == want["control_dispositions.json"] {
 			t.Fatalf("changed dispositions keep their digest: %v", err)
 		}
 	})
