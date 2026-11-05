@@ -197,6 +197,9 @@ func LoadCatalog(dir string) (Catalog, error) {
 		path := filepath.Join(dir, name)
 		data, err := readRootFile(root, name)
 		if err != nil {
+			if _, old := root.Lstat("provider_dispositions.json"); old == nil && name == "control_dispositions.json" {
+				return c, errf("E_INPUT", "%s: missing; the export has provider_dispositions.json, the name before the rename: use a catalog export written after it", path)
+			}
 			return c, err
 		}
 		if err := decodeJSON(path, data, v); err != nil {
