@@ -2,7 +2,7 @@
 
 Self-service exceptions: resources that break CIS `deny` controls, waived by entries in `exceptions.hcl`, so `terraform plan` succeeds in `hard_fail` mode. The example also includes two entries that do not apply, one for another environment and one that has expired, to show what happens to those.
 
-Organization mode is not available yet: compliance.tf does not issue org profiles yet, so this example runs only with a development build, and a release build cannot use exceptions.
+Organization mode is not available: compliance.tf does not issue org profiles, so this example runs only with a development build, and a release build cannot use exceptions.
 
 An exceptions file counts only together with a **signed org profile** that allows self-service exceptions for the controls. Each control must also be declared coverable for `self_service` by the bundle that ships it. This example signs `profile.json` with the test key, so it runs with a development build.
 

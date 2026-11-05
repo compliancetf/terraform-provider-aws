@@ -15,10 +15,10 @@ The table is the outcome at plan and before apply. An existing resource with no 
 
 The mode comes from two places: `enforcement_mode` in the `compliance {}` block and the `COMPLIANCETF_ENFORCEMENT_MODE` variable. The stricter one wins, so `soft_fail` in the configuration cannot lower a `hard_fail` variable.
 
-Use `soft_fail` or `hard_fail`. The provider also accepts `advisory` and `grandfather`, but both need organization features that are not available yet:
+Use `soft_fail` or `hard_fail`. The provider also accepts two other values:
 
-- `advisory` has no effect. The provider warns that it is below the default `soft_fail` and runs in `soft_fail`, so findings still warn.
-- `grandfather` needs signed organization baselines. Without them it blocks at apply like `hard_fail`, while plan shows the violations a baseline could cover as `pending exemption: baseline <control id>` warnings. Use `hard_fail` instead.
+- `advisory` is ignored. The provider warns that it is below the default `soft_fail`, and the mode is at least `soft_fail`, so findings still warn. A stricter setting from the other place still wins: with `COMPLIANCETF_ENFORCEMENT_MODE=hard_fail`, the run is in `hard_fail`. No organization profile can turn `advisory` on.
+- `grandfather` needs signed organization baselines, which are not available. Without them it blocks at apply like `hard_fail`, while plan shows the violations a baseline could cover as `pending exemption: baseline <control id>` warnings. Use `hard_fail` instead.
 
 See [Enforcement modes](reference.md#enforcement-modes) in the reference.
 
@@ -43,7 +43,7 @@ terraform apply -input=false tfplan
 
 ## Caches
 
-The provider caches the `hashicorp/aws` binary that it downloads and verifies, and the upstream schema. These stay under `compliancetf` in the user cache directory (`$XDG_CACHE_HOME` or `~/.cache` on Linux, `~/Library/Caches` on macOS, `%LocalAppData%` on Windows). `COMPLIANCETF_CACHE_DIR` does not move them: it is only for organization bundles and profiles, and organization mode is not available yet. A `hashicorp/aws` of the pinned version in Terraform's plugin directories is used before any download.
+The provider caches the `hashicorp/aws` binary that it downloads and verifies, and the upstream schema. These stay under `compliancetf` in the user cache directory (`$XDG_CACHE_HOME` or `~/.cache` on Linux, `~/Library/Caches` on macOS, `%LocalAppData%` on Windows). `COMPLIANCETF_CACHE_DIR` does not move them: it is only for organization bundles and profiles, and organization mode is not available. A `hashicorp/aws` of the pinned version in Terraform's plugin directories is used before any download.
 
 In CI, persist this cache between jobs, or accept that each fresh runner downloads and verifies `hashicorp/aws` again. A restored cache directory must be owned by the job user and not writable by group or others, or the provider skips it with a warning. The ownership and ACL rules are under [Environment variables](reference.md#environment-variables), and [performance.md](performance.md) has the startup costs.
 
@@ -91,7 +91,7 @@ Upgrading from 0.1.x: a bundle with controls written as a `predicate` does not l
 
 ## Findings you cannot fix yet
 
-Exceptions are not available yet. Self-service exceptions, exception grants and grandfather baselines all need a signed organization profile, and organization mode is not available yet. An `exceptions_file` is ignored with a warning.
+Exceptions are not available. Self-service exceptions, exception grants and grandfather baselines all need a signed organization profile, and organization mode is not available. An `exceptions_file` is ignored with a warning.
 
 Keep the configuration that has the finding on `soft_fail` and make the others `hard_fail`. A CI job that sets `COMPLIANCETF_ENFORCEMENT_MODE=hard_fail` overrides that, so leave the variable off for that configuration's job.
 
@@ -152,7 +152,7 @@ Each directory in [examples/](../examples/) is a complete configuration with a `
 | [cis-complete](../examples/cis-complete) | Every resource type the CIS bundle checks, configured to pass every control, with the control id next to each setting | Succeeds, 23 resources, no compliance diagnostics |
 | [hard-fail](../examples/hard-fail) | Violations in `hard_fail` mode | Fails with 4 errors and 1 warning |
 | [soft-fail](../examples/soft-fail) | The same violations in the default `soft_fail` mode | Succeeds with 5 warnings |
-| [exception](../examples/exception) | Self-service exceptions, with every entry attribute and `match` variable explained | Succeeds only with a development build, which trusts the test key that signs its org profile. Organization profiles are not available yet, so release builds cannot use exceptions |
+| [exception](../examples/exception) | Self-service exceptions, with every entry attribute and `match` variable explained | Succeeds only with a development build, which trusts the test key that signs its org profile. Organization profiles are not available, so release builds cannot use exceptions |
 | [custom-bundle](../examples/custom-bundle) | A signed team bundle next to the embedded CIS bundle | Fails with 1 error and 1 warning; needs a development build |
 
 The 23 resources of cis-complete are more than the 11 checked types: several resources share a type (two security groups, two ingress rules), and the rest are the VPC, subnets, KMS key and other resources they need. The exception and custom-bundle examples sign their profile or bundle with the test key, which only a development build (`make build-dev`) trusts.

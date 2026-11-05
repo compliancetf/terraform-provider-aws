@@ -37,9 +37,9 @@ Fix: Set storage_encrypted = true.
 Docs: https://compliance.tf/docs/controls/aws/rds_db_instance_encryption_at_rest_enabled/
 ```
 
-`COMPLIANCETF_DIAGNOSTICS=full` adds the severity, mode, stage and framework references. A `To waive:` line appears only when an `exceptions_file` entry can waive the control, which needs a signed org profile. Org profiles are not available yet, so release builds do not print it: see [Diagnostics](../../docs/reference.md#diagnostics).
+`COMPLIANCETF_DIAGNOSTICS=full` adds the severity, mode, stage and framework references. A `To waive:` line appears only when an `exceptions_file` entry can waive the control, which needs a signed org profile. Org profiles are not available, so release builds do not print it: see [Diagnostics](../../docs/reference.md#diagnostics).
 
 ## Next steps
 
 - Fix the settings, as in [basic](../basic) or [cis-complete](../cis-complete).
-- Exceptions need a signed org profile, and org profiles are not available yet. The [exception](../exception) example shows them with a development build.
+- Exceptions need a signed org profile, and org profiles are not available. The [exception](../exception) example shows them with a development build.
