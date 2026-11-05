@@ -67,8 +67,12 @@ func CasePath(id string, k Case) string {
 	return id + "/cases/" + k.Control.ID + "/" + strings.TrimPrefix(k.ID, prefix) + ".json"
 }
 
-// AddCases writes cs canonically under bundle id. A path already in o is an
-// error: a case never overwrites another file.
+// maxFileName is the file name limit of common file systems (255 bytes).
+const maxFileName = 255
+
+// AddCases writes cs canonically under bundle id. A path already in o, or
+// one with a segment over maxFileName, is an error: a case never
+// overwrites another file.
 func (o *Output) AddCases(id string, cs []Case) error {
 	if o.Files == nil {
 		o.Files = map[string][]byte{}
@@ -83,6 +87,9 @@ func (o *Output) AddCases(id string, cs []Case) error {
 			return err
 		}
 		p := CasePath(id, k)
+		if slices.ContainsFunc(strings.Split(p, "/"), func(seg string) bool { return len(seg) > maxFileName }) {
+			return errf("E_FIXTURE", "case %q: a segment of %s is over %d bytes", k.ID, p, maxFileName)
+		}
 		if _, dup := o.Files[p]; dup {
 			return errf("E_FIXTURE", "case %q: %s is already in the output", k.ID, p)
 		}
