@@ -8,15 +8,16 @@ It is a product of [compliance.tf](https://compliance.tf), by Anton Babenko, mai
 
 - You change the provider `source`. Your resources, code and version numbers stay the same: compliancetf/aws X.Y.Z runs hashicorp/aws X.Y.Z.
 - The provider checks each resource when Terraform plans it, again before apply, and on refresh and import. The checks run wherever Terraform runs, locally or in CI, with no extra pipeline step.
-- A violated `deny` control fails the run in `hard_fail` mode and warns in the default `soft_fail` mode. A violated `warn` control warns in every mode but `advisory`, which only writes evidence. An existing resource with no planned change only warns, even in `hard_fail`; any change to it is blocked. When the configuration, the `COMPLIANCETF_ENFORCEMENT_MODE` variable and an organization profile set different modes, the strictest one wins.
+- A violated `deny` control fails the run in `hard_fail` mode and warns in the default `soft_fail` mode. A violated `warn` control always warns. An existing resource with no planned change only warns, even in `hard_fail`; any change to it is blocked. When the configuration and the `COMPLIANCETF_ENFORCEMENT_MODE` variable set different modes, the strictest one wins.
 - It warns or denies, and never changes a value you wrote.
 
 ## Before you start
 
-- **Resources in child modules that require `hashicorp/aws` are not checked.** Every terraform-aws-modules module lists `hashicorp/aws` in its own `required_providers`, so Terraform installs `hashicorp/aws` separately for it and those resources bypass the checks. compliance.tf serves versions of terraform-aws-modules with the controls built into the modules. See [Modules that require hashicorp/aws](docs/guide.md#modules-that-require-hashicorpaws) for the options.
+- **Only resources in the root module, and in child modules that themselves require `registry.compliance.tf/compliancetf/aws`, are checked.** A child module that lists `hashicorp/aws` in its own `required_providers`, or that declares no `aws` provider requirement at all, gets `hashicorp/aws`: Terraform installs it separately for that module, and those resources bypass the checks. Every terraform-aws-modules module lists `hashicorp/aws`, and most in-house modules either list it or declare nothing. compliance.tf serves versions of terraform-aws-modules with the controls built into the modules. See [Modules that require hashicorp/aws](docs/guide.md#modules-that-require-hashicorpaws) for the options.
 - **A module call that passes `providers = { aws = aws }` to such a module fails** with a provider type mismatch once the root `aws` provider is compliancetf/aws. The same guide section shows the fix.
 - **What it checks.** The built-in CIS baseline has 18 controls on 11 resource types: encryption, public access, backup retention, deletion protection, and SSH and RDP ingress. Other resource types are not checked. Each check looks at one resource at a time. It is not a monitor: it sees a resource only when Terraform plans, applies, refreshes or imports it.
-- **What it contacts.** `terraform init` downloads the provider from registry.compliance.tf. At run time it downloads `hashicorp/aws` from releases.hashicorp.com only when no verified copy is cached, and checks its signature and pinned checksum. It contacts compliance.tf only when you configure an organization. It never sends your configuration, state or AWS credentials to compliance.tf. Details are in [Data and trust](#data-and-trust).
+- **Organization mode is not available.** Organization profiles, mode floors, exceptions, exception grants and grandfather baselines all need a signed organization profile, and compliance.tf does not issue them. Leave `org_id`, `COMPLIANCETF_ORG_ID` and `COMPLIANCETF_TOKEN` unset. If `org_id` is set without a token, the provider finds no profile, warns `Org profile for <org> unavailable: hard_fail floor applied`, and a violated `deny` control then fails the plan as in `hard_fail`; compliant resources pass and `warn` controls still warn. If `COMPLIANCETF_TOKEN` is set as well, the provider asks compliance.tf for the profile, the request is refused, and the provider configuration fails, so every plan stops.
+- **What it contacts.** `terraform init` downloads the provider from registry.compliance.tf. At run time it downloads `hashicorp/aws` from releases.hashicorp.com only when no verified copy is cached, and checks its signature and pinned checksum. With `org_id` unset it does not contact compliance.tf at run time. It never sends your configuration, state or AWS credentials to compliance.tf. Details are in [Data and trust](#data-and-trust).
 - **Known limit.** Replacing a resource that has an identity needs Terraform 1.16.6 or later. Terraform 1.12 to 1.16.5 and OpenTofu block that apply; tainting the object first works, but destroys and recreates it. See [Limitations](docs/reference.md#limitations). The provider is tested with Terraform 1.5 and later and with OpenTofu.
 
 ## Quick start
@@ -80,7 +81,7 @@ Fix: Set storage_encrypted = true.
 Docs: https://compliance.tf/docs/controls/aws/rds_db_instance_encryption_at_rest_enabled/
 ```
 
-The [guide](docs/guide.md) covers CI setup, all four modes, reading diagnostics and what to do with a finding you cannot fix yet.
+The [guide](docs/guide.md) covers CI setup, the modes, reading diagnostics and what to do with a finding you cannot fix yet.
 
 ## Switch back
 
@@ -106,7 +107,7 @@ Each directory in [examples/](examples/) is a complete configuration with a `REA
 
 - `terraform init` downloads the provider from registry.compliance.tf. Release archives are signed with the compliance.tf release key, which Terraform checks at `terraform init`.
 - At run time the provider downloads `hashicorp/aws` from releases.hashicorp.com only when no verified copy is cached. It checks the HashiCorp signature and the pinned checksum before it starts the binary.
-- It contacts compliance.tf only when you configure an organization (`org_id` and `COMPLIANCETF_TOKEN`), to fetch the organization's signed profile, bundles and floor statement. Those requests carry the compliance.tf token. Your configuration, state and AWS credentials are never sent.
+- With `org_id` unset, the provider does not contact compliance.tf at run time. With `org_id` set and no `COMPLIANCETF_TOKEN`, it still sends nothing and applies the `hard_fail` floor described in [Before you start](#before-you-start). With both set, it requests the organization's signed profile from compliance.tf, sending the token; organization mode is not available, so the request is refused and the provider configuration fails. Your configuration, state and AWS credentials are never sent.
 - Control bundles are signed by compliance.tf and verified against keys built into the provider. A bundle that fails verification is not loaded and the run stops.
 - Every check writes a record to a local evidence directory (`.terraform/compliancetf/evidence` by default): the control, the resource type, the operation, the resource id and identity, the result and the mode. The resource address is not recorded, so a record alone does not name the module or the `count` or `for_each` instance. Other attribute values are not recorded. Each line is hash-chained to the one before it, so a line edited or removed in the middle of a file shows; a file cut short at the end does not. The files are local: copy them to write-once storage if you rely on them as evidence.
 
