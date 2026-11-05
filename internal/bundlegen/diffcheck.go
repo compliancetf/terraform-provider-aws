@@ -97,8 +97,8 @@ func LoadPolicyFixtures(path string) (PolicyFixtures, error) {
 	seen := map[string]bool{}
 	for _, p := range pf.Policies {
 		key := p.ID + " " + p.ResourceType
-		if safeName(p.ID) != p.ID || safeName(p.ResourceType) != p.ResourceType || seen[key] {
-			return pf, errf("E_INPUT", "%s: policy %s %s: want a unique name-shaped id and type", path, safeName(p.ID), safeName(p.ResourceType))
+		if !bundle.ValidID(p.ID) || safeName(p.ResourceType) != p.ResourceType || seen[key] {
+			return pf, errf("E_INPUT", "%s: policy %s %s: want a unique control id and name-shaped type", path, safeName(p.ID), safeName(p.ResourceType))
 		}
 		seen[key] = true
 		if len(p.Cases) == 0 {
@@ -116,8 +116,9 @@ func LoadPolicyFixtures(path string) (PolicyFixtures, error) {
 }
 
 // LoadDiffAllow reads diffcheck-allow.yaml, a list of {id, case, cel,
-// postcondition, reason}; every field is required, cel and postcondition
-// are engine state names, and an (id, case) appears once.
+// postcondition, reason}; every field is required, id is a control id
+// (bundle.ValidID), cel and postcondition are engine state names, and an
+// (id, case) appears once.
 func LoadDiffAllow(path string) ([]DiffAllow, error) {
 	data, err := readRegular(path)
 	if err != nil {
@@ -137,9 +138,9 @@ func LoadDiffAllow(path string) ([]DiffAllow, error) {
 		k := [2]string{a.ID, a.Case}
 		name := strings.TrimPrefix(a.Case, policyCasePrefix)
 		var st engine.State
-		if safeName(a.ID) != a.ID || safeName(name) != name || strings.TrimSpace(a.Reason) == "" || seen[k] ||
+		if !bundle.ValidID(a.ID) || safeName(name) != name || strings.TrimSpace(a.Reason) == "" || seen[k] ||
 			st.UnmarshalText([]byte(a.CEL)) != nil || st.UnmarshalText([]byte(a.Postcondition)) != nil || a.CEL == a.Postcondition {
-			return nil, errf("E_INPUT", "%s: entry %d: want a unique name-shaped id and case, two different states cel and postcondition, and a reason", path, i)
+			return nil, errf("E_INPUT", "%s: entry %d: want a unique control id and name-shaped case, two different states cel and postcondition, and a reason", path, i)
 		}
 		seen[k] = true
 	}
@@ -184,9 +185,10 @@ func (r DiffcheckReport) JSON() ([]byte, error) { return canonicalJSON(r) }
 //     checked nothing;
 //   - W_DIFFCHECK_SKIPPED: a control diffcheck cannot check by design: no
 //     intent postcondition (spec: diffcheck covers the content policies that
-//     carry one; authored-only ids), a load diagnostic (verify fails
-//     on it, E_LOAD_DIAG), or a graph control (the provider does not
-//     evaluate it; ctfkit gate does);
+//     carry one; authored-only ids), a target type other than the intent's
+//     resource_type (the postcondition is written for that type only), a
+//     load diagnostic (verify fails on it, E_LOAD_DIAG), or a graph control
+//     (the provider does not evaluate it; ctfkit gate does);
 //   - W_DIFFCHECK_NO_POLICY_FIXTURES: a checked control without policy
 //     fixtures, or one that is not a resource control (policy fixtures are
 //     resource values), so only its bundle cases were compared;
@@ -273,6 +275,10 @@ func diffcheckBundle(out *Output, id string, intents map[string]Intent, fixtures
 			continue
 		case !ok || it.Postcondition == "":
 			f("W_DIFFCHECK_SKIPPED", "", "no content postcondition for the control")
+			continue
+		case c.ResourceType != it.ResourceType:
+			// one postcondition per id, written against the intent's type
+			f("W_DIFFCHECK_SKIPPED", "", "the content postcondition is for %s, not %s", it.ResourceType, c.ResourceType)
 			continue
 		case diagnosed[c.ID]:
 			f("W_DIFFCHECK_SKIPPED", "", "the control has a load diagnostic")

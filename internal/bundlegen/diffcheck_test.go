@@ -376,6 +376,59 @@ func TestLoadDiffcheckInputs(t *testing.T) {
 	}
 }
 
+// TestLoadDiffcheckInputsLongID: an id longer than 64 characters is a valid
+// control id, so it can get an allow entry and policy fixtures; an id the
+// control id rule rejects cannot.
+func TestLoadDiffcheckInputsLongID(t *testing.T) {
+	const long = "elb_application_network_lb_https_tls_listener_recommended_security_policy" // 73
+	dir := t.TempDir()
+	write := func(name, body string) string {
+		p := filepath.Join(dir, name)
+		if err := os.WriteFile(p, []byte(body), 0o600); err != nil {
+			t.Fatal(err)
+		}
+		return p
+	}
+	a, err := LoadDiffAllow(write("long.yaml", "- {id: "+long+", case: pass, cel: pass, postcondition: fail, reason: r}\n"))
+	if err != nil || len(a) != 1 || a[0].ID != long {
+		t.Fatalf("long id allow entry: %v %v", a, err)
+	}
+	pf, err := LoadPolicyFixtures(write("long.json", `{"format": "content.policy-fixtures/1", "policies": [{"id": "`+long+`", "resource_type": "aws_lb_listener", "cases": [{"name": "c", "resource": {}}]}]}`))
+	if err != nil || len(pf.Policies) != 1 || pf.Policies[0].ID != long {
+		t.Fatalf("long id policy fixtures: %v %v", pf, err)
+	}
+	for name, id := range map[string]string{"129 chars": "a" + strings.Repeat("b", 128), "leading underscore": "_abc", "two chars": "ab", "dash": "a-bc"} {
+		if _, err := LoadDiffAllow(write("bad.yaml", "- {id: "+id+", case: pass, cel: pass, postcondition: fail, reason: r}\n")); err == nil {
+			t.Errorf("%s: want an error", name)
+		}
+	}
+}
+
+// TestDiffcheckTargetType: the intent's postcondition is written for its
+// resource_type, so a control of the same id on another target type is
+// skipped, not evaluated (its self paths need not exist there), and the
+// intent's own type is still compared.
+func TestDiffcheckTargetType(t *testing.T) {
+	s := subsetSchemas(t)
+	const id = "vpc_bobthecorp_two_types"
+	sg := testControl(id, "aws_security_group", "resource.revoke_rules_on_delete == true", bundle.PresenceEffective, "revoke_rules_on_delete")
+	rule := testControl(id, "aws_security_group_rule", "resource.self == false", bundle.PresenceEffective, "self")
+	in := Intents{Policies: []Intent{{ID: id, ResourceType: "aws_security_group", Postcondition: "self.revoke_rules_on_delete == true"}}}
+	pf := PolicyFixtures{Policies: []PolicyFixture{{ID: id, ResourceType: "aws_security_group_rule", Cases: []PolicyCase{{Name: "x", Resource: []byte(`{}`)}}}}}
+	out := bundleOutput(t, []bundle.Control{sg, rule}, slices.Concat(synth(t, s, sg), synth(t, s, rule)))
+	rep, err := Diffcheck(out, in, pf, nil, s, verifyEngine())
+	if err != nil {
+		t.Fatal(err)
+	}
+	want := []string{
+		"W_DIFFCHECK_NO_POLICY_FIXTURES " + id + " : no policy fixtures; only bundle cases are compared",
+		"W_DIFFCHECK_SKIPPED " + id + " : the content postcondition is for aws_security_group, not aws_security_group_rule",
+	}
+	if got := findingKeys(rep.Findings); !slices.Equal(got, want) || rep.Failed() {
+		t.Fatalf("findings (failed %v):\n%s\nwant:\n%s", rep.Failed(), strings.Join(got, "\n"), strings.Join(want, "\n"))
+	}
+}
+
 // diffcheckGenInputs is the generator fixture with the rds control
 // translated from an intent carrying postcondition post (its authored file
 // removed), the other ids authored without an intent, and diffcheck on

@@ -128,6 +128,9 @@ var (
 	toolSlugs = []string{"aws_config", "checkov", "control_tower", "kics", "powerpipe", "prowler", "security_hub", "trivy"}
 )
 
+// ValidID reports whether id is a well-formed control id.
+func ValidID(id string) bool { return idRe.MatchString(id) }
+
 // ParseControls is the provider load path. data_source and ephemeral
 // controls load like any kind, so it is
 // DecodeControls; the per-kind schema rules are celeng.Load's and the
