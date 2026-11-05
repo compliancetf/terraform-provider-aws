@@ -1,0 +1,33 @@
+a Required attribute stays effective: the planned value is the written one
+-- intent.json --
+{
+ "id": "rds_bobthecorp_instance_class",
+ "resource_type": "aws_db_instance",
+ "attributes": [{"schema_path": "instance_class", "condition": "equals_any", "values": ["db.m5.large"], "values_from_ref": null}],
+ "explanation": "Explanation of rds_bobthecorp_instance_class.",
+ "postcondition": "",
+ "has_strategy_condition": false
+}
+-- want.json --
+{
+  "control": {
+    "id": "rds_bobthecorp_instance_class",
+    "version": "1.0.0",
+    "kind": "resource",
+    "resource_type": "aws_db_instance",
+    "reads": [
+      "instance_class"
+    ],
+    "presence_mode": "effective",
+    "on": [
+      "create",
+      "update"
+    ],
+    "expr": "resource.instance_class == \"db.m5.large\"",
+    "action": "deny",
+    "severity": "",
+    "message": "",
+    "fix": "Explanation of rds_bobthecorp_instance_class.",
+    "exemption_coverable": []
+  }
+}

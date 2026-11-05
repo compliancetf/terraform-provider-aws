@@ -1,4 +1,4 @@
-one value: x == v, effective
+one value on a plain Optional (not Computed) attribute: x == v, effective
 -- intent.json --
 {
  "id": "kms_cmk_rotation_enabled",
