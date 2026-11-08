@@ -111,7 +111,7 @@ jobs:
       # on that release's checksums.txt locally, checks the Linux_x86_64
       # tarball against it and rewrites both pins; --check re-verifies the
       # current pins. Never drop a step.
-      - uses: sigstore/cosign-installer@6f9f17788090df1f26f669e9d70d6ae9567deba6 # v4.1.2
+      - uses: sigstore/cosign-installer@756fe2d284c7292c4e9b62c8a28f1e5629c59532 # v4.1.3
         with:
           cosign-release: v3.0.6
       - name: Install goreleaser (pinned sha256, cosign verified)
