@@ -23,7 +23,7 @@ require (
 	buf.build/go/protoyaml v0.7.0 // indirect
 	buf.build/go/spdx v0.2.0 // indirect
 	buf.build/go/standard v0.1.1-0.20260325175353-2b287e071df5 // indirect
-	cel.dev/cel-go v0.32.0 // indirect
+	cel.dev/cel-go v0.33.2 // indirect
 	cel.dev/expr v0.25.3 // indirect
 	connectrpc.com/connect v1.20.0 // indirect
 	connectrpc.com/otelconnect v0.9.0 // indirect
@@ -83,7 +83,7 @@ require (
 	go.opentelemetry.io/otel/trace v1.46.0 // indirect
 	go.uber.org/multierr v1.11.0 // indirect
 	go.uber.org/zap v1.28.0 // indirect
-	go.yaml.in/yaml/v3 v3.0.5 // indirect
+	go.yaml.in/yaml/v3 v3.0.6 // indirect
 	golang.org/x/crypto v0.57.0 // indirect
 	golang.org/x/exp v0.0.0-20260824195058-e88cd73687aa // indirect
 	golang.org/x/mod v0.42.0 // indirect
