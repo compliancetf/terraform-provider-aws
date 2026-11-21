@@ -234,6 +234,7 @@ jobs:
           BRANCH: ${{ needs.pin.outputs.branch }}
           STATUS: ${{ needs.pin.outputs.status }}
           SHA: ${{ needs.pin.outputs.sha }}
+          RESIGN: ${{ needs.pin.outputs.resign }}
         run: |
           set -euo pipefail
           [[ "$NEXT" =~ ^(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)$ && "$BRANCH" == "pin/hashicorp-aws-$NEXT" ]] \
@@ -261,6 +262,9 @@ jobs:
             -F body=@"$d/body.md" -F draft="$draft" >"$RUNNER_TEMP/pr.json"
           echo "pr=$(jq -r .number "$RUNNER_TEMP/pr.json")" >>"$GITHUB_OUTPUT"
           echo "::notice::opened $(jq -r .html_url "$RUNNER_TEMP/pr.json")"
+          # A run that will not merge is red, so the waiting PR is noticed.
+          [ "$STATUS" = ok ] || { echo "::error::make pin stopped for an owner decision; see the draft PR"; exit 1; }
+          [ "$RESIGN" = false ] || { echo "::error::cis.tar.gz must be re-signed; see the PR"; exit 1; }
 
   # The full Test workflow on the pin commit, with a read-only token.
   test:
@@ -302,25 +306,39 @@ jobs:
             || { echo "::error::bad version or branch: $NEXT $BRANCH"; exit 1; }
           [[ $SHA =~ ^[0-9a-f]{40}$ && $PR =~ ^[0-9]+$ ]] || { echo "::error::bad SHA or PR: $SHA $PR"; exit 1; }
           hold() { echo "::error::PR #$PR not merged: $*; merge, tag and release it by hand"; exit 1; }
+          # Each step below is skipped when a rerun finds it done.
           gh api "repos/$REPO/pulls/$PR" >"$RUNNER_TEMP/pr.json"
-          jq -e --arg sha "$SHA" --arg repo "$REPO" --arg branch "$BRANCH" '
-            .state == "open" and .draft == false and .head.sha == $sha and .head.ref == $branch
-            and .head.repo.full_name == $repo and .base.repo.full_name == $repo and .base.ref == "master"' \
-            "$RUNNER_TEMP/pr.json" >/dev/null || hold "it is not the open pin PR at $SHA"
-          # The squash must land the tested tree: master is still the pin
-          # commit's parent (checked in publish).
-          # shortcut: a push to master between this check and the merge lands untested; a merge queue would close it.
-          tip=$(gh api "repos/$REPO/git/ref/heads/master" --jq .object.sha)
-          [ "$tip" = "$GITHUB_SHA" ] || hold "master moved to $tip after the pin"
-          gh api --silent "repos/$REPO/statuses/$SHA" -f state=success -f context=owner-approval \
-            -f description="pin commit tested by upstream-watch" \
-            -f target_url="$GITHUB_SERVER_URL/$REPO/actions/runs/$GITHUB_RUN_ID"
-          merged=$(gh api -X PUT "repos/$REPO/pulls/$PR/merge" -f merge_method=squash -f sha="$SHA" \
-            -f commit_title="chore(pin): hashicorp/aws $NEXT (#$PR)" --jq .sha)
+          if jq -e --arg sha "$SHA" '.merged == true and .head.sha == $sha' "$RUNNER_TEMP/pr.json" >/dev/null; then
+            merged=$(jq -r .merge_commit_sha "$RUNNER_TEMP/pr.json")
+          else
+            jq -e --arg sha "$SHA" --arg repo "$REPO" --arg branch "$BRANCH" '
+              .state == "open" and .draft == false and .head.sha == $sha and .head.ref == $branch
+              and .head.repo.full_name == $repo and .base.repo.full_name == $repo and .base.ref == "master"' \
+              "$RUNNER_TEMP/pr.json" >/dev/null || hold "it is not the open pin PR at $SHA"
+            # The squash must land the tested tree: master is still the pin
+            # commit's parent (checked in publish).
+            # shortcut: a push to master between this check and the merge lands untested; a merge queue would close it.
+            tip=$(gh api "repos/$REPO/git/ref/heads/master" --jq .object.sha)
+            [ "$tip" = "$GITHUB_SHA" ] || hold "master moved to $tip after the pin"
+            gh api --silent "repos/$REPO/statuses/$SHA" -f state=success -f context=owner-approval \
+              -f description="pin commit tested by upstream-watch" \
+              -f target_url="$GITHUB_SERVER_URL/$REPO/actions/runs/$GITHUB_RUN_ID"
+            merged=$(gh api -X PUT "repos/$REPO/pulls/$PR/merge" -f merge_method=squash -f sha="$SHA" \
+              -f commit_title="chore(pin): hashicorp/aws $NEXT (#$PR)" --jq .sha)
+          fi
           [[ $merged =~ ^[0-9a-f]{40}$ ]] || { echo "::error::bad merge SHA: $merged"; exit 1; }
-          gh api --silent -X DELETE "repos/$REPO/git/refs/heads/$BRANCH" || echo "::warning::could not delete $BRANCH"
           # Annotated tag, as a hand release; the release-tags ruleset must let GitHub Actions create v* tags.
-          tag=$(gh api "repos/$REPO/git/tags" -f tag="v$NEXT" -f message="v$NEXT" -f object="$merged" -f type=commit --jq .sha)
-          gh api --silent "repos/$REPO/git/refs" -f ref="refs/tags/v$NEXT" -f sha="$tag"
-          gh api --silent -X POST "repos/$REPO/actions/workflows/release.yml/dispatches" -f ref="v$NEXT"
+          ref=$(gh api "repos/$REPO/git/matching-refs/tags/v$NEXT" --jq ".[] | select(.ref == \"refs/tags/v$NEXT\") | .object.sha")
+          if [ -z "$ref" ]; then
+            tag=$(gh api "repos/$REPO/git/tags" -f tag="v$NEXT" -f message="v$NEXT" -f object="$merged" -f type=commit --jq .sha)
+            gh api --silent "repos/$REPO/git/refs" -f ref="refs/tags/v$NEXT" -f sha="$tag"
+          elif [ "$(gh api "repos/$REPO/git/tags/$ref" --jq .object.sha)" != "$merged" ]; then
+            echo "::error::tag v$NEXT exists and is not the annotated tag of $merged"
+            exit 1
+          fi
+          gh api --paginate "repos/$REPO/releases?per_page=100" --jq '.[].tag_name' >"$RUNNER_TEMP/released.txt"
+          if ! grep -qxF "v$NEXT" "$RUNNER_TEMP/released.txt"; then
+            gh api --silent -X POST "repos/$REPO/actions/workflows/release.yml/dispatches" -f ref="v$NEXT"
+          fi
+          gh api --silent -X DELETE "repos/$REPO/git/refs/heads/$BRANCH" || echo "::warning::could not delete $BRANCH"
           echo "Merged PR #$PR as $merged, tagged v$NEXT and dispatched release.yml." >>"$GITHUB_STEP_SUMMARY"

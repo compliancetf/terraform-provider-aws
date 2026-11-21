@@ -1,7 +1,7 @@
 name: Release
 
 # upstream-watch.yml dispatches this on the tag it created (a tag created
-# with GITHUB_TOKEN starts no push workflow); a dispatch never republishes.
+# with GITHUB_TOKEN starts no push workflow). No run republishes a release.
 on:
   push:
     tags: ['v*']
@@ -28,10 +28,10 @@ jobs:
     outputs:
       backfill: ${{ steps.origin.outputs.backfill }}
     steps:
-      # A republish replaces the archives and breaks lock files; only a tag
-      # push by an admin may do that (REPUBLISH=1 backfills).
-      - name: Refuse a dispatch for a tag that already has a release
-        if: github.event_name == 'workflow_dispatch'
+      # A republish replaces the archives (mode: replace) and breaks lock
+      # files, and a rerun of an old run would do it unreviewed. To republish
+      # on purpose (REPUBLISH=1 backfill), delete the GitHub release first.
+      - name: Refuse a tag that already has a release
         env:
           GH_TOKEN: ${{ github.token }}
           REPO: ${{ github.repository }}
@@ -39,7 +39,7 @@ jobs:
           set -euo pipefail
           gh api --paginate "repos/$REPO/releases?per_page=100" --jq '.[].tag_name' >"$RUNNER_TEMP/released.txt"
           if grep -qxF "$GITHUB_REF_NAME" "$RUNNER_TEMP/released.txt"; then
-            echo "::error::$GITHUB_REF_NAME already has a release; a dispatch never republishes"
+            echo "::error::$GITHUB_REF_NAME already has a release; delete it first to republish"
             exit 1
           fi
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1

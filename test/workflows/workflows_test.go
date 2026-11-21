@@ -460,9 +460,9 @@ func TestReleaseChangelogMerge(t *testing.T) {
 
 // TestUpstreamWatchAutoRelease: the pin PR merges, tags and releases itself
 // only when this run tested the exact pin commit, make pin needed no owner
-// decision or re-signing, and master is still the pin commit's parent; and a
-// dispatched release never republishes a version (.goreleaser.yml mode:
-// replace).
+// decision or re-signing, and master is still the pin commit's parent; the
+// branch goes last, so a rerun resumes; and no release run republishes a
+// version (.goreleaser.yml mode: replace).
 func TestUpstreamWatchAutoRelease(t *testing.T) {
 	b, wf := parseWorkflow(t, ".github/workflows/upstream-watch.yml")
 	gate := "needs.pin.outputs.status == 'ok' && needs.pin.outputs.resign == 'false'"
@@ -488,7 +488,9 @@ func TestUpstreamWatchAutoRelease(t *testing.T) {
 		q(`-f state=success -f context=owner-approval`),
 		q(`-X PUT "repos/$REPO/pulls/$PR/merge" -f merge_method=squash -f sha="$SHA"`),
 		q(`-f tag="v$NEXT" -f message="v$NEXT" -f object="$merged" -f type=commit`),
+		q(`!= "$merged" ]; then`),
 		q(`actions/workflows/release.yml/dispatches" -f ref="v$NEXT"`),
+		q(`-X DELETE "repos/$REPO/git/refs/heads/$BRANCH"`),
 	}
 	at := 0
 	for _, re := range order {
@@ -504,7 +506,7 @@ func TestUpstreamWatchAutoRelease(t *testing.T) {
 	}
 	for _, want := range []string{
 		"if: startsWith(github.ref, 'refs/tags/v')",
-		"if: github.event_name == 'workflow_dispatch'",
+		"- name: Refuse a tag that already has a release",
 		`if grep -qxF "$GITHUB_REF_NAME" "$RUNNER_TEMP/released.txt"; then`,
 	} {
 		if !bytes.Contains(rel, []byte(want)) {
