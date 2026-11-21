@@ -14,7 +14,14 @@ name: Upstream watch
 # only),
 # pushes the branch and opens the PR. When `make pin` stops for an owner
 # decision, the partial commit opens as a draft PR carrying the message.
-# No auto-merge, no tag. PRs opened with GITHUB_TOKEN start no workflows.
+#
+# A PR opened with GITHUB_TOKEN starts no workflows, so this run tests the
+# pin commit itself: the test job calls test.yml on its SHA. When every job
+# passed, make pin needed no owner decision and no re-signing, and master is
+# still the commit the pin was made on, the merge job squash-merges that SHA,
+# tags the merge commit vX.Y.Z and dispatches release.yml on the tag (a tag
+# created with GITHUB_TOKEN starts no push workflow). Otherwise the PR waits
+# for the owner and the run is red.
 on:
   schedule:
     - cron: "41 5 * * *"
@@ -48,6 +55,8 @@ jobs:
       next: ${{ steps.pick.outputs.next }}
       branch: ${{ steps.pick.outputs.branch }}
       status: ${{ steps.pin.outputs.status }}
+      resign: ${{ steps.pin.outputs.resign }}
+      sha: ${{ steps.pin.outputs.sha }}
     steps:
       # The run's SHA in both jobs: the bundle's prerequisite and parent check.
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -159,8 +168,13 @@ jobs:
             else
               echo "1. The CIS manifest did not change: \`cis.tar.gz\` needs no re-signing."
             fi
-            echo "2. No CI runs on this PR: it was opened with GITHUB_TOKEN, which starts no workflows (the protected-paths gate included), and the repo has no PR CI. Run \`make test\` and \`GOTOOLCHAIN=go1.26.2 make lint\` locally."
-            echo "3. Merge by hand (no auto-merge). Then tag the merge commit on master: \`git tag v$NEXT <merge SHA> && git push origin v$NEXT\` (release.yml requires the tag to equal the pins.json version)."
+            if [ "$status" = ok ] && [ "$resign" = false ]; then
+              echo "2. Nothing, unless the [upstream watch run]($RUN_URL) is red. That run tests this commit (\`make test\` on Linux, macOS and Windows, lint, build); when every job passes and master has not moved, it merges this PR, tags \`v$NEXT\` and starts the release."
+              echo "3. If the run is red, this PR stays open: run \`make test\` and \`GOTOOLCHAIN=go1.26.2 make lint\` locally, merge by hand, then tag the merge commit on master: \`git tag -a v$NEXT <merge SHA> -m v$NEXT && git push origin v$NEXT\`."
+            else
+              echo "2. No CI runs on this PR: it was opened with GITHUB_TOKEN, which starts no workflows (the protected-paths gate included), and the repo has no PR CI. Run \`make test\` and \`GOTOOLCHAIN=go1.26.2 make lint\` locally."
+              echo "3. Merge by hand. Then tag the merge commit on master: \`git tag -a v$NEXT <merge SHA> -m v$NEXT && git push origin v$NEXT\` (release.yml requires the tag to equal the pins.json version)."
+            fi
             echo
             if [ -n "$QUEUED" ]; then
               echo "Newer releases wait for this PR to merge, then open one per day in order: $QUEUED."
@@ -175,7 +189,11 @@ jobs:
             echo
             echo "</details>"
           } >"$out/body.md"
-          echo "status=$status" >>"$GITHUB_OUTPUT"
+          {
+            echo "status=$status"
+            echo "resign=$resign"
+            echo "sha=$(git rev-parse HEAD)"
+          } >>"$GITHUB_OUTPUT"
       - if: steps.pick.outputs.next != ''
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
@@ -195,6 +213,8 @@ jobs:
     permissions:
       contents: write
       pull-requests: write
+    outputs:
+      pr: ${{ steps.open.outputs.pr }}
     steps:
       # The run's SHA in both jobs: the bundle's prerequisite and parent check.
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -206,12 +226,14 @@ jobs:
           name: pin
           path: ${{ runner.temp }}/pin
       - name: Check the commit, push the branch, open the PR
+        id: open
         env:
           GH_TOKEN: ${{ github.token }}
           REPO: ${{ github.repository }}
           NEXT: ${{ needs.pin.outputs.next }}
           BRANCH: ${{ needs.pin.outputs.branch }}
           STATUS: ${{ needs.pin.outputs.status }}
+          SHA: ${{ needs.pin.outputs.sha }}
         run: |
           set -euo pipefail
           [[ "$NEXT" =~ ^(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)$ && "$BRANCH" == "pin/hashicorp-aws-$NEXT" ]] \
@@ -220,6 +242,7 @@ jobs:
           d="$RUNNER_TEMP/pin"
           git bundle verify -q "$d/pin.bundle"
           git fetch -q "$d/pin.bundle" "refs/heads/$BRANCH:refs/heads/$BRANCH"
+          [ "$(git rev-parse "$BRANCH")" = "$SHA" ] || { echo "::error::$BRANCH is not the pin commit $SHA"; exit 1; }
           # Exactly one commit, whose only parent is the run's master SHA, touching
           # the make pin outputs only (renames listed as delete plus add).
           [ "$(git show -s --format=%P "$BRANCH")" = "$GITHUB_SHA" ] || { echo "::error::$BRANCH is not one commit on $GITHUB_SHA"; exit 1; }
@@ -234,6 +257,70 @@ jobs:
           title="chore(pin): hashicorp/aws $NEXT"
           draft=false
           if [ "$STATUS" = owner-action ]; then title="$title (needs owner action)"; draft=true; fi
-          url=$(gh api "repos/$REPO/pulls" -f title="$title" -f head="$BRANCH" -f base=master \
-            -F body=@"$d/body.md" -F draft="$draft" --jq .html_url)
-          echo "::notice::opened $url"
+          gh api "repos/$REPO/pulls" -f title="$title" -f head="$BRANCH" -f base=master \
+            -F body=@"$d/body.md" -F draft="$draft" >"$RUNNER_TEMP/pr.json"
+          echo "pr=$(jq -r .number "$RUNNER_TEMP/pr.json")" >>"$GITHUB_OUTPUT"
+          echo "::notice::opened $(jq -r .html_url "$RUNNER_TEMP/pr.json")"
+
+  # The full Test workflow on the pin commit, with a read-only token.
+  test:
+    name: Test the pin commit
+    needs: [pin, publish]
+    if: needs.pin.outputs.status == 'ok' && needs.pin.outputs.resign == 'false'
+    permissions:
+      contents: read
+    uses: ./.github/workflows/test.yml
+    with:
+      ref: ${{ needs.pin.outputs.sha }}
+
+  # Runs no repository code. The owner-approval status it sets covers only
+  # the pin commit this run made, checked against the make pin outputs in
+  # publish and tested above; the merge API refuses if the PR head moved.
+  merge:
+    name: Merge, tag and release
+    needs: [pin, publish, test]
+    if: needs.pin.outputs.status == 'ok' && needs.pin.outputs.resign == 'false'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      actions: write
+      contents: write
+      pull-requests: write
+      statuses: write
+    steps:
+      - name: Merge the tested commit, tag it and dispatch the release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          NEXT: ${{ needs.pin.outputs.next }}
+          BRANCH: ${{ needs.pin.outputs.branch }}
+          SHA: ${{ needs.pin.outputs.sha }}
+          PR: ${{ needs.publish.outputs.pr }}
+        run: |
+          set -euo pipefail
+          [[ "$NEXT" =~ ^(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)$ && "$BRANCH" == "pin/hashicorp-aws-$NEXT" ]] \
+            || { echo "::error::bad version or branch: $NEXT $BRANCH"; exit 1; }
+          [[ $SHA =~ ^[0-9a-f]{40}$ && $PR =~ ^[0-9]+$ ]] || { echo "::error::bad SHA or PR: $SHA $PR"; exit 1; }
+          hold() { echo "::error::PR #$PR not merged: $*; merge, tag and release it by hand"; exit 1; }
+          gh api "repos/$REPO/pulls/$PR" >"$RUNNER_TEMP/pr.json"
+          jq -e --arg sha "$SHA" --arg repo "$REPO" --arg branch "$BRANCH" '
+            .state == "open" and .draft == false and .head.sha == $sha and .head.ref == $branch
+            and .head.repo.full_name == $repo and .base.repo.full_name == $repo and .base.ref == "master"' \
+            "$RUNNER_TEMP/pr.json" >/dev/null || hold "it is not the open pin PR at $SHA"
+          # The squash must land the tested tree: master is still the pin
+          # commit's parent (checked in publish).
+          # shortcut: a push to master between this check and the merge lands untested; a merge queue would close it.
+          tip=$(gh api "repos/$REPO/git/ref/heads/master" --jq .object.sha)
+          [ "$tip" = "$GITHUB_SHA" ] || hold "master moved to $tip after the pin"
+          gh api --silent "repos/$REPO/statuses/$SHA" -f state=success -f context=owner-approval \
+            -f description="pin commit tested by upstream-watch" \
+            -f target_url="$GITHUB_SERVER_URL/$REPO/actions/runs/$GITHUB_RUN_ID"
+          merged=$(gh api -X PUT "repos/$REPO/pulls/$PR/merge" -f merge_method=squash -f sha="$SHA" \
+            -f commit_title="chore(pin): hashicorp/aws $NEXT (#$PR)" --jq .sha)
+          [[ $merged =~ ^[0-9a-f]{40}$ ]] || { echo "::error::bad merge SHA: $merged"; exit 1; }
+          gh api --silent -X DELETE "repos/$REPO/git/refs/heads/$BRANCH" || echo "::warning::could not delete $BRANCH"
+          # Annotated tag, as a hand release; the release-tags ruleset must let GitHub Actions create v* tags.
+          tag=$(gh api "repos/$REPO/git/tags" -f tag="v$NEXT" -f message="v$NEXT" -f object="$merged" -f type=commit --jq .sha)
+          gh api --silent "repos/$REPO/git/refs" -f ref="refs/tags/v$NEXT" -f sha="$tag"
+          gh api --silent -X POST "repos/$REPO/actions/workflows/release.yml/dispatches" -f ref="v$NEXT"
+          echo "Merged PR #$PR as $merged, tagged v$NEXT and dispatched release.yml." >>"$GITHUB_STEP_SUMMARY"
