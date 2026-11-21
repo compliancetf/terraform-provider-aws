@@ -1,8 +1,11 @@
 name: Release
 
+# upstream-watch.yml dispatches this on the tag it created (a tag created
+# with GITHUB_TOKEN starts no push workflow). No run republishes a release.
 on:
   push:
     tags: ['v*']
+  workflow_dispatch:
 
 permissions:
   contents: write
@@ -11,7 +14,9 @@ permissions:
 # one pending run per group, so a third tag pushed while one runs and one
 # waits replaces the waiting run; re-push that tag's run by hand if it happens.
 concurrency:
-  group: release
+  # A dispatch from a non-tag ref skips every job: its own group, so it never
+  # replaces a waiting release.
+  group: ${{ startsWith(github.ref, 'refs/tags/v') && 'release' || github.run_id }}
   cancel-in-progress: false
 
 jobs:
@@ -21,9 +26,25 @@ jobs:
     # Gate: the "release" environment has a required reviewer, and v* tags
     # are restricted by a tag ruleset.
     environment: release
+    if: startsWith(github.ref, 'refs/tags/v')
     outputs:
       backfill: ${{ steps.origin.outputs.backfill }}
     steps:
+      # A republish replaces the archives (mode: replace) and breaks lock
+      # files, and a rerun of an old run would do it unreviewed. To republish
+      # on purpose (REPUBLISH=1 backfill), delete the GitHub release first. A
+      # draft left by a failed upload was never published and may be replaced.
+      - name: Refuse a tag that already has a release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          gh api --paginate "repos/$REPO/releases?per_page=100" --jq '.[] | select(.draft == false) | .tag_name' >"$RUNNER_TEMP/released.txt"
+          if grep -qxF "$GITHUB_REF_NAME" "$RUNNER_TEMP/released.txt"; then
+            echo "::error::$GITHUB_REF_NAME already has a release; delete it first to republish"
+            exit 1
+          fi
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           fetch-depth: 0

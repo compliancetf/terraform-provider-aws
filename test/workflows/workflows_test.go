@@ -28,8 +28,9 @@ var (
 	tagNoteRe  = regexp.MustCompile(`@[0-9a-f]{40} # v[0-9]+\.[0-9]+\.[0-9]+$`)
 	floatingRe = regexp.MustCompile(`(?m)(@latest\b|^\s*[\w-]*version:\s*["']?latest["']?\s*(#.*)?$)`)
 	// Events any workflow may use; anything else needs an owner-approved
-	// entry in allowedTriggers (policy: no CI on pushes or PRs).
-	anyTrigger = map[string]bool{"workflow_dispatch": true, "schedule": true}
+	// entry in allowedTriggers (policy: no CI on pushes or PRs). A
+	// workflow_call comes only from another workflow of this repository.
+	anyTrigger = map[string]bool{"workflow_dispatch": true, "schedule": true, "workflow_call": true}
 	// The owner-approved exceptions as they stand: release on tag push,
 	// test.yml for Dependabot PRs (other PRs skip every job), the protected
 	// paths gate and the Dependabot merge and owner review hooks.
@@ -110,12 +111,14 @@ func TestWorkflowPins(t *testing.T) {
 		f = filepath.ToSlash(f) // allowedTriggers keys use "/"
 		b, wf := parseWorkflow(t, f)
 		for _, line := range strings.Split(string(b), "\n") {
-			if usesRe.MatchString(line) && !tagNoteRe.MatchString(strings.TrimSpace(line)) {
+			m := usesRe.FindStringSubmatch(line)
+			if m != nil && !strings.HasPrefix(m[1], "./.github/workflows/") && !tagNoteRe.MatchString(strings.TrimSpace(line)) {
 				t.Errorf("%s: %q is not pinned to a commit SHA with a \"# vX.Y.Z\" note", f, strings.TrimSpace(line))
 			}
 		}
 		for name, job := range wf.Jobs {
-			if job.Uses != "" && !shaPinRe.MatchString(job.Uses) {
+			// A local reusable workflow runs from the caller's own commit.
+			if job.Uses != "" && !strings.HasPrefix(job.Uses, "./.github/workflows/") && !shaPinRe.MatchString(job.Uses) {
 				t.Errorf("%s: job %s: reusable workflow %s is not pinned to a commit SHA", f, name, job.Uses)
 			}
 			for _, st := range job.Steps {
@@ -452,5 +455,63 @@ func TestReleaseChangelogMerge(t *testing.T) {
 	}
 	if !regexp.MustCompile(`(?m)^\s*statuses: write$`).MatchString(s) {
 		t.Error("release.yml: the changelog job needs statuses: write to set owner-approval")
+	}
+}
+
+// TestUpstreamWatchAutoRelease: the pin PR merges, tags and releases itself
+// only when this run tested the exact pin commit, make pin needed no owner
+// decision or re-signing, and master is still the pin commit's parent; the
+// branch goes last, so a rerun resumes; and no release run republishes a
+// version (.goreleaser.yml mode: replace).
+func TestUpstreamWatchAutoRelease(t *testing.T) {
+	b, wf := parseWorkflow(t, ".github/workflows/upstream-watch.yml")
+	gate := "needs.pin.outputs.status == 'ok' && needs.pin.outputs.resign == 'false'"
+	test, merge := wf.Jobs["test"], wf.Jobs["merge"]
+	if test.Uses != "./.github/workflows/test.yml" || test.If != gate || len(test.Permissions) != 1 || test.Permissions["contents"] != "read" {
+		t.Errorf("upstream-watch.yml test job: uses %q, if %q, permissions %v", test.Uses, test.If, test.Permissions)
+	}
+	var needs []string
+	if err := merge.Needs.Decode(&needs); err != nil || !slices.Contains(needs, "test") || merge.If != gate {
+		t.Errorf("upstream-watch.yml merge job: needs %v (%v), if %q", needs, err, merge.If)
+	}
+	for _, st := range merge.Steps {
+		if st.Uses != "" {
+			t.Errorf("upstream-watch.yml merge job: uses %s; it runs no repository code", st.Uses)
+		}
+	}
+	q := regexp.QuoteMeta
+	order := []string{
+		q(`[ "$(git rev-parse "$BRANCH")" = "$SHA" ] ||`),
+		q(`ref: ${{ needs.pin.outputs.sha }}`),
+		q(`.state == "open" and .draft == false and .head.sha == $sha and .head.ref == $branch`),
+		q(`[ "$tip" = "$GITHUB_SHA" ] || hold`),
+		q(`-f state=success -f context=owner-approval`),
+		q(`-X PUT "repos/$REPO/pulls/$PR/merge" -f merge_method=squash -f sha="$SHA"`),
+		q(`[[ $want =~ ^[0-9a-f]{40}$ && $got == "$want" ]] || hold "merge commit $merged is not the tested tree of $SHA"`),
+		q(`-f tag="v$NEXT" -f message="v$NEXT" -f object="$merged" -f type=commit`),
+		q(`!= "$merged" ]; then`),
+		q(`actions/workflows/release.yml/dispatches" -f ref="v$NEXT"`),
+		q(`-X DELETE "repos/$REPO/git/refs/heads/$BRANCH"`),
+	}
+	at := 0
+	for _, re := range order {
+		loc := regexp.MustCompile(re).FindIndex(b[at:])
+		if loc == nil {
+			t.Fatalf("upstream-watch.yml: missing, or out of order: %s", re)
+		}
+		at += loc[1]
+	}
+	rel, err := os.ReadFile(".github/workflows/release.yml")
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, want := range []string{
+		"if: startsWith(github.ref, 'refs/tags/v')",
+		"- name: Refuse a tag that already has a release",
+		`if grep -qxF "$GITHUB_REF_NAME" "$RUNNER_TEMP/released.txt"; then`,
+	} {
+		if !bytes.Contains(rel, []byte(want)) {
+			t.Errorf("release.yml: missing %s", want)
+		}
 	}
 }
