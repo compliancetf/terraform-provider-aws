@@ -328,8 +328,9 @@ jobs:
           fi
           [[ $merged =~ ^[0-9a-f]{40}$ ]] || { echo "::error::bad merge SHA: $merged"; exit 1; }
           # Release only the tested tree, also when a rerun finds a merge by hand.
-          [ "$(gh api "repos/$REPO/git/commits/$merged" --jq .tree.sha)" = "$(gh api "repos/$REPO/git/commits/$SHA" --jq .tree.sha)" ] \
-            || hold "merge commit $merged is not the tested tree of $SHA"
+          got=$(gh api "repos/$REPO/git/commits/$merged" --jq .tree.sha)
+          want=$(gh api "repos/$REPO/git/commits/$SHA" --jq .tree.sha)
+          [[ $want =~ ^[0-9a-f]{40}$ && $got == "$want" ]] || hold "merge commit $merged is not the tested tree of $SHA"
           # Annotated tag, as a hand release; the release-tags ruleset must let GitHub Actions create v* tags.
           ref=$(gh api "repos/$REPO/git/matching-refs/tags/v$NEXT" --jq ".[] | select(.ref == \"refs/tags/v$NEXT\") | .object.sha")
           if [ -z "$ref" ]; then
@@ -339,7 +340,7 @@ jobs:
             echo "::error::tag v$NEXT exists and is not the annotated tag of $merged"
             exit 1
           fi
-          gh api --paginate "repos/$REPO/releases?per_page=100" --jq '.[].tag_name' >"$RUNNER_TEMP/released.txt"
+          gh api --paginate "repos/$REPO/releases?per_page=100" --jq '.[] | select(.draft == false) | .tag_name' >"$RUNNER_TEMP/released.txt"
           if ! grep -qxF "v$NEXT" "$RUNNER_TEMP/released.txt"; then
             gh api --silent -X POST "repos/$REPO/actions/workflows/release.yml/dispatches" -f ref="v$NEXT"
           fi

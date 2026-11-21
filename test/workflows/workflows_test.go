@@ -487,7 +487,7 @@ func TestUpstreamWatchAutoRelease(t *testing.T) {
 		q(`[ "$tip" = "$GITHUB_SHA" ] || hold`),
 		q(`-f state=success -f context=owner-approval`),
 		q(`-X PUT "repos/$REPO/pulls/$PR/merge" -f merge_method=squash -f sha="$SHA"`),
-		q(`|| hold "merge commit $merged is not the tested tree of $SHA"`),
+		q(`[[ $want =~ ^[0-9a-f]{40}$ && $got == "$want" ]] || hold "merge commit $merged is not the tested tree of $SHA"`),
 		q(`-f tag="v$NEXT" -f message="v$NEXT" -f object="$merged" -f type=commit`),
 		q(`!= "$merged" ]; then`),
 		q(`actions/workflows/release.yml/dispatches" -f ref="v$NEXT"`),
