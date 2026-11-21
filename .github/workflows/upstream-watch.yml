@@ -327,12 +327,15 @@ jobs:
               -f commit_title="chore(pin): hashicorp/aws $NEXT (#$PR)" --jq .sha)
           fi
           [[ $merged =~ ^[0-9a-f]{40}$ ]] || { echo "::error::bad merge SHA: $merged"; exit 1; }
+          # Release only the tested tree, also when a rerun finds a merge by hand.
+          [ "$(gh api "repos/$REPO/git/commits/$merged" --jq .tree.sha)" = "$(gh api "repos/$REPO/git/commits/$SHA" --jq .tree.sha)" ] \
+            || hold "merge commit $merged is not the tested tree of $SHA"
           # Annotated tag, as a hand release; the release-tags ruleset must let GitHub Actions create v* tags.
           ref=$(gh api "repos/$REPO/git/matching-refs/tags/v$NEXT" --jq ".[] | select(.ref == \"refs/tags/v$NEXT\") | .object.sha")
           if [ -z "$ref" ]; then
             tag=$(gh api "repos/$REPO/git/tags" -f tag="v$NEXT" -f message="v$NEXT" -f object="$merged" -f type=commit --jq .sha)
             gh api --silent "repos/$REPO/git/refs" -f ref="refs/tags/v$NEXT" -f sha="$tag"
-          elif [ "$(gh api "repos/$REPO/git/tags/$ref" --jq .object.sha)" != "$merged" ]; then
+          elif [ "$(gh api "repos/$REPO/git/tags/$ref" --jq .object.sha || echo lightweight)" != "$merged" ]; then
             echo "::error::tag v$NEXT exists and is not the annotated tag of $merged"
             exit 1
           fi
