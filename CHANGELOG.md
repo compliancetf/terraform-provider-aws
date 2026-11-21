@@ -1,3 +1,21 @@
+## 6.72.0 (November 21, 2026)
+
+NOTES:
+
+* pin: hashicorp/aws 6.72.0 ([#56](https://github.com/compliancetf/terraform-provider-aws/pull/56))
+
+FEATURES:
+
+* bundlegen: Enforce controls on aws_alb* alias types, regex in diffcheck ([#49](https://github.com/compliancetf/terraform-provider-aws/pull/49))
+
+ENHANCEMENTS:
+
+* bundlegen: Read control_dispositions.json from the catalog export ([#45](https://github.com/compliancetf/terraform-provider-aws/pull/45))
+
+BUG FIXES:
+
+* bundlegen: Long ids and multi-type controls in diffcheck, configured mode for Optional+Computed reads ([#48](https://github.com/compliancetf/terraform-provider-aws/pull/48))
+
 ## 6.71.0 (October 29, 2026)
 
 NOTES:
