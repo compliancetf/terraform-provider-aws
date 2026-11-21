@@ -1,6 +1,6 @@
 # AGENTS.md
 
-Coding agents write all code in this repository. Before changing anything, read `DEVELOPING.md` in full: it holds the rules, the layout, every make target and script, the test gates and the release flow. Keep it current in the same pull request as your change.
+Coding agents write all code in this repository. Before changing anything, read `DEVELOPING.md` in full: it holds the rules, the layout, every make target and script, the test gates and the release flow. Keep it current in the same pull request as your change. Before changing the proxy, upstream handling, trust or evidence code, also read `docs/architecture.md`.
 
 @DEVELOPING.md
 
@@ -10,4 +10,5 @@ The short version:
 - Run `make hooks` once per clone; never bypass the hooks. Before opening a pull request, `make test` and `GOTOOLCHAIN=go1.26.2 make lint` must pass (the pre-push hook runs both).
 - Changes land by pull request from maintainers only; users open issues.
 - Task tracking, research notes and other private context live in a private companion repository of the maintainers, not here. If it is available in your session, follow its `AGENTS.md`. Never copy its content, names or ids into this repository, and keep no issue-tracker state here.
+- User documentation lives on the compliance.tf docs site. A change to anything a user sets or sees updates `docs/reference.md` in the same pull request, and a change to internals updates `docs/architecture.md`; fill in the Docs impact section of the pull request template (DEVELOPING.md, Rules).
 - The provider denies or warns; it never changes a value the user wrote. `hashicorp/aws` is never modified.

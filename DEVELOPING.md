@@ -9,6 +9,7 @@ Coding agents write and change all code in this repository; no person works on i
 - **Git hooks.** Run `make hooks` once per clone. Commits then run the fast checks; pushes run the history guard (`scripts/check-push.sh`: every root commit reachable from any local ref and the pushed commit is this repository's root commit, and no `refs/dolt/*`), then `make test` and `make lint` (`.pre-commit-config.yaml`). Never bypass them with `--no-verify`.
 - **Private context** (task tracking, research, plans) lives in the maintainers' private companion repository; never copy it here.
 - **Commits** follow conventional commits (`feat:`, `fix:`, `test:`, `docs:`, `chore:`, `ci:`).
+- **Documentation.** User documentation lives on the [compliance.tf docs site](https://compliance.tf/docs/provider/); this repository documents the code. A change to anything a user sets or sees (a `compliance {}` attribute, a `COMPLIANCETF_*` variable, a mode, a diagnostics line, a limit, a control) updates `docs/reference.md` in the same pull request; `TestReferenceDocumentsSettings` fails when an attribute or a variable that the code reads is missing there. A change to the request flow, verification, caches, bundles or evidence updates `docs/architecture.md` in the same pull request. The pull request's Docs impact section names the docs-site pages to change, or says `none` and why; those pages must be live before the release that ships the change (see [Releasing](#releasing)).
 - **Never overwrite explicit user values.** Terraform consistency rules forbid it: the provider denies or warns only, and does not default null or unset values.
 - **The upstream provider is a black box.** `hashicorp/aws` runs as a separate, unmodified binary.
 - **Generated code** (`internal/tfplugin/tfplugin5`, `tfplugin6`, `routes_gen.go`) is never edited by hand; run `make proto`.
@@ -58,37 +59,10 @@ make test    # the full test gate
 
 ## Architecture
 
-```
-Terraform / OpenTofu
-    |  tfplugin5 gRPC
-    v
-internal/proxy/serve.go       go-plugin server, protocol 5, raw codec
-    |
-    +-- intercepted method --> internal/proxy/server5.go, route5*.go
-    |                            decode into internal/tfplugin/tfplugin5 types,
-    |                            call the hook (internal/hook), change only
-    |                            owned fields, re-encode, forward
-    |
-    +-- passthrough method --> internal/rawgrpc   forward undecoded bytes
-    |
-    +-- not in pinned proto --> Unimplemented
-    |
-    v
-internal/upstream/launch.go   hashicorp/aws as a go-plugin subprocess
-                              (pinned, verified, run from a hashed copy shared per sha256)
-```
+[docs/architecture.md](docs/architecture.md) describes the request flow, the intercepted and passthrough methods, upstream discovery and verification, the shared upstream copy and schema file, `planned_private`, bundles and trust, and the evidence chain. Read it before changing `internal/proxy`, `internal/upstream`, `internal/trust` or `internal/evidence`, and keep it current in the same pull request. Read [docs/performance.md](docs/performance.md) before changing the shared upstream copy or the schema file. Two invariants the tests guard:
 
-- Intercepted methods decode into the generated types, change only the fields they own and re-encode, so unknown fields survive. Every other method of the pinned proto is forwarded as undecoded bytes. The provider does not use `terraform-plugin-mux` or `tf5server`.
-- `internal/tfplugin/routes_gen.go` is the route table, generated from the vendored protos by `make proto`. `internal/tfplugin/classes.json` assigns each method `intercept` or `passthrough`; generation fails for a method with no class.
-- `internal/hook` defines the `Evaluator` the proxy calls at Configure and at the Validate, Plan and Apply stages. `main` serves the lifecycle evaluator (`internal/wrapper/evaluator.go`: `lifecycle.Hook`), which evaluates the signed bundles at plan, apply, refresh and import.
-- The `compliance {}` block is a nested block of the provider schema, stripped before the configuration reaches the upstream.
-- `internal/proxy/private.go` carries plan-time compliance data in `planned_private` and checks it at apply. It never writes into state.
-- Apply returns the upstream `new_state` bytes unchanged. `internal/proxy/apply_invariant_test.go` and the conformance tap check this.
 - The binary links terraform-plugin-go only for its value types, never `tf5server`/`tf6server`, which would link its own proto copy and panic on duplicate registration. `TestNoPluginGoServerLinked` (`internal/proxy/deps_test.go`) guards this, so the generated `tfplugin5` package is the only registrant of `tfplugin5.proto`.
-- The verified upstream copy is shared across provider processes: `internal/upstream/shared.go` keeps one owner-only entry per pinned sha256 under the user cache directory, and `internal/proxy/schemafile.go` keeps the upstream schema there. Terraform starts the provider three times per plan; see `docs/performance.md` before changing either.
-- `main` finds the upstream with `upstream.Discover`: the `hashicorp/aws` version pinned in `pins.json` (written by `tools/pinupstream`), from `COMPLIANCETF_UPSTREAM_PATH`, Terraform's plugin directories or a download, verified against the pin before launch. Go tests and conformance use the fake upstream in `test/fakeupstream` instead.
-- `internal/bundle`, `bundlegen`, `engine`, `lifecycle`, `trust`, `profile`, `fetch` and `evidence` are the bundle, engine, trust and evidence packages; `cmd/ctfbundle` and `cmd/ctf-bundlegen` are their CLIs. The CIS baseline is embedded in the binary; organization bundles come from the bundle service.
-- `internal/embedded` holds the signed CIS bundle archives built from `cis/` (`cis.tar.gz`, production-signed, in release builds; `cis_ctftest.tar.gz`, test-signed, in `ctftest` builds); `internal/exceptions` reads signed grants and the self-service sidecar. Control `expr` runs on the CEL engine in `internal/engine/celeng`.
+- Go tests and conformance use the fake upstream in `test/fakeupstream` instead of `hashicorp/aws`.
 
 ## Repository layout
 
@@ -122,7 +96,7 @@ test/
   fixtures/                 Terraform configs for scripts/fixtures.sh
 testdata/                   schemas, bundles and other shared test inputs
 examples/                   user-facing example configurations
-docs/                       user guide, reference and performance notes
+docs/                       architecture, the version-pinned reference, performance notes; guide.md points to the docs site
 scripts/                    see Scripts
 ```
 
@@ -190,6 +164,8 @@ The admission estimates of `json.path` and `iam.parse` (`decodeCost`, `matchCost
 | `COMPLIANCETF_CONFORMANCE_PINS` | `conformance` tag only | Pins file that replaces the embedded `pins.json`; the runner pins the fake upstream in it and passes the binary as `COMPLIANCETF_UPSTREAM_PATH` |
 | `COMPLIANCETF_CONFORMANCE_EVALUATOR` | `conformance` tag only | Test evaluator: empty for the no-op, `deny:<type>` or `warn:<type>` |
 | `COMPLIANCETF_CONFORMANCE_RPCSEQ` | `conformance` tag only | File the recording evaluator writes the RPC sequence to; exclusive with `COMPLIANCETF_CONFORMANCE_EVALUATOR` |
+| `COMPLIANCETF_CONFORMANCE_ENVELOPE` | `conformance` tag only | JSON file whose `envelope_mutation` edit the proxy applies to an apply's `planned_private` envelope, to test how apply handles a changed or stripped envelope |
+| `COMPLIANCETF_RECORD_DIR` | `record` tag only | Directory `internal/proxy/record_on.go` writes apply requests to, for the instance_key fixtures |
 
 `internal/upstream/launch.go` drops every `COMPLIANCETF_*` variable from the upstream's environment. Release builds must not carry `-tags=conformance` or `-tags=ctftest`. User-facing settings are in `docs/reference.md`.
 
@@ -233,7 +209,7 @@ Version parity: compliancetf/aws X.Y.Z proxies hashicorp/aws X.Y.Z exactly. User
 | beta | `X.Y.Z-beta.N` | before the X.Y.Z release |
 | proxy-only fix | `X.Y.Z-compliancetf.N` | a fix on top of X.Y.Z; spell `compliancetf` in full |
 
-Every control diagnostic links `https://compliance.tf/docs/controls/aws/<control id>/`, so a control id ships in a bundle only once its docs page is published. Before tagging, check each new embedded control id: `curl -fsSL https://compliance.tf/docs/controls/aws/<id>/ | rg -qF <id>` must succeed.
+Every control diagnostic links `https://compliance.tf/docs/controls/aws/<control id>/`, so a control id ships in a bundle only once its docs page is published. Before tagging, check each new embedded control id: `curl -fsSL https://compliance.tf/docs/controls/aws/<id>/ | rg -qF <id>` must succeed. In the same way, check that every docs-site page named in the Docs impact section of a pull request since the previous tag shows the change: open the page under `https://compliance.tf/docs/provider/` and find the new name or value.
 
 Terraform never selects a prerelease from a range constraint, so users opt in by pinning the exact version.
 
