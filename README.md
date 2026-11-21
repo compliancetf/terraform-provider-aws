@@ -113,6 +113,8 @@ Each directory in [examples/](examples/) is a complete configuration with a `REA
 
 ## Documentation
 
+The [compliance.tf docs](https://compliance.tf/docs/provider/) cover the provider by task: a quickstart, rollout and CI, which modules are checked, and a reference. The files below are the source; where they differ, follow [docs/reference.md](docs/reference.md).
+
 | Document | For |
 |---|---|
 | [docs/guide.md](docs/guide.md) | Day-to-day use: modes, CI, caches, evidence, diagnostics, upgrades, findings you cannot fix yet |
