@@ -1155,6 +1155,12 @@
                     "optional": true,
                     "type": "string"
                   },
+                  "continuum": {
+                    "description": "Use this to override the default service endpoint URL",
+                    "description_kind": "plain",
+                    "optional": true,
+                    "type": "string"
+                  },
                   "controltower": {
                     "description": "Use this to override the default service endpoint URL",
                     "description_kind": "plain",
