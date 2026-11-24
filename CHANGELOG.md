@@ -1,3 +1,9 @@
+## 6.74.0 (November 24, 2026)
+
+NOTES:
+
+* pin: hashicorp/aws 6.74.0 ([#62](https://github.com/compliancetf/terraform-provider-aws/pull/62))
+
 ## 6.73.0 (November 22, 2026)
 
 NOTES:
